@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة تسجيل الدخول</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        input { width: 100%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>تسجيل الدخول</h2>
+        <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="loadExcelFile(event)">
+        <input type="text" id="name" placeholder="الاسم" required>
+        <input type="text" id="number" placeholder="الرقم" required>
+        <input type="text" id="code" placeholder="الكود" required>
+        <button onclick="checkLogin()">تسجيل الدخول</button>
+        <button onclick="goToWhatsApp()">اشترك عبر واتساب</button>
+        <p id="error" class="error"></p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        let excelData = [];
+
+        // قراءة ملف Excel
+        function loadExcelFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                excelData = XLSX.utils.sheet_to_json(sheet);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // التحقق من بيانات تسجيل الدخول
+        function checkLogin() {
+            const name = document.getElementById('name').value.trim();
+            const number = document.getElementById('number').value.trim();
+            const code = document.getElementById('code').value.trim();
+            const error = document.getElementById('error');
+
+            if (!name || !number || !code) {
+                error.textContent = 'يرجى ملء جميع الحقول';
+                return;
+            }
+
+            if (excelData.length === 0) {
+                error.textContent = 'يرجى رفع ملف Excel أولاً';
+                return;
+            }
+
+            const user = excelData.find(row => 
+                row.name === name && 
+                row.number === number && 
+                row.code === code
+            );
+
+            if (user) {
+                error.textContent = 'تسجيل الدخول ناجح!';
+                error.style.color = 'green';
+            } else {
+                error.textContent = 'بيانات غير صحيحة، يرجى التحقق';
+                error.style.color = 'red';
+            }
+        }
+
+        // توجيه إلى واتساب
+        function goToWhatsApp() {
+            const message = encodeURIComponent('عاوز اشترك في المنصة');
+            window.location.href = `https://wa.me/201007586279?text=${message}`;
+        }
+    </script>
+</body>
+</html>
