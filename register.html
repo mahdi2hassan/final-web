@@ -3,80 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صفحة تسجيل الدخول</title>
+    <title>تسجيل الدخول</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-        .container { max-width: 400px; margin: auto; }
-        input { width: 100%; padding: 10px; margin: 10px 0; }
-        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
-        .error { color: red; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #2a5298;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin: 10px 0;
+        }
+
+        button:hover {
+            background: #1e3c72;
+        }
+
+        .whatsapp-btn {
+            background: #25D366;
+        }
+
+        .whatsapp-btn:hover {
+            background: #1ebe52;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: #2ecc71;
+            font-size: 14px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>تسجيل الدخول</h2>
-        <input type="file" id="excelFile" accept=".xlsx, .xls" onchange="loadExcelFile(event)">
-        <input type="text" id="name" placeholder="الاسم" required>
-        <input type="text" id="number" placeholder="الرقم" required>
-        <input type="text" id="code" placeholder="الكود" required>
+        <div class="input-group">
+            <input type="text" id="name" placeholder="الاسم" required>
+        </div>
+        <div class="input-group">
+            <input type="text" id="number" placeholder="الرقم" required>
+        </div>
+        <div class="input-group">
+            <input type="text" id="code" placeholder="الكود" required>
+        </div>
         <button onclick="checkLogin()">تسجيل الدخول</button>
-        <button onclick="goToWhatsApp()">اشترك عبر واتساب</button>
-        <p id="error" class="error"></p>
+        <button class="whatsapp-btn" onclick="goToWhatsApp()">اشترك عبر واتساب</button>
+        <p id="message"></p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
-        let excelData = [];
-
-        // قراءة ملف Excel
-        function loadExcelFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const sheetName = workbook.SheetNames[0];
-                const sheet = workbook.Sheets[sheetName];
-                excelData = XLSX.utils.sheet_to_json(sheet);
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // التحقق من بيانات تسجيل الدخول
-        function checkLogin() {
+        async function checkLogin() {
             const name = document.getElementById('name').value.trim();
             const number = document.getElementById('number').value.trim();
             const code = document.getElementById('code').value.trim();
-            const error = document.getElementById('error');
+            const message = document.getElementById('message');
 
             if (!name || !number || !code) {
-                error.textContent = 'يرجى ملء جميع الحقول';
+                message.textContent = 'يرجى ملء جميع الحقول';
+                message.className = 'error';
                 return;
             }
 
-            if (excelData.length === 0) {
-                error.textContent = 'يرجى رفع ملف Excel أولاً';
-                return;
-            }
+            try {
+                const response = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, number, code })
+                });
 
-            const user = excelData.find(row => 
-                row.name === name && 
-                row.number === number && 
-                row.code === code
-            );
-
-            if (user) {
-                error.textContent = 'تسجيل الدخول ناجح!';
-                error.style.color = 'green';
-            } else {
-                error.textContent = 'بيانات غير صحيحة، يرجى التحقق';
-                error.style.color = 'red';
+                const result = await response.json();
+                message.textContent = result.message;
+                message.className = result.success ? 'success' : 'error';
+            } catch (error) {
+                message.textContent = 'حدث خطأ، يرجى المحاولة لاحقًا';
+                message.className = 'error';
             }
         }
 
-        // توجيه إلى واتساب
         function goToWhatsApp() {
             const message = encodeURIComponent('عاوز اشترك في المنصة');
             window.location.href = `https://wa.me/201007586279?text=${message}`;
