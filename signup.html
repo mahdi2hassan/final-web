@@ -6,10 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="index, follow, all">
-    <meta name="description" content="Plus is your go-to platform for learning Math, offering interactive courses and resources for high school students.">
-    <meta property="og:description" content="Plus is your go-to platform for learning Math, offering interactive courses and resources for high school students.">
+    <meta name="description" content="Plus is your go-to platform for learning Math, offering interactive courses and resources for students.">
+    <meta property="og:description" content="Plus is your go-to platform for learning Math, offering interactive courses and resources for students.">
     <meta name="twitter:description" content="Plus is your go-to platform for learning Math.">
-    <meta name="keywords" content="Plus, learn Math, Math for high school, Math courses, learn Math online, Math, رياضيات, high school Math, رياضة, اعدادي, ثانوي, بلس, بلس في الرياضيات">
+    <meta name="keywords" content="Plus, learn Math, Math courses, learn Math online, Math, رياضيات, رياضة, اعدادي, ثانوي, بلس, بلس في الرياضيات">
     <meta property="og:title" content="طلب إنشاء حساب">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="طلب إنشاء حساب">
@@ -52,76 +52,81 @@
             src: url(/store/1/fonts/Alexandria-Regular.ttf) format('woff2');
         }
         :root {
-            --primary: #3e1b53;
-            --primary-border: #3e1b53;
-            --primary-hover: #2a133b;
+            --primary: #4a2c6b;
+            --primary-border: #4a2c6b;
+            --primary-hover: #3b2056;
             --primary-btn-color: #ffffff;
-            --secondary: #3e1b53;
-            --body_bg: #f5f5f5;
+            --secondary: #4a2c6b;
+            --body_bg: #f8f9fa;
         }
         body {
             font-family: 'main-font-family', 'Tajawal', sans-serif;
             direction: rtl;
             background: var(--body_bg);
+            margin: 0;
+            padding: 0;
         }
         .top-navbar {
-            height: 100px;
-            position: absolute;
+            height: 80px;
+            position: fixed;
             z-index: 9999;
             width: 100%;
-            background: transparent;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), transparent);
         }
         .navbar-brand img {
-            max-height: 80px;
+            max-height: 70px;
         }
-        .btn-primary {
-            background: var(--primary);
-            color: var(--primary-btn-color);
-            box-shadow: 0 3px 8px 0 rgba(17, 17, 26, .25), 0 12px 36px 0 rgba(0, 0, 0, .1);
-            transition: all 0.3s;
-        }
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
         }
         .form-section {
-            max-width: 800px;
-            margin: 120px auto;
+            max-width: 900px;
+            margin: 120px auto 60px;
             padding: 30px;
             background: #fff;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
         }
         .form-section h2 {
-            font-size: 32px;
+            font-size: 34px;
             color: var(--primary);
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            font-weight: bold;
         }
         .form-section .discribtion {
             text-align: center;
-            color: #333;
+            color: #444;
             margin-bottom: 40px;
             font-size: 16px;
+            line-height: 1.6;
         }
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 25px;
-            margin-bottom: 25px;
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
         }
         .group {
             position: relative;
-            flex: 1;
-            min-width: 200px;
         }
         .group .input, .group select {
             width: 100%;
             padding: 12px 45px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
             font-size: 16px;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        .group .input:focus, .group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 8px rgba(74, 44, 107, 0.2);
         }
         .group .icon {
             position: absolute;
@@ -138,28 +143,27 @@
             background: #fff;
             padding: 0 8px;
             font-size: 14px;
-            color: #333;
-        }
-        .group .input:focus, .group select:focus {
-            border-color: var(--primary);
-            outline: none;
+            color: #444;
+            font-weight: 500;
         }
         .submit-btn {
             display: block;
             width: 100%;
             padding: 15px;
             background: var(--primary);
-            color: #fff;
+            color: var(--primary-btn-color);
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 18px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             position: relative;
+            font-weight: bold;
         }
         .submit-btn:hover {
             background: var(--primary-hover);
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
         }
         .submit-btn.loading::after {
             content: "";
@@ -179,15 +183,17 @@
         }
         .login-link {
             text-align: center;
-            margin-top: 25px;
+            margin-top: 30px;
             font-size: 16px;
         }
         .login-link a {
             color: var(--primary);
             text-decoration: none;
             font-weight: bold;
+            transition: color 0.3s;
         }
         .login-link a:hover {
+            color: var(--primary-hover);
             text-decoration: underline;
         }
         footer {
@@ -218,19 +224,39 @@
             color: #fff;
             margin: 0 10px;
             font-size: 24px;
+            transition: color 0.3s;
+        }
+        .social-icons a:hover {
+            color: var(--primary);
         }
         .footer-bottom {
             margin-top: 20px;
             font-size: 14px;
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         @media (max-width: 991px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
             .form-section {
-                margin: 60px 20px;
+                margin: 80px 20px;
                 padding: 20px;
             }
-            .form-row {
-                flex-direction: column;
-                gap: 15px;
+        }
+        @media (max-width: 600px) {
+            .form-section h2 {
+                font-size: 28px;
+            }
+            .form-section .discribtion {
+                font-size: 14px;
+            }
+            .submit-btn {
+                font-size: 16px;
+                padding: 12px;
             }
         }
     </style>
@@ -289,14 +315,14 @@
 
         <!-- Form Section -->
         <div class="container">
-            <div class="form-section animate__animated animate__backInRight">
+            <div class="form-section">
                 <h2>
                     <img class="icon-rigstar" src="img/register.12fd893257dedfb81c9712f694a7b32f.svg" alt="Register Icon" style="width: 40px; vertical-align: middle; margin-left: 10px;">
                     طلب <span class="talap">إنشاء حساب</span>
                 </h2>
                 <p class="discribtion">ادخل بياناتك بشكل صحيح وسيتم التواصل معك خلال ساعات قليلة لتفعيل الحساب!</p>
 
-                <div class="form-row">
+                <div class="form-grid">
                     <div class="group">
                         <i class="fa fa-user icon"></i>
                         <input required type="text" class="input" id="first_name">
@@ -309,9 +335,6 @@
                         <span class="highlight"></span><span class="bar"></span>
                         <label>الاسم الثاني</label>
                     </div>
-                </div>
-
-                <div class="form-row">
                     <div class="group">
                         <i class="fa fa-user icon"></i>
                         <input required type="text" class="input" id="third_name">
@@ -324,9 +347,6 @@
                         <span class="highlight"></span><span class="bar"></span>
                         <label>الاسم الأخير</label>
                     </div>
-                </div>
-
-                <div class="form-row">
                     <div class="group">
                         <i class="fa fa-phone icon"></i>
                         <input required type="text" class="input" id="student_phone">
@@ -339,24 +359,6 @@
                         <span class="highlight"></span><span class="bar"></span>
                         <label>رقم هاتف الأب</label>
                     </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="group">
-                        <i class="fa fa-school icon"></i>
-                        <input required type="text" class="input" id="school_name">
-                        <span class="highlight"></span><span class="bar"></span>
-                        <label>اسم المدرسة</label>
-                    </div>
-                    <div class="group">
-                        <i class="fa fa-phone icon"></i>
-                        <input required type="text" class="input" id="mother_phone">
-                        <span class="highlight"></span><span class="bar"></span>
-                        <label>رقم هاتف الأم</label>
-                    </div>
-                </div>
-
-                <div class="form-row">
                     <div class="group">
                         <i class="fa fa-graduation-cap icon"></i>
                         <select required class="input" id="grade">
@@ -372,12 +374,6 @@
                             <option>الصف الثالث الثانوي</option>
                         </select>
                         <span class="bar"></span>
-                    </div>
-                    <div class="group">
-                        <i class="fa fa-envelope icon"></i>
-                        <input required type="email" class="input" id="email">
-                        <span class="highlight"></span><span class="bar"></span>
-                        <label>البريد الإلكتروني</label>
                     </div>
                 </div>
 
@@ -455,16 +451,12 @@
                 last_name: document.getElementById('last_name').value,
                 student_phone: document.getElementById('student_phone').value,
                 father_phone: document.getElementById('father_phone').value,
-                mother_phone: document.getElementById('mother_phone').value,
-                school_name: document.getElementById('school_name').value,
-                grade: document.getElementById('grade').value,
-                email: document.getElementById('email').value
+                grade: document.getElementById('grade').value
             };
 
             // التحقق من أن جميع الحقول مملوءة
             if (!formData.first_name || !formData.second_name || !formData.third_name || !formData.last_name ||
-                !formData.student_phone || !formData.father_phone || !formData.mother_phone || !formData.school_name ||
-                !formData.grade || !formData.email) {
+                !formData.student_phone || !formData.father_phone || !formData.grade) {
                 Swal.fire({
                     icon: 'error',
                     title: 'خطأ',
