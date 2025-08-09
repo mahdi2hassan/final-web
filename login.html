@@ -51,19 +51,6 @@
             font-display: swap;
             src: url(/store/1/fonts/Alexandria-Regular.ttf) format('woff2');
         }
-    </style>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="/assets/default/vendors/sweetalert2/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="/assets/default/vendors/toast/jquery.toast.min.css">
-    <link rel="stylesheet" href="/assets/default/vendors/simplebar/simplebar.css">
-    <link rel="stylesheet" href="/assets/default/css/app.css">
-    <link rel="stylesheet" href="/assets/default/css/rtl-app.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
-
-    <!-- Custom CSS -->
-    <style>
         :root {
             --primary: #3e1b53;
             --primary-border: #3e1b53;
@@ -275,7 +262,9 @@
                             </div>
                         </div>
                     </div>
- 
+                </div>
+            </div>
+        </div>
 
         <!-- Form Section -->
         <div class="container">
@@ -288,7 +277,7 @@
                 <div class="form-row">
                     <div class="group">
                         <i class="fa fa-phone icon"></i>
-                        <input required type="text" class="input">
+                        <input required type="text" class="input" id="phone">
                         <span class="highlight"></span><span class="bar"></span>
                         <label>رقم الهاتف</label>
                     </div>
@@ -297,14 +286,14 @@
                 <div class="form-row">
                     <div class="group">
                         <i class="fa fa-lock icon"></i>
-                        <input required type="password" class="input">
+                        <input required type="password" class="input" id="password">
                         <span class="highlight"></span><span class="bar"></span>
                         <label>كلمة السر</label>
                     </div>
                 </div>
 
                 <div class="buttons">
-                    <button class="submit-btn">تسجيل الدخول</button>
+                    <button class="submit-btn" onclick="checkLogin()">تسجيل الدخول</button>
                 </div>
 
                 <div class="login-link">
@@ -368,6 +357,39 @@
             duration: 1000,
             once: true,
         });
+
+        // توليد كلمات المرور
+        const passwords = [];
+        // النطاق الأول: من 1004 إلى 110004
+        for (let i = 1004; i <= 110004; i++) {
+            passwords.push(i + "s@");
+        }
+        // النطاق الثاني: من 550005 إلى 1000000 (حد أقصى مؤقت)
+        for (let i = 550005; i <= 1000000; i++) {
+            passwords.push(i + "s@");
+        }
+
+        // دالة التحقق من تسجيل الدخول
+        function checkLogin() {
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('password').value;
+
+            // التحقق من كلمة المرور
+            if (passwords.includes(password)) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'نجاح تسجيل الدخول',
+                    text: `مرحبًا! تم تسجيل الدخول بنجاح برقم الهاتف ${phone}`,
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'فشل تسجيل الدخول',
+                    text: 'كلمة المرور غير صحيحة. حاول مرة أخرى!',
+                });
+            }
+        }
+
         var deleteAlertTitle = 'هل أنت واثق؟';
         var deleteAlertHint = 'لا يمكن التراجع عن هذا الإجراء!';
         var deleteAlertConfirm = 'حذف';
