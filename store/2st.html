@@ -6,10 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="robots" content="index, follow, all">
-    <meta name="description" content="منصة تعليمية تقدم محتوى تعليمي عبر Google Drive، YouTube، وGoogle Forms للطلاب.">
-    <meta property="og:description" content="منصة تعليمية تقدم محتوى تعليمي عبر Google Drive، YouTube، وGoogle Forms.">
-    <meta name="twitter:description" content="منصة تعليمية لمحتوى Google Drive، YouTube، وGoogle Forms.">
-    <meta name="keywords" content="تعليم, دروس أونلاين, Google Drive, YouTube, Google Forms, منصة تعليمية">
+    <meta name="description" content="منصة تعليمية تقدم محتوى تعليمي  للطلاب.">
+    <meta property="og:description" content="منصة تعليمية تقدم محتوى تعليمي   ">
+    <meta name="twitter:description" content="منصة تعليمية المحتوي  ">
+    <meta name="keywords" content="تعليم, دروس أونلاين, MahdiHassan, YouTube, plusinmath, منصة تعليمية">
     <meta property="og:title" content="محتوى تعليمي">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="محتوى تعليمي">
@@ -76,21 +76,30 @@
             font-family: 'main-font-family', 'Tajawal', sans-serif;
             direction: rtl;
             background: var(--body_bg);
+            margin: 0;
+            padding: 0;
         }
         .top-navbar {
-            height: 100px;
-            position: absolute;
-            z-index: 9999;
+            height: 80px;
+            position: fixed;
+            top: 0;
             width: 100%;
             background: transparent;
+            z-index: 9999;
+            transition: background 0.3s;
+        }
+        .top-navbar.scrolled {
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
         .navbar-brand img {
-            max-height: 80px;
+            max-height: 60px;
         }
         .btn-primary {
             background: var(--primary);
             color: var(--primary-btn-color);
-            box-shadow: 0 3px 8px 0 rgba(17, 17, 26, .25), 0 12px 36px 0 rgba(0, 0, 0, .1);
+            padding: 10px 20px;
+            border-radius: 5px;
             transition: all 0.3s;
         }
         .btn-primary:hover {
@@ -98,11 +107,11 @@
         }
         .content-section {
             max-width: 1200px;
-            margin: 100px auto;
+            margin: 100px auto 50px;
             padding: 20px;
         }
         .content-section h2 {
-            font-size: 30px;
+            font-size: 32px;
             color: var(--primary);
             text-align: center;
             margin-bottom: 20px;
@@ -110,41 +119,45 @@
         .content-section .discribtion {
             text-align: center;
             color: #333;
+            font-size: 18px;
             margin-bottom: 30px;
         }
         .content-row {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
-            justify-content: center;
+            justify-content: space-between;
         }
         .content-card {
             background: #fff;
             border-radius: 10px;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            flex: 1;
+            min-width: 280px;
+            max-width: 360px;
             text-align: center;
             padding: 20px;
             transition: transform 0.3s, filter 0.3s;
         }
         .content-card:hover {
-            transform: scale(0.9);
-            filter: brightness(1.1);
+            transform: translateY(-10px);
+            filter: brightness(1.05);
         }
         .content-card img {
             width: 100%;
-            height: 150px;
+            height: 180px;
             object-fit: cover;
             border-radius: 5px;
             margin-bottom: 15px;
         }
         .content-card h3 {
-            font-size: 20px;
+            font-size: 22px;
             color: var(--primary);
             margin-bottom: 10px;
         }
         .content-card p {
             color: #333;
+            font-size: 16px;
             margin-bottom: 15px;
         }
         .content-card a {
@@ -162,15 +175,20 @@
         footer {
             background: #212529;
             color: #fff;
-            padding: 50px 0;
+            padding: 40px 20px;
             text-align: center;
         }
         .footer-container {
             display: flex;
-            justify-content: space-around;
             flex-wrap: wrap;
+            justify-content: space-between;
             max-width: 1200px;
             margin: 0 auto;
+            gap: 20px;
+        }
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
         }
         .footer-section h2 {
             font-size: 20px;
@@ -182,23 +200,58 @@
         }
         .footer-section ul li {
             margin-bottom: 10px;
+            font-size: 16px;
         }
         .social-icons a {
             color: #fff;
             margin: 0 10px;
             font-size: 24px;
+            transition: color 0.3s;
+        }
+        .social-icons a:hover {
+            color: var(--primary);
         }
         .footer-bottom {
             margin-top: 20px;
             font-size: 14px;
         }
+
+        /* Responsive Design */
         @media (max-width: 991px) {
             .content-section {
-                margin: 50px 20px;
+                margin: 80px 20px 40px;
             }
             .content-row {
                 flex-direction: column;
                 align-items: center;
+            }
+            .content-card {
+                max-width: 100%;
+                width: 100%;
+            }
+            .top-navbar {
+                height: 60px;
+            }
+            .navbar-brand img {
+                max-height: 50px;
+            }
+        }
+        @media (max-width: 576px) {
+            .content-section h2 {
+                font-size: 28px;
+            }
+            .content-section .discribtion {
+                font-size: 16px;
+            }
+            .content-card img {
+                height: 150px;
+            }
+            .footer-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .footer-section {
+                margin-bottom: 20px;
             }
         }
     </style>
@@ -207,76 +260,75 @@
     <div id="app">
         <!-- Navbar -->
         <div class="top-navbar d-flex">
-            <div class="container d-flex justify-content-between flex-column flex-lg-row">
-                <div class="top-contact-box d-flex align-items-center justify-content-center">
-                    <a class="navbar-brand navbar-order d-flex align-items-center justify-content-center mr-0 ml-auto" href="/">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div class="top-contact-box d-flex align-items-center">
+                    <a class="navbar-brand" href="/">
                         <img src="store/1/logo.png" class="img-cover" alt="Logo">
                     </a>
                 </div>
-                <div class="xs-w-100 d-flex align-items-center justify-content-between">
-                    <div class="d-flex">
-                        <div class="dropdown">
-                            <button type="button" disabled class="btn btn-transparent dropdown-toggle" id="navbarShopingCart" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i data-feather="shopping-cart" width="20" height="20" class="mr-10"></i>
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="navbarShopingCart">
-                                <div class="d-md-none border-bottom mb-20 pb-10 text-right">
-                                    <i class="close-dropdown" data-feather="x" width="32" height="32" class="mr-10"></i>
-                                </div>
-                                <div class="navbar-shopping-cart h-100" data-simplebar>
-                                    <div class="d-flex align-items-center text-center py-50">
-                                        <i data-feather="shopping-cart" width="20" height="20" class="mr-10"></i>
-                                        <span>عربة التسوق فارغة</span>
-                                    </div>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <button type="button" disabled class="btn btn-transparent dropdown-toggle" id="navbarShopingCart" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i data-feather="shopping-cart" width="20" height="20" class="mr-10"></i>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="navbarShopingCart">
+                            <div class="d-md-none border-bottom mb-20 pb-10 text-right">
+                                <i class="close-dropdown" data-feather="x" width="32" height="32" class="mr-10"></i>
+                            </div>
+                            <div class="navbar-shopping-cart h-100" data-simplebar>
+                                <div class="d-flex align-items-center text-center py-50">
+                                    <i data-feather="shopping-cart" width="20" height="20" class="mr-10"></i>
+                                    <span>عربة التسوق فارغة</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="mx-5 mx-lg-15"></div>
-                        <div class="dropdown">
-                            <button type="button" disabled class="btn btn-transparent dropdown-toggle" id="navbarNotification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i data-feather="bell" width="20" height="20" class="mr-10"></i>
-                            </button>
-                            <div class="dropdown-menu pt-20" aria-labelledby="navbarNotification">
-                                <div class="d-flex flex-column h-100">
-                                    <div class="navbar-notification-card" data-simplebar>
-                                        <div class="d-md-none border-bottom mb-20 pb-10 text-right">
-                                            <i class="close-dropdown" data-feather="x" width="32" height="32" class="mr-10"></i>
-                                        </div>
-                                        <div class="d-flex align-items-center text-center py-50">
-                                            <i data-feather="bell" width="20" height="20" class="mr-10"></i>
-                                            <span>الإخطارات الفارغة</span>
-                                        </div>
+                    </div>
+                    <div class="mx-5"></div>
+                    <div class="dropdown">
+                        <button type="button" disabled class="btn btn-transparent dropdown-toggle" id="navbarNotification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i data-feather="bell" width="20" height="20" class="mr-10"></i>
+                        </button>
+                        <div class="dropdown-menu pt-20" aria-labelledby="navbarNotification">
+                            <div class="d-flex flex-column h-100">
+                                <div class="navbar-notification-card" data-simplebar>
+                                    <div class="d-md-none border-bottom mb-20 pb-10 text-right">
+                                        <i class="close-dropdown" data-feather="x" width="32" height="32" class="mr-10"></i>
+                                    </div>
+                                    <div class="d-flex align-items-center text-center py-50">
+                                        <i data-feather="bell" width="20" height="20" class="mr-10"></i>
+                                        <span>الإخطارات الفارغة</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex align-items-center ml-md-50">
-  
-     
+                </div>
+            </div>
+        </div>
+
         <!-- Content Section -->
         <div class="container">
             <div class="content-section animate__animated animate__backInRight">
-                <h2>المحتوى تعليمي</h2>
-                <p class="discribtion">اتعلم باحدث بالاساليب مع بلس!</p>
+                <h2>المحتوى التعليمي</h2>
+                <p class="discribtion">تعلم بأحدث الأساليب مع بلس!</p>
                 <div class="content-row">
                     <div class="content-card">
                         <img src="https://via.placeholder.com/300x150?text=Google+Drive" alt="Google Drive">
-                        <h3> الواجبات</h3>
-                        <p>   الواجبات علي كل الدروس التعليمة</p>
-                        <a href="https://drive.google.com/drive/folders/123456789" target="_blank">فتح  </a>
+                        <h3>الواجبات</h3>
+                        <p>الواجبات لجميع الدروس التعليمية</p>
+                        <a href="https://drive.google.com/drive/folders/123456789" target="_blank">فتح</a>
                     </div>
                     <div class="content-card">
                         <img src="https://via.placeholder.com/300x150?text=YouTube" alt="YouTube">
                         <h3>الشروحات</h3>
-                        <p>شاهد دروسًا تعليمية وفيديوهات توضيحية على للدروس الخاصة بالمقرر.</p>
+                        <p>شاهد دروسًا تعليمية وفيديوهات توضيحية للدروس الخاصة بالمقرر.</p>
                         <a href="https://www.youtube.com/watch?v=example" target="_blank">فتح</a>
                     </div>
                     <div class="content-card">
                         <img src="https://via.placeholder.com/300x150?text=Google+Forms" alt="Google Forms">
-                        <h3>امتحانات </h3>
-                        <p>امتحانات دورية لكل الدروس  </p>
-                        <a href="https://forms.gle/example" target="_blank">فتح  </a>
+                        <h3>الامتحانات</h3>
+                        <p>امتحانات دورية لجميع الدروس</p>
+                        <a href="https://forms.gle/example" target="_blank">فتح</a>
                     </div>
                 </div>
             </div>
@@ -296,7 +348,7 @@
                             <h2>تواصل معنا</h2>
                             <ul>
                                 <li><i class="fas fa-phone"></i> 01007586279</li>
-                                <li><i class="fas fa-envelope"></i>plusinmath@gmail.com</li>
+                                <li><i class="fas fa-envelope"></i> plusinmath@gmail.com</li>
                                 <li><i class="fas fa-map-marker-alt"></i> مصر</li>
                             </ul>
                         </div>
@@ -331,10 +383,19 @@
             duration: 1000,
             once: true,
         });
+        // Add sticky navbar effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.top-navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
         var deleteAlertTitle = 'هل أنت واثق؟';
         var deleteAlertHint = 'لا يمكن التراجع عن هذا الإجراء!';
         var deleteAlertConfirm = 'حذف';
-        var deleteAlertCancel = 'الغاء';
+        var deleteAlertCancel = 'إلغاء';
         var deleteAlertSuccess = 'النجاح';
         var deleteAlertFail = 'فشل';
         var deleteAlertFailHint = 'خطأ أثناء حذف العنصر!';
