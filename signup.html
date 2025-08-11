@@ -6,7 +6,7 @@
     <meta name="description" content="Plus is your go-to platform for learning Math, offering interactive courses and resources for students.">
     <meta name="keywords" content="Plus, learn Math, Math courses, learn Math online, Math, رياضيات, رياضة, اعدادي, ثانوي, بلس, بلس في الرياضيات">
     <meta name="author" content="Plus Team">
-    <title>نموذج الاتصال | Plus</title>
+    <title>طلب إنشاء حساب | Plus</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -275,6 +275,18 @@
                 return;
             }
 
+            // التحقق من أن أرقام الهواتف تحتوي على أرقام فقط
+            if (!/^\d+$/.test(formData.student_phone) || !/^\d+$/.test(formData.father_phone)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: 'يرجى إدخال أرقام هاتف صالحة (أرقام فقط)!',
+                });
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                return;
+            }
+
             // إرسال النموذج باستخدام AJAX
             const xhr = new XMLHttpRequest();
             xhr.open('POST', 'send_email.php', true);
@@ -297,7 +309,7 @@
                     Swal.fire({
                         icon: 'error',
                         title: 'فشل الإرسال',
-                        text: 'حدث خطأ أثناء إرسال البيانات. حاول مرة أخرى!',
+                        text: xhr.responseText || 'حدث خطأ أثناء إرسال البيانات. حاول مرة أخرى!',
                     });
                 }
                 submitBtn.classList.remove('loading');
@@ -308,7 +320,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'فشل الإرسال',
-                    text: 'حدث خطأ أثناء إرسال البيانات. حاول مرة أخرى!',
+                    text: 'حدث خطأ في الاتصال بالخادم. حاول مرة أخرى!',
                 });
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
