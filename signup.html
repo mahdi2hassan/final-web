@@ -1,120 +1,321 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نموذج الاتصال</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Plus is your go-to platform for learning Math, offering interactive courses and resources for students.">
+    <meta name="keywords" content="Plus, learn Math, Math courses, learn Math online, Math, رياضيات, رياضة, اعدادي, ثانوي, بلس, بلس في الرياضيات">
+    <meta name="author" content="Plus Team">
+    <title>نموذج الاتصال | Plus</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            direction: rtl;
-            text-align: center;
-            background-color: #f4f4f4;
-            padding: 20px;
+        :root {
+            --primary: #689f38;
+            --primary-hover: #558b2f;
+            --primary-btn-color: #ffffff;
+            --body-bg: #f8f9fa;
         }
-        .form-container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        body {
+            font-family: 'Tajawal', sans-serif;
+            direction: rtl;
+            background: var(--body-bg);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 0 15px;
+        }
+        #contact-form {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        #contact-form h2 {
+            font-size: 32px;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        #contact-form .description {
+            text-align: center;
+            color: #444;
+            margin-bottom: 40px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
         }
         .form-group {
-            margin-bottom: 15px;
+            position: relative;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        input, select {
+        .form-group input,
+        .form-group select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px 45px;
+            border: 1px solid #e3e3e3;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #fafafa;
+            transition: all 0.3s ease;
         }
-        button {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 8px rgba(104, 159, 56, 0.2);
+        }
+        .form-group .icon {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 18px;
+        }
+        .form-group label {
+            position: absolute;
+            top: -12px;
+            right: 15px;
+            background: #fff;
+            padding: 0 8px;
+            font-size: 14px;
+            color: #444;
+            font-weight: 500;
+        }
+        #ContactForm1_contact-form-submit {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: var(--primary-btn-color);
             border: none;
-            border-radius: 4px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
         }
-        button:hover {
-            background-color: #218838;
+        #ContactForm1_contact-form-submit:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
         }
-        #responseMessage {
-            display: none;
+        #ContactForm1_contact-form-submit.loading::after {
+            content: "";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .error-message,
+        .success-message {
+            text-align: center;
             margin-top: 20px;
-            color: green;
+            font-size: 14px;
+        }
+        .error-message {
+            color: #b90000;
+            font-weight: bold;
+        }
+        .success-message {
+            color: var(--primary);
+            font-weight: bold;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 991px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            #contact-form {
+                margin: 30px 20px;
+                padding: 20px;
+            }
+        }
+        @media (max-width: 600px) {
+            #contact-form h2 {
+                font-size: 28px;
+            }
+            #contact-form .description {
+                font-size: 14px;
+            }
+            #ContactForm1_contact-form-submit {
+                font-size: 16px;
+                padding: 12px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h2>نموذج الاتصال</h2>
-        <form id="contactForm" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
-            <div class="form-group">
-                <label for="name">الاسم</label>
-                <input type="text" id="name" name="name" required>
-            </div>
-            <div class="form-group">
-                <label for="phone">رقم الهاتف</label>
-                <input type="tel" id="phone" name="phone" required>
-            </div>
-            <div class="form-group">
-                <label for="grade">الصف</label>
-                <select id="grade" name="grade" required>
-                    <option value="">اختر الصف</option>
-                    <option value="رابعة ابتدائي">رابعة ابتدائي</option>
-                    <option value="خامسة ابتدائي">خامسة ابتدائي</option>
-                    <option value="سادسة ابتدائي">سادسة ابتدائي</option>
-                    <option value="أول إعدادي">أول إعدادي</option>
-                    <option value="ثاني إعدادي">ثاني إعدادي</option>
-                    <option value="ثالث إعدادي">ثالث إعدادي</option>
-                    <option value="أول ثانوي">أول ثانوي</option>
-                    <option value="ثاني ثانوي">ثاني ثانوي</option>
-                    <option value="ثالث ثانوي">ثالث ثانوي</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="parentPhone">رقم هاتف ولي الأمر</label>
-                <input type="tel" id="parentPhone" name="parentPhone" required>
-            </div>
-            <input type="hidden" name="_to" value="plusinmath@gmail.com">
-            <button type="submit">إرسال</button>
-        </form>
-        <div id="responseMessage">سوف يتم التواصل معك لتزويدك بالكود الخاص بك</div>
+    <div class="container">
+        <div id="contact-form">
+            <h2>طلب إنشاء حساب</h2>
+            <p class="description">ادخل بياناتك بشكل صحيح وسيتم التواصل معك خلال ساعات قليلة لتفعيل الحساب!</p>
+            <form name="contact-form" id="contactForm" method="POST" action="send_email.php">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <i class="fa fa-user icon"></i>
+                        <input required type="text" id="first_name" name="first_name" placeholder="الاسم الأول">
+                        <label>الاسم الأول</label>
+                    </div>
+                    <div class="form-group">
+                        <i class="fa fa-user icon"></i>
+                        <input required type="text" id="second_name" name="second_name" placeholder="الاسم الثاني">
+                        <label>الاسم الثاني</label>
+                    </div>
+                    <div class="form-group">
+                        <i class="fa fa-user icon"></i>
+                        <input required type="text" id="third_name" name="third_name" placeholder="الاسم الثالث">
+                        <label>الاسم الثالث</label>
+                    </div>
+                    <div class="form-group">
+                        <i class="fa fa-user icon"></i>
+                        <input required type="text" id="last_name" name="last_name" placeholder="الاسم الأخير">
+                        <label>الاسم الأخير</label>
+                    </div>
+                    <div class="form-group">
+                        <i class="fa fa-phone icon"></i>
+                        <input required type="text" id="student_phone" name="student_phone" placeholder="رقم هاتف الطالب">
+                        <label>رقم هاتف الطالب</label>
+                    </div>
+                    <div class="form-group">
+                        <i class="fa fa-phone icon"></i>
+                        <input required type="text" id="father_phone" name="father_phone" placeholder="رقم هاتف الأب">
+                        <label>رقم هاتف الأب</label>
+                    </div>
+                    <div class="form-group">
+                        <i class="fa fa-graduation-cap icon"></i>
+                        <select required id="grade" name="grade">
+                            <option disabled selected>اختر الصف</option>
+                            <option>الصف الرابع الابتدائي</option>
+                            <option>الصف الخامس الابتدائي</option>
+                            <option>الصف السادس الابتدائي</option>
+                            <option>الصف الأول الإعدادي</option>
+                            <option>الصف الثاني الإعدادي</option>
+                            <option>الصف الثالث الإعدادي</option>
+                            <option>الصف الأول الثانوي</option>
+                            <option>الصف الثاني الثانوي</option>
+                            <option>الصف الثالث الثانوي</option>
+                        </select>
+                    </div>
+                </div>
+                <input id="ContactForm1_contact-form-submit" type="button" value="إرسال" onclick="submitForm()" />
+                <div class="error-message" id="ContactForm1_contact-form-error-message"></div>
+                <div class="success-message" id="ContactForm1_contact-form-success-message"></div>
+            </form>
+        </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.getElementById('contactForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
-
+        function submitForm() {
+            const submitBtn = document.getElementById('ContactForm1_contact-form-submit');
+            const errorMessage = document.getElementById('ContactForm1_contact-form-error-message');
+            const successMessage = document.getElementById('ContactForm1_contact-form-success-message');
             const form = document.getElementById('contactForm');
-            const formData = new FormData(form);
 
-            try {
-                const response = await fetch(form.action, {
-                    method: form.method,
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            errorMessage.textContent = '';
+            successMessage.textContent = '';
+
+            // جمع البيانات من النموذج
+            const formData = {
+                first_name: document.getElementById('first_name').value,
+                second_name: document.getElementById('second_name').value,
+                third_name: document.getElementById('third_name').value,
+                last_name: document.getElementById('last_name').value,
+                student_phone: document.getElementById('student_phone').value,
+                father_phone: document.getElementById('father_phone').value,
+                grade: document.getElementById('grade').value
+            };
+
+            // التحقق من أن جميع الحقول مملوءة
+            if (!formData.first_name || !formData.second_name || !formData.third_name || !formData.last_name ||
+                !formData.student_phone || !formData.father_phone || !formData.grade) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: 'يرجى ملء جميع الحقول المطلوبة!',
                 });
-
-                if (response.ok) {
-                    document.getElementById('responseMessage').style.display = 'block';
-                    form.reset();
-                } else {
-                    alert('حدث خطأ أثناء الإرسال، حاول مرة أخرى.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('حدث خطأ، تأكد من اتصالك بالإنترنت.');
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                return;
             }
-        });
+
+            // إرسال النموذج باستخدام AJAX
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'send_email.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+            // تحويل البيانات إلى تنسيق URL-encoded
+            const data = `first_name=${encodeURIComponent(formData.first_name)}&second_name=${encodeURIComponent(formData.second_name)}&third_name=${encodeURIComponent(formData.third_name)}&last_name=${encodeURIComponent(formData.last_name)}&student_phone=${encodeURIComponent(formData.student_phone)}&father_phone=${encodeURIComponent(formData.father_phone)}&grade=${encodeURIComponent(formData.grade)}`;
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تم الإرسال',
+                        text: 'سيتم التواصل معك لتأكيد الانضمام',
+                    });
+                    // إعادة تعيين النموذج
+                    form.reset();
+                    document.getElementById('grade').selectedIndex = 0;
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'فشل الإرسال',
+                        text: 'حدث خطأ أثناء إرسال البيانات. حاول مرة أخرى!',
+                    });
+                }
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            };
+
+            xhr.onerror = function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'فشل الإرسال',
+                    text: 'حدث خطأ أثناء إرسال البيانات. حاول مرة أخرى!',
+                });
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            };
+
+            xhr.send(data);
+        }
     </script>
 </body>
 </html>
