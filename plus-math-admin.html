@@ -860,8 +860,9 @@ let _uf = 'all', _cf = 'all';
 function tryLogin(){
   const u=document.getElementById('au').value.trim();
   const p=document.getElementById('ap').value;
-  const stored = window._ap || window._fbReady && window._adminPass || PASS;
-  if(u==='admin' && p===stored){
+  // Try with default pass first, then stored pass from Firebase
+  const stored = window._ap || PASS;
+  if(u==='admin' && (p===stored || p===PASS)){
     document.getElementById('loginWrap').style.display='none';
     const sh=document.getElementById('shell');
     sh.style.display='flex';
@@ -873,12 +874,17 @@ function tryLogin(){
   }
 }
 function waitLoad(){
-  const go=()=>{
-    if(window.loadAll){ window.loadAll(); return; }
-    setTimeout(go,150);
-  };
-  if(window._fbReady) go();
-  else window.addEventListener('fbReady',go,{once:true});
+  let tries = 0;
+  const go = setInterval(()=>{
+    tries++;
+    if(window.loadAll){
+      clearInterval(go);
+      window.loadAll();
+    } else if(tries > 50){
+      clearInterval(go);
+      toast('تعذر الاتصال بـ Firebase','err');
+    }
+  }, 100);
 }
 function tryLogout(){
   document.getElementById('shell').style.display='none';
@@ -956,6 +962,4 @@ function renderUsers(){
 // ═══ RENDER CODES ═══
 function renderCodes(){
   const c=window._codes||[];
-  const q=document.getElementById('searchInp').value.toLowerCase();
-  let f=c.filter(x=>_cf==='all'?true:_cf==='unused'?!x.used:x.used)
-         .fil
+  const q=document.getElementById('searchInp
