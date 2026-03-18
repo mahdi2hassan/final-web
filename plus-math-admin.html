@@ -221,7 +221,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);dis
 </div>
 
 <!-- DASHBOARD -->
-<div id="db" style="display:none;width:100%;height:100%;flex-direction:row">
+<div id="db" style="display:none;width:100%;height:100%">
 
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
@@ -626,9 +626,12 @@ window.exportCSV = function(){
 };
 
 // ── Initial load ──
-setTimeout(()=>{
-  if(document.getElementById('db').style.display!=='none') window.loadAll();
-},100);
+window.addEventListener('load', () => {
+  // Load settings in background for password check
+  setTimeout(() => {
+    if (window._db) window.loadSettings?.();
+  }, 500);
+});
 </script>
 
 <script>
@@ -641,9 +644,17 @@ function adminLogin(){
   const storedPass = window._adminPass || ADMIN_PASS;
   if(u==='admin' && p===storedPass){
     document.getElementById('loginScreen').style.display='none';
-    const db=document.getElementById('db');
-    db.style.display='flex';
-    if(window.loadAll) window.loadAll();
+    const dbEl=document.getElementById('db');
+    dbEl.style.display='flex';
+    dbEl.style.flexDirection='row';
+    // Wait for firebase module to be ready then load data
+    const tryLoad = setInterval(()=>{
+      if(window.loadAll){
+        clearInterval(tryLoad);
+        window.loadAll();
+      }
+    }, 100);
+    setTimeout(()=>clearInterval(tryLoad), 5000);
   } else {
     document.getElementById('lerr').style.display='block';
   }
