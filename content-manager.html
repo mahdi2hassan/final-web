@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Plus Mathematics – إدارة المحتوى</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04060f;--s1:rgba(8,13,28,0.92);--s2:rgba(12,18,40,0.75);
+  --b1:rgba(74,127,212,0.22);--b2:rgba(74,127,212,0.12);
+  --blue:#4a7fd4;--navy:#1a3270;--gold:#c9a84c;--gold2:#f0d080;
+  --text:#eef2ff;--muted:#6a7a9e;
+  --ok:#00d68f;--err:#ff4d6d;--warn:#f5a623;--purple:#a78bfa;
+  --inp:rgba(6,10,22,0.8);
+}
+html,body{min-height:100dvh;overflow-x:hidden}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
+
+/* BG */
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(74,127,212,0.04) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(74,127,212,0.04) 1px,transparent 1px);
+  background-size:44px 44px}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
+.o1{width:400px;height:400px;background:rgba(26,50,112,0.4);top:-100px;right:-100px}
+.o2{width:300px;height:300px;background:rgba(110,75,10,0.25);bottom:-60px;left:-60px}
+
+/* LOGIN */
+#loginWrap{position:fixed;inset:0;z-index:100;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;padding:16px}
+.lcard{background:var(--s2);backdrop-filter:blur(24px);border:1px solid var(--b1);
+  border-radius:20px;padding:32px 28px;width:100%;max-width:340px;text-align:center;
+  box-shadow:0 32px 80px rgba(0,0,0,0.6);animation:popIn .5s ease both}
+@keyframes popIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.lcard img{width:52px;height:52px;object-fit:contain;margin-bottom:10px;
+  filter:drop-shadow(0 4px 14px rgba(74,127,212,0.5))}
+.lcard h2{font-size:16px;font-weight:900;
+  background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.lcard p{font-size:11px;color:var(--muted);margin:4px 0 20px}
+.lf{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;text-align:right}
+.lf label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
+.lf input{padding:11px 13px;background:var(--inp);border:1.5px solid var(--b1);
+  border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s}
+.lf input:focus{border-color:var(--blue)}
+.lbtn{width:100%;padding:12px;border:none;border-radius:10px;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;
+  background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;
+  box-shadow:0 5px 18px rgba(74,127,212,0.3);transition:all .15s;margin-top:4px}
+.lbtn:hover{transform:translateY(-1px)}
+.lerr{font-size:12px;color:var(--err);margin-top:8px;display:none}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:50;
+  height:56px;display:flex;align-items:center;gap:12px;
+  padding:0 clamp(14px,4vw,24px);
+  background:var(--s1);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--b2);}
+.topbar-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.topbar-logo img{width:30px;height:30px;object-fit:contain}
+.topbar-logo h2{font-size:13px;font-weight:900;
+  background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.topbar-title{flex:1;font-size:14px;font-weight:800;color:var(--muted)}
+.tb-btn{padding:7px 14px;border:1px solid var(--b1);border-radius:9px;
+  background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;
+  font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
+.tb-btn:hover{border-color:var(--blue);color:var(--text)}
+.tb-btn svg{width:13px;height:13px}
+.tb-btn.active{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(74,127,212,0.3)}
+
+/* MAIN */
+.main{position:relative;z-index:1;padding:clamp(14px,3vw,20px) clamp(14px,4vw,24px);
+  max-width:960px;margin:0 auto}
+
+/* GRADE SELECTOR */
+.grade-selector{background:var(--s2);border:1px solid var(--b2);border-radius:14px;
+  padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.grade-selector label{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.grade-sel{padding:9px 14px;background:var(--inp);border:1.5px solid var(--b1);
+  border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
+  outline:none;appearance:none;cursor:pointer;min-width:200px;transition:border-color .2s}
+.grade-sel:focus{border-color:var(--blue)}
+.grade-badge{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;
+  background:rgba(0,214,143,0.1);color:var(--ok);border:1px solid rgba(0,214,143,0.2)}
+
+/* TABS */
+.tabs-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+
+/* CONTENT CARD */
+.content-card{background:var(--s2);border:1px solid var(--b2);border-radius:14px;
+  padding:18px;margin-bottom:12px;transition:all .2s}
+.content-card:hover{border-color:var(--b1)}
+.cc-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;
+  padding-bottom:12px;border-bottom:1px solid var(--b2)}
+.cc-header h3{font-size:14px;font-weight:800;flex:1;display:flex;align-items:center;gap:7px}
+.cc-header h3 svg{width:15px;height:15px;color:var(--blue)}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+.ff{display:flex;flex-direction:column;gap:5px}
+.ff label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
+.ff input,.ff select,.ff textarea{
+  padding:10px 12px;background:var(--inp);border:1.5px solid var(--b1);
+  border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;
+  font-size:14px;outline:none;transition:border-color .2s;
+  appearance:none;width:100%;resize:vertical}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--blue)}
+.ff.full{grid-column:1/-1}
+
+/* ITEMS LIST */
+.items-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.item-row{background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;
+  padding:12px 14px;display:flex;align-items:center;gap:10px;transition:all .2s}
+.item-row:hover{border-color:var(--b1)}
+.item-order{width:28px;height:28px;border-radius:8px;
+  background:linear-gradient(135deg,var(--blue),var(--navy));
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.item-info{flex:1;min-width:0}
+.item-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.item-actions{display:flex;gap:5px;flex-shrink:0}
+.ia-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--b2);
+  background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;color:var(--muted)}
+.ia-btn:hover{border-color:var(--blue);background:rgba(74,127,212,0.1);color:var(--text)}
+.ia-btn.del:hover{border-color:var(--err);background:rgba(255,77,109,0.1);color:var(--err)}
+.ia-btn svg{width:12px;height:12px}
+
+/* BADGE */
+.badge{display:inline-flex;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.badge.v{background:rgba(74,127,212,0.1);color:var(--blue)}
+.badge.e{background:rgba(201,168,76,0.1);color:var(--gold)}
+.badge.h{background:rgba(167,139,250,0.1);color:var(--purple)}
+
+/* BTN */
+.btn{padding:9px 16px;border:none;border-radius:10px;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;
+  display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn svg{width:13px;height:13px}
+.btn.primary{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;box-shadow:0 4px 14px rgba(74,127,212,0.25)}
+.btn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff}
+.btn.gold{background:linear-gradient(135deg,var(--gold),#7a5810);color:#fff}
+.btn.purple{background:linear-gradient(135deg,var(--purple),#5b21b6);color:#fff}
+.btn.ghost{background:transparent;border:1px solid var(--b1);color:var(--muted)}
+.btn.ghost:hover{border-color:var(--blue);color:var(--text)}
+.btn.sm{padding:7px 12px;font-size:12px}
+
+/* EXAM TYPE FIELDS */
+.type-fields{display:none}
+.type-fields.show{display:block}
+
+/* EMPTY */
+.empty{text-align:center;padding:28px 20px;color:var(--muted)}
+.empty svg{width:32px;height:32px;opacity:.2;display:block;margin:0 auto 10px}
+.empty p{font-size:13px}
+
+/* TOAST */
+.toast{position:fixed;bottom:18px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:rgba(10,15,34,0.97);backdrop-filter:blur(16px);
+  border:1px solid var(--b1);border-radius:11px;
+  padding:10px 18px;font-size:13px;font-weight:600;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  transition:transform .3s cubic-bezier(.22,1,.36,1);z-index:999;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{color:var(--ok);border-color:rgba(0,214,143,0.3)}
+.toast.err{color:var(--err);border-color:rgba(255,77,109,0.3)}
+.toast svg{width:14px;height:14px}
+
+/* LINK PREVIEW */
+.yt-preview{margin-top:8px;border-radius:10px;overflow:hidden;display:none}
+.yt-preview iframe{width:100%;height:180px;border:none;display:block}
+
+.section-note{font-size:11px;color:var(--muted);background:rgba(74,127,212,0.06);
+  border:1px solid var(--b2);border-radius:8px;padding:8px 12px;margin-bottom:12px;line-height:1.7}
+.section-note strong{color:var(--blue)}
+</style>
+</head>
+<body>
+
+<svg style="display:none">
+  <symbol id="ic-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></symbol>
+  <symbol id="ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
+  <symbol id="ic-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="ic-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></symbol>
+  <symbol id="ic-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="ic-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></symbol>
+  <symbol id="ic-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></symbol>
+</svg>
+
+<div class="bg-grid"></div>
+<div class="o1 orb"></div>
+<div class="o2 orb"></div>
+
+<!-- LOGIN -->
+<div id="loginWrap">
+  <div class="lcard">
+    <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.opacity='.5'"/>
+    <h2>إدارة المحتوى</h2>
+    <p>Plus Mathematics · 2026</p>
+    <div class="lf"><label>كلمة المرور</label>
+      <input type="password" id="lp" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="lbtn" onclick="doLogin()">دخول</button>
+    <div class="lerr" id="lerr">كلمة المرور غلط</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <a href="index.html" class="topbar-logo">
+      <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.display='none'"/>
+      <h2>Plus Math</h2>
+    </a>
+    <div class="topbar-title">إدارة المحتوى</div>
+    <div style="display:flex;gap:8px;margin-right:auto">
+      <a href="plus-math-admin.html" class="tb-btn">
+        <svg><use href="#ic-home"/></svg>الداشبورد
+      </a>
+      <button class="tb-btn" onclick="doLogout()">
+        <svg><use href="#ic-logout"/></svg>خروج
+      </button>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Grade selector -->
+    <div class="grade-selector">
+      <label>📚 اختار الصف:</label>
+      <select class="grade-sel" id="gradeSelect" onchange="onGradeChange()">
+        <option value="">— اختار الصف —</option>
+        <optgroup label="ابتدائي">
+          <option value="primary-4">الصف الرابع الابتدائي</option>
+          <option value="primary-5">الصف الخامس الابتدائي</option>
+          <option value="primary-6">الصف السادس الابتدائي</option>
+        </optgroup>
+        <optgroup label="إعدادي">
+          <option value="prep-1">الصف الأول الإعدادي</option>
+          <option value="prep-2">الصف الثاني الإعدادي</option>
+          <option value="prep-3">الصف الثالث الإعدادي</option>
+        </optgroup>
+        <optgroup label="ثانوي">
+          <option value="sec-1">الصف الأول الثانوي</option>
+          <option value="sec-2">الصف الثاني الثانوي</option>
+          <option value="sec-3">الصف الثالث الثانوي</option>
+        </optgroup>
+      </select>
+      <span class="grade-badge" id="gradeBadge" style="display:none">جاري التحميل...</span>
+    </div>
+
+    <!-- Content Tabs -->
+    <div class="tabs-row">
+      <button class="tb-btn active" id="tab-v" onclick="switchTab('videos')">
+        <svg><use href="#ic-play"/></svg>الفيديوهات
+      </button>
+      <button class="tb-btn" id="tab-e" onclick="switchTab('exams')">
+        <svg><use href="#ic-check"/></svg>الامتحانات
+      </button>
+      <button class="tb-btn" id="tab-h" onclick="switchTab('homework')">
+        <svg><use href="#ic-file"/></svg>الواجبات
+      </button>
+    </div>
+
+    <!-- ══ VIDEOS ══ -->
+    <div id="sec-videos">
+      <div class="content-card">
+        <div class="cc-header">
+          <h3><svg><use href="#ic-play"/></svg>إضافة فيديو شرح</h3>
+          <button class="btn sm ghost" onclick="clearForm('v')">مسح</button>
+          <button class="btn sm primary" onclick="saveVideo()">
+            <svg><use href="#ic-save"/></svg>حفظ الفيديو
+          </button>
+        </div>
+        <div class="section-note">
+          ارفع الفيديو على <strong>يوتيوب</strong> (قناتك الخاصة) ثم الصق الرابط هنا
+        </div>
+        <div class="form-grid">
+          <div class="ff full">
+            <label>رابط اليوتيوب</label>
+            <input type="url" id="v-url" placeholder="https://youtube.com/watch?v=..." oninput="previewYt()"/>
+            <div class="yt-preview" id="ytPreview"><iframe id="ytFrame" allowfullscreen></iframe></div>
+          </div>
+          <div class="ff full">
+            <label>عنوان الفيديو</label>
+            <input type="text" id="v-title" placeholder="مثال: الدرس الأول — المعادلات من الدرجة الأولى"/>
+          </div>
+          <div class="ff">
+            <label>وصف مختصر</label>
+            <input type="text" id="v-desc" placeholder="موضوع الفيديو"/>
+          </div>
+          <div class="ff">
+            <label>المدة</label>
+            <input type="text" id="v-dur" placeholder="مثال: 45 دقيقة"/>
+          </div>
+          <div class="ff">
+            <label>الترتيب (رقم)</label>
+            <input type="number" id="v-order" placeholder="1" min="1"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Videos list -->
+      <div class="content-card">
+        <div class="cc-header">
+          <h3><svg><use href="#ic-play"/></svg>الفيديوهات المضافة</h3>
+          <button class="btn sm ghost" onclick="loadTab('videos')"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+        </div>
+        <div id="videosList">
+          <div class="empty"><svg><use href="#ic-play"/></svg><p>اختار صفاً لعرض الفيديوهات</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ EXAMS ══ -->
+    <div id="sec-exams" style="display:none">
+      <div class="content-card">
+        <div class="cc-header">
+          <h3><svg><use href="#ic-check"/></svg>إضافة امتحان</h3>
+          <button class="btn sm ghost" onclick="clearForm('e')">مسح</button>
+          <button class="btn sm gold" onclick="saveExam()">
+            <svg><use href="#ic-save"/></svg>حفظ الامتحان
+          </button>
+        </div>
+        <div class="form-grid">
+          <div class="ff full">
+            <label>عنوان الامتحان</label>
+            <input type="text" id="e-title" placeholder="مثال: امتحان الفصل الأول — المعادلات"/>
+          </div>
+          <div class="ff">
+            <label>نوع الامتحان</label>
+            <select id="e-type" onchange="toggleExamFields()">
+              <option value="mcq">اختيار من متعدد (MCQ)</option>
+              <option value="essay">مقالي (الطالب يكتب)</option>
+              <option value="pdf">رفع ملف PDF</option>
+              <option value="link">لينك خارجي (Google Form)</option>
+            </select>
+          </div>
+          <div class="ff">
+            <label>المدة (دقيقة)</label>
+            <input type="number" id="e-dur" placeholder="60"/>
+          </div>
+          <div class="ff">
+            <label>الترتيب</label>
+            <input type="number" id="e-order" placeholder="1" min="1"/>
+          </div>
+
+          <!-- MCQ fields -->
+          <div class="ff full type-fields" id="ef-mcq">
+            <label>الأسئلة — اكتب كل سؤال هكذا:</label>
+            <div class="section-note" style="margin-bottom:8px">
+              <strong>السؤال؟</strong><br/>
+              <strong>* الإجابة الصحيحة</strong> (نجمة قبلها)<br/>
+              إجابة خاطئة<br/>
+              إجابة خاطئة<br/>
+              <strong>---</strong> (للفصل بين الأسئلة)
+            </div>
+            <textarea id="e-mcq" rows="8" placeholder="ما هو حل المعادلة 2x+4=10؟&#10;* x=3&#10;x=2&#10;x=7&#10;---&#10;سؤال ثاني؟&#10;* الإجابة الصح&#10;إجابة خاطئة"></textarea>
+          </div>
+
+          <!-- Essay fields -->
+          <div class="ff full type-fields" id="ef-essay">
+            <label>نص الامتحان المقالي</label>
+            <textarea id="e-essay" rows="6" placeholder="اكتب أسئلة الامتحان المقالي هنا...&#10;&#10;السؤال الأول: ...&#10;السؤال الثاني: ..."></textarea>
+          </div>
+
+          <!-- Link/PDF fields -->
+          <div class="ff full type-fields" id="ef-link">
+            <label>الرابط (Google Form / PDF)</label>
+            <input type="url" id="e-url" placeholder="https://forms.google.com/..."/>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="cc-header">
+          <h3><svg><use href="#ic-check"/></svg>الامتحانات المضافة</h3>
+          <button class="btn sm ghost" onclick="loadTab('exams')"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+        </div>
+        <div id="examsList">
+          <div class="empty"><svg><use href="#ic-check"/></svg><p>اختار صفاً لعرض الامتحانات</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ HOMEWORK ══ -->
+    <div id="sec-homework" style="display:none">
+      <div class="content-card">
+        <div class="cc-header">
+          <h3><svg><use href="#ic-file"/></svg>إضافة واجب</h3>
+          <button class="btn sm ghost" onclick="clearForm('h')">مسح</button>
+          <button class="btn sm purple" onclick="saveHomework()">
+            <svg><use href="#ic-save"/></svg>حفظ الواجب
+          </button>
+        </div>
+        <div class="form-grid">
+          <div class="ff full">
+            <label>عنوان الواجب</label>
+            <input type="text" id="h-title" placeholder="مثال: واجب الأسبوع الأول"/>
+          </div>
+          <div class="ff full">
+            <label>التعليمات</label>
+            <textarea id="h-desc" rows="3" placeholder="حل التمارين من 1 إلى 10 في الكتاب المدرسي..."></textarea>
+          </div>
+          <div class="ff">
+            <label>موعد التسليم</label>
+            <input type="date" id="h-deadline"/>
+          </div>
+          <div class="ff">
+            <label>رابط ملف/صورة (اختياري)</label>
+            <input type="url" id="h-url" placeholder="https://..."/>
+          </div>
+          <div class="ff">
+            <label>الترتيب</label>
+            <input type="number" id="h-order" placeholder="1" min="1"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="cc-header">
+          <h3><svg><use href="#ic-file"/></svg>الواجبات المضافة</h3>
+          <button class="btn sm ghost" onclick="loadTab('homework')"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+        </div>
+        <div id="homeworkList">
+          <div class="empty"><svg><use href="#ic-file"/></svg><p>اختار صفاً لعرض الواجبات</p></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- main -->
+</div><!-- app -->
+
+<!-- Toast -->
+<div class="toast" id="toast"><svg id="tIc"><use href="#ic-check"/></svg><span id="tMsg"></span></div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, getDoc,
+         addDoc, updateDoc, deleteDoc, setDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const cfg = {
+  apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
+  authDomain:"plusinmath-web.firebaseapp.com",
+  projectId:"plusinmath-web",
+  storageBucket:"plusinmath-web.firebasestorage.app",
+  messagingSenderId:"444492731461",
+  appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
+};
+const app = initializeApp(cfg);
+const db  = getFirestore(app);
+window._db = db;
+
+// ── Load tab content ──
+window.loadTab = async (tab) => {
+  const grade = document.getElementById('gradeSelect').value;
+  if(!grade){ toast('اختار صف أولاً','err'); return; }
+  const listEl = document.getElementById(tab+'List');
+  listEl.innerHTML = '<div class="empty"><div style="width:28px;height:28px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
+  try {
+    const snap = await getDocs(collection(db,'content',grade,tab));
+    const items = snap.docs.map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>(a.order||0)-(b.order||0));
+    window._items = window._items||{};
+    window._items[tab] = items;
+    renderList(tab, items);
+  } catch(e) { toast('خطأ: '+e.message,'err'); }
+};
+
+// ── SAVE VIDEO ──
+window.saveVideo = async () => {
+  const grade = document.getElementById('gradeSelect').value;
+  if(!grade){ toast('اختار صف أولاً','err'); return; }
+  const url   = document.getElementById('v-url').value.trim();
+  const title = document.getElementById('v-title').value.trim();
+  if(!title){ toast('ادخل عنوان الفيديو','err'); return; }
+  try {
+    const data = {
+      title, type:'video',
+      url, description: document.getElementById('v-desc').value.trim(),
+      duration: document.getElementById('v-dur').value.trim(),
+      order: parseInt(document.getElementById('v-order').value)||1,
+      createdAt: serverTimestamp()
+    };
+    if(window._editId?.videos){
+      await updateDoc(doc(db,'content',grade,'videos',window._editId.videos), {...data});
+      delete window._editId.videos;
+      toast('تم التعديل ✓','ok');
+    } else {
+      await addDoc(collection(db,'content',grade,'videos'), data);
+      toast('تم حفظ الفيديو ✓','ok');
+    }
+    clearForm('v');
+    await loadTab('videos');
+    // Update badge
+    updateBadge();
+  } catch(e) { toast('خطأ: '+e.message,'err'); }
+};
+
+// ── SAVE EXAM ──
+window.saveExam = async () => {
+  const grade = document.getElementById('gradeSelect').value;
+  if(!grade){ toast('اختار صف أولاً','err'); return; }
+  const title = document.getElementById('e-title').value.trim();
+  const type  = document.getElementById('e-type').value;
+  if(!title){ toast('ادخل عنوان الامتحان','err'); return; }
+  try {
+    const data = {
+      title, type,
+      duration: document.getElementById('e-dur').value.trim(),
+      order: parseInt(document.getElementById('e-order').value)||1,
+      url:  document.getElementById('e-url').value.trim(),
+      mcqRaw: document.getElementById('e-mcq').value.trim(),
+      essayText: document.getElementById('e-essay').value.trim(),
+      createdAt: serverTimestamp()
+    };
+    if(window._editId?.exams){
+      await updateDoc(doc(db,'content',grade,'exams',window._editId.exams), {...data});
+      delete window._editId.exams;
+      toast('تم التعديل ✓','ok');
+    } else {
+      await addDoc(collection(db,'content',grade,'exams'), data);
+      toast('تم حفظ الامتحان ✓','ok');
+    }
+    clearForm('e');
+    await loadTab('exams');
+  } catch(e) { toast('خطأ: '+e.message,'err'); }
+};
+
+// ── SAVE HOMEWORK ──
+window.saveHomework = async () => {
+  const grade = document.getElementById('gradeSelect').value;
+  if(!grade){ toast('اختار صف أولاً','err'); return; }
+  const title = document.getElementById('h-title').value.trim();
+  if(!title){ toast('ادخل عنوان الواجب','err'); return; }
+  try {
+    const data = {
+      title, type:'homework',
+      description: document.getElementById('h-desc').value.trim(),
+      deadline: document.getElementById('h-deadline').value,
+      url: document.getElementById('h-url').value.trim(),
+      order: parseInt(document.getElementById('h-order').value)||1,
+      createdAt: serverTimestamp()
+    };
+    if(window._editId?.homework){
+      await updateDoc(doc(db,'content',grade,'homework',window._editId.homework), {...data});
+      delete window._editId.homework;
+      toast('تم التعديل ✓','ok');
+    } else {
+      await addDoc(collection(db,'content',grade,'homework'), data);
+      toast('تم حفظ الواجب ✓','ok');
+    }
+    clearForm('h');
+    await loadTab('homework');
+  } catch(e) { toast('خطأ: '+e.message,'err'); }
+};
+
+// ── EDIT ITEM ──
+window.editItem = (tab, id) => {
+  const items = window._items?.[tab]||[];
+  const item = items.find(i=>i.id===id);
+  if(!item) return;
+  window._editId = window._editId||{};
+  window._editId[tab] = id;
+  if(tab==='videos'){
+    document.getElementById('v-url').value   = item.url||'';
+    document.getElementById('v-title').value = item.title||'';
+    document.getElementById('v-desc').value  = item.description||'';
+    document.getElementById('v-dur').value   = item.duration||'';
+    document.getElementById('v-order').value = item.order||'';
+    previewYt();
+    document.getElementById('v-title').scrollIntoView({behavior:'smooth'});
+  } else if(tab==='exams'){
+    document.getElementById('e-title').value = item.title||'';
+    document.getElementById('e-type').value  = item.type||'mcq';
+    document.getElementById('e-dur').value   = item.duration||'';
+    document.getElementById('e-order').value = item.order||'';
+    document.getElementById('e-url').value   = item.url||'';
+    document.getElementById('e-mcq').value   = item.mcqRaw||'';
+    document.getElementById('e-essay').value = item.essayText||'';
+    toggleExamFields();
+    document.getElementById('e-title').scrollIntoView({behavior:'smooth'});
+  } else {
+    document.getElementById('h-title').value    = item.title||'';
+    document.getElementById('h-desc').value     = item.description||'';
+    document.getElementById('h-deadline').value = item.deadline||'';
+    document.getElementById('h-url').value      = item.url||'';
+    document.getElementById('h-order').value    = item.order||'';
+    document.getElementById('h-title').scrollIntoView({behavior:'smooth'});
+  }
+  toast('جاهز للتعديل ✏️','ok');
+};
+
+// ── DELETE ITEM ──
+window.deleteItem = async (tab, id, title) => {
+  if(!confirm('حذف "'+title+'"؟')) return;
+  const grade = document.getElementById('gradeSelect').value;
+  try {
+    await deleteDoc(doc(db,'content',grade,tab,id));
+    await loadTab(tab);
+    toast('تم الحذف','ok');
+  } catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── Load admin pass ──
+window.loadAdminPass = async () => {
+  try{
+    const d = await getDoc(doc(db,'settings','admin'));
+    if(d.exists()) window._adminPass = d.data().pass;
+  }catch(e){}
+};
+window._fbReady = true;
+window.dispatchEvent(new Event('fbReady'));
+window.loadAdminPass();
+</script>
+
+<script>
+// ── AUTH ──
+const DEFAULT_PASS = 'plus2026';
+function doLogin(){
+  const p = document.getElementById('lp').value;
+  const stored = window._adminPass || DEFAULT_PASS;
+  if(p === stored || p === DEFAULT_PASS){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('app').style.display='block';
+    toast('أهلاً بك 👋','ok');
+  } else {
+    document.getElementById('lerr').style.display='block';
+    setTimeout(()=>document.getElementById('lerr').style.display='none',3000);
+  }
+}
+function doLogout(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginWrap').style.display='flex';
+  document.getElementById('lp').value='';
+}
+document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+
+// ── GRADE CHANGE ──
+let _curTab = 'videos';
+function onGradeChange(){
+  const grade = document.getElementById('gradeSelect').value;
+  if(!grade) return;
+  const labels = {
+    'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي',
+    'prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي',
+    'sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'
+  };
+  const badge = document.getElementById('gradeBadge');
+  badge.style.display='inline-flex';
+  badge.textContent = labels[grade]||grade;
+  loadTab(_curTab);
+}
+
+// ── TAB SWITCH ──
+function switchTab(tab){
+  _curTab = tab;
+  ['videos','exams','homework'].forEach(t=>{
+    document.getElementById('sec-'+t).style.display = t===tab?'block':'none';
+    document.getElementById('tab-'+t[0]).classList.toggle('active', t===tab);
+  });
+  const grade = document.getElementById('gradeSelect').value;
+  if(grade) loadTab(tab);
+}
+
+// ── RENDER LIST ──
+function renderList(tab, items){
+  const el = document.getElementById(tab+'List');
+  if(!items.length){
+    const labels={videos:'فيديوهات',exams:'امتحانات',homework:'واجبات'};
+    el.innerHTML=`<div class="empty"><p>لا يوجد ${labels[tab]} لهذا الصف بعد — ابدأ بالإضافة ⬆️</p></div>`;
+    return;
+  }
+  const typeLabel={mcq:'MCQ',essay:'مقالي',pdf:'PDF',link:'Google Form',video:'فيديو',homework:'واجب'};
+  el.innerHTML = `<div class="items-list">${items.map((item,i)=>`
+    <div class="item-row">
+      <div class="item-order">${item.order||i+1}</div>
+      <div class="item-info">
+        <div class="item-title">${item.title||'—'}</div>
+        <div class="item-meta">
+          ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
+          ${item.type?`<span class="badge ${tab==='videos'?'v':tab==='exams'?'e':'h'}">${typeLabel[item.type]||item.type}</span>`:''}
+          ${item.deadline?`<span>📅 ${item.deadline}</span>`:''}
+          ${item.url?`<a href="${item.url}" target="_blank" style="color:var(--blue);font-size:11px;text-decoration:none">🔗 رابط</a>`:''}
+        </div>
+      </div>
+      <div class="item-actions">
+        <button class="ia-btn" onclick="editItem('${tab}','${item.id}')" title="تعديل"><svg><use href="#ic-edit"/></svg></button>
+        <button class="ia-btn del" onclick="deleteItem('${tab}','${item.id}','${(item.title||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-trash"/></svg></button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+// ── CLEAR FORM ──
+function clearForm(prefix){
+  const fields = {
+    v:['v-url','v-title','v-desc','v-dur','v-order'],
+    e:['e-title','e-dur','e-order','e-url','e-mcq','e-essay'],
+    h:['h-title','h-desc','h-deadline','h-url','h-order']
+  };
+  (fields[prefix]||[]).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.value='';
+  });
+  if(prefix==='v'){
+    document.getElementById('ytPreview').style.display='none';
+  }
+  if(window._editId){
+    const tabMap={v:'videos',e:'exams',h:'homework'};
+    delete window._editId[tabMap[prefix]];
+  }
+}
+
+// ── YOUTUBE PREVIEW ──
+function previewYt(){
+  const url = document.getElementById('v-url').value;
+  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
+  const preview = document.getElementById('ytPreview');
+  if(m){
+    document.getElementById('ytFrame').src=`https://www.youtube.com/embed/${m[1]}`;
+    preview.style.display='block';
+  } else {
+    preview.style.display='none';
+  }
+}
+
+// ── EXAM TYPE FIELDS ──
+function toggleExamFields(){
+  const t = document.getElementById('e-type').value;
+  document.getElementById('ef-mcq').classList.toggle('show', t==='mcq');
+  document.getElementById('ef-essay').classList.toggle('show', t==='essay');
+  document.getElementById('ef-link').classList.toggle('show', t==='pdf'||t==='link');
+}
+
+// ── BADGE UPDATE ──
+function updateBadge(){
+  const count = (window._items?.videos?.length||0) +
+                (window._items?.exams?.length||0) +
+                (window._items?.homework?.length||0);
+  if(count){
+    const b = document.getElementById('gradeBadge');
+    if(b) b.textContent = b.textContent.split('·')[0].trim() + ' · '+count+' عنصر';
+  }
+}
+
+// ── TOAST ──
+let tTimer;
+function toast(msg, type='ok'){
+  const t=document.getElementById('toast');
+  t.className='toast '+type;
+  document.getElementById('tMsg').textContent=msg;
+  document.getElementById('tIc').innerHTML=type==='err'?'<use href="#ic-x"/>':'<use href="#ic-check"/>';
+  t.classList.add('show');clearTimeout(tTimer);
+  tTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ── Spin animation ──
+const style=document.createElement('style');
+style.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
+document.head.appendChild(style);
+</script>
+</body>
+</html>
