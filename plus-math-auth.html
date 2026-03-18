@@ -36,9 +36,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);
   background:linear-gradient(135deg,var(--navy),var(--blue));
   box-shadow:0 2px 16px rgba(74,127,212,0.4);}
 #banner.show{display:flex}
-#banner svg{width:15px;height:15px;flex-shrink:0}
 #banner-close{cursor:pointer;opacity:.7;margin-right:auto;flex-shrink:0}
-#banner-close:hover{opacity:1}
 
 .wrapper{position:relative;z-index:10;width:100%;max-width:430px;margin:auto}
 
@@ -105,6 +103,9 @@ input:not(.phone-input){width:100%;padding:13px 14px;background:var(--input);
 input:not(.phone-input):focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(74,127,212,0.12)}
 input::placeholder{color:var(--muted);opacity:.5}
 
+/* Code input */
+.code-input{text-align:center!important;letter-spacing:8px!important;font-size:22px!important;font-weight:800!important}
+
 .btn{width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;
   font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;
   background:linear-gradient(135deg,var(--blue),var(--navy),var(--blue));
@@ -121,23 +122,29 @@ input::placeholder{color:var(--muted);opacity:.5}
 .btn.loading .btn-text{display:none}
 .btn.loading .spin{display:block}
 
+/* Google button */
 .btn-google{
-  background:#fff !important;color:#000 !important;
-  border:1px solid #ddd !important;box-shadow:0 2px 6px rgba(0,0,0,0.1) !important;
-  margin:12px 0; font-weight:600;
+  width:100%;padding:12px;border:1.5px solid #ddd!important;border-radius:12px;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;
+  background:#fff!important;color:#333!important;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1)!important;transition:all .2s;
+  animation:none!important;
 }
-.btn-google svg{width:20px;height:20px;}
+.btn-google:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,0.15)!important}
+.btn-google svg{width:20px;height:20px}
 
+/* WhatsApp button */
 .btn-wa{width:100%;padding:12px;border:none;border-radius:12px;cursor:pointer;
   font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;
   background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;
   display:flex;align-items:center;justify-content:center;gap:8px;
-  box-shadow:0 5px 18px rgba(37,211,102,0.25);transition:all .2s;text-decoration:none;margin-top:10px;}
+  box-shadow:0 5px 18px rgba(37,211,102,0.25);transition:all .2s;text-decoration:none;}
 .btn-wa:hover{transform:translateY(-1px)}
 .btn-wa svg{width:18px;height:18px}
 
 .divider{display:flex;align-items:center;gap:8px;color:var(--muted);
-  font-size:11px;margin:16px 0 12px;letter-spacing:1px;}
+  font-size:11px;margin:14px 0;letter-spacing:1px;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border2)}
 
 .msg{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;
@@ -145,7 +152,6 @@ input::placeholder{color:var(--muted);opacity:.5}
 .msg.show{display:flex}
 .msg.error{background:rgba(255,77,109,0.1);color:var(--error);border:1px solid rgba(255,77,109,0.2)}
 .msg.success{background:rgba(0,214,143,0.08);color:var(--success);border:1px solid rgba(0,214,143,0.2)}
-.msg svg{width:14px;height:14px;flex-shrink:0}
 
 .forgot{text-align:left;margin:-4px 0 12px}
 .forgot a{font-size:12px;color:var(--gold);text-decoration:none;font-weight:600}
@@ -173,9 +179,11 @@ input::placeholder{color:var(--muted);opacity:.5}
 
 <!-- Announcement Banner -->
 <div id="banner">
-  <svg><use href="#i-bell"/></svg>
+  <svg width="15" height="15"><use href="#i-bell"/></svg>
   <span id="banner-text">مرحباً بكم في Plus Mathematics!</span>
-  <span id="banner-close" onclick="closeBanner()"><svg width="16" height="16"><use href="#i-x"/></svg></span>
+  <span id="banner-close" onclick="closeBanner()">
+    <svg width="15" height="15"><use href="#i-x"/></svg>
+  </span>
 </div>
 
 <div class="bg-grid"></div>
@@ -188,53 +196,60 @@ input::placeholder{color:var(--muted);opacity:.5}
 
   <div class="auth-header">
     <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" class="logo-img"
-      onerror="this.src='https://plusinmath-web.firebasestorage.app/logo.png'"/>
+      onerror="this.style.opacity='.5'"/>
     <h1>Plus Mathematics</h1>
     <p>منصة مراجعة الرياضيات · 2026</p>
   </div>
 
   <div class="auth-body">
 
-    <!-- STEP: LOGIN / REGISTER -->
+    <!-- ══ STEP: AUTH ══ -->
     <div class="step active" id="step-auth">
       <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</button>
         <button class="tab-btn" onclick="switchTab('register')">حساب جديد</button>
       </div>
 
-      <!-- Login -->
+      <!-- Login Tab -->
       <div id="tab-login">
         <div class="field">
           <label>رقم الهاتف أو الإيميل</label>
-          <input type="text" id="login-identifier" placeholder="01xxxxxxxxx أو example@gmail.com"/>
+          <input type="text" id="login-id" placeholder="01xxxxxxxxx أو example@gmail.com"/>
         </div>
         <div class="field">
           <label>كلمة المرور</label>
           <input type="password" id="login-pass" placeholder="••••••••"/>
         </div>
-        <div class="forgot"><a href="#" onclick="forgotPass()">نسيت كلمة المرور؟</a></div>
+        <div class="forgot">
+          <a href="#" onclick="forgotPass(event)">نسيت كلمة المرور؟</a>
+        </div>
         <div class="msg" id="login-msg"></div>
-
         <button class="btn" id="login-btn" onclick="doLogin()">
-          <span class="btn-text"><svg><use href="#i-arrow-r"/></svg> دخول</span>
+          <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>دخول</span>
           <div class="spin"></div>
         </button>
 
         <div class="divider">أو</div>
 
-        <button class="btn btn-google" onclick="signInWithGoogle()">
-          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.51h5.84c-.25 1.31-.98 2.42-2.07 3.16v2.63h3.35c1.96-1.81 3.09-4.47 3.09-7.25z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-1.01 7.28-2.73l-3.35-2.63c-1.01.68-2.29 1.08-3.93 1.08-3.02 0-5.58-2.04-6.49-4.79H.96v2.67C2.77 20.39 6.62 23 12 23z"/><path fill="#FBBC05" d="M5.51 14.21c-.23-.68-.36-1.41-.36-2.21s.13-1.53.36-2.21V7.34H.96C.35 8.85 0 10.39 0 12s.35 3.15.96 4.66l4.55-2.45z"/><path fill="#EA4335" d="M12 4.98c1.64 0 3.11.56 4.27 1.66l3.19-3.19C17.46 1.01 14.97 0 12 0 6.62 0 2.77 2.61.96 6.34l4.55 2.45C6.42 6.02 8.98 4.98 12 4.98z"/></svg>
-          الدخول بجوجل
+        <button class="btn-google" id="google-login-btn" onclick="doGoogle('login-msg')">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.51h5.84c-.25 1.31-.98 2.42-2.07 3.16v2.63h3.35c1.96-1.81 3.09-4.47 3.09-7.25z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-1.01 7.28-2.73l-3.35-2.63c-1.01.68-2.29 1.08-3.93 1.08-3.02 0-5.58-2.04-6.49-4.79H.96v2.67C2.77 20.39 6.62 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.51 14.21c-.23-.68-.36-1.41-.36-2.21s.13-1.53.36-2.21V7.34H.96C.35 8.85 0 10.39 0 12s.35 3.15.96 4.66l4.55-2.45z"/>
+            <path fill="#EA4335" d="M12 4.98c1.64 0 3.11.56 4.27 1.66l3.19-3.19C17.46 1.01 14.97 0 12 0 6.62 0 2.77 2.61.96 6.34l4.55 2.45C6.42 6.02 8.98 4.98 12 4.98z"/>
+          </svg>
+          الدخول بحساب Google
         </button>
 
         <div class="divider">أو</div>
 
-        <a class="btn-wa" href="#" onclick="openWaRegister(event)">
-          <svg><use href="#i-wa"/></svg> طلب حساب عبر واتساب
-        </a>
+        <button class="btn-wa" onclick="openWaRegister()">
+          <svg><use href="#i-wa"/></svg>
+          طلب حساب عبر واتساب
+        </button>
       </div>
 
-      <!-- Register -->
+      <!-- Register Tab -->
       <div id="tab-register" style="display:none">
         <div class="field">
           <label>الاسم الكامل</label>
@@ -251,36 +266,38 @@ input::placeholder{color:var(--muted);opacity:.5}
           </div>
         </div>
         <div class="field">
-          <label>الإيميل <span style="color:var(--error);">*</span></label>
-          <input type="email" id="reg-email" placeholder="example@gmail.com" required/>
+          <label>الإيميل <span style="color:var(--error)">*</span></label>
+          <input type="email" id="reg-email" placeholder="example@gmail.com"/>
         </div>
         <div class="field">
           <label>كلمة المرور</label>
           <input type="password" id="reg-pass" placeholder="٨ أحرف على الأقل" minlength="8"/>
         </div>
         <div class="msg" id="reg-msg"></div>
-
         <button class="btn" id="reg-btn" onclick="doRegister()">
-          <span class="btn-text"><svg><use href="#i-check"/></svg> إنشاء حساب</span>
+          <span class="btn-text"><svg><use href="#i-check"/></svg>إنشاء حساب</span>
           <div class="spin"></div>
         </button>
 
         <div class="divider">أو</div>
 
-        <button class="btn btn-google" onclick="signInWithGoogle()">
-          <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.51h5.84c-.25 1.31-.98 2.42-2.07 3.16v2.63h3.35c1.96-1.81 3.09-4.47 3.09-7.25z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-1.01 7.28-2.73l-3.35-2.63c-1.01.68-2.29 1.08-3.93 1.08-3.02 0-5.58-2.04-6.49-4.79H.96v2.67C2.77 20.39 6.62 23 12 23z"/><path fill="#FBBC05" d="M5.51 14.21c-.23-.68-.36-1.41-.36-2.21s.13-1.53.36-2.21V7.34H.96C.35 8.85 0 10.39 0 12s.35 3.15.96 4.66l4.55-2.45z"/><path fill="#EA4335" d="M12 4.98c1.64 0 3.11.56 4.27 1.66l3.19-3.19C17.46 1.01 14.97 0 12 0 6.62 0 2.77 2.61.96 6.34l4.55 2.45C6.42 6.02 8.98 4.98 12 4.98z"/></svg>
-          إنشاء حساب بجوجل
+        <button class="btn-google" id="google-reg-btn" onclick="doGoogle('reg-msg')">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.51h5.84c-.25 1.31-.98 2.42-2.07 3.16v2.63h3.35c1.96-1.81 3.09-4.47 3.09-7.25z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-1.01 7.28-2.73l-3.35-2.63c-1.01.68-2.29 1.08-3.93 1.08-3.02 0-5.58-2.04-6.49-4.79H.96v2.67C2.77 20.39 6.62 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.51 14.21c-.23-.68-.36-1.41-.36-2.21s.13-1.53.36-2.21V7.34H.96C.35 8.85 0 10.39 0 12s.35 3.15.96 4.66l4.55-2.45z"/>
+            <path fill="#EA4335" d="M12 4.98c1.64 0 3.11.56 4.27 1.66l3.19-3.19C17.46 1.01 14.97 0 12 0 6.62 0 2.77 2.61.96 6.34l4.55 2.45C6.42 6.02 8.98 4.98 12 4.98z"/>
+          </svg>
+          إنشاء حساب بـ Google
         </button>
       </div>
     </div>
 
-    <!-- باقي الـ steps (كود الاشتراك + النجاح) بدون تغيير -->
-
-    <!-- STEP: ENTER CODE -->
+    <!-- ══ STEP: CODE ══ -->
     <div class="step" id="step-code">
       <div class="step-info">
         <h3>🔑 أدخل كود الاشتراك</h3>
-        <p>ادخل الكود اللي وصلك من المدرس لتفعيل اشتراكك والوصول للمحتوى</p>
+        <p>ادخل الكود اللي وصلك من المدرس لتفعيل اشتراكك</p>
       </div>
       <div class="field">
         <label>كود الاشتراك</label>
@@ -289,20 +306,20 @@ input::placeholder{color:var(--muted);opacity:.5}
       </div>
       <div class="msg" id="code-msg"></div>
       <button class="btn" id="code-btn" onclick="submitCode()">
-        <span class="btn-text"><svg><use href="#i-key"/></svg> تفعيل الاشتراك</span>
+        <span class="btn-text"><svg><use href="#i-key"/></svg>تفعيل الاشتراك</span>
         <div class="spin"></div>
       </button>
       <div class="divider">مش عندك كود؟</div>
-      <a class="btn-wa" href="#" onclick="openWaCode(event)">
+      <button class="btn-wa" onclick="openWaCode()">
         <svg><use href="#i-wa"/></svg>
         اطلب كود عبر واتساب
-      </a>
+      </button>
       <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px">
         سعر الاشتراك: <span id="sub-price" style="color:var(--gold2);font-weight:700">يتحدد من المدرس</span>
       </p>
     </div>
 
-    <!-- STEP: SUCCESS -->
+    <!-- ══ STEP: SUCCESS ══ -->
     <div class="step" id="step-success">
       <div style="text-align:center;padding:20px 0">
         <div style="width:64px;height:64px;border-radius:50%;background:rgba(0,214,143,0.12);border:2px solid var(--success);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
@@ -310,8 +327,8 @@ input::placeholder{color:var(--muted);opacity:.5}
         </div>
         <h3 style="font-size:18px;font-weight:900;margin-bottom:8px">تم تفعيل اشتراكك! 🎉</h3>
         <p style="font-size:13px;color:var(--muted);margin-bottom:20px">مرحباً بك في Plus Mathematics</p>
-        <button class="btn" onclick="goToCourses()">
-          <span class="btn-text"><svg><use href="#i-arrow-r"/></svg> ابدأ المذاكرة</span>
+        <button class="btn" onclick="window.location.href='courses.html'">
+          <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>ابدأ المذاكرة</span>
         </button>
       </div>
     </div>
@@ -328,311 +345,269 @@ input::placeholder{color:var(--muted);opacity:.5}
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-         onAuthStateChanged, sendPasswordResetEmail, GoogleAuthProvider, signInWithRedirect, getRedirectResult }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where,
-         getDocs, updateDoc, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getAuth, onAuthStateChanged,
+  signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, collection,
+  query, where, getDocs, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
-  authDomain: "plusinmath-web.firebaseapp.com",
-  projectId: "plusinmath-web",
-  storageBucket: "plusinmath-web.firebasestorage.app",
-  messagingSenderId: "444492731461",
-  appId: "1:444492731461:web:14529f08d9ccf047dabf2c"
+const cfg = {
+  apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
+  authDomain:"plusinmath-web.firebaseapp.com",
+  projectId:"plusinmath-web",
+  storageBucket:"plusinmath-web.firebasestorage.app",
+  messagingSenderId:"444492731461",
+  appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
 };
-
-const app  = initializeApp(firebaseConfig);
+const app  = initializeApp(cfg);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-// Handle redirect result on page load (مهم جدًا بعد signInWithRedirect)
-getRedirectResult(auth)
-  .then((result) => {
-    if (result) {
-      // Google sign-in successful via redirect
-      const user = result.user;
-      // يمكنك هنا معالجة إنشاء/تحديث المستخدم في Firestore إذا لزم
-      console.log('Google redirect success:', user);
-    }
-  })
-  .catch((error) => {
-    console.error('Redirect error:', error);
-    if (error.code) {
-      showMsg('login-msg', 'خطأ في إكمال تسجيل الدخول عبر جوجل: ' + error.message, 'error');
-    }
-  });
+// ── Handle Google redirect result ──
+getRedirectResult(auth).then(async result => {
+  if(result?.user) await handleGoogleUser(result.user);
+}).catch(e => { console.warn('redirect:', e.code); });
 
-// ── Load banner & price ──
+// ── Auth state ──
+onAuthStateChanged(auth, async user => {
+  loadBanner(); loadPrice();
+  if(!user){ showStep('step-auth'); return; }
+  const ud = await getDoc(doc(db,'users',user.uid));
+  if(ud.exists() && ud.data().subscriptionActive){
+    window.location.href = 'courses.html';
+  } else {
+    showStep('step-code');
+  }
+});
+
+// ── Helpers ──
+function phoneToEmail(p){ return '20'+p.replace(/\D/g,'').replace(/^0/,'')+'@plusinmath.edu'; }
+
+function resolveEmail(input){
+  const v = input.trim();
+  if(v.includes('@') && v.includes('.')) return v.toLowerCase();
+  const d = v.replace(/\D/g,'');
+  if(d.length>=10) return phoneToEmail(d);
+  throw new Error('ادخل رقم هاتف صحيح أو إيميل صالح');
+}
+
+// ── LOGIN ──
+window.doLogin = async () => {
+  const id   = document.getElementById('login-id').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if(!id){ showMsg('login-msg','ادخل رقم الهاتف أو الإيميل','error'); return; }
+  if(!pass){ showMsg('login-msg','ادخل كلمة المرور','error'); return; }
+  const btn = document.getElementById('login-btn');
+  setLoad(btn, true);
+  try {
+    const email = resolveEmail(id);
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    const msgs = {
+      'auth/invalid-credential':'بيانات الدخول غير صحيحة',
+      'auth/user-not-found':'الحساب ده مش موجود',
+      'auth/wrong-password':'كلمة المرور خاطئة',
+      'auth/too-many-requests':'محاولات كتير — انتظر قليلاً'
+    };
+    showMsg('login-msg', msgs[e.code] || e.message, 'error');
+  }
+  setLoad(btn, false);
+};
+
+// ── REGISTER ──
+window.doRegister = async () => {
+  const name  = document.getElementById('reg-name').value.trim();
+  const phone = document.getElementById('reg-phone').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-pass').value;
+  if(!name)  { showMsg('reg-msg','ادخل اسمك','error'); return; }
+  if(phone.length<10){ showMsg('reg-msg','رقم الهاتف غير صحيح','error'); return; }
+  if(!email.includes('@')){ showMsg('reg-msg','ادخل إيميل صحيح','error'); return; }
+  if(pass.length<8){ showMsg('reg-msg','كلمة المرور لازم ٨ أحرف على الأقل','error'); return; }
+  const btn = document.getElementById('reg-btn');
+  setLoad(btn, true);
+  try {
+    const fakeEmail = phoneToEmail(phone);
+    const cred = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
+    await setDoc(doc(db,'users',cred.user.uid), {
+      name, phone, email: email.toLowerCase(),
+      subscriptionActive: false,
+      createdAt: serverTimestamp(), signInMethod: 'phone'
+    });
+    showMsg('reg-msg','تم إنشاء حسابك ✓','success');
+    // Move to code step after short delay
+    setTimeout(()=>showStep('step-code'), 1200);
+  } catch(e) {
+    const msgs = {
+      'auth/email-already-in-use':'الرقم ده مسجل بالفعل — سجل دخول',
+      'auth/weak-password':'كلمة المرور ضعيفة جداً'
+    };
+    showMsg('reg-msg', msgs[e.code] || e.message, 'error');
+  }
+  setLoad(btn, false);
+};
+
+// ── GOOGLE ──
+window.doGoogle = async (msgId) => {
+  const provider = new GoogleAuthProvider();
+  provider.addScope('email');
+  provider.addScope('profile');
+  try {
+    // Try popup first, fall back to redirect
+    const result = await signInWithPopup(auth, provider);
+    await handleGoogleUser(result.user);
+  } catch(e) {
+    if(e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user'){
+      // Fall back to redirect
+      showMsg(msgId, 'جاري التحويل لـ Google...', 'success');
+      setTimeout(()=>signInWithRedirect(auth, provider), 800);
+    } else if(e.code === 'auth/unauthorized-domain'){
+      showMsg(msgId, 'أضف الدومين في Firebase Console → Authentication → Settings → Authorized domains', 'error');
+    } else {
+      showMsg(msgId, e.message || 'خطأ في تسجيل الدخول بـ Google', 'error');
+    }
+  }
+};
+
+async function handleGoogleUser(user){
+  const ud = await getDoc(doc(db,'users',user.uid));
+  if(!ud.exists()){
+    // New Google user → create record
+    await setDoc(doc(db,'users',user.uid), {
+      name: user.displayName || '',
+      email: user.email || '',
+      phone: '',
+      subscriptionActive: false,
+      createdAt: serverTimestamp(),
+      signInMethod: 'google'
+    });
+  }
+  // Auth state listener will handle the redirect
+}
+
+// ── FORGOT PASSWORD ──
+window.forgotPass = async (e) => {
+  e?.preventDefault();
+  const id = document.getElementById('login-id').value.trim();
+  if(!id){ showMsg('login-msg','ادخل رقم الهاتف أو إيميلك الأول','error'); return; }
+  try {
+    // Try to get secondary email from Firestore if phone number
+    let email = id;
+    if(!id.includes('@')){
+      const fakeEmail = resolveEmail(id);
+      // Look up user's real email from Firestore
+      try {
+        const q = query(collection(db,'users'), where('phone','==',id.replace(/\D/g,'')));
+        const snap = await getDocs(q);
+        if(!snap.empty && snap.docs[0].data().email){
+          email = snap.docs[0].data().email;
+        } else {
+          email = fakeEmail; // fallback to fake email
+        }
+      } catch(err){ email = fakeEmail; }
+    }
+    await sendPasswordResetEmail(auth, email);
+    showMsg('login-msg','تم إرسال رابط إعادة تعيين كلمة المرور على الإيميل ✓','success');
+  } catch(e) {
+    showMsg('login-msg','الرقم أو الإيميل ده مش مسجل','error');
+  }
+};
+
+// ── SUBMIT CODE ──
+window.submitCode = async () => {
+  const code = document.getElementById('sub-code').value.trim().toUpperCase();
+  if(code.length<4){ showMsg('code-msg','ادخل الكود','error'); return; }
+  const btn = document.getElementById('code-btn');
+  setLoad(btn, true);
+  try {
+    const q = query(collection(db,'codes'), where('code','==',code), where('used','==',false));
+    const snap = await getDocs(q);
+    if(snap.empty){ showMsg('code-msg','الكود غلط أو مستخدم بالفعل ❌','error'); setLoad(btn,false); return; }
+    const cd = snap.docs[0];
+    const user = auth.currentUser;
+    await updateDoc(doc(db,'codes',cd.id), { used:true, usedBy:user.uid, usedAt:serverTimestamp() });
+    await updateDoc(doc(db,'users',user.uid), {
+      subscriptionActive:true, subscriptionCode:code,
+      stage:cd.data().stage||'', grade:cd.data().grade||'',
+      activatedAt:serverTimestamp()
+    });
+    showStep('step-success');
+  } catch(e){ showMsg('code-msg','خطأ: '+e.message,'error'); }
+  setLoad(btn, false);
+};
+
+// ── BANNER & PRICE ──
 async function loadBanner(){
   try {
     const d = await getDoc(doc(db,'settings','announcement'));
-    if(d.exists() && d.data().text && d.data().show){
+    if(d.exists() && d.data().show && d.data().text){
       document.getElementById('banner-text').textContent = d.data().text;
       document.getElementById('banner').classList.add('show');
       document.body.style.paddingTop = '50px';
     }
   } catch(e){}
 }
-
 async function loadPrice(){
   try {
     const d = await getDoc(doc(db,'settings','subscription'));
-    if(d.exists() && d.data().price){
+    if(d.exists() && d.data().price)
       document.getElementById('sub-price').textContent = d.data().price + ' جنيه';
-    }
   } catch(e){}
 }
 
-onAuthStateChanged(auth, async (user) => {
-  loadBanner();
-  loadPrice();
-  if(user){
-    const ud = await getDoc(doc(db,'users',user.uid));
-    if(ud.exists() && ud.data().subscriptionActive){
-      window.location.href = 'courses.html';
-    } else {
-      showStep('step-code');
-    }
-  } else {
-    showStep('step-auth');
-  }
-});
-
-// ── Helpers ──
-function phoneToEmail(phone){
-  const clean = phone.replace(/\D/g,'');
-  return '20' + clean.replace(/^0/,'') + '@plusinmath.edu';
-}
-
-function normalizeIdentifier(input) {
-  const trimmed = input.trim();
-  if (trimmed.includes('@')) {
-    if (!trimmed.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      throw new Error('صيغة الإيميل غير صحيحة');
-    }
-    return trimmed.toLowerCase();
-  }
-  const cleanPhone = trimmed.replace(/\D/g, '');
-  if (cleanPhone.length >= 10 && cleanPhone.length <= 11) {
-    let full = cleanPhone;
-    if (full.startsWith('0')) full = '20' + full.substring(1);
-    else if (!full.startsWith('20')) full = '20' + full;
-    return full + '@plusinmath.edu';
-  }
-  throw new Error('ادخل رقم هاتف صحيح أو إيميل صالح');
-}
-
-// ── LOGIN ──
-window.doLogin = async function(){
-  const identifier = document.getElementById('login-identifier').value.trim();
-  const pass  = document.getElementById('login-pass').value;
-
-  if(!identifier){ showMsg('login-msg','ادخل رقم الهاتف أو الإيميل','error'); return; }
-  if(!pass){ showMsg('login-msg','ادخل كلمة المرور','error'); return; }
-
-  const btn = document.getElementById('login-btn');
-  setLoad(btn, true);
-
-  try {
-    const email = normalizeIdentifier(identifier);
-    await signInWithEmailAndPassword(auth, email, pass);
-    showMsg('login-msg','تم تسجيل الدخول بنجاح ✓','success');
-  } catch(e) {
-    let msgText = 'حصل خطأ، حاول تاني';
-    if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential') {
-      msgText = 'بيانات الدخول غير صحيحة';
-    } else if (e.code === 'auth/wrong-password') {
-      msgText = 'كلمة المرور خاطئة';
-    } else if (e.code === 'auth/too-many-requests') {
-      msgText = 'محاولات كتير — انتظر شوية';
-    }
-    showMsg('login-msg', msgText, 'error');
-  }
-  setLoad(btn, false);
+// ── WhatsApp ──
+window.openWaRegister = () => {
+  const msg = encodeURIComponent('مرحباً أستاذ مهدي 👋\nعايز أشترك في Plus Mathematics\n\nاسمي: \nرقم هاتفي: \nالمرحلة والصف: \n\nأرجو كود الاشتراك وسعره 🎓');
+  window.open('https://wa.me/201007586279?text='+msg,'_blank');
 };
-
-// ── REGISTER ──
-window.doRegister = async function(){
-  const name  = document.getElementById('reg-name').value.trim();
-  const phone = document.getElementById('reg-phone').value.trim();
-  const emailInput = document.getElementById('reg-email').value.trim();
-  const pass  = document.getElementById('reg-pass').value;
-
-  if(!name){ showMsg('reg-msg','ادخل اسمك الكامل','error'); return; }
-  if(phone.length < 10){ showMsg('reg-msg','ادخل رقم هاتف صحيح','error'); return; }
-  if(!emailInput || !emailInput.includes('@') || !emailInput.includes('.')){ 
-    showMsg('reg-msg','الإيميل إجباري - ادخل إيميل صحيح','error'); 
-    return; 
-  }
-  if(pass.length < 8){ showMsg('reg-msg','كلمة المرور لازم تكون ٨ أحرف على الأقل','error'); return; }
-
-  const btn = document.getElementById('reg-btn');
-  setLoad(btn, true);
-
-  try {
-    const fakeEmail = phoneToEmail(phone);
-    const cred = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
-
-    const userData = {
-      name,
-      phone,
-      primaryEmail: fakeEmail,
-      secondaryEmail: emailInput.toLowerCase(),
-      subscriptionActive: false,
-      createdAt: serverTimestamp(),
-      signInMethod: 'phone'
-    };
-
-    await setDoc(doc(db,'users',cred.user.uid), userData);
-
-    showMsg('reg-msg','تم إنشاء حسابك ✓ — ادخل كود الاشتراك','success');
-  } catch(e) {
-    let msgText = 'حصل خطأ: ' + (e.message || '');
-    if (e.code === 'auth/email-already-in-use') {
-      msgText = 'الرقم ده مسجل بالفعل — جرب تسجيل الدخول';
-    } else if (e.code === 'auth/weak-password') {
-      msgText = 'كلمة المرور ضعيفة جداً';
-    }
-    showMsg('reg-msg', msgText, 'error');
-  }
-  setLoad(btn, false);
-};
-
-// ── GOOGLE SIGN IN (باستخدام Redirect لتجنب مشاكل Popup) ──
-window.signInWithGoogle = async function(){
-  const provider = new GoogleAuthProvider();
-  const btn = event.target;
-  const originalText = btn.innerHTML;
-
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spin"></div> جاري التحويل...';
-
-  try {
-    await signInWithRedirect(auth, provider);
-    // الصفحة هتعيد التحميل تلقائيًا بعد الرجوع، و getRedirectResult هيشتغل فوق
-  } catch (error) {
-    let msg = 'حصل خطأ في الدخول بجوجل';
-    if (error.code === 'auth/popup-blocked') {
-      msg = 'البوب أب محظور — جرب متصفح آخر أو اسمح بالبوب أبات';
-    } else if (error.code === 'auth/unauthorized-domain') {
-      msg = 'الدومين مش مضاف في Firebase Console (Authorized domains)';
-    } else if (error.code) {
-      msg += ': ' + error.code;
-    }
-    showMsg('login-msg', msg, 'error');
-    console.error('Google Redirect Error:', error);
-  }
-
-  btn.disabled = false;
-  btn.innerHTML = originalText;
-};
-
-// ── SUBMIT CODE ── (بدون تغيير)
-window.submitCode = async function(){
-  const code = document.getElementById('sub-code').value.trim().toUpperCase();
-  if(code.length < 4){ showMsg('code-msg','ادخل الكود الصح','error'); return; }
-  const btn = document.getElementById('code-btn');
-  setLoad(btn, true);
-
-  try {
-    const codesRef = collection(db,'codes');
-    const q = query(codesRef, where('code','==',code), where('used','==',false));
-    const snap = await getDocs(q);
-
-    if(snap.empty){
-      showMsg('code-msg','الكود غلط أو مستخدم بالفعل ❌','error');
-      setLoad(btn, false); return;
-    }
-
-    const codeDoc = snap.docs[0];
-    const codeData = codeDoc.data();
-    const user = auth.currentUser;
-
-    await updateDoc(doc(db,'codes',codeDoc.id), {
-      used: true, usedBy: user.uid,
-      usedAt: serverTimestamp()
-    });
-
-    await updateDoc(doc(db,'users',user.uid), {
-      subscriptionActive: true,
-      subscriptionCode: code,
-      stage: codeData.stage || '',
-      grade: codeData.grade || '',
-      activatedAt: serverTimestamp(),
-      expiresAt: codeData.expiresAt || null
-    });
-
-    showStep('step-success');
-  } catch(e) {
-    showMsg('code-msg','حصل خطأ: ' + e.message,'error');
-  }
-  setLoad(btn, false);
-};
-
-// ── FORGOT PASSWORD ──
-window.forgotPass = async function(){
-  const identifier = document.getElementById('login-identifier').value.trim();
-  if(!identifier){ showMsg('login-msg','ادخل رقم الهاتف أو الإيميل أولاً','error'); return; }
-
-  try {
-    const email = normalizeIdentifier(identifier);
-    await sendPasswordResetEmail(auth, email);
-    showMsg('login-msg','تم إرسال رابط إعادة تعيين كلمة المرور على الإيميل المرتبط','success');
-  } catch(e){
-    showMsg('login-msg','الرقم/الإيميل ده مش مسجل','error');
-  }
-};
-
-window.goToCourses = function(){ window.location.href = 'courses.html'; };
-
-// WhatsApp links (بدون تغيير)
-window.openWaRegister = function(e){
-  e.preventDefault();
-  const msg = encodeURIComponent(`مرحباً أستاذ مهدي 👋\nعايز أشترك في منصة Plus Mathematics\n\nاسمي: \nرقم هاتفي: \nالمرحلة والصف: \n\nأرجو إرسال كود الاشتراك وسعره 🎓`);
-  window.open(`https://wa.me/201007586279?text=${msg}`,'_blank');
-};
-
-window.openWaCode = function(e){
-  e.preventDefault();
-  const msg = encodeURIComponent(`مرحباً أستاذ مهدي 👋\nعايز كود اشتراك في Plus Mathematics\n\nرقم هاتفي: \nالمرحلة والصف: `);
-  window.open(`https://wa.me/201007586279?text=${msg}`,'_blank');
+window.openWaCode = () => {
+  const msg = encodeURIComponent('مرحباً أستاذ مهدي 👋\nعايز كود اشتراك في Plus Mathematics\n\nرقم هاتفي: \nالمرحلة والصف: ');
+  window.open('https://wa.me/201007586279?text='+msg,'_blank');
 };
 </script>
 
 <script>
-// ── UI helpers ──
+// ── UI Helpers ──
 function showStep(id){
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.getElementById(id)?.classList.add('active');
 }
 function switchTab(t){
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
-  document.getElementById('tab-login').style.display  = t==='login'  ? 'block' : 'none';
-  document.getElementById('tab-register').style.display = t==='register' ? 'block' : 'none';
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>
+    b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
+  document.getElementById('tab-login').style.display  = t==='login'  ?'block':'none';
+  document.getElementById('tab-register').style.display = t==='register'?'block':'none';
 }
-function showMsg(id,text,type){
-  const el=document.getElementById(id);
-  el.innerHTML=`<svg width="14" height="14"><use href="\( {type==='error'?'#i-x':'#i-check'}"/></svg> \){text}`;
-  el.className='msg show '+type;
+function showMsg(id, text, type){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const icon = type==='error' ? '#i-x' : '#i-check';
+  el.innerHTML = `<svg width="14" height="14"><use href="${icon}"/></svg>${text}`;
+  el.className = 'msg show ' + type;
 }
-function setLoad(btn,state){btn.disabled=state;btn.classList.toggle('loading',state)}
+function setLoad(btn, state){
+  btn.disabled = state;
+  btn.classList.toggle('loading', state);
+}
 function closeBanner(){
   document.getElementById('banner').classList.remove('show');
-  document.body.style.paddingTop='14px';
+  document.body.style.paddingTop = '14px';
 }
-// Enter key
-document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'){
-    const active=document.querySelector('.step.active');
-    if(active?.id==='step-auth') {
-      if(document.querySelector('.tab-btn.active').textContent.includes('دخول')) doLogin();
-      else doRegister();
-    }
-    if(active?.id==='step-code') submitCode();
+// Enter key support
+document.addEventListener('keydown', e => {
+  if(e.key !== 'Enter') return;
+  const active = document.querySelector('.step.active');
+  if(!active) return;
+  if(active.id === 'step-auth'){
+    const isLogin = document.querySelector('.tab-btn.active')?.textContent.includes('دخول');
+    isLogin ? doLogin() : doRegister();
   }
+  if(active.id === 'step-code') submitCode();
 });
 </script>
 </body>
