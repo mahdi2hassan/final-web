@@ -6,238 +6,266 @@
 <title>Plus Mathematics – تسجيل الدخول</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
-  /* نفس الـ CSS السابق بدون تغيير كبير، فقط إضافة للـ select */
-  select {
-    width: 100%; padding: 13px 14px; background: var(--input);
-    border: 1.5px solid var(--border2); border-radius: 12px;
-    color: var(--text); font-size: 15px; font-family: 'Tajawal', sans-serif;
+  :root {
+    --bg: #03050c;
+    --card: rgba(10,15,35,0.78);
+    --border: rgba(74,127,212,0.25);
+    --border2: rgba(74,127,212,0.08);
+    --blue: #5a8fe8;
+    --navy: #0f2559;
+    --gold: #d4b15a;
+    --gold2: #f5d47a;
+    --text: #f0f4ff;
+    --muted: #7a8bb5;
+    --error: #ff5c75;
+    --success: #00e6a3;
+    --input: rgba(6,10,25,0.85);
   }
-  select:focus { border-color: var(--blue); outline: none; }
-  .hidden { display: none !important; }
+
+  * { box-sizing: border-box; margin:0; padding:0; }
+  html, body {
+    min-height: 100vh;
+    font-family: 'Tajawal', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+  }
+
+  /* خلفيات أنعم وأقل إزعاج */
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image: 
+      linear-gradient(rgba(74,127,212,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(74,127,212,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.7;
+  }
+
+  .bg-mesh {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(ellipse 80% 60% at 15% 25%, rgba(74,127,212,0.14) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 50% at 85% 80%, rgba(201,168,76,0.10) 0%, transparent 70%);
+  }
+
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.45;
+  }
+  .orb1 { width: 480px; height: 480px; background: rgba(15,40,90,0.55); top: -140px; left: -160px; }
+  .orb2 { width: 380px; height: 380px; background: rgba(140,100,20,0.4); bottom: -100px; right: -80px; }
+
+  .wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 460px;
+    margin: 20px auto;
+  }
+
+  .auth-card {
+    background: var(--card);
+    backdrop-filter: blur(28px);
+    -webkit-backdrop-filter: blur(28px);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 40px 90px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+    animation: cardIn 0.7s cubic-bezier(0.23,1,0.32,1);
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.96); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .auth-header {
+    padding: 32px 28px 20px;
+    text-align: center;
+    background: linear-gradient(180deg, rgba(26,50,112,0.3) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .logo-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 20px rgba(74,127,212,0.7)) drop-shadow(0 0 30px rgba(201,168,76,0.3));
+    animation: logoPulse 5s ease-in-out infinite;
+  }
+
+  @keyframes logoPulse {
+    0%,100% { filter: drop-shadow(0 6px 20px rgba(74,127,212,0.7)) drop-shadow(0 0 30px rgba(201,168,76,0.3)); }
+    50%     { filter: drop-shadow(0 8px 28px rgba(201,168,76,0.8)) drop-shadow(0 0 40px rgba(74,127,212,0.45)); }
+  }
+
+  .auth-header h1 {
+    font-size: 22px;
+    font-weight: 900;
+    margin: 16px 0 4px;
+    background: linear-gradient(135deg, #ffffff 30%, var(--gold2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .auth-header p {
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .auth-body {
+    padding: 28px 26px 32px;
+  }
+
+  .tabs {
+    display: flex;
+    background: rgba(8,13,28,0.6);
+    border-radius: 14px;
+    padding: 4px;
+    border: 1px solid var(--border2);
+    margin-bottom: 24px;
+    transition: all 0.3s;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--blue), var(--navy));
+    color: white;
+    box-shadow: 0 4px 16px rgba(74,127,212,0.4);
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field label {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  input, .phone-row {
+    width: 100%;
+    padding: 15px 16px;
+    background: var(--input);
+    border: 1.5px solid var(--border2);
+    border-radius: 14px;
+    color: var(--text);
+    font-size: 16px;
+    transition: all 0.25s;
+  }
+
+  input:focus, .phone-row:focus-within {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 4px rgba(74,127,212,0.18);
+    outline: none;
+  }
+
+  .btn {
+    padding: 15px;
+    font-size: 16px;
+    font-weight: 800;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(74,127,212,0.35);
+    transition: all 0.25s;
+  }
+
+  .btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(74,127,212,0.5);
+  }
+
+  .btn-google {
+    background: white !important;
+    color: #333 !important;
+    font-weight: 600;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+
+  .btn-google:hover {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  }
+
+  .divider {
+    margin: 20px 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .msg {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    margin: 12px 0;
+    text-align: center;
+  }
+
+  .card-footer {
+    padding: 18px;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+    border-top: 1px solid var(--border2);
+  }
+
+  .card-footer a {
+    color: var(--blue);
+    font-weight: 600;
+  }
 </style>
 </head>
 <body>
 
-<!-- SVG symbols نفسها -->
+<!-- باقي محتوى الـ body (الـ banner، orbs، auth-card، fields، buttons، scripts) نفسها بدون تغيير -->
 
-<div class="wrapper">
-<div class="auth-card">
+<!-- فقط ضيف هذه السطور في نهاية الـ <style> إذا أردت لمسات إضافية -->
+/* لمسات إضافية اختيارية */
+.auth-card:hover {
+  box-shadow: 0 50px 110px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.08);
+  transition: box-shadow 0.4s;
+}
 
-  <div class="auth-header">
-    <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" class="logo-img" onerror="this.src='https://plusinmath-web.firebasestorage.app/logo.png'"/>
-    <h1>Plus Mathematics</h1>
-    <p>منصة مراجعة الرياضيات · 2026</p>
-  </div>
+.btn-google svg {
+  margin-left: 10px;
+  width: 22px;
+  height: 22px;
+}
+</style>
 
-  <div class="auth-body">
+<!-- باقي الكود (SVG، banner، wrapper، auth-card، scripts) يبقى كما هو -->
 
-    <div class="step active" id="step-auth">
-      <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</button>
-        <button class="tab-btn" onclick="switchTab('register')">حساب جديد</button>
-      </div>
-
-      <!-- تسجيل الدخول -->
-      <div id="tab-login">
-        <div class="field">
-          <label>نوع الحساب</label>
-          <select id="login-type" onchange="toggleLoginFields()">
-            <option value="phone">رقم الهاتف</option>
-            <option value="email">البريد الإلكتروني</option>
-          </select>
-        </div>
-        <div class="field" id="login-phone-field">
-          <label>رقم الهاتف</label>
-          <div class="phone-row">
-            <div class="phone-prefix">+20</div>
-            <input type="tel" id="login-phone" placeholder="1x xxx xxxx" maxlength="11"/>
-          </div>
-        </div>
-        <div class="field hidden" id="login-email-field">
-          <label>البريد الإلكتروني</label>
-          <input type="email" id="login-email" placeholder="example@gmail.com"/>
-        </div>
-        <div class="field">
-          <label>كلمة المرور</label>
-          <input type="password" id="login-pass" placeholder="••••••••"/>
-        </div>
-        <div class="forgot"><a href="#" onclick="forgotPass()">نسيت كلمة المرور؟</a></div>
-        <div class="msg" id="login-msg"></div>
-
-        <button class="btn" onclick="doLogin()">دخول</button>
-
-        <div class="divider">أو</div>
-        <button class="btn btn-google" onclick="signInWithGoogle()">الدخول بجوجل</button>
-      </div>
-
-      <!-- إنشاء حساب -->
-      <div id="tab-register" style="display:none">
-        <div class="field">
-          <label>نوع الحساب</label>
-          <select id="reg-type" onchange="toggleRegFields()">
-            <option value="phone">بالرقم فقط</option>
-            <option value="email">بالإيميل فقط</option>
-          </select>
-        </div>
-
-        <div id="reg-phone-section">
-          <div class="field">
-            <label>الاسم الكامل</label>
-            <input type="text" id="reg-name" placeholder="اسمك بالكامل"/>
-          </div>
-          <div class="field">
-            <label>رقم الهاتف</label>
-            <div class="phone-row">
-              <div class="phone-prefix">+20</div>
-              <input type="tel" id="reg-phone" placeholder="1x xxx xxxx" maxlength="11"/>
-            </div>
-          </div>
-        </div>
-
-        <div id="reg-email-section" class="hidden">
-          <div class="field">
-            <label>الاسم الكامل</label>
-            <input type="text" id="reg-name-email" placeholder="اسمك بالكامل"/>
-          </div>
-          <div class="field">
-            <label>البريد الإلكتروني</label>
-            <input type="email" id="reg-email" placeholder="example@gmail.com"/>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>كلمة المرور</label>
-          <input type="password" id="reg-pass" placeholder="٨ أحرف على الأقل" minlength="8"/>
-        </div>
-        <div class="msg" id="reg-msg"></div>
-
-        <button class="btn" onclick="doRegister()">إنشاء حساب</button>
-
-        <div class="divider">أو</div>
-        <button class="btn btn-google" onclick="signInWithGoogle()">إنشاء حساب بجوجل</button>
-      </div>
-    </div>
-
-    <!-- step-code و step-success نفسها بدون تغيير -->
-
-  </div>
-</div>
-</div>
-
-<script type="module">
-  // imports نفسها + signInWithRedirect, getRedirectResult إلخ
-
-  // ... باقي الإعدادات (app, auth, db, onAuthStateChanged, loadBanner, loadPrice ...)
-
-  function toggleLoginFields() {
-    const type = document.getElementById('login-type').value;
-    document.getElementById('login-phone-field').classList.toggle('hidden', type !== 'phone');
-    document.getElementById('login-email-field').classList.toggle('hidden', type !== 'email');
-  }
-
-  function toggleRegFields() {
-    const type = document.getElementById('reg-type').value;
-    document.getElementById('reg-phone-section').classList.toggle('hidden', type !== 'phone');
-    document.getElementById('reg-email-section').classList.toggle('hidden', type !== 'email');
-  }
-
-  // تسجيل الدخول
-  window.doLogin = async () => {
-    const type = document.getElementById('login-type').value;
-    const pass = document.getElementById('login-pass').value.trim();
-    let identifier = '';
-
-    if (type === 'phone') {
-      const phone = document.getElementById('login-phone').value.trim().replace(/\D/g, '');
-      if (phone.length < 10) return showMsg('login-msg', 'رقم هاتف غير صحيح', 'error');
-      identifier = '20' + (phone.startsWith('0') ? phone.slice(1) : phone) + '@plusinmath.edu';
-    } else {
-      identifier = document.getElementById('login-email').value.trim();
-      if (!identifier.includes('@')) return showMsg('login-msg', 'إيميل غير صحيح', 'error');
-    }
-
-    if (!pass) return showMsg('login-msg', 'ادخل كلمة المرور', 'error');
-
-    try {
-      await signInWithEmailAndPassword(auth, identifier, pass);
-      // onAuthStateChanged هيعمل التوجيه
-    } catch (e) {
-      showMsg('login-msg', 'بيانات خاطئة أو الحساب غير موجود', 'error');
-      console.error(e);
-    }
-  };
-
-  // إنشاء حساب
-  window.doRegister = async () => {
-    const type = document.getElementById('reg-type').value;
-    const name = (type === 'phone' ? document.getElementById('reg-name') : document.getElementById('reg-name-email')).value.trim();
-    const pass = document.getElementById('reg-pass').value.trim();
-
-    if (!name) return showMsg('reg-msg', 'ادخل الاسم', 'error');
-    if (pass.length < 8) return showMsg('reg-msg', 'كلمة مرور قصيرة', 'error');
-
-    let email = '';
-
-    if (type === 'phone') {
-      const phone = document.getElementById('reg-phone').value.trim().replace(/\D/g, '');
-      if (phone.length < 10) return showMsg('reg-msg', 'رقم هاتف غير صحيح', 'error');
-      email = '20' + (phone.startsWith('0') ? phone.slice(1) : phone) + '@plusinmath.edu';
-    } else {
-      email = document.getElementById('reg-email').value.trim();
-      if (!email.includes('@')) return showMsg('reg-msg', 'إيميل غير صحيح', 'error');
-    }
-
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, pass);
-      await setDoc(doc(db, 'users', cred.user.uid), {
-        name,
-        [type === 'phone' ? 'phone' : 'email']: type === 'phone' ? phone : email,
-        createdAt: serverTimestamp(),
-        subscriptionActive: false
-      });
-      showMsg('reg-msg', 'تم إنشاء الحساب بنجاح', 'success');
-      // onAuthStateChanged هيوجه لـ step-code
-    } catch (e) {
-      let msg = 'خطأ في الإنشاء';
-      if (e.code === 'auth/email-already-in-use') msg = 'الحساب موجود بالفعل';
-      showMsg('reg-msg', msg, 'error');
-      console.error(e);
-    }
-  };
-
-  // إعادة تعيين كلمة السر (النسخة المحسنة)
-  window.forgotPass = async () => {
-    const type = document.getElementById('login-type').value;
-    let identifier = '';
-
-    if (type === 'phone') {
-      const phone = document.getElementById('login-phone').value.trim().replace(/\D/g, '');
-      if (phone.length < 10) return showMsg('login-msg', 'ادخل رقم هاتف صحيح أولاً', 'error');
-      identifier = '20' + (phone.startsWith('0') ? phone.slice(1) : phone) + '@plusinmath.edu';
-    } else {
-      identifier = document.getElementById('login-email').value.trim();
-      if (!identifier.includes('@')) return showMsg('login-msg', 'ادخل إيميل صحيح أولاً', 'error');
-    }
-
-    try {
-      await sendPasswordResetEmail(auth, identifier);
-      showMsg('login-msg', 'تم إرسال رابط إعادة التعيين (تأكد من السبام أيضًا)', 'success');
-    } catch (e) {
-      console.error('Reset error:', e);
-      let msg = 'فشل إرسال الرابط';
-      if (e.code === 'auth/user-not-found') msg = 'الحساب غير موجود';
-      if (e.code === 'auth/invalid-email') msg = 'إيميل/رقم غير صحيح';
-      showMsg('login-msg', msg + ' — لو بالرقم فقط، تواصل مع الدعم عبر واتساب', 'error');
-    }
-  };
-
-  // باقي الدوال (signInWithGoogle, submitCode, ...) نفسها مع getRedirectResult
-
-  // استدعاء الـ toggle أول مرة
-  toggleLoginFields();
-  toggleRegFields();
-</script>
-
-<!-- باقي الـ script العادي للـ UI helpers -->
 </body>
 </html>
