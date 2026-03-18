@@ -214,6 +214,12 @@ section.gray{background:var(--bg)}
 </svg>
 
 <!-- NAV -->
+<!-- Announcement Banner -->
+<div id="topBanner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:200;padding:10px 16px;align-items:center;justify-content:center;gap:10px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;color:#fff;text-align:center;background:linear-gradient(135deg,#1a3270,#3a6ec4);box-shadow:0 2px 16px rgba(26,50,112,0.4);">
+  <span id="topBannerText"></span>
+  <span onclick="document.getElementById('topBanner').style.display='none';document.querySelector('nav').style.top='0'" style="cursor:pointer;opacity:.7;margin-right:auto">✕</span>
+</div>
+
 <nav id="navbar">
   <a href="index.html" class="nav-logo">
     <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus"/>
@@ -224,7 +230,7 @@ section.gray{background:var(--bg)}
     <button class="nav-link" onclick="scrollTo('features')">المميزات</button>
     <button class="nav-link" onclick="scrollTo('contact')">تواصل معنا</button>
   </div>
-  <div class="nav-btns">
+  <div class="nav-btns" id="navBtns">
     <a href="plus-math-auth.html" class="btn-login">تسجيل الدخول</a>
     <a href="plus-math-auth.html" class="btn-signup">اشترك الآن</a>
   </div>
@@ -272,8 +278,32 @@ section.gray{background:var(--bg)}
 </div>
 <div class="gold-line"></div>
 
-<!-- GRADES -->
+<!-- GRADES - Protected Content -->
 <section class="light" id="grades">
+
+  <!-- LOCK SCREEN - shown to non-subscribers -->
+  <div id="grades-lock" style="display:none">
+    <div style="max-width:500px;margin:0 auto;text-align:center;padding:clamp(40px,8vw,70px) clamp(14px,5vw,40px)">
+      <div style="width:72px;height:72px;border-radius:20px;background:var(--blue-l);display:flex;align-items:center;justify-content:center;margin:0 auto 20px">
+        <svg width="32" height="32" style="color:var(--blue)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      </div>
+      <h2 style="font-size:clamp(20px,4vw,28px);font-weight:900;color:var(--navy);margin-bottom:10px">المحتوى متاح للمشتركين فقط</h2>
+      <p style="font-size:clamp(13px,2.5vw,15px);color:var(--muted);line-height:1.7;margin-bottom:28px">سجل حسابك واشترك للوصول لكل محتوى الصفوف الدراسية — شرح ومراجعات وامتحانات</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <a href="plus-math-auth.html" style="padding:13px 28px;border:none;border-radius:13px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;background:var(--navy);color:white;text-decoration:none;display:inline-flex;align-items:center;gap:7px;box-shadow:0 6px 20px rgba(26,50,112,0.3);transition:all .2s">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+          اشترك الآن
+        </a>
+        <a href="https://wa.me/+201007586279" target="_blank" style="padding:13px 22px;border:none;border-radius:13px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;background:#25D366;color:white;text-decoration:none;display:inline-flex;align-items:center;gap:7px;box-shadow:0 6px 20px rgba(37,211,102,0.28);transition:all .2s">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          تواصل معنا
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTUAL CONTENT - shown to subscribers only -->
+  <div id="grades-content" style="display:none">
   <div class="section-wrap">
 
     <!-- Primary -->
@@ -382,9 +412,8 @@ section.gray{background:var(--bg)}
     </div>
 
   </div>
+  </div><!-- end grades-content -->
 </section>
-
-<!-- FEATURES -->
 <section class="gray" id="features">
   <div class="section-wrap">
     <div class="reveal" style="text-align:center;margin-bottom:36px">
@@ -494,17 +523,96 @@ const obs=new IntersectionObserver(entries=>{
 },{threshold:.1});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
-// Smooth scroll
 function scrollTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth'})}
 
-// Nav scroll
 window.addEventListener('scroll',()=>{
   document.getElementById('navbar').style.boxShadow=window.scrollY>40?'0 2px 20px rgba(26,50,112,0.1)':'0 1px 12px rgba(26,50,112,0.06)';
 });
 
-// Mobile menu
 function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open')}
 function closeMenu(){document.getElementById('mobileMenu').classList.remove('open')}
+</script>
+
+<!-- Firebase Auth Check -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
+  authDomain: "plusinmath-web.firebaseapp.com",
+  projectId: "plusinmath-web",
+  storageBucket: "plusinmath-web.firebasestorage.app",
+  messagingSenderId: "444492731461",
+  appId: "1:444492731461:web:14529f08d9ccf047dabf2c"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── Nav: update buttons based on auth state ──
+function updateNav(user, active){
+  const btns = document.getElementById('navBtns');
+  if(user && active){
+    btns.innerHTML = `
+      <span style="font-size:13px;color:var(--muted);font-weight:600">مرحباً 👋</span>
+      <button onclick="doSignOut()" style="padding:8px 18px;border:1.5px solid var(--border2);border-radius:11px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;color:var(--navy);background:white;cursor:pointer;transition:all .2s">خروج</button>`;
+  } else if(user && !active){
+    btns.innerHTML = `
+      <a href="plus-math-auth.html" style="padding:8px 18px;border:none;border-radius:11px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:800;background:var(--navy);color:white;text-decoration:none;box-shadow:0 4px 12px rgba(26,50,112,0.25)">فعّل اشتراكك</a>`;
+  }
+}
+
+// ── Check auth + subscription ──
+onAuthStateChanged(auth, async (user) => {
+  if(user){
+    try {
+      const ud = await getDoc(doc(db,'users',user.uid));
+      const active = ud.exists() && ud.data().subscriptionActive;
+      if(active){
+        // Show content
+        document.getElementById('grades-lock').style.display = 'none';
+        document.getElementById('grades-content').style.display = 'block';
+      } else {
+        // Show lock
+        document.getElementById('grades-lock').style.display = 'block';
+        document.getElementById('grades-content').style.display = 'none';
+      }
+      updateNav(user, active);
+    } catch(e){
+      document.getElementById('grades-lock').style.display = 'block';
+      document.getElementById('grades-content').style.display = 'none';
+    }
+  } else {
+    // Not logged in → show lock
+    document.getElementById('grades-lock').style.display = 'block';
+    document.getElementById('grades-content').style.display = 'none';
+    updateNav(null, false);
+  }
+
+  // Load announcement banner
+  try {
+    const ann = await getDoc(doc(db,'settings','announcement'));
+    if(ann.exists() && ann.data().show && ann.data().text){
+      const banner = document.getElementById('topBanner');
+      const bannerText = document.getElementById('topBannerText');
+      if(banner && bannerText){
+        bannerText.textContent = ann.data().text;
+        banner.style.display = 'flex';
+        document.querySelector('nav').style.top = '44px';
+        document.body.style.paddingTop = '0';
+      }
+    }
+  } catch(e){}
+});
+
+window.doSignOut = async function(){
+  const { signOut } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+  await signOut(auth);
+  location.reload();
+};
 </script>
 </body>
 </html>
