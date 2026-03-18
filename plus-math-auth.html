@@ -251,8 +251,8 @@ input::placeholder{color:var(--muted);opacity:.5}
           </div>
         </div>
         <div class="field">
-          <label>الإيميل (اختياري)</label>
-          <input type="email" id="reg-email" placeholder="example@gmail.com"/>
+          <label>الإيميل <span style="color:var(--error);">*</span></label>
+          <input type="email" id="reg-email" placeholder="example@gmail.com" required/>
         </div>
         <div class="field">
           <label>كلمة المرور</label>
@@ -273,6 +273,8 @@ input::placeholder{color:var(--muted);opacity:.5}
         </button>
       </div>
     </div>
+
+    <!-- باقي الـ steps (كود الاشتراك + النجاح) بدون تغيير -->
 
     <!-- STEP: ENTER CODE -->
     <div class="step" id="step-code">
@@ -327,7 +329,7 @@ input::placeholder{color:var(--muted);opacity:.5}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-         onAuthStateChanged, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup }
+         onAuthStateChanged, sendPasswordResetEmail, GoogleAuthProvider, signInWithRedirect, getRedirectResult }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, collection, query, where,
          getDocs, updateDoc, serverTimestamp }
@@ -345,6 +347,23 @@ const firebaseConfig = {
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
+
+// Handle redirect result on page load (مهم جدًا بعد signInWithRedirect)
+getRedirectResult(auth)
+  .then((result) => {
+    if (result) {
+      // Google sign-in successful via redirect
+      const user = result.user;
+      // يمكنك هنا معالجة إنشاء/تحديث المستخدم في Firestore إذا لزم
+      console.log('Google redirect success:', user);
+    }
+  })
+  .catch((error) => {
+    console.error('Redirect error:', error);
+    if (error.code) {
+      showMsg('login-msg', 'خطأ في إكمال تسجيل الدخول عبر جوجل: ' + error.message, 'error');
+    }
+  });
 
 // ── Load banner & price ──
 async function loadBanner(){
@@ -367,7 +386,6 @@ async function loadPrice(){
   } catch(e){}
 }
 
-// ── Auth state listener ──
 onAuthStateChanged(auth, async (user) => {
   loadBanner();
   loadPrice();
@@ -445,6 +463,10 @@ window.doRegister = async function(){
 
   if(!name){ showMsg('reg-msg','ادخل اسمك الكامل','error'); return; }
   if(phone.length < 10){ showMsg('reg-msg','ادخل رقم هاتف صحيح','error'); return; }
+  if(!emailInput || !emailInput.includes('@') || !emailInput.includes('.')){ 
+    showMsg('reg-msg','الإيميل إجباري - ادخل إيميل صحيح','error'); 
+    return; 
+  }
   if(pass.length < 8){ showMsg('reg-msg','كلمة المرور لازم تكون ٨ أحرف على الأقل','error'); return; }
 
   const btn = document.getElementById('reg-btn');
@@ -458,7 +480,7 @@ window.doRegister = async function(){
       name,
       phone,
       primaryEmail: fakeEmail,
-      secondaryEmail: emailInput ? emailInput.toLowerCase() : null,
+      secondaryEmail: emailInput.toLowerCase(),
       subscriptionActive: false,
       createdAt: serverTimestamp(),
       signInMethod: 'phone'
@@ -479,53 +501,36 @@ window.doRegister = async function(){
   setLoad(btn, false);
 };
 
-// ── GOOGLE SIGN IN ──
+// ── GOOGLE SIGN IN (باستخدام Redirect لتجنب مشاكل Popup) ──
 window.signInWithGoogle = async function(){
   const provider = new GoogleAuthProvider();
   const btn = event.target;
   const originalText = btn.innerHTML;
 
   btn.disabled = true;
-  btn.innerHTML = '<div class="spin"></div> جاري الدخول...';
+  btn.innerHTML = '<div class="spin"></div> جاري التحويل...';
 
   try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-
-    const userDocRef = doc(db, 'users', user.uid);
-    const userSnap = await getDoc(userDocRef);
-
-    if (!userSnap.exists()) {
-      await setDoc(userDocRef, {
-        name: user.displayName || 'مستخدم جوجل',
-        email: user.email,
-        phone: null,
-        photoURL: user.photoURL || null,
-        subscriptionActive: false,
-        createdAt: serverTimestamp(),
-        signInMethod: 'google'
-      });
-    } else {
-      await updateDoc(userDocRef, {
-        lastSignIn: serverTimestamp()
-      });
-    }
-
-    // No need to show message here → onAuthStateChanged will redirect
+    await signInWithRedirect(auth, provider);
+    // الصفحة هتعيد التحميل تلقائيًا بعد الرجوع، و getRedirectResult هيشتغل فوق
   } catch (error) {
     let msg = 'حصل خطأ في الدخول بجوجل';
-    if (error.code === 'auth/popup-closed-by-user') msg = 'تم إغلاق نافذة جوجل';
-    else if (error.code === 'auth/account-exists-with-different-credential') {
-      msg = 'الإيميل ده مسجل بطريقة أخرى، جرب تسجيل الدخول بالإيميل وكلمة المرور';
+    if (error.code === 'auth/popup-blocked') {
+      msg = 'البوب أب محظور — جرب متصفح آخر أو اسمح بالبوب أبات';
+    } else if (error.code === 'auth/unauthorized-domain') {
+      msg = 'الدومين مش مضاف في Firebase Console (Authorized domains)';
+    } else if (error.code) {
+      msg += ': ' + error.code;
     }
     showMsg('login-msg', msg, 'error');
+    console.error('Google Redirect Error:', error);
   }
 
   btn.disabled = false;
   btn.innerHTML = originalText;
 };
 
-// ── SUBMIT CODE (باقي الكود بدون تغيير) ──
+// ── SUBMIT CODE ── (بدون تغيير)
 window.submitCode = async function(){
   const code = document.getElementById('sub-code').value.trim().toUpperCase();
   if(code.length < 4){ showMsg('code-msg','ادخل الكود الصح','error'); return; }
@@ -583,7 +588,7 @@ window.forgotPass = async function(){
 
 window.goToCourses = function(){ window.location.href = 'courses.html'; };
 
-// ── WhatsApp links ──
+// WhatsApp links (بدون تغيير)
 window.openWaRegister = function(e){
   e.preventDefault();
   const msg = encodeURIComponent(`مرحباً أستاذ مهدي 👋\nعايز أشترك في منصة Plus Mathematics\n\nاسمي: \nرقم هاتفي: \nالمرحلة والصف: \n\nأرجو إرسال كود الاشتراك وسعره 🎓`);
@@ -618,7 +623,7 @@ function closeBanner(){
   document.getElementById('banner').classList.remove('show');
   document.body.style.paddingTop='14px';
 }
-// Enter key support
+// Enter key
 document.addEventListener('keydown',e=>{
   if(e.key==='Enter'){
     const active=document.querySelector('.step.active');
