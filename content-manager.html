@@ -8,7 +8,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#04060f;--s1:rgba(8,13,28,0.92);--s2:rgba(12,18,40,0.75);
+  --bg:#04060f;--s1:rgba(8,13,28,0.92);--s2:rgba(12,18,40,0.78);
   --b1:rgba(74,127,212,0.22);--b2:rgba(74,127,212,0.12);
   --blue:#4a7fd4;--navy:#1a3270;--gold:#c9a84c;--gold2:#f0d080;
   --text:#eef2ff;--muted:#6a7a9e;
@@ -17,186 +17,214 @@
 }
 html,body{min-height:100dvh;overflow-x:hidden}
 body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
-
-/* BG */
 .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:linear-gradient(rgba(74,127,212,0.04) 1px,transparent 1px),
-  linear-gradient(90deg,rgba(74,127,212,0.04) 1px,transparent 1px);
-  background-size:44px 44px}
+  linear-gradient(90deg,rgba(74,127,212,0.04) 1px,transparent 1px);background-size:44px 44px}
 .orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
 .o1{width:400px;height:400px;background:rgba(26,50,112,0.4);top:-100px;right:-100px}
 .o2{width:300px;height:300px;background:rgba(110,75,10,0.25);bottom:-60px;left:-60px}
 
-/* LOGIN */
-#loginWrap{position:fixed;inset:0;z-index:100;background:var(--bg);
+/* ── LOGIN ── */
+#loginWrap{position:fixed;inset:0;z-index:200;background:var(--bg);
   display:flex;align-items:center;justify-content:center;padding:16px}
 .lcard{background:var(--s2);backdrop-filter:blur(24px);border:1px solid var(--b1);
   border-radius:20px;padding:32px 28px;width:100%;max-width:340px;text-align:center;
   box-shadow:0 32px 80px rgba(0,0,0,0.6);animation:popIn .5s ease both}
 @keyframes popIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-.lcard img{width:52px;height:52px;object-fit:contain;margin-bottom:10px;
-  filter:drop-shadow(0 4px 14px rgba(74,127,212,0.5))}
-.lcard h2{font-size:16px;font-weight:900;
-  background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.lcard img{width:52px;height:52px;object-fit:contain;margin-bottom:10px;filter:drop-shadow(0 4px 14px rgba(74,127,212,0.5))}
+.lcard h2{font-size:16px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .lcard p{font-size:11px;color:var(--muted);margin:4px 0 20px}
 .lf{display:flex;flex-direction:column;gap:5px;margin-bottom:11px;text-align:right}
 .lf label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
-.lf input{padding:11px 13px;background:var(--inp);border:1.5px solid var(--b1);
-  border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
-  outline:none;transition:border-color .2s}
+.lf input{padding:11px 13px;background:var(--inp);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
 .lf input:focus{border-color:var(--blue)}
-.lbtn{width:100%;padding:12px;border:none;border-radius:10px;cursor:pointer;
-  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;
-  background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;
-  box-shadow:0 5px 18px rgba(74,127,212,0.3);transition:all .15s;margin-top:4px}
+.lbtn{width:100%;padding:12px;border:none;border-radius:10px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;transition:all .15s;margin-top:4px}
 .lbtn:hover{transform:translateY(-1px)}
 .lerr{font-size:12px;color:var(--err);margin-top:8px;display:none}
 
-/* TOPBAR */
-.topbar{position:sticky;top:0;z-index:50;
-  height:56px;display:flex;align-items:center;gap:12px;
-  padding:0 clamp(14px,4vw,24px);
-  background:var(--s1);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--b2);}
-.topbar-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
-.topbar-logo img{width:30px;height:30px;object-fit:contain}
-.topbar-logo h2{font-size:13px;font-weight:900;
-  background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.topbar-title{flex:1;font-size:14px;font-weight:800;color:var(--muted)}
-.tb-btn{padding:7px 14px;border:1px solid var(--b1);border-radius:9px;
-  background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;
-  font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
-.tb-btn:hover{border-color:var(--blue);color:var(--text)}
-.tb-btn svg{width:13px;height:13px}
-.tb-btn.active{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(74,127,212,0.3)}
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:50;height:56px;display:flex;align-items:center;gap:12px;
+  padding:0 clamp(14px,4vw,24px);background:var(--s1);backdrop-filter:blur(20px);border-bottom:1px solid var(--b2)}
+.tb-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.tb-logo img{width:30px;height:30px;object-fit:contain}
+.tb-logo h2{font-size:13px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tb-title{flex:1;font-size:14px;font-weight:700;color:var(--muted)}
+.tb-acts{display:flex;gap:8px;margin-right:auto}
+.tbtn{padding:7px 13px;border:1px solid var(--b1);border-radius:9px;background:transparent;
+  color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:5px;text-decoration:none}
+.tbtn:hover{border-color:var(--blue);color:var(--text)}
+.tbtn svg{width:13px;height:13px}
+.tbtn.on{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(74,127,212,0.3)}
 
-/* MAIN */
-.main{position:relative;z-index:1;padding:clamp(14px,3vw,20px) clamp(14px,4vw,24px);
-  max-width:960px;margin:0 auto}
+/* ── MAIN ── */
+.main{position:relative;z-index:1;padding:clamp(14px,3vw,20px) clamp(14px,4vw,24px);max-width:900px;margin:0 auto}
 
-/* GRADE SELECTOR */
-.grade-selector{background:var(--s2);border:1px solid var(--b2);border-radius:14px;
-  padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.grade-selector label{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
-.grade-sel{padding:9px 14px;background:var(--inp);border:1.5px solid var(--b1);
-  border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
-  outline:none;appearance:none;cursor:pointer;min-width:200px;transition:border-color .2s}
-.grade-sel:focus{border-color:var(--blue)}
-.grade-badge{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;
-  background:rgba(0,214,143,0.1);color:var(--ok);border:1px solid rgba(0,214,143,0.2)}
+/* ── GRADE BAR ── */
+.grade-bar{background:var(--s2);border:1px solid var(--b2);border-radius:14px;
+  padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.grade-bar label{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.gsel{padding:9px 14px;background:var(--inp);border:1.5px solid var(--b1);border-radius:10px;
+  color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;
+  appearance:none;cursor:pointer;min-width:200px;transition:border-color .2s}
+.gsel:focus{border-color:var(--blue)}
+.grade-info{margin-right:auto;font-size:12px;color:var(--ok);font-weight:700;display:none}
 
-/* TABS */
-.tabs-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+/* ── TABS ── */
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
 
-/* CONTENT CARD */
-.content-card{background:var(--s2);border:1px solid var(--b2);border-radius:14px;
-  padding:18px;margin-bottom:12px;transition:all .2s}
-.content-card:hover{border-color:var(--b1)}
-.cc-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;
-  padding-bottom:12px;border-bottom:1px solid var(--b2)}
-.cc-header h3{font-size:14px;font-weight:800;flex:1;display:flex;align-items:center;gap:7px}
-.cc-header h3 svg{width:15px;height:15px;color:var(--blue)}
+/* ── CARD ── */
+.card{background:var(--s2);border:1px solid var(--b2);border-radius:14px;padding:18px;margin-bottom:14px}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--b2)}
+.card-head h3{font-size:14px;font-weight:800;flex:1;display:flex;align-items:center;gap:6px}
+.card-head h3 svg{width:14px;height:14px;color:var(--blue)}
 
-/* FORM */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+/* ── FORM ── */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:580px){.fgrid{grid-template-columns:1fr}}
 .ff{display:flex;flex-direction:column;gap:5px}
 .ff label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
-.ff input,.ff select,.ff textarea{
-  padding:10px 12px;background:var(--inp);border:1.5px solid var(--b1);
-  border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;
-  font-size:14px;outline:none;transition:border-color .2s;
-  appearance:none;width:100%;resize:vertical}
+.ff input,.ff select,.ff textarea{padding:10px 12px;background:var(--inp);border:1.5px solid var(--b1);
+  border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;appearance:none;width:100%;resize:vertical}
 .ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--blue)}
 .ff.full{grid-column:1/-1}
 
-/* ITEMS LIST */
-.items-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
-.item-row{background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;
+/* ── UPLOAD ZONE ── */
+.upload-zone{border:2px dashed var(--b1);border-radius:12px;padding:clamp(18px,4vw,28px) 16px;
+  text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:rgba(74,127,212,0.05)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone-ico{width:44px;height:44px;border-radius:12px;background:rgba(74,127,212,0.1);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.upload-zone-ico svg{width:22px;height:22px;color:var(--blue)}
+.upload-zone h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.upload-zone p{font-size:12px;color:var(--muted)}
+.upload-zone .accept{font-size:11px;color:var(--muted);margin-top:6px;
+  padding:3px 10px;background:rgba(74,127,212,0.08);border-radius:20px;display:inline-block}
+
+/* ── UPLOAD PROGRESS ── */
+.upload-progress{display:none;margin-top:10px}
+.upload-progress.show{display:block}
+.up-bar{height:6px;background:rgba(74,127,212,0.15);border-radius:3px;overflow:hidden;margin-bottom:4px}
+.up-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--ok));border-radius:3px;
+  transition:width .2s;width:0%}
+.up-txt{font-size:11px;color:var(--muted);display:flex;justify-content:space-between}
+
+/* ── FILE PREVIEW ── */
+.file-preview{margin-top:10px;display:none}
+.file-preview.show{display:flex;align-items:center;gap:10px;
+  background:rgba(74,127,212,0.06);border:1px solid var(--b2);border-radius:10px;padding:10px}
+.fp-ico{width:36px;height:36px;border-radius:9px;background:rgba(74,127,212,0.12);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fp-ico svg{width:18px;height:18px;color:var(--blue)}
+.fp-info{flex:1;min-width:0}
+.fp-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fp-size{font-size:11px;color:var(--muted)}
+.fp-del{background:transparent;border:none;cursor:pointer;color:var(--err);padding:4px}
+
+/* ── IMAGE PREVIEW ── */
+.img-preview{display:none;margin-top:10px;border-radius:10px;overflow:hidden;max-height:200px}
+.img-preview img{width:100%;object-fit:cover;display:block}
+
+/* ── YT PREVIEW ── */
+.yt-wrap{display:none;margin-top:8px;border-radius:10px;overflow:hidden;background:#000}
+.yt-wrap iframe{width:100%;height:clamp(160px,35vw,220px);border:none;display:block}
+
+/* ── NOTE ── */
+.note{font-size:11px;color:var(--muted);background:rgba(74,127,212,0.06);
+  border:1px solid var(--b2);border-radius:8px;padding:8px 12px;margin-bottom:12px;line-height:1.8}
+.note strong{color:var(--blue)}
+
+/* ── EXAM TYPE ── */
+.etype-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:500px){.etype-grid{grid-template-columns:repeat(2,1fr)}}
+.etype-card{border:1.5px solid var(--b2);border-radius:10px;padding:10px 8px;text-align:center;
+  cursor:pointer;transition:all .2s;font-size:12px;font-weight:700;color:var(--muted)}
+.etype-card:hover{border-color:var(--b1);color:var(--text)}
+.etype-card.sel{border-color:var(--blue);background:rgba(74,127,212,0.1);color:var(--blue)}
+.etype-card svg{width:20px;height:20px;display:block;margin:0 auto 5px}
+.etype-fields{display:none}
+.etype-fields.show{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── ITEMS LIST ── */
+.items{display:flex;flex-direction:column;gap:8px}
+.item{background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;
   padding:12px 14px;display:flex;align-items:center;gap:10px;transition:all .2s}
-.item-row:hover{border-color:var(--b1)}
-.item-order{width:28px;height:28px;border-radius:8px;
+.item:hover{border-color:var(--b1)}
+.item-num{width:26px;height:26px;border-radius:7px;
   background:linear-gradient(135deg,var(--blue),var(--navy));
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
 .item-info{flex:1;min-width:0}
 .item-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.item-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.item-actions{display:flex;gap:5px;flex-shrink:0}
-.ia-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--b2);
-  background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:all .2s;color:var(--muted)}
-.ia-btn:hover{border-color:var(--blue);background:rgba(74,127,212,0.1);color:var(--text)}
-.ia-btn.del:hover{border-color:var(--err);background:rgba(255,77,109,0.1);color:var(--err)}
-.ia-btn svg{width:12px;height:12px}
+.item-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.item-acts{display:flex;gap:5px;flex-shrink:0}
+.ia{width:28px;height:28px;border-radius:8px;border:1px solid var(--b2);background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--muted)}
+.ia:hover{border-color:var(--blue);background:rgba(74,127,212,0.1);color:var(--text)}
+.ia.del:hover{border-color:var(--err);background:rgba(255,77,109,0.1);color:var(--err)}
+.ia svg{width:12px;height:12px}
+.tag{display:inline-flex;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.tag.v{background:rgba(74,127,212,0.1);color:var(--blue)}
+.tag.e{background:rgba(201,168,76,0.1);color:var(--gold)}
+.tag.h{background:rgba(167,139,250,0.1);color:var(--purple)}
+.tag.ok{background:rgba(0,214,143,0.1);color:var(--ok)}
 
-/* BADGE */
-.badge{display:inline-flex;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
-.badge.v{background:rgba(74,127,212,0.1);color:var(--blue)}
-.badge.e{background:rgba(201,168,76,0.1);color:var(--gold)}
-.badge.h{background:rgba(167,139,250,0.1);color:var(--purple)}
-
-/* BTN */
-.btn{padding:9px 16px;border:none;border-radius:10px;cursor:pointer;
-  font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;
-  display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+/* ── BTNS ── */
+.btn{padding:9px 16px;border:none;border-radius:10px;cursor:pointer;font-family:'Tajawal',sans-serif;
+  font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
 .btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
 .btn svg{width:13px;height:13px}
 .btn.primary{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;box-shadow:0 4px 14px rgba(74,127,212,0.25)}
-.btn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff}
+.btn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff;box-shadow:0 4px 14px rgba(0,214,143,0.2)}
 .btn.gold{background:linear-gradient(135deg,var(--gold),#7a5810);color:#fff}
 .btn.purple{background:linear-gradient(135deg,var(--purple),#5b21b6);color:#fff}
 .btn.ghost{background:transparent;border:1px solid var(--b1);color:var(--muted)}
 .btn.ghost:hover{border-color:var(--blue);color:var(--text)}
 .btn.sm{padding:7px 12px;font-size:12px}
+.btn.w100{width:100%;justify-content:center}
 
-/* EXAM TYPE FIELDS */
-.type-fields{display:none}
-.type-fields.show{display:block}
-
-/* EMPTY */
+/* ── EMPTY ── */
 .empty{text-align:center;padding:28px 20px;color:var(--muted)}
-.empty svg{width:32px;height:32px;opacity:.2;display:block;margin:0 auto 10px}
-.empty p{font-size:13px}
+.empty svg{width:30px;height:30px;opacity:.2;display:block;margin:0 auto 10px}
 
-/* TOAST */
-.toast{position:fixed;bottom:18px;left:50%;
-  transform:translateX(-50%) translateY(80px);
-  background:rgba(10,15,34,0.97);backdrop-filter:blur(16px);
-  border:1px solid var(--b1);border-radius:11px;
-  padding:10px 18px;font-size:13px;font-weight:600;
-  display:flex;align-items:center;gap:8px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+/* ── TOAST ── */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:rgba(10,15,34,0.97);backdrop-filter:blur(16px);border:1px solid var(--b1);
+  border-radius:11px;padding:10px 18px;font-size:13px;font-weight:600;
+  display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,0.5);
   transition:transform .3s cubic-bezier(.22,1,.36,1);z-index:999;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.ok{color:var(--ok);border-color:rgba(0,214,143,0.3)}
 .toast.err{color:var(--err);border-color:rgba(255,77,109,0.3)}
+.toast.info{color:var(--blue);border-color:rgba(74,127,212,0.3)}
 .toast svg{width:14px;height:14px}
 
-/* LINK PREVIEW */
-.yt-preview{margin-top:8px;border-radius:10px;overflow:hidden;display:none}
-.yt-preview iframe{width:100%;height:180px;border:none;display:block}
-
-.section-note{font-size:11px;color:var(--muted);background:rgba(74,127,212,0.06);
-  border:1px solid var(--b2);border-radius:8px;padding:8px 12px;margin-bottom:12px;line-height:1.7}
-.section-note strong{color:var(--blue)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
 </style>
 </head>
 <body>
 
 <svg style="display:none">
-  <symbol id="ic-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></symbol>
-  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></symbol>
-  <symbol id="ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></symbol>
-  <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
-  <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
-  <symbol id="ic-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
-  <symbol id="ic-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></symbol>
-  <symbol id="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
-  <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></symbol>
-  <symbol id="ic-logout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
-  <symbol id="ic-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></symbol>
-  <symbol id="ic-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
 </svg>
 
 <div class="bg-grid"></div>
@@ -210,8 +238,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
     <h2>إدارة المحتوى</h2>
     <p>Plus Mathematics · 2026</p>
     <div class="lf"><label>كلمة المرور</label>
-      <input type="password" id="lp" placeholder="••••••••"
-        onkeydown="if(event.key==='Enter')doLogin()"/></div>
+      <input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
     <button class="lbtn" onclick="doLogin()">دخول</button>
     <div class="lerr" id="lerr">كلمة المرور غلط</div>
   </div>
@@ -220,30 +247,24 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 <!-- APP -->
 <div id="app" style="display:none">
 
-  <!-- Topbar -->
   <div class="topbar">
-    <a href="index.html" class="topbar-logo">
+    <a href="index.html" class="tb-logo">
       <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.display='none'"/>
       <h2>Plus Math</h2>
     </a>
-    <div class="topbar-title">إدارة المحتوى</div>
-    <div style="display:flex;gap:8px;margin-right:auto">
-      <a href="plus-math-admin.html" class="tb-btn">
-        <svg><use href="#ic-home"/></svg>الداشبورد
-      </a>
-      <button class="tb-btn" onclick="doLogout()">
-        <svg><use href="#ic-logout"/></svg>خروج
-      </button>
+    <div class="tb-title">إدارة المحتوى</div>
+    <div class="tb-acts">
+      <a href="plus-math-admin.html" class="tbtn"><svg><use href="#i-home"/></svg>الداشبورد</a>
+      <button class="tbtn" onclick="doLogout()"><svg><use href="#i-out"/></svg>خروج</button>
     </div>
   </div>
 
-  <!-- Main -->
   <div class="main">
 
     <!-- Grade selector -->
-    <div class="grade-selector">
-      <label>📚 اختار الصف:</label>
-      <select class="grade-sel" id="gradeSelect" onchange="onGradeChange()">
+    <div class="grade-bar">
+      <label>📚 الصف:</label>
+      <select class="gsel" id="gSel" onchange="onGrade()">
         <option value="">— اختار الصف —</option>
         <optgroup label="ابتدائي">
           <option value="primary-4">الصف الرابع الابتدائي</option>
@@ -261,200 +282,224 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <option value="sec-3">الصف الثالث الثانوي</option>
         </optgroup>
       </select>
-      <span class="grade-badge" id="gradeBadge" style="display:none">جاري التحميل...</span>
+      <span class="grade-info" id="gInfo"></span>
     </div>
 
-    <!-- Content Tabs -->
-    <div class="tabs-row">
-      <button class="tb-btn active" id="tab-v" onclick="switchTab('videos')">
-        <svg><use href="#ic-play"/></svg>الفيديوهات
-      </button>
-      <button class="tb-btn" id="tab-e" onclick="switchTab('exams')">
-        <svg><use href="#ic-check"/></svg>الامتحانات
-      </button>
-      <button class="tb-btn" id="tab-h" onclick="switchTab('homework')">
-        <svg><use href="#ic-file"/></svg>الواجبات
-      </button>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tbtn on" id="tv" onclick="switchTab('v')"><svg><use href="#i-yt"/></svg>الفيديوهات</button>
+      <button class="tbtn" id="te" onclick="switchTab('e')"><svg><use href="#i-check"/></svg>الامتحانات</button>
+      <button class="tbtn" id="th" onclick="switchTab('h')"><svg><use href="#i-file"/></svg>الواجبات</button>
     </div>
 
-    <!-- ══ VIDEOS ══ -->
-    <div id="sec-videos">
-      <div class="content-card">
-        <div class="cc-header">
-          <h3><svg><use href="#ic-play"/></svg>إضافة فيديو شرح</h3>
-          <button class="btn sm ghost" onclick="clearForm('v')">مسح</button>
-          <button class="btn sm primary" onclick="saveVideo()">
-            <svg><use href="#ic-save"/></svg>حفظ الفيديو
-          </button>
+    <!-- ══════════════════ VIDEOS ══════════════════ -->
+    <div id="sv">
+
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-yt"/></svg>إضافة فيديو</h3>
+          <button class="btn sm ghost" onclick="clearV()">مسح</button>
+          <button class="btn sm primary" id="vSaveBtn" onclick="saveVideo()"><svg><use href="#i-save"/></svg>حفظ</button>
         </div>
-        <div class="section-note">
-          ارفع الفيديو على <strong>يوتيوب</strong> (قناتك الخاصة) ثم الصق الرابط هنا
+
+        <div class="note">
+          ارفع الفيديو على <strong>يوتيوب</strong> كـ <strong>Unlisted</strong> (غير مدرج — لن يظهر في البحث) ثم الصق الرابط — الفيديو هيشتغل جوّا المنصة مباشرة 🎬
         </div>
-        <div class="form-grid">
+
+        <div class="fgrid">
           <div class="ff full">
-            <label>رابط اليوتيوب</label>
-            <input type="url" id="v-url" placeholder="https://youtube.com/watch?v=..." oninput="previewYt()"/>
-            <div class="yt-preview" id="ytPreview"><iframe id="ytFrame" allowfullscreen></iframe></div>
+            <label>رابط يوتيوب</label>
+            <input type="url" id="vUrl" placeholder="https://youtube.com/watch?v=..." oninput="previewYt(this.value)"/>
+            <div class="yt-wrap" id="ytWrap"><iframe id="ytFrame" allowfullscreen></iframe></div>
           </div>
           <div class="ff full">
             <label>عنوان الفيديو</label>
-            <input type="text" id="v-title" placeholder="مثال: الدرس الأول — المعادلات من الدرجة الأولى"/>
+            <input type="text" id="vTitle" placeholder="مثال: الدرس الأول — المعادلات من الدرجة الأولى"/>
           </div>
           <div class="ff">
             <label>وصف مختصر</label>
-            <input type="text" id="v-desc" placeholder="موضوع الفيديو"/>
+            <input type="text" id="vDesc" placeholder="موضوع الفيديو"/>
           </div>
           <div class="ff">
             <label>المدة</label>
-            <input type="text" id="v-dur" placeholder="مثال: 45 دقيقة"/>
+            <input type="text" id="vDur" placeholder="مثال: 45 دقيقة"/>
           </div>
           <div class="ff">
-            <label>الترتيب (رقم)</label>
-            <input type="number" id="v-order" placeholder="1" min="1"/>
+            <label>الترتيب</label>
+            <input type="number" id="vOrder" placeholder="1" min="1"/>
           </div>
         </div>
       </div>
 
-      <!-- Videos list -->
-      <div class="content-card">
-        <div class="cc-header">
-          <h3><svg><use href="#ic-play"/></svg>الفيديوهات المضافة</h3>
-          <button class="btn sm ghost" onclick="loadTab('videos')"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-play"/></svg>الفيديوهات المضافة</h3>
+          <button class="btn sm ghost" onclick="loadList('videos','vList')"><svg><use href="#i-refresh"/></svg></button>
         </div>
-        <div id="videosList">
-          <div class="empty"><svg><use href="#ic-play"/></svg><p>اختار صفاً لعرض الفيديوهات</p></div>
-        </div>
+        <div id="vList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
       </div>
     </div>
 
-    <!-- ══ EXAMS ══ -->
-    <div id="sec-exams" style="display:none">
-      <div class="content-card">
-        <div class="cc-header">
-          <h3><svg><use href="#ic-check"/></svg>إضافة امتحان</h3>
-          <button class="btn sm ghost" onclick="clearForm('e')">مسح</button>
-          <button class="btn sm gold" onclick="saveExam()">
-            <svg><use href="#ic-save"/></svg>حفظ الامتحان
-          </button>
+    <!-- ══════════════════ EXAMS ══════════════════ -->
+    <div id="se" style="display:none">
+
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-check"/></svg>إضافة امتحان</h3>
+          <button class="btn sm ghost" onclick="clearE()">مسح</button>
+          <button class="btn sm gold" id="eSaveBtn" onclick="saveExam()"><svg><use href="#i-save"/></svg>حفظ</button>
         </div>
-        <div class="form-grid">
+
+        <!-- Exam type selector -->
+        <div class="etype-grid">
+          <div class="etype-card sel" id="et-mcq" onclick="setEType('mcq')">
+            <svg><use href="#i-check"/></svg>اختيار متعدد
+          </div>
+          <div class="etype-card" id="et-essay" onclick="setEType('essay')">
+            <svg><use href="#i-edit" xlink:href="#i-edit"/></svg>مقالي
+            <svg width="20" height="20"><use href="#i-file"/></svg>
+          </div>
+          <div class="etype-card" id="et-images" onclick="setEType('images')">
+            <svg><use href="#i-img"/></svg>صور امتحان
+          </div>
+          <div class="etype-card" id="et-link" onclick="setEType('link')">
+            <svg><use href="#i-link"/></svg>Google Form
+          </div>
+        </div>
+
+        <div class="fgrid">
           <div class="ff full">
             <label>عنوان الامتحان</label>
-            <input type="text" id="e-title" placeholder="مثال: امتحان الفصل الأول — المعادلات"/>
-          </div>
-          <div class="ff">
-            <label>نوع الامتحان</label>
-            <select id="e-type" onchange="toggleExamFields()">
-              <option value="mcq">اختيار من متعدد (MCQ)</option>
-              <option value="essay">مقالي (الطالب يكتب)</option>
-              <option value="pdf">رفع ملف PDF</option>
-              <option value="link">لينك خارجي (Google Form)</option>
-            </select>
+            <input type="text" id="eTitle" placeholder="مثال: امتحان الفصل الأول"/>
           </div>
           <div class="ff">
             <label>المدة (دقيقة)</label>
-            <input type="number" id="e-dur" placeholder="60"/>
+            <input type="number" id="eDur" placeholder="60"/>
           </div>
           <div class="ff">
             <label>الترتيب</label>
-            <input type="number" id="e-order" placeholder="1" min="1"/>
+            <input type="number" id="eOrder" placeholder="1" min="1"/>
           </div>
 
-          <!-- MCQ fields -->
-          <div class="ff full type-fields" id="ef-mcq">
-            <label>الأسئلة — اكتب كل سؤال هكذا:</label>
-            <div class="section-note" style="margin-bottom:8px">
-              <strong>السؤال؟</strong><br/>
-              <strong>* الإجابة الصحيحة</strong> (نجمة قبلها)<br/>
-              إجابة خاطئة<br/>
-              إجابة خاطئة<br/>
-              <strong>---</strong> (للفصل بين الأسئلة)
-            </div>
-            <textarea id="e-mcq" rows="8" placeholder="ما هو حل المعادلة 2x+4=10؟&#10;* x=3&#10;x=2&#10;x=7&#10;---&#10;سؤال ثاني؟&#10;* الإجابة الصح&#10;إجابة خاطئة"></textarea>
+          <!-- MCQ -->
+          <div class="ff full etype-fields show" id="ef-mcq">
+            <label>الأسئلة — * قبل الإجابة الصح — فصل بـ ---</label>
+            <textarea id="eMcq" rows="7" placeholder="ما هو حل 2x+4=10؟&#10;* x=3&#10;x=2&#10;x=7&#10;x=5&#10;---&#10;سؤال ثانٍ؟&#10;* الإجابة الصح&#10;إجابة خاطئة&#10;إجابة خاطئة"></textarea>
           </div>
 
-          <!-- Essay fields -->
-          <div class="ff full type-fields" id="ef-essay">
+          <!-- Essay -->
+          <div class="ff full etype-fields" id="ef-essay">
             <label>نص الامتحان المقالي</label>
-            <textarea id="e-essay" rows="6" placeholder="اكتب أسئلة الامتحان المقالي هنا...&#10;&#10;السؤال الأول: ...&#10;السؤال الثاني: ..."></textarea>
+            <textarea id="eEssay" rows="6" placeholder="اكتب أسئلة الامتحان هنا..."></textarea>
           </div>
 
-          <!-- Link/PDF fields -->
-          <div class="ff full type-fields" id="ef-link">
-            <label>الرابط (Google Form / PDF)</label>
-            <input type="url" id="e-url" placeholder="https://forms.google.com/..."/>
+          <!-- Images upload -->
+          <div class="ff full etype-fields" id="ef-images">
+            <label>صور الامتحان (JPG/PNG/PDF)</label>
+            <div class="upload-zone" id="eImgZone">
+              <input type="file" accept="image/*,.pdf" multiple id="eImgFile" onchange="handleExamFiles(this.files)"/>
+              <div class="upload-zone-ico"><svg><use href="#i-img"/></svg></div>
+              <h4>اضغط أو اسحب الصور هنا</h4>
+              <p>JPG, PNG, PDF — حتى 10 ملفات</p>
+            </div>
+            <div class="upload-progress" id="eImgProgress">
+              <div class="up-bar"><div class="up-fill" id="eImgFill"></div></div>
+              <div class="up-txt"><span id="eImgTxt">جاري الرفع...</span><span id="eImgPct">0%</span></div>
+            </div>
+            <div id="eImgPreviews" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+          </div>
+
+          <!-- Link -->
+          <div class="ff full etype-fields" id="ef-link">
+            <label>رابط Google Form</label>
+            <input type="url" id="eLink" placeholder="https://forms.google.com/..."/>
           </div>
         </div>
       </div>
 
-      <div class="content-card">
-        <div class="cc-header">
-          <h3><svg><use href="#ic-check"/></svg>الامتحانات المضافة</h3>
-          <button class="btn sm ghost" onclick="loadTab('exams')"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-check"/></svg>الامتحانات المضافة</h3>
+          <button class="btn sm ghost" onclick="loadList('exams','eList')"><svg><use href="#i-refresh"/></svg></button>
         </div>
-        <div id="examsList">
-          <div class="empty"><svg><use href="#ic-check"/></svg><p>اختار صفاً لعرض الامتحانات</p></div>
-        </div>
+        <div id="eList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
       </div>
     </div>
 
-    <!-- ══ HOMEWORK ══ -->
-    <div id="sec-homework" style="display:none">
-      <div class="content-card">
-        <div class="cc-header">
-          <h3><svg><use href="#ic-file"/></svg>إضافة واجب</h3>
-          <button class="btn sm ghost" onclick="clearForm('h')">مسح</button>
-          <button class="btn sm purple" onclick="saveHomework()">
-            <svg><use href="#ic-save"/></svg>حفظ الواجب
-          </button>
+    <!-- ══════════════════ HOMEWORK ══════════════════ -->
+    <div id="sh" style="display:none">
+
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-file"/></svg>إضافة واجب</h3>
+          <button class="btn sm ghost" onclick="clearH()">مسح</button>
+          <button class="btn sm purple" id="hSaveBtn" onclick="saveHomework()"><svg><use href="#i-save"/></svg>حفظ</button>
         </div>
-        <div class="form-grid">
+
+        <div class="fgrid">
           <div class="ff full">
             <label>عنوان الواجب</label>
-            <input type="text" id="h-title" placeholder="مثال: واجب الأسبوع الأول"/>
+            <input type="text" id="hTitle" placeholder="مثال: واجب الأسبوع الأول"/>
           </div>
           <div class="ff full">
             <label>التعليمات</label>
-            <textarea id="h-desc" rows="3" placeholder="حل التمارين من 1 إلى 10 في الكتاب المدرسي..."></textarea>
+            <textarea id="hDesc" rows="3" placeholder="حل التمارين من 1 إلى 10 في الكتاب..."></textarea>
           </div>
           <div class="ff">
             <label>موعد التسليم</label>
-            <input type="date" id="h-deadline"/>
-          </div>
-          <div class="ff">
-            <label>رابط ملف/صورة (اختياري)</label>
-            <input type="url" id="h-url" placeholder="https://..."/>
+            <input type="date" id="hDeadline"/>
           </div>
           <div class="ff">
             <label>الترتيب</label>
-            <input type="number" id="h-order" placeholder="1" min="1"/>
+            <input type="number" id="hOrder" placeholder="1" min="1"/>
           </div>
+
+          <!-- PDF Upload -->
+          <div class="ff full">
+            <label>ملف PDF / صورة (اختياري)</label>
+            <div class="upload-zone" id="hFileZone">
+              <input type="file" accept=".pdf,image/*" id="hFile" onchange="handleHwFile(this.files[0])"/>
+              <div class="upload-zone-ico"><svg><use href="#i-upload"/></svg></div>
+              <h4>ارفع ملف PDF أو صورة</h4>
+              <p>سيتمكن الطلاب من فتحه</p>
+              <span class="accept">PDF · JPG · PNG</span>
+            </div>
+            <div class="upload-progress" id="hProgress">
+              <div class="up-bar"><div class="up-fill" id="hFill"></div></div>
+              <div class="up-txt"><span id="hTxt">جاري الرفع...</span><span id="hPct">0%</span></div>
+            </div>
+            <div class="file-preview" id="hPreview">
+              <div class="fp-ico"><svg><use href="#i-file"/></svg></div>
+              <div class="fp-info"><div class="fp-name" id="hFileName"></div><div class="fp-size" id="hFileSize"></div></div>
+              <button class="fp-del" onclick="clearHFile()"><svg><use href="#i-x"/></svg></button>
+            </div>
+          </div>
+          <input type="hidden" id="hFileUrl"/>
         </div>
       </div>
 
-      <div class="content-card">
-        <div class="cc-header">
-          <h3><svg><use href="#ic-file"/></svg>الواجبات المضافة</h3>
-          <button class="btn sm ghost" onclick="loadTab('homework')"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-file"/></svg>الواجبات المضافة</h3>
+          <button class="btn sm ghost" onclick="loadList('homework','hList')"><svg><use href="#i-refresh"/></svg></button>
         </div>
-        <div id="homeworkList">
-          <div class="empty"><svg><use href="#ic-file"/></svg><p>اختار صفاً لعرض الواجبات</p></div>
-        </div>
+        <div id="hList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
       </div>
     </div>
 
-  </div><!-- main -->
-</div><!-- app -->
+  </div>
+</div>
 
 <!-- Toast -->
-<div class="toast" id="toast"><svg id="tIc"><use href="#ic-check"/></svg><span id="tMsg"></span></div>
+<div class="toast" id="toast"><svg id="tIc"><use href="#i-check"/></svg><span id="tMsg"></span></div>
 
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc,
-         addDoc, updateDoc, deleteDoc, setDoc, serverTimestamp }
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const cfg = {
   apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
@@ -464,180 +509,267 @@ const cfg = {
   messagingSenderId:"444492731461",
   appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
 };
-const app = initializeApp(cfg);
-const db  = getFirestore(app);
-window._db = db;
+const app  = initializeApp(cfg);
+const db   = getFirestore(app);
+const stor = getStorage(app);
 
-// ── Load tab content ──
-window.loadTab = async (tab) => {
-  const grade = document.getElementById('gradeSelect').value;
-  if(!grade){ toast('اختار صف أولاً','err'); return; }
-  const listEl = document.getElementById(tab+'List');
-  listEl.innerHTML = '<div class="empty"><div style="width:28px;height:28px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
-  try {
-    const snap = await getDocs(collection(db,'content',grade,tab));
-    const items = snap.docs.map(d=>({id:d.id,...d.data()}))
-      .sort((a,b)=>(a.order||0)-(b.order||0));
-    window._items = window._items||{};
-    window._items[tab] = items;
-    renderList(tab, items);
-  } catch(e) { toast('خطأ: '+e.message,'err'); }
+// ── Upload file to Firebase Storage ──
+window.uploadFile = (file, path, onProgress) => {
+  return new Promise((res, rej) => {
+    const storRef = ref(stor, path);
+    const task = uploadBytesResumable(storRef, file);
+    task.on('state_changed',
+      snap => onProgress && onProgress(snap.bytesTransferred/snap.totalBytes*100),
+      rej,
+      async () => res(await getDownloadURL(task.snapshot.ref))
+    );
+  });
 };
 
-// ── SAVE VIDEO ──
-window.saveVideo = async () => {
-  const grade = document.getElementById('gradeSelect').value;
+// ── Load list ──
+window.loadList = async (tab, elId) => {
+  const grade = document.getElementById('gSel').value;
   if(!grade){ toast('اختار صف أولاً','err'); return; }
-  const url   = document.getElementById('v-url').value.trim();
-  const title = document.getElementById('v-title').value.trim();
-  if(!title){ toast('ادخل عنوان الفيديو','err'); return; }
+  const el = document.getElementById(elId);
+  el.innerHTML = '<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
+  try {
+    const snap = await getDocs(collection(db,'content',grade,tab));
+    const items = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+    window._cache = window._cache||{};
+    window._cache[tab] = items;
+    renderItems(tab, items, elId);
+    // update grade info
+    const gi = document.getElementById('gInfo');
+    gi.style.display='inline';
+    gi.textContent = (window._cache.videos?.length||0)+' فيديو · '+(window._cache.exams?.length||0)+' امتحان · '+(window._cache.homework?.length||0)+' واجب';
+  } catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── Save Video ──
+window.saveVideo = async () => {
+  const grade = document.getElementById('gSel').value;
+  if(!grade){ toast('اختار صف','err'); return; }
+  const url   = document.getElementById('vUrl').value.trim();
+  const title = document.getElementById('vTitle').value.trim();
+  if(!url || !title){ toast('ادخل الرابط والعنوان','err'); return; }
+  const btn = document.getElementById('vSaveBtn');
+  btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
   try {
     const data = {
-      title, type:'video',
-      url, description: document.getElementById('v-desc').value.trim(),
-      duration: document.getElementById('v-dur').value.trim(),
-      order: parseInt(document.getElementById('v-order').value)||1,
-      createdAt: serverTimestamp()
+      title, type:'video', url,
+      description: document.getElementById('vDesc').value.trim(),
+      duration: document.getElementById('vDur').value.trim(),
+      order: parseInt(document.getElementById('vOrder').value)||1,
+      updatedAt: serverTimestamp()
     };
-    if(window._editId?.videos){
-      await updateDoc(doc(db,'content',grade,'videos',window._editId.videos), {...data});
-      delete window._editId.videos;
+    if(window._editId?.v){
+      await updateDoc(doc(db,'content',grade,'videos',window._editId.v), data);
+      delete window._editId.v;
       toast('تم التعديل ✓','ok');
     } else {
+      data.createdAt = serverTimestamp();
       await addDoc(collection(db,'content',grade,'videos'), data);
       toast('تم حفظ الفيديو ✓','ok');
     }
-    clearForm('v');
-    await loadTab('videos');
-    // Update badge
-    updateBadge();
-  } catch(e) { toast('خطأ: '+e.message,'err'); }
+    clearV(); loadList('videos','vList');
+  } catch(e){ toast('خطأ: '+e.message,'err'); }
+  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
 };
 
-// ── SAVE EXAM ──
+// ── Save Exam ──
 window.saveExam = async () => {
-  const grade = document.getElementById('gradeSelect').value;
-  if(!grade){ toast('اختار صف أولاً','err'); return; }
-  const title = document.getElementById('e-title').value.trim();
-  const type  = document.getElementById('e-type').value;
+  const grade = document.getElementById('gSel').value;
+  if(!grade){ toast('اختار صف','err'); return; }
+  const title = document.getElementById('eTitle').value.trim();
   if(!title){ toast('ادخل عنوان الامتحان','err'); return; }
+  const btn = document.getElementById('eSaveBtn');
+  btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
   try {
+    const type = window._eType||'mcq';
     const data = {
       title, type,
-      duration: document.getElementById('e-dur').value.trim(),
-      order: parseInt(document.getElementById('e-order').value)||1,
-      url:  document.getElementById('e-url').value.trim(),
-      mcqRaw: document.getElementById('e-mcq').value.trim(),
-      essayText: document.getElementById('e-essay').value.trim(),
-      createdAt: serverTimestamp()
+      duration: document.getElementById('eDur').value.trim(),
+      order: parseInt(document.getElementById('eOrder').value)||1,
+      mcqRaw: document.getElementById('eMcq').value.trim(),
+      essayText: document.getElementById('eEssay').value.trim(),
+      externalUrl: document.getElementById('eLink').value.trim(),
+      imageUrls: window._examImgUrls||[],
+      updatedAt: serverTimestamp()
     };
-    if(window._editId?.exams){
-      await updateDoc(doc(db,'content',grade,'exams',window._editId.exams), {...data});
-      delete window._editId.exams;
+    if(window._editId?.e){
+      await updateDoc(doc(db,'content',grade,'exams',window._editId.e), data);
+      delete window._editId.e;
       toast('تم التعديل ✓','ok');
     } else {
+      data.createdAt = serverTimestamp();
       await addDoc(collection(db,'content',grade,'exams'), data);
       toast('تم حفظ الامتحان ✓','ok');
     }
-    clearForm('e');
-    await loadTab('exams');
-  } catch(e) { toast('خطأ: '+e.message,'err'); }
+    clearE(); loadList('exams','eList');
+  } catch(e){ toast('خطأ: '+e.message,'err'); }
+  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
 };
 
-// ── SAVE HOMEWORK ──
+// ── Save Homework ──
 window.saveHomework = async () => {
-  const grade = document.getElementById('gradeSelect').value;
-  if(!grade){ toast('اختار صف أولاً','err'); return; }
-  const title = document.getElementById('h-title').value.trim();
+  const grade = document.getElementById('gSel').value;
+  if(!grade){ toast('اختار صف','err'); return; }
+  const title = document.getElementById('hTitle').value.trim();
   if(!title){ toast('ادخل عنوان الواجب','err'); return; }
+  const btn = document.getElementById('hSaveBtn');
+  btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
   try {
     const data = {
       title, type:'homework',
-      description: document.getElementById('h-desc').value.trim(),
-      deadline: document.getElementById('h-deadline').value,
-      url: document.getElementById('h-url').value.trim(),
-      order: parseInt(document.getElementById('h-order').value)||1,
-      createdAt: serverTimestamp()
+      description: document.getElementById('hDesc').value.trim(),
+      deadline: document.getElementById('hDeadline').value,
+      fileUrl: document.getElementById('hFileUrl').value||'',
+      order: parseInt(document.getElementById('hOrder').value)||1,
+      updatedAt: serverTimestamp()
     };
-    if(window._editId?.homework){
-      await updateDoc(doc(db,'content',grade,'homework',window._editId.homework), {...data});
-      delete window._editId.homework;
+    if(window._editId?.h){
+      await updateDoc(doc(db,'content',grade,'homework',window._editId.h), data);
+      delete window._editId.h;
       toast('تم التعديل ✓','ok');
     } else {
+      data.createdAt = serverTimestamp();
       await addDoc(collection(db,'content',grade,'homework'), data);
       toast('تم حفظ الواجب ✓','ok');
     }
-    clearForm('h');
-    await loadTab('homework');
-  } catch(e) { toast('خطأ: '+e.message,'err'); }
+    clearH(); loadList('homework','hList');
+  } catch(e){ toast('خطأ: '+e.message,'err'); }
+  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
 };
 
-// ── EDIT ITEM ──
-window.editItem = (tab, id) => {
-  const items = window._items?.[tab]||[];
-  const item = items.find(i=>i.id===id);
-  if(!item) return;
-  window._editId = window._editId||{};
-  window._editId[tab] = id;
-  if(tab==='videos'){
-    document.getElementById('v-url').value   = item.url||'';
-    document.getElementById('v-title').value = item.title||'';
-    document.getElementById('v-desc').value  = item.description||'';
-    document.getElementById('v-dur').value   = item.duration||'';
-    document.getElementById('v-order').value = item.order||'';
-    previewYt();
-    document.getElementById('v-title').scrollIntoView({behavior:'smooth'});
-  } else if(tab==='exams'){
-    document.getElementById('e-title').value = item.title||'';
-    document.getElementById('e-type').value  = item.type||'mcq';
-    document.getElementById('e-dur').value   = item.duration||'';
-    document.getElementById('e-order').value = item.order||'';
-    document.getElementById('e-url').value   = item.url||'';
-    document.getElementById('e-mcq').value   = item.mcqRaw||'';
-    document.getElementById('e-essay').value = item.essayText||'';
-    toggleExamFields();
-    document.getElementById('e-title').scrollIntoView({behavior:'smooth'});
-  } else {
-    document.getElementById('h-title').value    = item.title||'';
-    document.getElementById('h-desc').value     = item.description||'';
-    document.getElementById('h-deadline').value = item.deadline||'';
-    document.getElementById('h-url').value      = item.url||'';
-    document.getElementById('h-order').value    = item.order||'';
-    document.getElementById('h-title').scrollIntoView({behavior:'smooth'});
+// ── Handle HW file upload ──
+window.handleHwFile = async (file) => {
+  if(!file) return;
+  const grade = document.getElementById('gSel').value||'general';
+  const prog = document.getElementById('hProgress');
+  const fill = document.getElementById('hFill');
+  const txt  = document.getElementById('hTxt');
+  const pct  = document.getElementById('hPct');
+  prog.classList.add('show');
+  try {
+    const path = `homework/${grade}/${Date.now()}_${file.name}`;
+    const url = await window.uploadFile(file, path, p=>{
+      fill.style.width=p+'%'; pct.textContent=Math.round(p)+'%';
+      txt.textContent = p<100?'جاري الرفع...':'اكتمل الرفع ✓';
+    });
+    document.getElementById('hFileUrl').value = url;
+    document.getElementById('hFileName').textContent = file.name;
+    document.getElementById('hFileSize').textContent = (file.size/1024/1024).toFixed(2)+' MB';
+    document.getElementById('hPreview').classList.add('show');
+    toast('تم رفع الملف ✓','ok');
+  } catch(e){ toast('خطأ رفع: '+e.message,'err'); }
+  setTimeout(()=>prog.classList.remove('show'),2000);
+};
+
+// ── Handle Exam images upload ──
+window._examImgUrls = [];
+window.handleExamFiles = async (files) => {
+  const grade = document.getElementById('gSel').value||'general';
+  const prevDiv = document.getElementById('eImgPreviews');
+  const prog  = document.getElementById('eImgProgress');
+  const fill  = document.getElementById('eImgFill');
+  const txt   = document.getElementById('eImgTxt');
+  const pct   = document.getElementById('eImgPct');
+  prog.classList.add('show');
+  window._examImgUrls = [];
+  prevDiv.innerHTML = '';
+  const arr = Array.from(files).slice(0,10);
+  for(let i=0;i<arr.length;i++){
+    const file = arr[i];
+    txt.textContent = `رفع ${i+1}/${arr.length}...`;
+    const path = `exams/${grade}/${Date.now()}_${file.name}`;
+    try {
+      const url = await window.uploadFile(file, path, p=>{
+        const overall = ((i/arr.length)+(p/100/arr.length))*100;
+        fill.style.width=overall+'%'; pct.textContent=Math.round(overall)+'%';
+      });
+      window._examImgUrls.push(url);
+      // Preview
+      const div = document.createElement('div');
+      div.style.cssText='position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;flex-shrink:0';
+      if(file.type.startsWith('image')){
+        div.innerHTML=`<img src="${url}" style="width:100%;height:100%;object-fit:cover"/>`;
+      } else {
+        div.innerHTML=`<div style="width:100%;height:100%;background:rgba(74,127,212,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--blue);font-weight:700;text-align:center">PDF<br/>${(file.size/1024).toFixed(0)}KB</div>`;
+      }
+      prevDiv.appendChild(div);
+    } catch(e){ toast('خطأ رفع '+file.name,'err'); }
   }
-  toast('جاهز للتعديل ✏️','ok');
+  txt.textContent='اكتمل الرفع ✓'; pct.textContent='100%';
+  setTimeout(()=>prog.classList.remove('show'),2000);
+  toast('تم رفع '+arr.length+' ملف ✓','ok');
 };
 
-// ── DELETE ITEM ──
+// ── Delete item ──
 window.deleteItem = async (tab, id, title) => {
   if(!confirm('حذف "'+title+'"؟')) return;
-  const grade = document.getElementById('gradeSelect').value;
+  const grade = document.getElementById('gSel').value;
+  const listEl = tab==='videos'?'vList':tab==='exams'?'eList':'hList';
   try {
     await deleteDoc(doc(db,'content',grade,tab,id));
-    await loadTab(tab);
+    await loadList(tab, listEl);
     toast('تم الحذف','ok');
   } catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
-// ── Load admin pass ──
-window.loadAdminPass = async () => {
-  try{
-    const d = await getDoc(doc(db,'settings','admin'));
-    if(d.exists()) window._adminPass = d.data().pass;
-  }catch(e){}
+// ── Edit item ──
+window.editItem = (tab, id) => {
+  const items = window._cache?.[tab]||[];
+  const item = items.find(i=>i.id===id);
+  if(!item) return;
+  window._editId = window._editId||{};
+  const key = tab==='videos'?'v':tab==='exams'?'e':'h';
+  window._editId[key] = id;
+  if(tab==='videos'){
+    document.getElementById('vUrl').value   = item.url||'';
+    document.getElementById('vTitle').value = item.title||'';
+    document.getElementById('vDesc').value  = item.description||'';
+    document.getElementById('vDur').value   = item.duration||'';
+    document.getElementById('vOrder').value = item.order||'';
+    previewYt(item.url||'');
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else if(tab==='exams'){
+    document.getElementById('eTitle').value = item.title||'';
+    document.getElementById('eDur').value   = item.duration||'';
+    document.getElementById('eOrder').value = item.order||'';
+    document.getElementById('eMcq').value   = item.mcqRaw||'';
+    document.getElementById('eEssay').value = item.essayText||'';
+    document.getElementById('eLink').value  = item.externalUrl||'';
+    setEType(item.type||'mcq');
+    window.scrollTo({top:0,behavior:'smooth'});
+  } else {
+    document.getElementById('hTitle').value    = item.title||'';
+    document.getElementById('hDesc').value     = item.description||'';
+    document.getElementById('hDeadline').value = item.deadline||'';
+    document.getElementById('hOrder').value    = item.order||'';
+    document.getElementById('hFileUrl').value  = item.fileUrl||'';
+    if(item.fileUrl){
+      document.getElementById('hFileName').textContent = item.fileUrl.split('%2F').pop().split('?')[0];
+      document.getElementById('hFileSize').textContent = '';
+      document.getElementById('hPreview').classList.add('show');
+    }
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  toast('جاهز للتعديل ✏️','ok');
 };
-window._fbReady = true;
-window.dispatchEvent(new Event('fbReady'));
-window.loadAdminPass();
+
+// Load admin pass
+try{
+  const ad = await getDoc(doc(db,'settings','admin'));
+  if(ad.exists()) window._adminPass = ad.data().pass;
+}catch(e){}
+window._fbReady=true;
 </script>
 
 <script>
-// ── AUTH ──
-const DEFAULT_PASS = 'plus2026';
+const DEFAULT='plus2026';
 function doLogin(){
-  const p = document.getElementById('lp').value;
-  const stored = window._adminPass || DEFAULT_PASS;
-  if(p === stored || p === DEFAULT_PASS){
+  const p=document.getElementById('lp').value;
+  if(p===DEFAULT||(window._adminPass&&p===window._adminPass)){
     document.getElementById('loginWrap').style.display='none';
     document.getElementById('app').style.display='block';
     toast('أهلاً بك 👋','ok');
@@ -653,128 +785,122 @@ function doLogout(){
 }
 document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 
-// ── GRADE CHANGE ──
-let _curTab = 'videos';
-function onGradeChange(){
-  const grade = document.getElementById('gradeSelect').value;
-  if(!grade) return;
-  const labels = {
-    'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي',
-    'prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي',
-    'sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'
-  };
-  const badge = document.getElementById('gradeBadge');
-  badge.style.display='inline-flex';
-  badge.textContent = labels[grade]||grade;
-  loadTab(_curTab);
+let _curTab='v';
+const GRADES_LABEL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};
+
+function onGrade(){
+  const g = document.getElementById('gSel').value;
+  if(!g) return;
+  const gi=document.getElementById('gInfo');
+  gi.style.display='inline';gi.textContent=GRADES_LABEL[g]||g;
+  const tab = _curTab==='v'?'videos':_curTab==='e'?'exams':'homework';
+  const elId = _curTab==='v'?'vList':_curTab==='e'?'eList':'hList';
+  loadList(tab, elId);
 }
 
-// ── TAB SWITCH ──
-function switchTab(tab){
-  _curTab = tab;
-  ['videos','exams','homework'].forEach(t=>{
-    document.getElementById('sec-'+t).style.display = t===tab?'block':'none';
-    document.getElementById('tab-'+t[0]).classList.toggle('active', t===tab);
-  });
-  const grade = document.getElementById('gradeSelect').value;
-  if(grade) loadTab(tab);
-}
-
-// ── RENDER LIST ──
-function renderList(tab, items){
-  const el = document.getElementById(tab+'List');
-  if(!items.length){
-    const labels={videos:'فيديوهات',exams:'امتحانات',homework:'واجبات'};
-    el.innerHTML=`<div class="empty"><p>لا يوجد ${labels[tab]} لهذا الصف بعد — ابدأ بالإضافة ⬆️</p></div>`;
-    return;
+function switchTab(t){
+  _curTab=t;
+  ['v','e','h'].forEach(x=>document.getElementById('t'+x).classList.toggle('on',x===t));
+  ['sv','se','sh'].forEach(x=>document.getElementById('s'+x.slice(1)).style.display=x.slice(1)===t?'block':'none');
+  const grade=document.getElementById('gSel').value;
+  if(grade){
+    const tab=t==='v'?'videos':t==='e'?'exams':'homework';
+    const el=t==='v'?'vList':t==='e'?'eList':'hList';
+    loadList(tab,el);
   }
-  const typeLabel={mcq:'MCQ',essay:'مقالي',pdf:'PDF',link:'Google Form',video:'فيديو',homework:'واجب'};
-  el.innerHTML = `<div class="items-list">${items.map((item,i)=>`
-    <div class="item-row">
-      <div class="item-order">${item.order||i+1}</div>
+}
+
+// ── YouTube preview ──
+function previewYt(url){
+  const m=(url||'').match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
+  const wrap=document.getElementById('ytWrap');
+  if(m){document.getElementById('ytFrame').src=`https://www.youtube.com/embed/${m[1]}`;wrap.style.display='block';}
+  else wrap.style.display='none';
+}
+
+// ── Exam type ──
+window._eType='mcq';
+function setEType(t){
+  window._eType=t;
+  ['mcq','essay','images','link'].forEach(x=>{
+    document.getElementById('et-'+x).classList.toggle('sel',x===t);
+    const f=document.getElementById('ef-'+x);
+    if(f) f.classList.toggle('show',x===t);
+  });
+}
+
+// ── Render items ──
+function renderItems(tab, items, elId){
+  const el=document.getElementById(elId);
+  if(!items.length){
+    el.innerHTML='<div class="empty"><p>لا يوجد محتوى بعد — ابدأ بالإضافة ⬆️</p></div>';return;
+  }
+  const typeLabel={mcq:'MCQ',essay:'مقالي',images:'صور',link:'Google Form',video:'يوتيوب',homework:'واجب'};
+  const tagCls=tab==='videos'?'v':tab==='exams'?'e':'h';
+  el.innerHTML=`<div class="items">${items.map((item,i)=>`
+    <div class="item">
+      <div class="item-num">${item.order||i+1}</div>
       <div class="item-info">
         <div class="item-title">${item.title||'—'}</div>
         <div class="item-meta">
+          ${item.type?`<span class="tag ${tagCls}">${typeLabel[item.type]||item.type}</span>`:''}
           ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
-          ${item.type?`<span class="badge ${tab==='videos'?'v':tab==='exams'?'e':'h'}">${typeLabel[item.type]||item.type}</span>`:''}
           ${item.deadline?`<span>📅 ${item.deadline}</span>`:''}
-          ${item.url?`<a href="${item.url}" target="_blank" style="color:var(--blue);font-size:11px;text-decoration:none">🔗 رابط</a>`:''}
+          ${item.url||item.externalUrl?`<a href="${item.url||item.externalUrl}" target="_blank" style="color:var(--blue);font-size:11px;text-decoration:none">🔗 رابط</a>`:''}
+          ${item.imageUrls?.length?`<span class="tag ok">📷 ${item.imageUrls.length} صورة</span>`:''}
+          ${item.fileUrl?`<a href="${item.fileUrl}" target="_blank" style="color:var(--purple);font-size:11px;text-decoration:none">📎 ملف</a>`:''}
         </div>
       </div>
-      <div class="item-actions">
-        <button class="ia-btn" onclick="editItem('${tab}','${item.id}')" title="تعديل"><svg><use href="#ic-edit"/></svg></button>
-        <button class="ia-btn del" onclick="deleteItem('${tab}','${item.id}','${(item.title||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-trash"/></svg></button>
+      <div class="item-acts">
+        <button class="ia" onclick="editItem('${tab}','${item.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
+        <button class="ia del" onclick="deleteItem('${tab}','${item.id}','${(item.title||'').replace(/'/g,"\\'")}')"><svg><use href="#i-trash"/></svg></button>
+        ${item.url?`<a class="ia" href="${item.url}" target="_blank" title="فتح"><svg><use href="#i-eye"/></svg></a>`:''}
       </div>
     </div>`).join('')}</div>`;
 }
 
-// ── CLEAR FORM ──
-function clearForm(prefix){
-  const fields = {
-    v:['v-url','v-title','v-desc','v-dur','v-order'],
-    e:['e-title','e-dur','e-order','e-url','e-mcq','e-essay'],
-    h:['h-title','h-desc','h-deadline','h-url','h-order']
-  };
-  (fields[prefix]||[]).forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.value='';
-  });
-  if(prefix==='v'){
-    document.getElementById('ytPreview').style.display='none';
-  }
-  if(window._editId){
-    const tabMap={v:'videos',e:'exams',h:'homework'};
-    delete window._editId[tabMap[prefix]];
-  }
+// ── Clear forms ──
+function clearV(){
+  ['vUrl','vTitle','vDesc','vDur','vOrder'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ytWrap').style.display='none';
+  if(window._editId) delete window._editId.v;
+}
+function clearE(){
+  ['eTitle','eDur','eOrder','eMcq','eEssay','eLink'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('eImgPreviews').innerHTML='';
+  window._examImgUrls=[];
+  setEType('mcq');
+  if(window._editId) delete window._editId.e;
+}
+function clearH(){
+  ['hTitle','hDesc','hDeadline','hOrder','hFileUrl'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('hPreview').classList.remove('show');
+  document.getElementById('hFile').value='';
+  if(window._editId) delete window._editId.h;
+}
+function clearHFile(){
+  document.getElementById('hFileUrl').value='';
+  document.getElementById('hPreview').classList.remove('show');
+  document.getElementById('hFile').value='';
 }
 
-// ── YOUTUBE PREVIEW ──
-function previewYt(){
-  const url = document.getElementById('v-url').value;
-  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
-  const preview = document.getElementById('ytPreview');
-  if(m){
-    document.getElementById('ytFrame').src=`https://www.youtube.com/embed/${m[1]}`;
-    preview.style.display='block';
-  } else {
-    preview.style.display='none';
-  }
-}
-
-// ── EXAM TYPE FIELDS ──
-function toggleExamFields(){
-  const t = document.getElementById('e-type').value;
-  document.getElementById('ef-mcq').classList.toggle('show', t==='mcq');
-  document.getElementById('ef-essay').classList.toggle('show', t==='essay');
-  document.getElementById('ef-link').classList.toggle('show', t==='pdf'||t==='link');
-}
-
-// ── BADGE UPDATE ──
-function updateBadge(){
-  const count = (window._items?.videos?.length||0) +
-                (window._items?.exams?.length||0) +
-                (window._items?.homework?.length||0);
-  if(count){
-    const b = document.getElementById('gradeBadge');
-    if(b) b.textContent = b.textContent.split('·')[0].trim() + ' · '+count+' عنصر';
-  }
-}
-
-// ── TOAST ──
+// ── Toast ──
 let tTimer;
-function toast(msg, type='ok'){
+function toast(msg,type='ok'){
   const t=document.getElementById('toast');
   t.className='toast '+type;
   document.getElementById('tMsg').textContent=msg;
-  document.getElementById('tIc').innerHTML=type==='err'?'<use href="#ic-x"/>':'<use href="#ic-check"/>';
+  document.getElementById('tIc').innerHTML=type==='err'?'<use href="#i-x"/>':'<use href="#i-check"/>';
   t.classList.add('show');clearTimeout(tTimer);
-  tTimer=setTimeout(()=>t.classList.remove('show'),3000);
+  tTimer=setTimeout(()=>t.classList.remove('show'),3200);
 }
 
-// ── Spin animation ──
-const style=document.createElement('style');
-style.textContent='@keyframes spin{to{transform:rotate(360deg)}}';
-document.head.appendChild(style);
+// ── Drag & drop styling ──
+document.querySelectorAll('.upload-zone').forEach(z=>{
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag')});
+  z.addEventListener('dragleave',()=>z.classList.remove('drag'));
+  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag')});
+});
 </script>
 </body>
 </html>

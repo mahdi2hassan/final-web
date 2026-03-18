@@ -159,8 +159,79 @@ main{position:relative;z-index:1;padding-top:60px;min-height:100dvh}
 .tab-pane.on{display:block;animation:fadeUp .25s ease both}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* VIDEO LIST */
-.video-list{display:flex;flex-direction:column;gap:10px}
+/* VIDEO PLAYER MODAL */
+.player-modal{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.95);
+  display:none;flex-direction:column;align-items:center;justify-content:center;}
+.player-modal.open{display:flex}
+.player-close{position:absolute;top:16px;right:16px;width:40px;height:40px;
+  border-radius:50%;background:rgba(255,255,255,0.1);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#fff;transition:background .2s}
+.player-close:hover{background:rgba(255,255,255,0.2)}
+.player-close svg{width:20px;height:20px}
+.player-title{color:#fff;font-size:clamp(13px,3vw,16px);font-weight:700;
+  text-align:center;padding:0 50px;margin-bottom:12px;opacity:.85}
+.player-wrap{width:100%;max-width:900px;padding:0 12px;position:relative}
+.player-iframe{width:100%;aspect-ratio:16/9;border:none;border-radius:12px;
+  background:#000;display:block}
+.player-done-btn{margin-top:14px;padding:11px 24px;border:none;border-radius:10px;
+  cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;
+  background:linear-gradient(135deg,var(--ok),#006040);color:#fff;
+  box-shadow:0 4px 14px rgba(0,214,143,0.3);transition:all .2s}
+.player-done-btn:hover{transform:translateY(-1px)}
+
+/* MCQ EXAM */
+.mcq-modal{position:fixed;inset:0;z-index:300;background:var(--bg);
+  overflow-y:auto;display:none;}
+.mcq-modal.open{display:block}
+.mcq-header{position:sticky;top:0;z-index:10;background:var(--s1);
+  backdrop-filter:blur(20px);border-bottom:1px solid var(--b2);
+  padding:14px 20px;display:flex;align-items:center;gap:12px;}
+.mcq-header h2{font-size:16px;font-weight:800;flex:1}
+.mcq-body{max-width:700px;margin:0 auto;padding:20px 16px}
+.mcq-q{background:var(--s2);border:1px solid var(--b2);border-radius:14px;
+  padding:18px;margin-bottom:14px;transition:all .2s}
+.mcq-q-text{font-size:15px;font-weight:700;margin-bottom:14px;line-height:1.6}
+.mcq-q-num{display:inline-block;background:linear-gradient(135deg,var(--blue),var(--navy));
+  color:#fff;font-size:12px;font-weight:800;padding:3px 9px;border-radius:6px;margin-bottom:8px}
+.mcq-option{display:flex;align-items:center;gap:10px;padding:10px 14px;
+  border-radius:10px;border:1.5px solid var(--b2);margin-bottom:7px;
+  cursor:pointer;transition:all .2s;font-size:14px;font-weight:600}
+.mcq-option:hover{border-color:var(--blue);background:rgba(74,127,212,0.08)}
+.mcq-option.selected{border-color:var(--blue);background:rgba(74,127,212,0.12)}
+.mcq-option.correct{border-color:var(--ok);background:rgba(0,214,143,0.1);color:var(--ok)}
+.mcq-option.wrong{border-color:var(--err);background:rgba(255,77,109,0.08);color:var(--err)}
+.mcq-option .opt-bullet{width:20px;height:20px;border-radius:50%;
+  border:2px solid var(--b1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px}
+.mcq-option.selected .opt-bullet{border-color:var(--blue);background:var(--blue);color:#fff}
+.mcq-option.correct .opt-bullet{border-color:var(--ok);background:var(--ok);color:#fff}
+.mcq-option.wrong .opt-bullet{border-color:var(--err);background:var(--err);color:#fff}
+.mcq-submit{width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;
+  background:linear-gradient(135deg,var(--gold),#7a5810);color:#fff;
+  box-shadow:0 4px 16px rgba(201,168,76,0.3);transition:all .2s;margin-top:8px}
+.mcq-result{text-align:center;padding:24px;background:var(--s2);border:1px solid var(--b2);
+  border-radius:14px;margin-top:14px;display:none}
+.mcq-score{font-size:clamp(32px,8vw,52px);font-weight:900;
+  background:linear-gradient(135deg,var(--gold2),var(--ok));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* IMAGE VIEWER */
+.img-viewer{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.95);
+  display:none;align-items:center;justify-content:center;padding:16px}
+.img-viewer.open{display:flex}
+.img-viewer img{max-width:100%;max-height:90vh;border-radius:10px;object-fit:contain}
+.img-viewer-close{position:absolute;top:14px;right:14px;width:38px;height:38px;
+  border-radius:50%;background:rgba(255,255,255,0.15);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#fff}
+.img-viewer-close svg{width:18px;height:18px}
+
+/* ESSAY EXAM */
+.essay-box{background:var(--s2);border:1px solid var(--b2);border-radius:14px;padding:20px;margin-top:14px}
+.essay-text{font-size:14px;line-height:1.9;color:var(--text);white-space:pre-wrap;margin-bottom:16px}
+.essay-answer{width:100%;min-height:120px;padding:12px;background:var(--inp);
+  border:1.5px solid var(--b1);border-radius:10px;color:var(--text);
+  font-family:'Tajawal',sans-serif;font-size:14px;outline:none;resize:vertical;
+  transition:border-color .2s}
+.essay-answer:focus{border-color:var(--blue)}
 .video-item{
   background:var(--s2);border:1px solid var(--b2);border-radius:14px;
   padding:clamp(12px,3vw,16px);display:flex;align-items:center;gap:12px;
@@ -468,6 +539,53 @@ main{position:relative;z-index:1;padding-top:60px;min-height:100dvh}
   </div>
 </div>
 
+<!-- VIDEO PLAYER MODAL -->
+<div class="player-modal" id="playerModal">
+  <button class="player-close" onclick="closePlayer()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <div class="player-title" id="playerTitle"></div>
+  <div class="player-wrap">
+    <iframe class="player-iframe" id="playerIframe" allowfullscreen
+      allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture"></iframe>
+  </div>
+  <button class="player-done-btn" id="playerDoneBtn" onclick="playerMarkDone()">
+    ✅ انهيت الفيديو — الدرس التالي
+  </button>
+</div>
+
+<!-- MCQ EXAM MODAL -->
+<div class="mcq-modal" id="mcqModal">
+  <div class="mcq-header">
+    <button onclick="closeMcq()" style="width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+    </button>
+    <h2 id="mcqTitle">الامتحان</h2>
+    <span id="mcqProgress" style="font-size:12px;color:var(--muted)"></span>
+  </div>
+  <div class="mcq-body">
+    <div id="mcqQuestions"></div>
+    <button class="mcq-submit" id="mcqSubmit" onclick="submitMcq()" style="display:none">
+      تسليم الامتحان 📝
+    </button>
+    <div class="mcq-result" id="mcqResult">
+      <div class="mcq-score" id="mcqScore">0%</div>
+      <div style="font-size:14px;color:var(--muted);margin:8px 0" id="mcqScoreText"></div>
+      <button onclick="closeMcq()" style="padding:11px 24px;border:none;border-radius:10px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;margin-top:12px">
+        إغلاق ✓
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- IMAGE VIEWER -->
+<div class="img-viewer" id="imgViewer" onclick="this.classList.remove('open')">
+  <button class="img-viewer-close" onclick="document.getElementById('imgViewer').classList.remove('open')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <img id="imgViewerSrc" src="" alt=""/>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast">
   <svg id="toast-ic"><use href="#ic-check"/></svg>
@@ -621,13 +739,47 @@ function renderVideos(videos,done,gradeKey,isMyGrade){
   }
   el.innerHTML=videos.map((v,i)=>{
     const isDone=done.includes(v.id);
-    // Sequential lock: locked if previous video not done AND it's student's own grade
     const isLocked=isMyGrade&&i>0&&!done.includes(videos[i-1].id)&&!isDone;
     const ytId=extractYtId(v.url||'');
     const thumb=ytId?`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`:'';
     return `
+    <div class="video-item" style="${isLocked?'opacity:.5':'';''}">
+      <!-- Embedded player (hidden by default, shown on click) -->
+      <div id="vp-${v.id}" style="display:none;width:100%;margin-bottom:10px;border-radius:12px;overflow:hidden;background:#000;flex-shrink:0">
+        <iframe id="vf-${v.id}" src="" style="width:100%;height:clamp(180px,40vw,260px);border:none;display:block" allowfullscreen allow="autoplay"></iframe>
+        <div style="padding:8px 12px;display:flex;gap:8px;background:rgba(8,13,28,0.8)">
+          <button onclick="event.stopPropagation();closeVideo('${v.id}')" style="padding:6px 12px;border:1px solid var(--b1);border-radius:8px;background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer">إغلاق ✕</button>
+          ${isMyGrade&&!isDone?`<button onclick="event.stopPropagation();markDone('${gradeKey}','videos','${v.id}')" style="padding:6px 12px;border:none;border-radius:8px;background:var(--ok);color:#000;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer">انهيت الدرس ✓</button>`:''}
+        </div>
+      </div>
+      <!-- Click row -->
+      <div style="display:flex;align-items:center;gap:12px;cursor:${isLocked?'not-allowed':'pointer'};width:100%"
+        ${!isLocked&&ytId?`onclick="toggleVideo('${v.id}','${ytId}','${gradeKey}')"`:''}
+      >
+        <div class="video-thumb" style="${thumb?`background-image:url(${thumb});background-size:cover;background-position:center`:''}">
+          ${isLocked
+            ?'<svg style="color:#fff8;width:22px;height:22px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'
+            :isDone
+              ?'<svg style="color:var(--ok);width:22px;height:22px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>'
+              :'<svg style="color:#fffc;width:22px;height:22px" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>'}
+        </div>
+        <div class="video-info">
+          <div class="video-title">${v.order?v.order+'. ':''}${v.title||'درس'}</div>
+          <div class="video-meta">
+            ${v.duration?`<svg><use href="#ic-clock"/></svg>${v.duration}`:''}
+            ${isLocked?'<span style="color:var(--err);margin-right:6px">🔒 أكمل الدرس السابق</span>':
+              isDone?'<span style="color:var(--ok);margin-right:6px">✅ تمت المشاهدة</span>':
+              '<span style="margin-right:6px;color:var(--blue)">▶ اضغط لتشغيل الفيديو</span>'}
+          </div>
+        </div>
+        ${isDone?'<span style="color:var(--ok);font-size:14px;flex-shrink:0">✅</span>':''}
+      </div>
+    </div>`;
+  }).join('');
+}
+    return `
     <div class="video-item" style="${isLocked?'opacity:.5;cursor:not-allowed':v.url?'cursor:pointer':''}"
-      ${!isLocked&&v.url?`onclick="handleVideoOpen('${v.url}','${v.id}','${gradeKey}')"`:''}
+      ${!isLocked&&v.url?`onclick="handleVideoOpen('${v.url}','${v.id}','${gradeKey}','${(v.title||'').replace(/'/g,"\\'")}')"`:''}
     >
       <div class="video-thumb" style="${thumb?`background-image:url(${thumb});background-size:cover;background-position:center`:''}">
         ${isLocked
@@ -664,27 +816,98 @@ function renderExams(exams,done,gradeKey,isMyGrade){
     return;
   }
   const typeLabel={mcq:'اختيار متعدد',essay:'مقالي',pdf:'PDF',link:'Google Form'};
+  const typeColor={mcq:'var(--gold)',essay:'var(--blue)',pdf:'var(--err)',link:'var(--ok)'};
   el.innerHTML=exams.map((e,i)=>{
     const isDone=done.includes(e.id);
     const isLocked=isMyGrade&&i>0&&!done.includes(exams[i-1].id)&&!isDone;
     const tl=typeLabel[e.type]||e.type||'امتحان';
+    const tc=typeColor[e.type]||'var(--gold)';
+    let clickAction='';
+    if(!isLocked){
+      if(e.type==='mcq'&&e.mcqRaw){
+        const safe=encodeURIComponent(e.mcqRaw);
+        clickAction=`onclick="openMcqExam('${e.id}','${gradeKey}','${(e.title||'').replace(/'/g,"\\'")}',decodeURIComponent('${safe}'))"`;
+      } else if(e.type==='essay'&&e.essayText){
+        const safeT=encodeURIComponent(e.essayText);
+        clickAction=`onclick="openEssayExam('${e.id}','${gradeKey}','${(e.title||'').replace(/'/g,"\\'")}',decodeURIComponent('${safeT}'))"`;
+      } else if(e.type==='images'&&e.imageUrls?.length){
+        const urlsEnc = encodeURIComponent(JSON.stringify(e.imageUrls));
+        clickAction=`onclick="openImageExam('${e.id}','${gradeKey}','${(e.title||'').replace(/'/g,"\\'")}',decodeURIComponent('${urlsEnc}'))"`;
+      } else if(e.imageUrl){
+        clickAction=`onclick="viewImage('${e.imageUrl}')"`;
+      } else if(e.externalUrl||e.url){
+        clickAction=`onclick="window.open('${e.externalUrl||e.url}','_blank')"`;
+      }
+    }
     return `
-    <div class="exam-item" style="${isLocked?'opacity:.5;cursor:not-allowed':e.url?'cursor:pointer':''}"
-      ${!isLocked&&e.url?`onclick="openExamLink('${e.url}','${e.id}','${gradeKey}')"`:''}
-    >
-      <div class="exam-icon" style="${isLocked?'opacity:.5':''}">
+    <div class="exam-item" style="${isLocked?'opacity:.5;cursor:not-allowed':'cursor:pointer'}" ${clickAction}>
+      <div class="exam-icon" style="background:${tc}18;color:${tc}">
         ${isDone
-          ?'<svg style="color:var(--ok)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>'
-          :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>'}
+          ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>'
+          :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>'}
       </div>
       <div class="exam-info">
         <div class="exam-title">${e.order?e.order+'. ':''}${e.title||'امتحان'}</div>
-        <div class="exam-meta">${tl}${e.duration?' · '+e.duration+' دقيقة':''}${isLocked?' · 🔒 محظور':''}</div>
+        <div class="exam-meta">
+          <span style="color:${tc};font-weight:700">${tl}</span>
+          ${e.duration?' · ⏱ '+e.duration+' دقيقة':''}
+          ${isLocked?' · 🔒 محظور':''}
+          ${e.imageUrl?' · 🖼 صورة':''}
+        </div>
       </div>
-      <span class="exam-badge ${isDone?'done':'new'}">${isDone?'تم ✓':'جديد'}</span>
+      <span class="exam-badge ${isDone?'done':'new'}">${isDone?'تم ✓':'ابدأ ▶'}</span>
     </div>`;
   }).join('');
 }
+
+// ── IMAGE EXAM ──
+window.openImageExam = (id, gradeKey, title, urlsJson) => {
+  const urls = JSON.parse(urlsJson);
+  document.getElementById('mcqTitle').textContent = title;
+  document.getElementById('mcqProgress').textContent = urls.length+' صفحة';
+  document.getElementById('mcqQuestions').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px">
+      ${urls.map((u,i)=>`
+        <div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:4px">صفحة ${i+1}</div>
+          <img src="${u}" style="width:100%;border-radius:10px;display:block" onclick="window.open('${u}','_blank')"/>
+        </div>`).join('')}
+    </div>`;
+  document.getElementById('mcqSubmit').textContent = 'تم المشاهدة ✓';
+  document.getElementById('mcqSubmit').style.display='block';
+  document.getElementById('mcqSubmit').onclick = () => {
+    markDone(gradeKey,'exams',id);
+    document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin:10px 0">تم!</div>';
+    document.getElementById('mcqResult').style.display='block';
+    document.getElementById('mcqSubmit').style.display='none';
+  };
+  document.getElementById('mcqResult').style.display='none';
+  document.getElementById('mcqModal').classList.add('open');
+  document.body.style.overflow='hidden';
+};
+
+// ── ESSAY EXAM ──
+window.openEssayExam = (id, gradeKey, title, text) => {
+  // Show essay in MCQ modal reused
+  document.getElementById('mcqTitle').textContent = title;
+  document.getElementById('mcqProgress').textContent = 'مقالي';
+  document.getElementById('mcqQuestions').innerHTML = `
+    <div class="essay-box">
+      <div class="essay-text">${text}</div>
+      <textarea class="essay-answer" id="essayAns" placeholder="اكتب إجابتك هنا..."></textarea>
+    </div>`;
+  document.getElementById('mcqSubmit').textContent = 'تسليم ✓';
+  document.getElementById('mcqSubmit').style.display='block';
+  document.getElementById('mcqSubmit').onclick = () => {
+    markDone(gradeKey,'exams',id);
+    document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin:10px 0">تم التسليم بنجاح!</div>';
+    document.getElementById('mcqResult').style.display='block';
+    document.getElementById('mcqSubmit').style.display='none';
+  };
+  document.getElementById('mcqResult').style.display='none';
+  document.getElementById('mcqModal').classList.add('open');
+  document.body.style.overflow='hidden';
+};
 
 // ── RENDER HOMEWORK ──
 function renderHomework(hw,done,gradeKey,isMyGrade){
@@ -700,144 +923,8 @@ function renderHomework(hw,done,gradeKey,isMyGrade){
       <div class="hw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
       <div class="hw-info">
         <div class="hw-title">${h.order?h.order+'. ':''}${h.title||'واجب'}</div>
-        <div class="hw-meta">${h.description||''}${h.deadline?' · موعد التسليم: '+h.deadline:''}</div>
-        ${h.url?`<a href="${h.url}" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none">📎 فتح الملف</a>`:''}
-      </div>
-      ${isMyGrade&&!isDone
-        ?`<button onclick="markDone('${gradeKey}','homework','${h.id}')"
-            style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">سلّمت ✓</button>`
-        :isDone?'<span style="color:var(--ok);font-size:13px;font-weight:700;flex-shrink:0">✅</span>':''}
-    </div>`;
-  }).join('');
-}
-
-// ── HANDLE VIDEO OPEN (auto-mark after opening) ──
-window.handleVideoOpen = (url, id, gradeKey) => {
-  window.open(url,'_blank');
-  // Auto mark as done after 3s (simulate watched)
-  setTimeout(()=>markDone(gradeKey,'videos',id), 3000);
-};
-
-window.openExamLink = (url, id, gradeKey) => {
-  window.open(url,'_blank');
-};
-
-// ── MARK DONE ──
-window.markDone = async (gradeKey,type,itemId) => {
-  try{
-    const gp=_progress[gradeKey]||{};
-    const list=[...(gp[type]||[])];
-    if(list.includes(itemId)){showToast('تم التسجيل مسبقاً ✓','ok');return;}
-    list.push(itemId);
-    _progress[gradeKey]={...gp,[type]:list};
-    await setDoc(doc(db,'progress',_user.uid),_progress,{merge:true});
-    // Refresh
-    const gk=window._openGradeKey;
-    if(gk) await openCourse(gk,document.getElementById('cvTitle').textContent,document.getElementById('cvSub').textContent);
-    showToast('تم التسجيل ✓','ok');
-  }catch(e){showToast('خطأ: '+e.message,'err');}
-};
-
-// ── HELPERS ──
-function extractYtId(url){
-  const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
-  return m?m[1]:'';
-}
-window.doSignOut = async()=>{await signOut(auth);window.location.href='index.html';};
-</script>
-
-<script>
-// ── Grade data ──
-const GRADES = {
-  primary: [
-    {key:'primary-4',label:'الصف الرابع الابتدائي', sub:'كل محتوى الصف الرابع',
-     img:'https://plusedu.vercel.app/store/1/ye 1.png', stage:'ابتدائي'},
-    {key:'primary-5',label:'الصف الخامس الابتدائي',sub:'كل محتوى الصف الخامس',
-     img:'https://plusedu.vercel.app/store/1/ye-2.jpg', stage:'ابتدائي'},
-    {key:'primary-6',label:'الصف السادس الابتدائي',sub:'كل محتوى الصف السادس',
-     img:'https://plusedu.vercel.app/store/1/ye-3.jpg', stage:'ابتدائي'},
-  ],
-  prep: [
-    {key:'prep-1',label:'الصف الأول الإعدادي',sub:'كل محتوى الصف الأول',
-     img:'https://plusedu.vercel.app/store/1/yer 1.png', stage:'إعدادي'},
-    {key:'prep-2',label:'الصف الثاني الإعدادي',sub:'كل محتوى الصف الثاني',
-     img:'https://plusedu.vercel.app/store/1/yer-2.jpg', stage:'إعدادي'},
-    {key:'prep-3',label:'الصف الثالث الإعدادي',sub:'كل محتوى الصف الثالث',
-     img:'https://plusedu.vercel.app/store/1/yer-3.jpg', stage:'إعدادي'},
-  ],
-  sec: [
-    {key:'sec-1',label:'الصف الأول الثانوي',sub:'كل محتوى الصف الأول',
-     img:'https://plusedu.vercel.app/store/1/year 1.png', stage:'ثانوي'},
-    {key:'sec-2',label:'الصف الثاني الثانوي',sub:'كل محتوى الصف الثاني',
-     img:'https://plusedu.vercel.app/store/1/year-2.jpg', stage:'ثانوي'},
-    {key:'sec-3',label:'الصف الثالث الثانوي',sub:'كل محتوى الصف الثالث',
-     img:'https://plusedu.vercel.app/store/1/year-3.jpg', stage:'ثانوي'},
-  ]
-};
-
-// Build grade cards
-function buildGrades(){
-  const ud = window._userData || {};
-  ['primary','prep','sec'].forEach(stage=>{
-    const grid = document.getElementById('grid-'+stage);
-    if(!grid) return;
-    grid.innerHTML = GRADES[stage].map(g=>{
-      const isMine = ud.gradeKey === g.key;
-      return `
-        <div id="grade-${g.key}" class="grade-card" onclick="openCourse('${g.key}','${g.label}','${g.stage}')"
-          style="${isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':''}">
-          <img src="${g.img}" class="grade-card-img" alt="${g.label}" onerror="this.style.display='none'"/>
-          ${isMine?'<div class="grade-card-badge mine">صفك ✓</div>':''}
-          <div class="grade-card-body">
-            <div class="grade-card-title">${g.label}</div>
-            <div class="grade-card-sub">${isMine?'📚 محتواك الأساسي':g.sub}</div>
-          </div>
-          <div class="grade-card-footer">
-            <span>${isMine?'فيديوهات · امتحانات · واجبات':'اضغط للمشاهدة'}</span>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
-          </div>
-        </div>`;
-    }).join('');
-  });
-}
-
-// ── Course view ──
-function closeCourse(){
-  document.getElementById('courseView').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function switchTab(name, btn){
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.cv-tab').forEach(b=>b.classList.remove('on'));
-  document.getElementById('tab-'+name).classList.add('on');
-  if(btn) btn.classList.add('on');
-}
-
-function setProgress(id, val){
-  const fill = document.getElementById('prog-'+id);
-  const lbl  = document.getElementById('prog-'+id+'-val');
-  if(fill) fill.style.width = val+'%';
-  if(lbl)  lbl.textContent  = val+'%';
-}
-
-// ── Toast ──
-let tTimer;
-function showToast(msg, type='ok'){
-  const t  = document.getElementById('toast');
-  const ic = document.getElementById('toast-ic');
-  t.className = 'toast '+type;
-  document.getElementById('toast-msg').textContent = msg;
-  ic.innerHTML = type==='err'?'<use href="#ic-x"/>':'<use href="#ic-check"/>';
-  t.classList.add('show');
-  clearTimeout(tTimer);
-  tTimer = setTimeout(()=>t.classList.remove('show'), 3000);
-}
-
-// Back button closes course view
-document.addEventListener('keydown', e=>{
-  if(e.key==='Escape') closeCourse();
-});
-</script>
-</body>
-</html>
+        <div class="hw-meta">${h.description||''}${h.deadline?' · 📅 '+h.deadline:''}</div>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+          ${h.fileUrl?`<a href="${h.fileUrl}" target="_blank" style="font-size:11px;color:var(--blue);font-weight:700;text-decoration:none;padding:4px 10px;border:1px solid rgba(74,127,212,0.3);border-radius:6px;background:rgba(74,127,212,0.07)">📎 فتح الملف</a>`:''}
+          ${h.pdfUrl?`<a href="${h.pdfUrl}" target="_blank" style="font-size:11px;color:var(--err);font-weight:700;text-decoration:none;padding:3px 9px;border:1px solid rgba(255,77,109,0.3);border-radius:6px">📄 فتح PDF</a>`:''}
+          ${h.imageUrl?`<button onclick="viewImage('${h.imageUrl}')" style="font-size:11px;color:var(--blue);font-weight:700;background:r
