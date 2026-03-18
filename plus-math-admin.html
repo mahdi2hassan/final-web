@@ -1084,11 +1084,11 @@ function renderUsers(){
     <td><div style="display:flex;gap:4px;flex-wrap:wrap">
       <button class="btn icon-btn" onclick="viewUser('${x.id}')" title="تفاصيل"><svg><use href="#ic-eye"/></svg></button>
       <button class="btn icon-btn" onclick="waUser('${x.phone||''}','${x.name||''}')" title="واتساب"><svg><use href="#ic-wa"/></svg></button>
-      <button class="btn icon-btn" onclick="resetUserPass('${x.id}','${(x.email||'').replace(/'/g,"\\'")}','${(x.name||'').replace(/'/g,"\\'")}')}" title="reset كلمة مرور"><svg><use href="#ic-mail"/></svg></button>
+      <button class="btn icon-btn" onclick="resetUserPass('${x.id}','${(x.email||'').replace(/'/g,"\\'")}','${(x.name||'').replace(/'/g,"\\'")}');" title="reset كلمة مرور"><svg><use href="#ic-mail"/></svg></button>
       ${x.blocked
         ?`<button class="btn icon-btn" style="color:var(--ok)" onclick="blockUser('${x.id}',false)" title="إلغاء الحظر"><svg><use href="#ic-shield"/></svg></button>`
         :`<button class="btn icon-btn" style="color:var(--warn)" onclick="blockUser('${x.id}',true)" title="حظر"><svg><use href="#ic-shield-off"/></svg></button>`}
-      <button class="btn icon-btn del" onclick="deleteUser('${x.id}','${(x.name||'').replace(/'/g,"\\'")}')}" title="حذف"><svg><use href="#ic-trash"/></svg></button>
+      <button class="btn icon-btn del" onclick="deleteUser('${x.id}','${(x.name||'').replace(/'/g,"\\'")}');" title="حذف"><svg><use href="#ic-trash"/></svg></button>
     </div></td>
   </tr>`).join('');
 
