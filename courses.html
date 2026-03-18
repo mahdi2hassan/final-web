@@ -497,22 +497,36 @@ let _user, _userData, _progress = {};
 
 // ── AUTH CHECK ──
 onAuthStateChanged(auth, async (user) => {
-  if(!user){ window.location.href='plus-math-auth.html'; return; }
+  if(!user){
+    // No user logged in → go to auth
+    window.location.href='plus-math-auth.html';
+    return;
+  }
   _user = user;
   try {
     const ud = await getDoc(doc(db,'users',user.uid));
-    if(!ud.exists()||!ud.data().subscriptionActive){
-      window.location.href='plus-math-auth.html'; return;
+    
+    if(!ud.exists()){
+      // New user, no record yet → go to auth to complete registration
+      window.location.href='plus-math-auth.html';
+      return;
     }
+    
+    if(!ud.data().subscriptionActive){
+      // No active subscription → go to auth to enter code
+      window.location.href='plus-math-auth.html';
+      return;
+    }
+    
     _userData = ud.data();
-    if(!_userData.gradeKey){ window.location.href='plus-math-auth.html'; return; }
+    // Note: gradeKey might not exist for old users — that's OK, show all grades
 
     document.getElementById('loadingScreen').style.display='none';
     document.getElementById('navbar').style.display='flex';
     document.getElementById('mainContent').style.display='block';
     document.getElementById('userName').textContent=_userData.name?.split(' ')[0]||'طالب';
-    document.getElementById('statGrade').textContent=_userData.grade||'—';
-    document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
+    document.getElementById('statGrade').textContent=_userData.grade||'كل الصفوف';
+    document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'كل المراحل';
 
     // Banner
     try{
@@ -531,7 +545,19 @@ onAuthStateChanged(auth, async (user) => {
     }catch(e){_progress={};}
 
     buildGrades();
-  }catch(e){ window.location.href='plus-math-auth.html'; }
+  }catch(e){
+    console.error('Courses auth error:', e);
+    // Only redirect if it's a permission/auth error, not a network error
+    if(e.code==='permission-denied'||e.code==='unauthenticated'){
+      window.location.href='plus-math-auth.html';
+    } else {
+      // Show page anyway — might be offline
+      document.getElementById('loadingScreen').style.display='none';
+      document.getElementById('navbar').style.display='flex';
+      document.getElementById('mainContent').style.display='block';
+      buildGrades();
+    }
+  }
 });
 
 // ── OPEN COURSE ──
