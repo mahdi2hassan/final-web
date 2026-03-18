@@ -319,6 +319,34 @@ input::placeholder{color:var(--muted);opacity:.5}
       </p>
     </div>
 
+    <!-- ══ STEP: GRADE SELECT ══ -->
+    <div class="step" id="step-grade">
+      <div class="step-info">
+        <h3>📚 اختار صفك الدراسي</h3>
+        <p>اختار صفك عشان يتفتحلك المحتوى المناسب ليك</p>
+      </div>
+      <div class="field">
+        <label>المرحلة</label>
+        <select id="grade-stage" onchange="updateGradeOptions()" style="width:100%;padding:13px 14px;background:var(--input);border:1.5px solid var(--border2);border-radius:12px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:15px;outline:none;appearance:none;transition:border-color .2s">
+          <option value="">— اختار المرحلة —</option>
+          <option value="primary">ابتدائي</option>
+          <option value="prep">إعدادي</option>
+          <option value="sec">ثانوي</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>الصف</label>
+        <select id="grade-level" style="width:100%;padding:13px 14px;background:var(--input);border:1.5px solid var(--border2);border-radius:12px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:15px;outline:none;appearance:none;transition:border-color .2s">
+          <option value="">— اختار الصف —</option>
+        </select>
+      </div>
+      <div class="msg" id="grade-msg"></div>
+      <button class="btn" id="grade-btn" onclick="saveGrade()">
+        <span class="btn-text"><svg><use href="#i-check"/></svg>تأكيد الصف وابدأ</span>
+        <div class="spin"></div>
+      </button>
+    </div>
+
     <!-- ══ STEP: SUCCESS ══ -->
     <div class="step" id="step-success">
       <div style="text-align:center;padding:20px 0">
@@ -530,14 +558,64 @@ window.submitCode = async () => {
     if(snap.empty){ showMsg('code-msg','الكود غلط أو مستخدم بالفعل ❌','error'); setLoad(btn,false); return; }
     const cd = snap.docs[0];
     const user = auth.currentUser;
+    // Mark code used
     await updateDoc(doc(db,'codes',cd.id), { used:true, usedBy:user.uid, usedAt:serverTimestamp() });
+    // Activate subscription but wait for grade selection
     await updateDoc(doc(db,'users',user.uid), {
-      subscriptionActive:true, subscriptionCode:code,
-      stage:cd.data().stage||'', grade:cd.data().grade||'',
-      activatedAt:serverTimestamp()
+      subscriptionActive: true,
+      subscriptionCode: code,
+      stage: cd.data().stage||'',
+      grade: cd.data().grade||'',
+      gradeKey: cd.data().gradeKey||'',
+      activatedAt: serverTimestamp()
+    });
+    // If code already has grade → skip grade step
+    if(cd.data().gradeKey){
+      showStep('step-success');
+    } else {
+      showStep('step-grade');
+    }
+  } catch(e){ showMsg('code-msg','خطأ: '+e.message,'error'); }
+  setLoad(btn, false);
+};
+
+// ── GRADE OPTIONS ──
+window.updateGradeOptions = () => {
+  const stage = document.getElementById('grade-stage').value;
+  const sel = document.getElementById('grade-level');
+  const opts = {
+    primary: ['الصف الرابع الابتدائي|primary-4','الصف الخامس الابتدائي|primary-5','الصف السادس الابتدائي|primary-6'],
+    prep:    ['الصف الأول الإعدادي|prep-1','الصف الثاني الإعدادي|prep-2','الصف الثالث الإعدادي|prep-3'],
+    sec:     ['الصف الأول الثانوي|sec-1','الصف الثاني الثانوي|sec-2','الصف الثالث الثانوي|sec-3']
+  };
+  sel.innerHTML = '<option value="">— اختار الصف —</option>';
+  if(stage && opts[stage]){
+    opts[stage].forEach(o=>{
+      const [label,val] = o.split('|');
+      sel.innerHTML += `<option value="${val}">${label}</option>`;
+    });
+  }
+};
+
+// ── SAVE GRADE ──
+window.saveGrade = async () => {
+  const stage    = document.getElementById('grade-stage').value;
+  const gradeKey = document.getElementById('grade-level').value;
+  if(!stage){ showMsg('grade-msg','اختار المرحلة','error'); return; }
+  if(!gradeKey){ showMsg('grade-msg','اختار الصف','error'); return; }
+  const btn = document.getElementById('grade-btn');
+  setLoad(btn, true);
+  const gradeLabels = {
+    'primary-4':'الصف الرابع الابتدائي','primary-5':'الصف الخامس الابتدائي','primary-6':'الصف السادس الابتدائي',
+    'prep-1':'الصف الأول الإعدادي','prep-2':'الصف الثاني الإعدادي','prep-3':'الصف الثالث الإعدادي',
+    'sec-1':'الصف الأول الثانوي','sec-2':'الصف الثاني الثانوي','sec-3':'الصف الثالث الثانوي'
+  };
+  try{
+    await updateDoc(doc(db,'users',auth.currentUser.uid), {
+      stage, gradeKey, grade: gradeLabels[gradeKey]||gradeKey
     });
     showStep('step-success');
-  } catch(e){ showMsg('code-msg','خطأ: '+e.message,'error'); }
+  }catch(e){ showMsg('grade-msg','خطأ: '+e.message,'error'); }
   setLoad(btn, false);
 };
 
