@@ -26,6 +26,8 @@
 
 html,body{height:100%;overflow:hidden}
 body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
+#shell{display:none;width:100%;height:100%;flex-direction:column}
+#shell.open{display:flex !important;flex-direction:column}
 
 /* ═══ BG ═══ */
 .bg-grid{position:fixed;inset:0;z-index:0;
@@ -858,40 +860,57 @@ let _uf = 'all', _cf = 'all';
 
 // ═══ AUTH ═══
 function tryLogin(){
-  const u=document.getElementById('au').value.trim();
-  const p=document.getElementById('ap').value;
-  // Try with default pass first, then stored pass from Firebase
-  const stored = window._ap || PASS;
-  if(u==='admin' && (p===stored || p===PASS)){
-    document.getElementById('loginWrap').style.display='none';
-    const sh=document.getElementById('shell');
-    sh.style.display='flex';
-    sh.style.flexDirection='column';
-    waitLoad();
-  } else {
-    document.getElementById('lerr').style.display='block';
-    setTimeout(()=>document.getElementById('lerr').style.display='none',3000);
+  const u = document.getElementById('au').value.trim();
+  const p = document.getElementById('ap').value;
+  
+  // Always allow login with default pass first
+  if(u === 'admin' && p === PASS){
+    openDashboard();
+    return;
   }
+  
+  // Also check Firebase stored pass if available
+  if(window._ap && u === 'admin' && p === window._ap){
+    openDashboard();
+    return;
+  }
+  
+  // Wrong credentials
+  document.getElementById('lerr').style.display = 'block';
+  setTimeout(()=>{ document.getElementById('lerr').style.display='none'; }, 3000);
 }
+
+function openDashboard(){
+  document.getElementById('loginWrap').style.display = 'none';
+  const sh = document.getElementById('shell');
+  sh.classList.add('open');
+  // Load data when Firebase is ready
+  waitLoad();
+}
+
 function waitLoad(){
   let tries = 0;
-  const go = setInterval(()=>{
+  const iv = setInterval(()=>{
     tries++;
     if(window.loadAll){
-      clearInterval(go);
+      clearInterval(iv);
       window.loadAll();
-    } else if(tries > 50){
-      clearInterval(go);
-      toast('تعذر الاتصال بـ Firebase','err');
+    } else if(tries > 60){
+      clearInterval(iv);
+      // Show dashboard even without Firebase
+      updateStats();
     }
   }, 100);
 }
+
 function tryLogout(){
-  document.getElementById('shell').style.display='none';
-  document.getElementById('loginWrap').style.display='flex';
-  document.getElementById('ap').value='';
+  document.getElementById('shell').classList.remove('open');
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('ap').value = '';
 }
-document.getElementById('au').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin()});
+
+document.getElementById('au').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
+document.getElementById('ap').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
 
 // ═══ SIDEBAR ═══
 let sbOpen=false;
@@ -962,4 +981,69 @@ function renderUsers(){
 // ═══ RENDER CODES ═══
 function renderCodes(){
   const c=window._codes||[];
-  const q=document.getElementById('searchInp
+  const q=document.getElementById('searchInp').value.toLowerCase();
+  let f=c.filter(x=>_cf==='all'?true:_cf==='unused'?!x.used:x.used)
+         .filter(x=>!q||(x.code||'').toLowerCase().includes(q));
+  const tb=document.getElementById('codesTbl');
+  if(!f.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><svg><use href="#ic-key"/></svg><p>لا يوجد أكواد</p></div></td></tr>';return}
+  tb.innerHTML=f.map(x=>`<tr>
+    <td><span class="cc" onclick="cpTxt('${x.code||''}')">${x.code||'—'}</span></td>
+    <td style="font-size:12px;color:var(--muted)">${x.stage||'—'}</td>
+    <td style="font-size:12px;color:var(--muted)">${x.grade||'—'}</td>
+    <td style="font-size:12px;color:var(--gold2)">${x.price?x.price+' جنيه':'—'}</td>
+    <td><span class="bd ${x.used?'pu':'blue'}">${x.used?'مستخدم':'متاح'}</span></td>
+    <td style="font-size:11px;color:var(--muted)">${x.usedBy||'—'}</td>
+    <td><div style="display:flex;gap:4px">
+      <button class="btn icon-btn" onclick="cpTxt('${x.code||''}')" title="نسخ"><svg><use href="#ic-copy"/></svg></button>
+      ${!x.used?`<button class="btn icon-btn del" onclick="delCode('${x.id}')" title="مسح"><svg><use href="#ic-x"/></svg></button>`:''}
+    </div></td>
+  </tr>`).join('');
+}
+
+// ═══ STATS ═══
+function updateStats(){
+  const u=window._users||[],c=window._codes||[];
+  document.getElementById('st-t').textContent=u.length;
+  document.getElementById('st-a').textContent=u.filter(x=>x.subscriptionActive).length;
+  document.getElementById('st-av').textContent=c.filter(x=>!x.used).length;
+  document.getElementById('st-u').textContent=c.filter(x=>x.used).length;
+  const pd=u.filter(x=>!x.subscriptionActive).length;
+  const b=document.getElementById('pendBadge');
+  b.textContent=pd;b.style.display=pd?'inline':'none';
+  document.getElementById('uf-all').textContent='('+u.length+')';
+}
+
+// ═══ FILTERS ═══
+function setUF(f){_uf=f;document.querySelectorAll('#page-users .ftab').forEach((t,i)=>t.classList.toggle('on',['all','active','inactive'][i]===f));renderUsers()}
+function setCF(f){_cf=f;document.querySelectorAll('#page-codes .ftab').forEach((t,i)=>t.classList.toggle('on',['all','unused','used'][i]===f));renderCodes()}
+function doSearch(){renderUsers();renderCodes()}
+
+// ═══ HELPERS ═══
+function waUser(phone,name){
+  const p='20'+phone.replace(/^0/,'').replace(/\D/g,'');
+  window.open(`https://wa.me/${p}?text=${encodeURIComponent('مرحباً '+name+' 👋\nرسالة من أستاذ مهدي — Plus Mathematics 🎓')}`,'_blank');
+}
+function cpTxt(t){
+  navigator.clipboard.writeText(t).catch(()=>{});
+  toast('تم النسخ ✓','ok');
+}
+function openGenModal(){
+  document.getElementById('genResult').style.display='none';
+  document.getElementById('genModal').classList.add('on');
+}
+function closeModal(id){document.getElementById(id).classList.remove('on')}
+document.querySelectorAll('.mbg').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('on')}));
+
+let tTimer;
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  const ic=document.getElementById('ti');
+  t.className='toast '+type;
+  document.getElementById('tm').textContent=msg;
+  ic.innerHTML=type==='err'?'<use href="#ic-x"/>':'<use href="#ic-check"/>';
+  t.classList.add('show');clearTimeout(tTimer);
+  tTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+</script>
+</body>
+</html>
