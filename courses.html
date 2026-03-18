@@ -477,9 +477,8 @@ main{position:relative;z-index:1;padding-top:60px;min-height:100dvh}
 <!-- Firebase -->
 <script type="module">
 import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, getDocs, query, where }
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, getDocs, collection, setDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const cfg = {
@@ -490,154 +489,224 @@ const cfg = {
   messagingSenderId:"444492731461",
   appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
 };
-
 const app  = initializeApp(cfg);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-// ── Auth check ──
+let _user, _userData, _progress = {};
+
+// ── AUTH CHECK ──
 onAuthStateChanged(auth, async (user) => {
-  document.getElementById('loadingScreen').style.display = 'none';
-
-  if(!user){
-    window.location.href = 'plus-math-auth.html';
-    return;
-  }
-
-  // Get user data
+  if(!user){ window.location.href='plus-math-auth.html'; return; }
+  _user = user;
   try {
     const ud = await getDoc(doc(db,'users',user.uid));
-    if(!ud.exists() || !ud.data().subscriptionActive){
-      window.location.href = 'plus-math-auth.html';
-      return;
+    if(!ud.exists()||!ud.data().subscriptionActive){
+      window.location.href='plus-math-auth.html'; return;
     }
+    _userData = ud.data();
+    if(!_userData.gradeKey){ window.location.href='plus-math-auth.html'; return; }
 
-    const data = ud.data();
-    window._userData = data;
-    window._userId   = user.uid;
+    document.getElementById('loadingScreen').style.display='none';
+    document.getElementById('navbar').style.display='flex';
+    document.getElementById('mainContent').style.display='block';
+    document.getElementById('userName').textContent=_userData.name?.split(' ')[0]||'طالب';
+    document.getElementById('statGrade').textContent=_userData.grade||'—';
+    document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
 
-    // Show UI
-    document.getElementById('navbar').style.display = 'flex';
-    document.getElementById('mainContent').style.display = 'block';
-    document.getElementById('userName').textContent = data.name?.split(' ')[0] || 'طالب';
-
-    // Set stats
-    const stageMap = {primary:'ابتدائي', prep:'إعدادي', sec:'ثانوي'};
-    document.getElementById('statGrade').textContent  = data.grade || '—';
-    document.getElementById('statStage').textContent  = stageMap[data.stage] || '—';
-
-    // Load announcement
-    try {
-      const ann = await getDoc(doc(db,'settings','announcement'));
-      if(ann.exists() && ann.data().show && ann.data().text){
-        document.getElementById('annText').textContent = ann.data().text;
+    // Banner
+    try{
+      const ann=await getDoc(doc(db,'settings','announcement'));
+      if(ann.exists()&&ann.data().show&&ann.data().text){
+        document.getElementById('annText').textContent=ann.data().text;
         document.getElementById('annBanner').classList.add('show');
-        document.getElementById('navbar').style.top = '40px';
-        document.getElementById('mainContent').style.paddingTop = '100px';
+        document.getElementById('navbar').style.top='40px';
       }
-    } catch(e){}
+    }catch(e){}
 
-    // Load content from Firebase
-    await loadContent();
+    // Progress
+    try{
+      const pr=await getDoc(doc(db,'progress',user.uid));
+      _progress=pr.exists()?pr.data():{};
+    }catch(e){_progress={};}
 
-  } catch(e) {
-    console.error(e);
-    window.location.href = 'plus-math-auth.html';
-  }
+    buildGrades();
+  }catch(e){ window.location.href='plus-math-auth.html'; }
 });
 
-// ── Load content ──
-async function loadContent(){
-  try {
-    const snap = await getDocs(collection(db,'content'));
-    window._content = snap.docs.map(d=>({id:d.id,...d.data()}));
-  } catch(e){ window._content = []; }
+// ── OPEN COURSE ──
+window.openCourse = async (gradeKey, gradeLabel, stageLabel) => {
+  window._openGradeKey = gradeKey;
+  document.getElementById('cvTitle').textContent=gradeLabel;
+  document.getElementById('cvSub').textContent=stageLabel;
+  document.getElementById('courseView').classList.add('open');
+  document.body.style.overflow='hidden';
+  // Show loading in lists
+  ['videoList','examList','hwList'].forEach(id=>{
+    document.getElementById(id).innerHTML='<div class="empty"><div class="loader" style="margin:20px auto;width:30px;height:30px;border-width:2px"></div></div>';
+  });
+  switchTab('videos',document.querySelector('.cv-tab'));
+
+  const isMyGrade = gradeKey===_userData?.gradeKey;
+  const gp = _progress[gradeKey]||{};
+  const doneV=gp.videos||[], doneE=gp.exams||[], doneH=gp.homework||[];
+
+  const [videos,exams,hw]=await Promise.all([
+    loadContentList(gradeKey,'videos'),
+    loadContentList(gradeKey,'exams'),
+    loadContentList(gradeKey,'homework')
+  ]);
+
+  renderVideos(videos,doneV,gradeKey,isMyGrade);
+  renderExams(exams,doneE,gradeKey,isMyGrade);
+  renderHomework(hw,doneH,gradeKey,isMyGrade);
+
+  setTimeout(()=>{
+    setProgress('videos',videos.length?Math.round(doneV.length/videos.length*100):0);
+    setProgress('exams', exams.length?Math.round(doneE.length/exams.length*100):0);
+    setProgress('hw',    hw.length?Math.round(doneH.length/hw.length*100):0);
+  },400);
+};
+
+async function loadContentList(gradeKey,tab){
+  try{
+    const s=await getDocs(collection(db,'content',gradeKey,tab));
+    return s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+  }catch(e){return [];}
 }
 
-// ── Sign out ──
-window.doSignOut = async () => {
-  await signOut(auth);
-  window.location.href = 'index.html';
+// ── RENDER VIDEOS ──
+function renderVideos(videos,done,gradeKey,isMyGrade){
+  const el=document.getElementById('videoList');
+  if(!videos.length){
+    el.innerHTML='<div class="empty"><svg><use href="#ic-play"/></svg><h3>لا يوجد فيديوهات بعد</h3><p>المحتوى هيتضاف قريباً من المدرس</p></div>';
+    return;
+  }
+  el.innerHTML=videos.map((v,i)=>{
+    const isDone=done.includes(v.id);
+    // Sequential lock: locked if previous video not done AND it's student's own grade
+    const isLocked=isMyGrade&&i>0&&!done.includes(videos[i-1].id)&&!isDone;
+    const ytId=extractYtId(v.url||'');
+    const thumb=ytId?`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`:'';
+    return `
+    <div class="video-item" style="${isLocked?'opacity:.5;cursor:not-allowed':v.url?'cursor:pointer':''}"
+      ${!isLocked&&v.url?`onclick="handleVideoOpen('${v.url}','${v.id}','${gradeKey}')"`:''}
+    >
+      <div class="video-thumb" style="${thumb?`background-image:url(${thumb});background-size:cover;background-position:center`:''}">
+        ${isLocked
+          ?'<svg style="color:#fff8;width:22px;height:22px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'
+          :isDone
+            ?'<svg style="color:var(--ok);width:22px;height:22px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>'
+            :'<svg style="color:#fffc;width:22px;height:22px" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>'}
+      </div>
+      <div class="video-info">
+        <div class="video-title">${v.order?v.order+'. ':''}${v.title||'درس'}</div>
+        <div class="video-meta">
+          ${v.duration?`<svg><use href="#ic-clock"/></svg>${v.duration}`:''}
+          ${isLocked?'<span style="color:var(--err);margin-right:6px">🔒 أكمل الدرس السابق أولاً</span>':
+            isDone?'<span style="color:var(--ok);margin-right:6px">✅ تمت المشاهدة</span>':
+            '<span style="margin-right:6px">اضغط للمشاهدة ▶</span>'}
+        </div>
+      </div>
+      ${isMyGrade&&!isLocked&&!isDone?`
+        <button onclick="event.stopPropagation();markDone('${gradeKey}','videos','${v.id}')"
+          style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s"
+          onmouseover="this.style.background='rgba(0,214,143,0.1)'" onmouseout="this.style.background='transparent'">
+          انهيت ✓
+        </button>`:
+        isDone?'<span style="color:var(--ok);font-size:12px;font-weight:700;flex-shrink:0">✅</span>':''}
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER EXAMS ──
+function renderExams(exams,done,gradeKey,isMyGrade){
+  const el=document.getElementById('examList');
+  if(!exams.length){
+    el.innerHTML='<div class="empty"><svg><use href="#ic-check-circle"/></svg><h3>لا يوجد امتحانات بعد</h3><p>الامتحانات هتتضاف قريباً</p></div>';
+    return;
+  }
+  const typeLabel={mcq:'اختيار متعدد',essay:'مقالي',pdf:'PDF',link:'Google Form'};
+  el.innerHTML=exams.map((e,i)=>{
+    const isDone=done.includes(e.id);
+    const isLocked=isMyGrade&&i>0&&!done.includes(exams[i-1].id)&&!isDone;
+    const tl=typeLabel[e.type]||e.type||'امتحان';
+    return `
+    <div class="exam-item" style="${isLocked?'opacity:.5;cursor:not-allowed':e.url?'cursor:pointer':''}"
+      ${!isLocked&&e.url?`onclick="openExamLink('${e.url}','${e.id}','${gradeKey}')"`:''}
+    >
+      <div class="exam-icon" style="${isLocked?'opacity:.5':''}">
+        ${isDone
+          ?'<svg style="color:var(--ok)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>'
+          :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>'}
+      </div>
+      <div class="exam-info">
+        <div class="exam-title">${e.order?e.order+'. ':''}${e.title||'امتحان'}</div>
+        <div class="exam-meta">${tl}${e.duration?' · '+e.duration+' دقيقة':''}${isLocked?' · 🔒 محظور':''}</div>
+      </div>
+      <span class="exam-badge ${isDone?'done':'new'}">${isDone?'تم ✓':'جديد'}</span>
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER HOMEWORK ──
+function renderHomework(hw,done,gradeKey,isMyGrade){
+  const el=document.getElementById('hwList');
+  if(!hw.length){
+    el.innerHTML='<div class="empty"><svg><use href="#ic-file"/></svg><h3>لا يوجد واجبات بعد</h3><p>الواجبات هتتضاف قريباً</p></div>';
+    return;
+  }
+  el.innerHTML=hw.map((h,i)=>{
+    const isDone=done.includes(h.id);
+    return `
+    <div class="hw-item">
+      <div class="hw-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
+      <div class="hw-info">
+        <div class="hw-title">${h.order?h.order+'. ':''}${h.title||'واجب'}</div>
+        <div class="hw-meta">${h.description||''}${h.deadline?' · موعد التسليم: '+h.deadline:''}</div>
+        ${h.url?`<a href="${h.url}" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none">📎 فتح الملف</a>`:''}
+      </div>
+      ${isMyGrade&&!isDone
+        ?`<button onclick="markDone('${gradeKey}','homework','${h.id}')"
+            style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">سلّمت ✓</button>`
+        :isDone?'<span style="color:var(--ok);font-size:13px;font-weight:700;flex-shrink:0">✅</span>':''}
+    </div>`;
+  }).join('');
+}
+
+// ── HANDLE VIDEO OPEN (auto-mark after opening) ──
+window.handleVideoOpen = (url, id, gradeKey) => {
+  window.open(url,'_blank');
+  // Auto mark as done after 3s (simulate watched)
+  setTimeout(()=>markDone(gradeKey,'videos',id), 3000);
 };
 
-// ── Open course ──
-window.openCourse = async (gradeKey, gradeLabel, stageLabel) => {
-  document.getElementById('cvTitle').textContent = gradeLabel;
-  document.getElementById('cvSub').textContent   = stageLabel;
-  document.getElementById('courseView').classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  // Load content for this grade
-  const content = (window._content||[]).filter(c => c.grade === gradeKey);
-
-  // Videos
-  const videos = content.filter(c=>c.type==='video');
-  const vList = document.getElementById('videoList');
-  if(videos.length){
-    vList.innerHTML = videos.map(v=>`
-      <a href="${v.url||'#'}" target="${v.url?'_blank':'_self'}" class="video-item">
-        <div class="video-thumb"><svg><use href="#ic-play"/></svg></div>
-        <div class="video-info">
-          <div class="video-title">${v.title||'درس'}</div>
-          <div class="video-meta">
-            <svg><use href="#ic-clock"/></svg>${v.duration||'—'}
-            ${v.platform?`<span>· ${v.platform}</span>`:''}
-          </div>
-        </div>
-        <div class="video-arrow"><svg><use href="#ic-arrow-r"/></svg></div>
-      </a>`).join('');
-  } else {
-    vList.innerHTML = `<div class="empty"><svg><use href="#ic-play"/></svg>
-      <h3>لا يوجد فيديوهات بعد</h3><p>المحتوى هيتضاف قريباً من المدرس</p></div>`;
-  }
-
-  // Exams
-  const exams = content.filter(c=>c.type==='exam');
-  const eList = document.getElementById('examList');
-  if(exams.length){
-    eList.innerHTML = exams.map(e=>`
-      <div class="exam-item" onclick="${e.url?`window.open('${e.url}','_blank')`:''}" >
-        <div class="exam-icon"><svg><use href="#ic-check-circle"/></svg></div>
-        <div class="exam-info">
-          <div class="exam-title">${e.title||'امتحان'}</div>
-          <div class="exam-meta">${e.questions||'—'} سؤال · ${e.duration||'—'}</div>
-        </div>
-        <span class="exam-badge new">جديد</span>
-      </div>`).join('');
-  } else {
-    eList.innerHTML = `<div class="empty"><svg><use href="#ic-check-circle"/></svg>
-      <h3>لا يوجد امتحانات بعد</h3><p>الامتحانات هتتضاف قريباً</p></div>`;
-  }
-
-  // Homework
-  const hw = content.filter(c=>c.type==='homework');
-  const hList = document.getElementById('hwList');
-  if(hw.length){
-    hList.innerHTML = hw.map(h=>`
-      <div class="hw-item">
-        <div class="hw-icon"><svg><use href="#ic-file"/></svg></div>
-        <div class="hw-info">
-          <div class="hw-title">${h.title||'واجب'}</div>
-          <div class="hw-meta">تسليم: ${h.deadline||'—'}</div>
-        </div>
-        <span class="hw-badge pending">جديد</span>
-      </div>`).join('');
-  } else {
-    hList.innerHTML = `<div class="empty"><svg><use href="#ic-file"/></svg>
-      <h3>لا يوجد واجبات بعد</h3><p>الواجبات هتتضاف قريباً</p></div>`;
-  }
-
-  // Switch to first tab
-  switchTab('videos', document.querySelector('.cv-tab'));
-
-  // Animate progress bars after a delay
-  setTimeout(()=>{
-    const vp = videos.length ? Math.min(Math.round(videos.length*10),100) : 0;
-    setProgress('videos', vp);
-    setProgress('exams', exams.length?15:0);
-    setProgress('hw', hw.length?5:0);
-  }, 400);
+window.openExamLink = (url, id, gradeKey) => {
+  window.open(url,'_blank');
 };
+
+// ── MARK DONE ──
+window.markDone = async (gradeKey,type,itemId) => {
+  try{
+    const gp=_progress[gradeKey]||{};
+    const list=[...(gp[type]||[])];
+    if(list.includes(itemId)){showToast('تم التسجيل مسبقاً ✓','ok');return;}
+    list.push(itemId);
+    _progress[gradeKey]={...gp,[type]:list};
+    await setDoc(doc(db,'progress',_user.uid),_progress,{merge:true});
+    // Refresh
+    const gk=window._openGradeKey;
+    if(gk) await openCourse(gk,document.getElementById('cvTitle').textContent,document.getElementById('cvSub').textContent);
+    showToast('تم التسجيل ✓','ok');
+  }catch(e){showToast('خطأ: '+e.message,'err');}
+};
+
+// ── HELPERS ──
+function extractYtId(url){
+  const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
+  return m?m[1]:'';
+}
+window.doSignOut = async()=>{await signOut(auth);window.location.href='index.html';};
 </script>
 
 <script>
@@ -675,7 +744,24 @@ function buildGrades(){
   ['primary','prep','sec'].forEach(stage=>{
     const grid = document.getElementById('grid-'+stage);
     grid.innerHTML = GRADES[stage].map(g=>{
-      const isMine = (ud.stage===stage);
+      const isMine = ud.gradeKey === g.key;
+      return `
+        <div class="grade-card" onclick="openCourse('${g.key}','${g.label}','${g.stage}')"
+          style="${isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':''}">
+          <img src="${g.img}" class="grade-card-img" alt="${g.label}" onerror="this.style.display='none'"/>
+          ${isMine?`<div class="grade-card-badge mine">صفك ✓</div>`:''}
+          <div class="grade-card-body">
+            <div class="grade-card-title">${g.label}</div>
+            <div class="grade-card-sub">${isMine?'📚 محتواك الأساسي':g.sub}</div>
+          </div>
+          <div class="grade-card-footer">
+            <span>${isMine?'فيديوهات · امتحانات · واجبات':'اضغط للمشاهدة'}</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+          </div>
+        </div>`;
+    }).join('');
+  });
+}
       return `
         <div class="grade-card" onclick="openCourse('${g.key}','${g.label}','${g.stage}')">
           <img src="${g.img}" class="grade-card-img" alt="${g.label}"
