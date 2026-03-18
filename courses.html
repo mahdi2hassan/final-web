@@ -545,6 +545,17 @@ onAuthStateChanged(auth, async (user) => {
     }catch(e){_progress={};}
 
     buildGrades();
+
+    // Auto-scroll to student's grade card
+    setTimeout(()=>{
+      if(_userData?.gradeKey){
+        const stage = _userData.gradeKey.split('-')[0];
+        const el = document.getElementById('grade-'+_userData.gradeKey) ||
+                   document.getElementById('grid-'+stage);
+        if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+    }, 600);
+
   }catch(e){
     console.error('Courses auth error:', e);
     // Only redirect if it's a permission/auth error, not a network error
@@ -769,13 +780,14 @@ function buildGrades(){
   const ud = window._userData || {};
   ['primary','prep','sec'].forEach(stage=>{
     const grid = document.getElementById('grid-'+stage);
+    if(!grid) return;
     grid.innerHTML = GRADES[stage].map(g=>{
       const isMine = ud.gradeKey === g.key;
       return `
-        <div class="grade-card" onclick="openCourse('${g.key}','${g.label}','${g.stage}')"
+        <div id="grade-${g.key}" class="grade-card" onclick="openCourse('${g.key}','${g.label}','${g.stage}')"
           style="${isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':''}">
           <img src="${g.img}" class="grade-card-img" alt="${g.label}" onerror="this.style.display='none'"/>
-          ${isMine?`<div class="grade-card-badge mine">صفك ✓</div>`:''}
+          ${isMine?'<div class="grade-card-badge mine">صفك ✓</div>':''}
           <div class="grade-card-body">
             <div class="grade-card-title">${g.label}</div>
             <div class="grade-card-sub">${isMine?'📚 محتواك الأساسي':g.sub}</div>
@@ -788,33 +800,6 @@ function buildGrades(){
     }).join('');
   });
 }
-      return `
-        <div class="grade-card" onclick="openCourse('${g.key}','${g.label}','${g.stage}')">
-          <img src="${g.img}" class="grade-card-img" alt="${g.label}"
-            onerror="this.style.display='none'"/>
-          <div class="grade-card-badge ${isMine&&ud.grade===g.label?'mine':''}">
-            ${isMine&&ud.grade===g.label?'صفك ✓':''}
-          </div>
-          <div class="grade-card-body">
-            <div class="grade-card-title">${g.label}</div>
-            <div class="grade-card-sub">${g.sub}</div>
-          </div>
-          <div class="grade-card-footer">
-            <span>فيديوهات · امتحانات · واجبات</span>
-            <svg><use href="#ic-arrow-r"/></svg>
-          </div>
-        </div>`;
-    }).join('');
-  });
-}
-
-// Wait for userData then build
-const buildWait = setInterval(()=>{
-  if(window._userData !== undefined){
-    clearInterval(buildWait);
-    buildGrades();
-  }
-},200);
 
 // ── Course view ──
 function closeCourse(){
