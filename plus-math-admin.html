@@ -363,7 +363,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   <symbol id="ic-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></symbol>
   <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
   <symbol id="ic-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5,12 12,5 19,12"/></symbol>
-  <symbol id="ic-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+  <symbol id="ic-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+  <symbol id="ic-shield-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.69 14a6.9 6.9 0 00.31-2V5l-8-3-3.16 1.18"/><path d="M4.73 4.73L4 5v7c0 6 8 10 8 10a20.29 20.29 0 005.62-4.38"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
+  <symbol id="ic-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+  <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
+  <symbol id="ic-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
 </svg>
 
 <div class="bg-grid"></div>
@@ -492,11 +496,12 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <div class="ftab on" onclick="setUF('all')">الكل <span id="uf-all"></span></div>
           <div class="ftab" onclick="setUF('active')">نشط</div>
           <div class="ftab" onclick="setUF('inactive')">غير مشترك</div>
+          <div class="ftab" onclick="setUF('blocked')">محظور</div>
         </div>
         <div class="tw"><div class="tw-scroll">
           <table>
-            <thead><tr><th>الطالب</th><th>الهاتف</th><th>الكود</th><th>الحالة</th><th>التسجيل</th><th>إجراء</th></tr></thead>
-            <tbody id="usersTbl"><tr><td colspan="6"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
+            <thead><tr><th>الطالب</th><th>الهاتف</th><th>الإيميل</th><th>الكود</th><th>الحالة</th><th>التسجيل</th><th>إجراء</th></tr></thead>
+            <tbody id="usersTbl"><tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
           </table>
         </div></div>
       </div>
@@ -640,6 +645,17 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   </div>
 </div>
 
+<!-- Student Details Modal -->
+<div class="mbg" id="studentModal">
+  <div class="modal" style="max-width:480px">
+    <h3><svg><use href="#ic-eye"/></svg>تفاصيل الطالب</h3>
+    <div id="studentModalContent"></div>
+    <div class="mfooter">
+      <button class="btn ghost" onclick="closeModal('studentModal')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"><svg id="ti"><use href="#ic-check"/></svg><span id="tm"></span></div>
 
@@ -774,6 +790,95 @@ window.revokeUser = async (id)=>{
     toast('تم إلغاء الاشتراك','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
+
+// ── BLOCK / UNBLOCK ──
+window.blockUser = async (id, block)=>{
+  const msg = block ? 'حظر الطالب؟ مش هيقدر يدخل' : 'إلغاء حظر الطالب؟';
+  if(!confirm(msg)) return;
+  try{
+    const upd = { blocked: block };
+    if(block) upd.subscriptionActive = false;
+    if(block) upd.blockedAt = serverTimestamp();
+    await updateDoc(doc(db,'users',id), upd);
+    await wloadUsers();
+    toast(block ? 'تم حظر الطالب ⛔' : 'تم إلغاء الحظر ✓','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── DELETE USER ──
+window.deleteUser = async (id, name)=>{
+  if(!confirm('حذف "'+name+'" نهائياً؟')) return;
+  if(!confirm('تأكيد الحذف النهائي — لا يمكن التراجع!')) return;
+  try{
+    await deleteDoc(doc(db,'users',id));
+    await wloadUsers();
+    toast('تم الحذف النهائي','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── RESET PASSWORD EMAIL ──
+window.resetUserPass = async (uid, userEmail, userName)=>{
+  try{
+    const ud = await getDoc(doc(db,'users',uid));
+    const d = ud.data()||{};
+    const emailToSend = d.email || userEmail;
+    if(!emailToSend || !emailToSend.includes('@')){
+      toast('مش عنده إيميل حقيقي مسجل','err'); return;
+    }
+    const apiKey = 'AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE';
+    const res = await fetch(
+      'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key='+apiKey,
+      { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({requestType:'PASSWORD_RESET', email:emailToSend}) }
+    );
+    const json = await res.json();
+    if(json.error){ toast('خطأ: '+(json.error.message||''), 'err'); }
+    else { toast('تم إرسال رابط reset لـ '+userName+' ✓','ok'); }
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── VIEW USER ──
+window.viewUser = async (id)=>{
+  try{
+    const ud = await getDoc(doc(db,'users',id));
+    if(!ud.exists()){ toast('لم يتم العثور على الطالب','err'); return; }
+    const d = ud.data();
+    const stageMap={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'};
+    const statusLabel = d.blocked ? '⛔ محظور' : d.subscriptionActive ? '✅ مشترك' : '⏳ غير مشترك';
+    document.getElementById('studentModalContent').innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(74,127,212,0.06);border:1px solid var(--b2);border-radius:12px;margin-bottom:12px">
+        <div style="width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;color:#fff;flex-shrink:0">${(d.name||'?').slice(0,2)}</div>
+        <div><div style="font-size:15px;font-weight:800">${d.name||'—'}</div><div style="font-size:12px;color:var(--muted)">${statusLabel}</div></div>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:14px">
+        ${tr('رقم الهاتف','<span style="direction:ltr;display:inline-block">'+(d.phone||'—')+'</span>')}
+        ${tr('الإيميل الحقيقي','<span style="color:var(--blue)">'+(d.email||'—')+'</span>')}
+        ${tr('المرحلة', stageMap[d.stage]||d.stage||'—')}
+        ${tr('الصف', d.grade||'—')}
+        ${tr('كود الاشتراك', d.subscriptionCode?'<span style="font-family:monospace;color:var(--gold2);letter-spacing:2px">'+d.subscriptionCode+'</span>':'—')}
+        ${tr('طريقة التسجيل', d.signInMethod==='google'?'🔵 Google':'📱 هاتف')}
+        ${tr('تاريخ التسجيل', d.createdAt?.toDate?.().toLocaleString('ar-EG')||'—')}
+        ${tr('تاريخ التفعيل', d.activatedAt?.toDate?.().toLocaleString('ar-EG')||'—')}
+        ${d.blocked?tr('تاريخ الحظر',d.blockedAt?.toDate?.().toLocaleString('ar-EG')||'—'):''}
+      </table>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <button class="btn primary sm" style="font-size:11px" onclick="resetUserPass('${id}','${(d.email||'').replace(/'/g,"\\'")}','${(d.name||'').replace(/'/g,"\\'")}');closeModal('studentModal')">
+          <svg width="12" height="12"><use href="#ic-mail"/></svg>إرسال reset كلمة مرور
+        </button>
+        ${d.subscriptionActive?`<button class="btn sm" style="background:linear-gradient(135deg,var(--warn),#8a5010);font-size:11px" onclick="revokeUser('${id}');closeModal('studentModal')"><svg width="12" height="12"><use href="#ic-x"/></svg>إلغاء الاشتراك</button>`:''}
+        ${d.blocked
+          ?`<button class="btn ok sm" style="font-size:11px" onclick="blockUser('${id}',false);closeModal('studentModal')"><svg width="12" height="12"><use href="#ic-shield"/></svg>إلغاء الحظر</button>`
+          :`<button class="btn sm" style="background:linear-gradient(135deg,#f5a623,#a06010);font-size:11px" onclick="blockUser('${id}',true);closeModal('studentModal')"><svg width="12" height="12"><use href="#ic-shield-off"/></svg>حظر</button>`}
+        <button class="btn err sm" style="font-size:11px" onclick="deleteUser('${id}','${(d.name||'').replace(/'/g,"\\'")}');closeModal('studentModal')">
+          <svg width="12" height="12"><use href="#ic-trash"/></svg>حذف نهائي
+        </button>
+      </div>`;
+    document.getElementById('studentModal').classList.add('on');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+function tr(label,val){
+  return '<tr style="border-bottom:1px solid var(--b2)"><td style="padding:8px 4px;color:var(--muted);font-weight:600;width:38%">'+label+'</td><td style="padding:8px 4px">'+val+'</td></tr>';
+}
 
 // ── CHANGE PASS ──
 window.changePass = async ()=>{
@@ -949,31 +1054,51 @@ function goPage(p){
 function renderUsers(){
   const u=window._users||[];
   const q=document.getElementById('searchInp').value.toLowerCase();
-  let f=u.filter(x=>_uf==='all'?true:_uf==='active'?x.subscriptionActive:!x.subscriptionActive)
-         .filter(x=>!q||(x.name||'').includes(q)||(x.phone||'').includes(q));
+  let f=u.filter(x=>{
+    if(_uf==='active') return x.subscriptionActive && !x.blocked;
+    if(_uf==='inactive') return !x.subscriptionActive && !x.blocked;
+    if(_uf==='blocked') return x.blocked;
+    return true;
+  }).filter(x=>!q||(x.name||'').includes(q)||(x.phone||'').includes(q)||(x.email||'').includes(q));
+
   const tb=document.getElementById('usersTbl');
-  if(!f.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><svg><use href="#ic-users"/></svg><p>لا يوجد نتائج</p></div></td></tr>';return}
-  tb.innerHTML=f.map(x=>`<tr>
+  if(!f.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>لا يوجد نتائج</p></div></td></tr>';return}
+
+  const statusBadge = x => {
+    if(x.blocked) return '<span class="bd err">⛔ محظور</span>';
+    if(x.subscriptionActive) return '<span class="bd ok">✅ نشط</span>';
+    return '<span class="bd pu">⏳ معلق</span>';
+  };
+
+  tb.innerHTML=f.map(x=>`<tr style="${x.blocked?'opacity:.6':''}">
     <td><div class="name-cell">
-      <div class="av">${(x.name||'?').slice(0,2)}</div>
-      <div><div style="font-weight:700;font-size:13px">${x.name||'—'}</div></div>
+      <div class="av" style="${x.blocked?'background:linear-gradient(135deg,var(--err),#800)':''}">${(x.name||'?').slice(0,2)}</div>
+      <div><div style="font-weight:700;font-size:13px">${x.name||'—'}</div>
+      <div style="font-size:10px;color:var(--muted)">${x.signInMethod==='google'?'🔵 Google':'📱 هاتف'}</div></div>
     </div></td>
     <td style="direction:ltr;font-size:12px;color:var(--muted)">${x.phone||'—'}</td>
+    <td style="font-size:11px;color:var(--blue);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.email||'—'}</td>
     <td><span class="cc" onclick="cpTxt('${x.subscriptionCode||''}')">${x.subscriptionCode||'—'}</span></td>
-    <td><span class="bd ${x.subscriptionActive?'ok':'pu'}">${x.subscriptionActive?'نشط':'معلق'}</span></td>
+    <td>${statusBadge(x)}</td>
     <td style="font-size:11px;color:var(--muted)">${x.createdAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</td>
-    <td><div style="display:flex;gap:4px">
+    <td><div style="display:flex;gap:4px;flex-wrap:wrap">
+      <button class="btn icon-btn" onclick="viewUser('${x.id}')" title="تفاصيل"><svg><use href="#ic-eye"/></svg></button>
       <button class="btn icon-btn" onclick="waUser('${x.phone||''}','${x.name||''}')" title="واتساب"><svg><use href="#ic-wa"/></svg></button>
-      ${x.subscriptionActive?`<button class="btn icon-btn del" onclick="revokeUser('${x.id}')" title="إلغاء الاشتراك"><svg><use href="#ic-x"/></svg></button>`:''}
+      <button class="btn icon-btn" onclick="resetUserPass('${x.id}','${(x.email||'').replace(/'/g,"\\'")}','${(x.name||'').replace(/'/g,"\\'")}')}" title="reset كلمة مرور"><svg><use href="#ic-mail"/></svg></button>
+      ${x.blocked
+        ?`<button class="btn icon-btn" style="color:var(--ok)" onclick="blockUser('${x.id}',false)" title="إلغاء الحظر"><svg><use href="#ic-shield"/></svg></button>`
+        :`<button class="btn icon-btn" style="color:var(--warn)" onclick="blockUser('${x.id}',true)" title="حظر"><svg><use href="#ic-shield-off"/></svg></button>`}
+      <button class="btn icon-btn del" onclick="deleteUser('${x.id}','${(x.name||'').replace(/'/g,"\\'")}')}" title="حذف"><svg><use href="#ic-trash"/></svg></button>
     </div></td>
   </tr>`).join('');
-  // overview recent
+
+  // overview recent table
   const rv=document.getElementById('recentTbl');
   const rec=u.slice(0,5);
-  rv.innerHTML=rec.length?`<table><thead><tr><th>الطالب</th><th>الهاتف</th><th>الحالة</th><th>التسجيل</th></tr></thead><tbody>${rec.map(x=>`<tr>
+  rv.innerHTML=rec.length?`<table><thead><tr><th>الطالب</th><th>الإيميل</th><th>الحالة</th><th>التسجيل</th></tr></thead><tbody>${rec.map(x=>`<tr>
     <td><div class="name-cell"><div class="av">${(x.name||'?').slice(0,2)}</div><span style="font-weight:700">${x.name||'—'}</span></div></td>
-    <td style="font-size:12px;color:var(--muted)">${x.phone||'—'}</td>
-    <td><span class="bd ${x.subscriptionActive?'ok':'pu'}">${x.subscriptionActive?'نشط':'معلق'}</span></td>
+    <td style="font-size:11px;color:var(--blue)">${x.email||'—'}</td>
+    <td>${x.blocked?'<span class="bd err">محظور</span>':x.subscriptionActive?'<span class="bd ok">نشط</span>':'<span class="bd pu">معلق</span>'}</td>
     <td style="font-size:11px;color:var(--muted)">${x.createdAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</td>
   </tr>`).join('')}</tbody></table>`:'<div class="empty"><svg><use href="#ic-users"/></svg><p>لا يوجد طلاب</p></div>';
 }
@@ -1014,7 +1139,7 @@ function updateStats(){
 }
 
 // ═══ FILTERS ═══
-function setUF(f){_uf=f;document.querySelectorAll('#page-users .ftab').forEach((t,i)=>t.classList.toggle('on',['all','active','inactive'][i]===f));renderUsers()}
+function setUF(f){_uf=f;document.querySelectorAll('#page-users .ftab').forEach((t,i)=>t.classList.toggle('on',['all','active','inactive','blocked'][i]===f));renderUsers()}
 function setCF(f){_cf=f;document.querySelectorAll('#page-codes .ftab').forEach((t,i)=>t.classList.toggle('on',['all','unused','used'][i]===f));renderCodes()}
 function doSearch(){renderUsers();renderCodes()}
 
