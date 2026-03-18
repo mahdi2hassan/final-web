@@ -743,7 +743,7 @@ function renderVideos(videos,done,gradeKey,isMyGrade){
     const ytId=extractYtId(v.url||'');
     const thumb=ytId?`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`:'';
     return `
-    <div class="video-item" style="${isLocked?'opacity:.5':'';''}">
+    <div class="video-item" style="${isLocked?'opacity:.5':''}">
       <!-- Embedded player (hidden by default, shown on click) -->
       <div id="vp-${v.id}" style="display:none;width:100%;margin-bottom:10px;border-radius:12px;overflow:hidden;background:#000;flex-shrink:0">
         <iframe id="vf-${v.id}" src="" style="width:100%;height:clamp(180px,40vw,260px);border:none;display:block" allowfullscreen allow="autoplay"></iframe>
@@ -777,37 +777,6 @@ function renderVideos(videos,done,gradeKey,isMyGrade){
     </div>`;
   }).join('');
 }
-    return `
-    <div class="video-item" style="${isLocked?'opacity:.5;cursor:not-allowed':v.url?'cursor:pointer':''}"
-      ${!isLocked&&v.url?`onclick="handleVideoOpen('${v.url}','${v.id}','${gradeKey}','${(v.title||'').replace(/'/g,"\\'")}')"`:''}
-    >
-      <div class="video-thumb" style="${thumb?`background-image:url(${thumb});background-size:cover;background-position:center`:''}">
-        ${isLocked
-          ?'<svg style="color:#fff8;width:22px;height:22px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'
-          :isDone
-            ?'<svg style="color:var(--ok);width:22px;height:22px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>'
-            :'<svg style="color:#fffc;width:22px;height:22px" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>'}
-      </div>
-      <div class="video-info">
-        <div class="video-title">${v.order?v.order+'. ':''}${v.title||'درس'}</div>
-        <div class="video-meta">
-          ${v.duration?`<svg><use href="#ic-clock"/></svg>${v.duration}`:''}
-          ${isLocked?'<span style="color:var(--err);margin-right:6px">🔒 أكمل الدرس السابق أولاً</span>':
-            isDone?'<span style="color:var(--ok);margin-right:6px">✅ تمت المشاهدة</span>':
-            '<span style="margin-right:6px">اضغط للمشاهدة ▶</span>'}
-        </div>
-      </div>
-      ${isMyGrade&&!isLocked&&!isDone?`
-        <button onclick="event.stopPropagation();markDone('${gradeKey}','videos','${v.id}')"
-          style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s"
-          onmouseover="this.style.background='rgba(0,214,143,0.1)'" onmouseout="this.style.background='transparent'">
-          انهيت ✓
-        </button>`:
-        isDone?'<span style="color:var(--ok);font-size:12px;font-weight:700;flex-shrink:0">✅</span>':''}
-    </div>`;
-  }).join('');
-}
-
 // ── RENDER EXAMS ──
 function renderExams(exams,done,gradeKey,isMyGrade){
   const el=document.getElementById('examList');
@@ -927,4 +896,52 @@ function renderHomework(hw,done,gradeKey,isMyGrade){
         <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
           ${h.fileUrl?`<a href="${h.fileUrl}" target="_blank" style="font-size:11px;color:var(--blue);font-weight:700;text-decoration:none;padding:4px 10px;border:1px solid rgba(74,127,212,0.3);border-radius:6px;background:rgba(74,127,212,0.07)">📎 فتح الملف</a>`:''}
           ${h.pdfUrl?`<a href="${h.pdfUrl}" target="_blank" style="font-size:11px;color:var(--err);font-weight:700;text-decoration:none;padding:3px 9px;border:1px solid rgba(255,77,109,0.3);border-radius:6px">📄 فتح PDF</a>`:''}
-          ${h.imageUrl?`<button onclick="viewImage('${h.imageUrl}')" style="font-size:11px;color:var(--blue);font-weight:700;background:r
+          ${h.imageUrl?`<button onclick="viewImage('${h.imageUrl}')" style="font-size:11px;color:var(--blue);font-weight:700;background:rgba(74,127,212,0.1);border:1px solid rgba(74,127,212,0.2);border-radius:6px;padding:3px 9px;cursor:pointer">🖼 عرض الصورة</button>`:''}
+          ${h.url&&!h.pdfUrl&&!h.imageUrl&&!h.fileUrl?`<a href="${h.url}" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none">🔗 رابط</a>`:''}
+        </div>
+      </div>
+      ${isMyGrade&&!isDone
+        ?`<button onclick="markDone('${gradeKey}','homework','${h.id}')"
+            style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">سلّمت ✓</button>`
+        :isDone?'<span style="color:var(--ok);font-size:13px;font-weight:700;flex-shrink:0">✅</span>':''}
+    </div>`;
+  }).join('');
+}
+
+// ── HANDLE VIDEO OPEN — embedded player ──
+window.handleVideoOpen = (url, id, gradeKey, title) => {
+  const ytId = extractYtId(url);
+  if(!ytId){ window.open(url,'_blank'); return; }
+  window._playerData = {id, gradeKey, url};
+  document.getElementById('playerTitle').textContent = title||'';
+  document.getElementById('playerIframe').src =
+    `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1`;
+  document.getElementById('playerModal').classList.add('open');
+  document.body.style.overflow='hidden';
+  // Auto mark done after 8 seconds of watching
+  setTimeout(()=>markDone(gradeKey,'videos',id), 8000);
+};
+
+// Inline toggle (for the new inline player)
+window.toggleVideo = (id, ytId, gradeKey) => {
+  const wrap  = document.getElementById('vp-'+id);
+  const frame = document.getElementById('vf-'+id);
+  if(!wrap) return;
+  const isOpen = wrap.style.display !== 'none';
+  // Close all others
+  document.querySelectorAll('[id^="vp-"]').forEach(w=>{
+    w.style.display='none';
+    const f=w.querySelector('iframe'); if(f) f.src='';
+  });
+  if(!isOpen){
+    wrap.style.display='block';
+    frame.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
+    setTimeout(()=>markDone(gradeKey,'videos',id), 8000);
+  }
+};
+window.closeVideo = (id) => {
+  const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);
+  if(w) w.style.display='none'; if(f) f.src='';
+};
+
+wi
