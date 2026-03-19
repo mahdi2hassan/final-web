@@ -448,23 +448,55 @@ auth.onAuthStateChanged(function(user){
     if(data.expiresAt){
       var exp = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
       if(new Date() > exp){
-        // ── انتهى الاشتراك: امسح الكود والاشتراك، افضل الحساب والصف ──
         db.collection('users').doc(user.uid).update({
-          subscriptionActive: false,
-          subscriptionCode: '',
-          expiresAt: null,
-          activatedAt: null
+          subscriptionActive: false, subscriptionCode: '', expiresAt: null, activatedAt: null
         });
         showExpiredStep(data.grade||'', data.gradeKey||'');
         return;
       }
     }
-    window.location.href = 'courses.html';
+    // ── Device check ──
+    var devId = getDeviceId();
+    var maxDevices = data.maxDevices || 3;
+    db.collection('users').doc(user.uid).collection('devices').get().then(function(devSnap){
+      var devices = devSnap.docs.map(function(d){ return {id:d.id,...d.data()}; });
+      var myDev   = devices.find(function(d){ return d.deviceId===devId; });
+      if(myDev){
+        // جهاز معروف — حدّث آخر دخول
+        db.collection('users').doc(user.uid).collection('devices').doc(myDev.id)
+          .update({lastSeen: new Date().toISOString()});
+        window.location.href = 'courses.html';
+      } else if(devices.length >= maxDevices){
+        // تجاوز الحد
+        auth.signOut();
+        showMsg('login-msg','وصلت للحد الأقصى من الأجهزة ('+maxDevices+') — تواصل مع المدرس لإعادة التفعيل ❌','error');
+        showStep('step-auth');
+      } else {
+        // جهاز جديد — أضفه
+        db.collection('users').doc(user.uid).collection('devices').add({
+          deviceId: devId,
+          userAgent: navigator.userAgent.slice(0,120),
+          addedAt: new Date().toISOString(),
+          lastSeen: new Date().toISOString()
+        }).then(function(){ window.location.href = 'courses.html'; });
+      }
+    });
   }).catch(function(){ showStep('step-auth'); });
 });
 
 // ── Helpers ──
 function phoneToEmail(p){ return '20'+p.replace(/\D/g,'').replace(/^0/,'')+'@plusinmath.edu'; }
+
+// ── Device ID (persistent fingerprint) ──
+function getDeviceId(){
+  var key = 'plusmath_did';
+  var did = localStorage.getItem(key);
+  if(!did){
+    did = 'dev_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem(key, did);
+  }
+  return did;
+}
 
 // ── LOGIN ──
 function doLogin(){
