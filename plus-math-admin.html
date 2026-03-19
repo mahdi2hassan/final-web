@@ -437,6 +437,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="sb-item on" onclick="goPage('overview')">
         <svg><use href="#ic-dash"/></svg><span>نظرة عامة</span>
       </div>
+      <div class="sb-item" onclick="goPage('analytics')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>الإحصائيات</span>
+      </div>
       <div class="sb-item" onclick="goPage('users')">
         <svg><use href="#ic-users"/></svg><span>الطلاب</span>
         <span class="sb-badge" id="pendBadge" style="display:none">0</span>
@@ -444,11 +448,27 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="sb-item" onclick="goPage('codes')">
         <svg><use href="#ic-key"/></svg><span>الأكواد</span>
       </div>
+      <div class="sb-item" onclick="goPage('coupons')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        <span>الكوبونات</span>
+      </div>
       <div class="sb-item" onclick="goPage('content')">
         <svg><use href="#ic-book"/></svg><span>المحتوى</span>
       </div>
       <div class="sb-item" onclick="goPage('broadcast')">
         <svg><use href="#ic-send"/></svg><span>إرسال جماعي</span>
+      </div>
+      <div class="sb-item" onclick="goPage('notifications')">
+        <svg><use href="#ic-bell"/></svg><span>الإشعارات</span>
+        <span class="sb-badge" id="notifBadge" style="display:none;background:var(--err)">0</span>
+      </div>
+      <div class="sb-item" onclick="goPage('activity')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+        <span>سجل النشاط</span>
+      </div>
+      <div class="sb-item" onclick="goPage('admins')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span>المشرفون</span>
       </div>
       <div class="sb-item" onclick="goPage('settings')">
         <svg><use href="#ic-settings"/></svg><span>الإعدادات</span>
@@ -701,139 +721,78 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </div>
       </div>
 
-    </div><!-- content -->
-  </div><!-- body-wrap -->
-</div><!-- shell -->
+      <!-- ══ ANALYTICS ══ -->
+      <div class="page" id="page-analytics">
+        <div class="sh"><div class="sh-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          الإحصائيات المتقدمة
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn primary sm" onclick="exportPDF()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+            تصدير PDF
+          </button>
+          <button class="btn ghost sm" onclick="buildAnalytics()">🔄 تحديث</button>
+        </div></div>
 
-<!-- Gen Modal -->
-<div class="mbg" id="genModal">
-  <div class="modal" style="max-width:480px">
-    <h3><svg><use href="#ic-key"/></svg>توليد أكواد اشتراك</h3>
+        <!-- Stats row extra -->
+        <div class="stats-row" style="margin-bottom:16px">
+          <div class="sc" style="background:rgba(167,139,250,0.08);border-color:rgba(167,139,250,0.2)">
+            <div class="sc-ico" style="background:rgba(167,139,250,0.12);color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg></div>
+            <div class="sc-val" id="an-renewal">—</div><div class="sc-lbl">نسبة التجديد</div>
+          </div>
+          <div class="sc" style="background:rgba(255,77,109,0.08);border-color:rgba(255,77,109,0.2)">
+            <div class="sc-ico" style="background:rgba(255,77,109,0.12);color:var(--err)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <div class="sc-val" id="an-expiring">—</div><div class="sc-lbl">غير مشتركين</div>
+          </div>
+          <div class="sc" style="background:rgba(0,214,143,0.08);border-color:rgba(0,214,143,0.2)">
+            <div class="sc-ico" style="background:rgba(0,214,143,0.12);color:var(--ok)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div>
+            <div class="sc-val" id="an-week">—</div><div class="sc-lbl">جدد هذا الأسبوع</div>
+          </div>
+          <div class="sc" style="background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.2)">
+            <div class="sc-ico" style="background:rgba(201,168,76,0.12);color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+            <div class="sc-val" id="an-revenue">—</div><div class="sc-lbl">إيرادات الأكواد</div>
+          </div>
+        </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-      <div class="ff" style="margin:0"><label>عدد الأكواد</label>
-        <input type="number" id="gc" value="10" min="1" max="100"/></div>
-      <div class="ff" style="margin:0"><label>السعر (جنيه)</label>
-        <input type="number" id="gp" placeholder="200"/></div>
-    </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+          <!-- Weekly chart -->
+          <div class="card">
+            <h4 style="margin-bottom:14px">📈 الاشتراكات الأسبوعية (آخر 7 أيام)</h4>
+            <div id="weekChart" style="display:flex;align-items:flex-end;gap:6px;height:100px;padding:4px 0"></div>
+            <div id="weekLabels" style="display:flex;gap:6px;margin-top:6px;font-size:10px;color:var(--muted)"></div>
+          </div>
+          <!-- Top grades -->
+          <div class="card">
+            <h4 style="margin-bottom:14px">🏆 أكثر الصفوف اشتراكاً</h4>
+            <div id="gradeChart"></div>
+          </div>
+        </div>
 
-    <div class="ff"><label>المرحلة الدراسية</label>
-      <select id="gs" onchange="updateGenGrades()">
-        <option value="">— اختار المرحلة —</option>
-        <option value="primary">ابتدائي</option>
-        <option value="prep">إعدادي</option>
-        <option value="sec">ثانوي</option>
-      </select>
-    </div>
-
-    <div class="ff" id="genGradeWrap" style="display:none"><label>الصف</label>
-      <select id="gg">
-        <option value="">— اختار الصف —</option>
-      </select>
-    </div>
-
-    <div id="genResult" style="display:none;margin-top:12px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div style="font-size:12px;color:var(--muted);font-weight:700">الأكواد المولّدة</div>
-        <button onclick="copyAllCodes()" style="padding:5px 12px;border:1px solid var(--blue);border-radius:7px;background:rgba(74,127,212,0.1);color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">📋 نسخ الكل</button>
-      </div>
-      <div id="genList" style="display:flex;flex-direction:column;gap:6px;max-height:260px;overflow-y:auto;padding:2px"></div>
-    </div>
-
-    <div class="mfooter">
-      <button class="btn ghost" onclick="closeModal('genModal')">إغلاق</button>
-      <button class="btn ok" onclick="genCodes()"><svg><use href="#ic-key"/></svg>توليد الأكواد</button>
-    </div>
-  </div>
-</div>
-
-<!-- Add Content Modal -->
-<div class="mbg" id="addContentModal">
-  <div class="modal" style="max-width:500px">
-    <h3 id="addContentTitle"><svg><use href="#ic-plus"/></svg>إضافة محتوى</h3>
-
-    <!-- VIDEO fields -->
-    <div id="fields-video">
-      <div class="ff"><label>عنوان الفيديو</label><input type="text" id="v-title" placeholder="مثال: الدرس الأول — المعادلات"/></div>
-      <div class="ff"><label>رابط اليوتيوب</label><input type="url" id="v-url" placeholder="https://youtube.com/watch?v=..."/></div>
-      <div class="ff"><label>وصف مختصر (اختياري)</label><input type="text" id="v-desc" placeholder="موضوع الفيديو"/></div>
-      <div class="ff"><label>المدة</label><input type="text" id="v-dur" placeholder="مثال: 45 دقيقة"/></div>
-      <div class="ff"><label>الترتيب</label><input type="number" id="v-order" placeholder="1" min="1"/></div>
-    </div>
-
-    <!-- EXAM fields -->
-    <div id="fields-exam" style="display:none">
-      <div class="ff"><label>عنوان الامتحان</label><input type="text" id="e-title" placeholder="مثال: امتحان الفصل الأول"/></div>
-      <div class="ff"><label>نوع الامتحان</label>
-        <select id="e-type" onchange="toggleExamType()">
-          <option value="mcq">اختيار من متعدد (MCQ)</option>
-          <option value="essay">مقالي</option>
-          <option value="pdf">ملف PDF</option>
-          <option value="link">لينك خارجي (Google Form)</option>
-        </select>
-      </div>
-      <div id="e-link-field" class="ff" style="display:none"><label>الرابط</label><input type="url" id="e-url" placeholder="https://..."/></div>
-      <div id="e-mcq-field" style="display:none">
-        <div class="ff"><label>الأسئلة (سؤال في كل سطر — الإجابة الصح ضع * قبلها)</label>
-          <textarea id="e-mcq" rows="6" placeholder="السؤال الأول؟&#10;* الإجابة الصح&#10;إجابة خاطئة&#10;إجابة خاطئة&#10;---&#10;السؤال الثاني؟&#10;* الإجابة الصح"></textarea>
+        <!-- Expiring soon table -->
+        <div class="card">
+          <h4 style="margin-bottom:12px">⚠️ اشتراكات تنتهي قريباً (خلال 7 أيام)</h4>
+          <div id="expiringTable"></div>
         </div>
       </div>
-      <div id="e-essay-field" style="display:none">
-        <div class="ff"><label>نص الامتحان المقالي</label><textarea id="e-essay" rows="5" placeholder="اكتب أسئلة الامتحان هنا..."></textarea></div>
+
+      <!-- ══ COUPONS ══ -->
+      <div class="page" id="page-coupons">
+        <div class="sh">
+          <div class="sh-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            كوبونات الخصم
+          </div>
+          <button class="btn primary sm" onclick="openModal('couponModal')">
+            <svg><use href="#ic-plus"/></svg>كوبون جديد
+          </button>
+        </div>
+        <div class="tw"><div class="tw-scroll">
+          <table>
+            <thead><tr><th>الكوبون</th><th>نوع الخصم</th><th>القيمة</th><th>الاستخدام</th><th>ينتهي</th><th>الحالة</th><th>إجراء</th></tr></thead>
+            <tbody id="couponsTbl"><tr><td colspan="7"><div class="empty"><p>لا يوجد كوبونات</p></div></td></tr></tbody>
+          </table>
+        </div></div>
       </div>
-      <div class="ff"><label>المدة (دقيقة)</label><input type="number" id="e-dur" placeholder="60"/></div>
-      <div class="ff"><label>الترتيب</label><input type="number" id="e-order" placeholder="1" min="1"/></div>
-    </div>
 
-    <!-- HOMEWORK fields -->
-    <div id="fields-homework" style="display:none">
-      <div class="ff"><label>عنوان الواجب</label><input type="text" id="h-title" placeholder="مثال: واجب الأسبوع الأول"/></div>
-      <div class="ff"><label>التعليمات</label><textarea id="h-desc" rows="3" placeholder="حل التمارين من 1 إلى 10..."></textarea></div>
-      <div class="ff"><label>موعد التسليم</label><input type="date" id="h-deadline"/></div>
-      <div class="ff"><label>رابط ملف/صورة (اختياري)</label><input type="url" id="h-url" placeholder="https://..."/></div>
-      <div class="ff"><label>الترتيب</label><input type="number" id="h-order" placeholder="1" min="1"/></div>
-    </div>
-
-    <div class="mfooter">
-      <button class="btn ghost" onclick="closeModal('addContentModal')">إلغاء</button>
-      <button class="btn primary" id="saveContentBtn" onclick="saveContent()"><svg><use href="#ic-check"/></svg>حفظ</button>
-    </div>
-  </div>
-</div>
-
-<!-- Student Details Modal -->
-<div class="mbg" id="studentModal">
-  <div class="modal" style="max-width:480px">
-    <h3><svg><use href="#ic-eye"/></svg>تفاصيل الطالب</h3>
-    <div id="studentModalContent"></div>
-    <div class="mfooter">
-      <button class="btn ghost" onclick="closeModal('studentModal')">إغلاق</button>
-    </div>
-  </div>
-</div>
-
-<!-- Toast -->
-<div class="toast" id="toast"><svg id="ti"><use href="#ic-check"/></svg><span id="tm"></span></div>
-
-<!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, getDoc, doc,
-         setDoc, addDoc, updateDoc, deleteDoc, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const cfg = {
-  apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
-  authDomain:"plusinmath-web.firebaseapp.com",
-  projectId:"plusinmath-web",
-  storageBucket:"plusinmath-web.firebasestorage.app",
-  messagingSenderId:"444492731461",
-  appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
-};
-const app = initializeApp(cfg);
-const db  = getFirestore(app);
-window._db = db;
-
-// ── LOAD ALL ──
-window.loadAll = async ()=>{
-  await P
+      
