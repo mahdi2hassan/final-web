@@ -599,23 +599,26 @@ nav{position:sticky;top:0;z-index:50;height:58px;
 </div>
 
 <!-- Firebase -->
-<!-- Firebase Compat -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- Firebase SDK (v9 compat) - loaded synchronously -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
+var _user, _userData, _progress = {};
+var auth, db;
 
-firebase.initializeApp({
+// Init Firebase
+var firebaseConfig = {
   apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
   authDomain:"plusinmath-web.firebaseapp.com",
   projectId:"plusinmath-web",
   storageBucket:"plusinmath-web.firebasestorage.app",
   messagingSenderId:"444492731461",
   appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
-});
-var auth = firebase.auth();
-var db   = firebase.firestore();
-var _user, _userData, _progress = {};
+};
+firebase.initializeApp(firebaseConfig);
+auth = firebase.auth();
+db   = firebase.firestore();
 
 // ── AUTH CHECK ──
 auth.onAuthStateChanged(function(user){
@@ -626,42 +629,45 @@ auth.onAuthStateChanged(function(user){
       window.location.href='plus-math-auth.html'; return;
     }
     var data = ud.data();
+    // Check 30-day expiry
     if(data.expiresAt){
       var exp = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
       if(new Date() > exp){
-        db.collection('users').doc(user.uid).update({subscriptionActive:false});
+        db.collection('users').doc(user.uid).update({subscriptionActive:false})
+          .catch(function(){});
         window.location.href='plus-math-auth.html'; return;
       }
     }
     _userData = data;
-    try{
-      db.collection('settings').doc('announcement').get().then(function(ann){
-        if(ann.exists && ann.data().show && ann.data().text){
-          document.getElementById('annText').textContent = ann.data().text;
-          document.getElementById('annBanner').classList.add('show');
-        }
-      });
-    }catch(e){}
+    // Load announcement
+    db.collection('settings').doc('announcement').get().then(function(ann){
+      if(ann.exists && ann.data().show && ann.data().text){
+        document.getElementById('annText').textContent = ann.data().text;
+        document.getElementById('annBanner').classList.add('show');
+      }
+    }).catch(function(){});
+    // Load progress
     db.collection('progress').doc(user.uid).get().then(function(pr){
       _progress = pr.exists ? pr.data() : {};
     }).catch(function(){ _progress={}; }).then(function(){
+      // Show page
       document.getElementById('loadingScreen').style.display='none';
       document.getElementById('navbar').style.display='flex';
       document.getElementById('mainContent').style.display='block';
       document.getElementById('userName').textContent = (_userData.name||'طالب').split(' ')[0];
-      document.getElementById('statGrade').textContent = _userData.grade||'—';
-      var sm = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'};
-      document.getElementById('statStage').textContent = sm[_userData.stage]||'—';
+      document.getElementById('statGrade').textContent  = _userData.grade||'—';
+      var sm={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'};
+      document.getElementById('statStage').textContent  = sm[_userData.stage]||'—';
       buildGrades();
       setTimeout(function(){
         if(_userData.gradeKey){
           var el=document.getElementById('gcard-'+_userData.gradeKey);
           if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
         }
-      },700);
+      },800);
     });
   }).catch(function(e){
-    console.error(e);
+    console.error('Auth error:',e);
     window.location.href='plus-math-auth.html';
   });
 });
@@ -846,6 +852,4 @@ function submitMcq(){
   });
   var pct=Math.round(score/_mcq.questions.length*100);
   document.getElementById('mcqResult').style.display='block';
-  document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">'+(pct>=60?'🎉':'💪')+'</div><div style="font-size:18px;font-weight:900;margin:8px 0">'+score+'/'+_mcq.questions.length+' صح</div><div style="font-size:14px;color:var(--muted)">'+pct+'%</div>';
-  document.getElementById('mcqBtn').style.display='none';
-  if(pct>=50) markDone(_mcq.gradeKey,'exams',_mcq.e
+  document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">'+(pct>=60?'🎉':'💪')+'</div><div style="font-size:18px;font-weight:900;margin:8px 0">'+sco
