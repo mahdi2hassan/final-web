@@ -862,14 +862,130 @@ try{
 }catch(e){}
 // ── Expose Firebase to window for books functions ──
 window._db = db;
-window._getDocs = getDocs;
-window._addDoc = addDoc;
-window._updateDoc = updateDoc;
-window._deleteDoc = deleteDoc;
-window._doc = doc;
-window._collection = collection;
-window._serverTimestamp = serverTimestamp;
 window._fbReady=true;
+
+// ══ BOOKS FUNCTIONS (inside module - has access to db) ══
+
+window.previewCover = (url) => {
+  const wrap = document.getElementById('bCoverPreview');
+  const img  = document.getElementById('bCoverImg');
+  if(url){ img.src=url; wrap.style.display='block'; }
+  else wrap.style.display='none';
+};
+
+window.saveBook = async () => {
+  const title = document.getElementById('bTitle').value.trim();
+  const price = document.getElementById('bPrice').value;
+  if(!title || !price){ window.toast('ادخل العنوان والسعر','err'); return; }
+  const btn = document.getElementById('bSaveBtn');
+  btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
+  try{
+    const data = {
+      title,
+      description: document.getElementById('bDesc').value.trim(),
+      price: parseFloat(price)||0,
+      gradeKey: document.getElementById('bGrade').value,
+      pages: parseInt(document.getElementById('bPages').value)||0,
+      order: parseInt(document.getElementById('bOrder').value)||1,
+      coverUrl: document.getElementById('bCover').value.trim(),
+      note: document.getElementById('bNote').value.trim(),
+      available: true,
+      updatedAt: serverTimestamp()
+    };
+    if(window._editId?.b){
+      await updateDoc(doc(db,'books',window._editId.b), data);
+      delete window._editId.b;
+      window.toast('تم تعديل الكتاب ✓','ok');
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db,'books'), data);
+      window.toast('تم إضافة الكتاب ✓','ok');
+    }
+    window.clearBook(); window.loadBooks();
+  }catch(e){ window.toast('خطأ: '+e.message,'err'); }
+  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ'; btn.disabled=false;
+};
+
+window.loadBooks = async () => {
+  const el = document.getElementById('bList');
+  el.innerHTML='<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
+  try{
+    const snap = await getDocs(collection(db,'books'));
+    const books = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+    const cnt = document.getElementById('cnt-b');
+    if(cnt) cnt.textContent = books.length ? '('+books.length+')':'';
+    if(!books.length){ el.innerHTML='<div class="empty"><p>لا يوجد كتب — ابدأ بالإضافة ⬆️</p></div>'; return; }
+    const GL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};
+    el.innerHTML=`<div class="items">${books.map((b,i)=>`
+      <div class="item" style="align-items:flex-start;gap:12px">
+        ${b.coverUrl?`<img src="${b.coverUrl}" style="width:48px;height:64px;object-fit:cover;border-radius:6px;flex-shrink:0;border:1px solid var(--b2)"/>`:`<div style="width:48px;height:64px;border-radius:6px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📚</div>`}
+        <div class="item-info" style="flex:1">
+          <div class="item-title">${b.title}</div>
+          <div class="item-meta">
+            <span style="color:var(--gold);font-weight:800">${b.price} جنيه</span>
+            ${b.gradeKey?`<span class="tag e">${GL[b.gradeKey]||b.gradeKey}</span>`:'<span class="tag v">كل الصفوف</span>'}
+            ${b.pages?`<span>📄 ${b.pages} صفحة</span>`:''}
+            <span class="tag ${b.available?'ok':'h'}">${b.available?'متاح':'غير متاح'}</span>
+          </div>
+          ${b.description?`<div style="font-size:11px;color:var(--muted);margin-top:3px">${b.description}</div>`:''}
+        </div>
+        <div class="item-acts">
+          <button class="ia" onclick="editBook('${b.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
+          <button class="ia" onclick="toggleBookAvail('${b.id}',${!b.available})" style="color:${b.available?'var(--warn)':'var(--ok)'}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px">${b.available?'<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>':'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'}</svg>
+          </button>
+          <button class="ia del" onclick="deleteBook('${b.id}','${(b.title||'').replace(/'/g,"\\'")}')"><svg><use href="#i-trash"/></svg></button>
+        </div>
+      </div>`).join('')}</div>`;
+  }catch(e){ el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`; }
+};
+
+window.editBook = async (id) => {
+  try{
+    const d = await getDoc(doc(db,'books',id));
+    if(!d.exists()) return;
+    const b = d.data();
+    window._editId = window._editId||{};
+    window._editId.b = id;
+    document.getElementById('bTitle').value = b.title||'';
+    document.getElementById('bDesc').value  = b.description||'';
+    document.getElementById('bPrice').value = b.price||'';
+    document.getElementById('bGrade').value = b.gradeKey||'';
+    document.getElementById('bPages').value = b.pages||'';
+    document.getElementById('bOrder').value = b.order||'';
+    document.getElementById('bCover').value = b.coverUrl||'';
+    document.getElementById('bNote').value  = b.note||'';
+    window.previewCover(b.coverUrl||'');
+    window.scrollTo({top:0,behavior:'smooth'});
+    window.toast('جاهز للتعديل ✏️','ok');
+  }catch(e){ window.toast('خطأ: '+e.message,'err'); }
+};
+
+window.toggleBookAvail = async (id, state) => {
+  try{
+    await updateDoc(doc(db,'books',id),{available:state});
+    window.loadBooks();
+    window.toast(state?'الكتاب متاح الآن ✓':'تم إخفاء الكتاب','ok');
+  }catch(e){ window.toast('خطأ','err'); }
+};
+
+window.deleteBook = async (id, title) => {
+  if(!confirm('حذف "'+title+'"؟')) return;
+  try{
+    await deleteDoc(doc(db,'books',id));
+    window.loadBooks();
+    window.toast('تم الحذف','ok');
+  }catch(e){ window.toast('خطأ: '+e.message,'err'); }
+};
+
+window.clearBook = () => {
+  ['bTitle','bDesc','bPrice','bPages','bOrder','bCover','bNote'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('bGrade').value='';
+  document.getElementById('bCoverPreview').style.display='none';
+  if(window._editId) delete window._editId.b;
+};
 </script>
 
 <script>
@@ -990,136 +1106,6 @@ function clearHFile(){
   document.getElementById('hFileUrl').value='';
   document.getElementById('hPreview').classList.remove('show');
   document.getElementById('hFile').value='';
-}
-
-// ── Cover preview ──
-function previewCover(url){
-  const wrap = document.getElementById('bCoverPreview');
-  const img  = document.getElementById('bCoverImg');
-  if(url){ img.src=url; wrap.style.display='block'; }
-  else wrap.style.display='none';
-}
-
-// ── Save Book ──
-window.saveBook = async () => {
-  const title = document.getElementById('bTitle').value.trim();
-  const price = document.getElementById('bPrice').value;
-  if(!title || !price){ toast('ادخل العنوان والسعر','err'); return; }
-  if(!window._db){ toast('Firebase مش جاهز — انتظر ثانية','err'); return; }
-  const btn = document.getElementById('bSaveBtn');
-  btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
-  try{
-    const data = {
-      title,
-      description: document.getElementById('bDesc').value.trim(),
-      price: parseFloat(price)||0,
-      gradeKey: document.getElementById('bGrade').value,
-      pages: parseInt(document.getElementById('bPages').value)||0,
-      order: parseInt(document.getElementById('bOrder').value)||1,
-      coverUrl: document.getElementById('bCover').value.trim(),
-      note: document.getElementById('bNote').value.trim(),
-      available: true,
-      updatedAt: window._serverTimestamp()
-    };
-    if(window._editId?.b){
-      await window._db.collection('books').doc(window._editId.b).update(data);
-      delete window._editId.b;
-      toast('تم تعديل الكتاب ✓','ok');
-    } else {
-      data.createdAt = window._serverTimestamp();
-      await window._db.collection('books').add(data);
-      toast('تم إضافة الكتاب ✓','ok');
-    }
-    clearBook(); loadBooks();
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ'; btn.disabled=false;
-};
-
-// ── Load Books ──
-window.loadBooks = async () => {
-  const el = document.getElementById('bList');
-  el.innerHTML='<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
-  if(!window._db){ el.innerHTML='<div class="empty"><p>Firebase مش جاهز — انتظر وحاول تاني</p></div>'; return; }
-  try{
-    const snap = await window._db.collection('books').get();
-    const books = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
-    const cnt = document.getElementById('cnt-b');
-    if(cnt) cnt.textContent = books.length ? '('+books.length+')':'';
-    if(!books.length){ el.innerHTML='<div class="empty"><p>لا يوجد كتب — ابدأ بالإضافة ⬆️</p></div>'; return; }
-    const GRADE_LABEL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};
-    el.innerHTML=`<div class="items">${books.map((b,i)=>`
-      <div class="item" style="align-items:flex-start;gap:12px">
-        ${b.coverUrl?`<img src="${b.coverUrl}" style="width:48px;height:64px;object-fit:cover;border-radius:6px;flex-shrink:0;border:1px solid var(--b2)"/>`:`<div style="width:48px;height:64px;border-radius:6px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📚</div>`}
-        <div class="item-info" style="flex:1">
-          <div class="item-title">${b.title}</div>
-          <div class="item-meta">
-            <span style="color:var(--gold);font-weight:800">${b.price} جنيه</span>
-            ${b.gradeKey?`<span class="tag e">${GRADE_LABEL[b.gradeKey]||b.gradeKey}</span>`:'<span class="tag v">كل الصفوف</span>'}
-            ${b.pages?`<span>📄 ${b.pages} صفحة</span>`:''}
-            <span class="tag ${b.available?'ok':'h'}">${b.available?'متاح':'غير متاح'}</span>
-          </div>
-          ${b.description?`<div style="font-size:11px;color:var(--muted);margin-top:3px">${b.description}</div>`:''}
-        </div>
-        <div class="item-acts">
-          <button class="ia" onclick="editBook('${b.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
-          <button class="ia" onclick="toggleBookAvail('${b.id}',${!b.available})" title="${b.available?'إخفاء':'إظهار'}" style="color:${b.available?'var(--warn)':'var(--ok)'}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px">${b.available?'<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>':'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'}</svg>
-          </button>
-          <button class="ia del" onclick="deleteBook('${b.id}','${(b.title||'').replace(/'/g,"\\'")}')"><svg><use href="#i-trash"/></svg></button>
-        </div>
-      </div>`).join('')}</div>`;
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-};
-
-// ── Edit Book ──
-window.editBook = async (id) => {
-  try{
-    const d = await window._db.collection('books').doc(id).get();
-    if(!d.exists) return;
-    const b = d.data();
-    window._editId = window._editId||{};
-    window._editId.b = id;
-    document.getElementById('bTitle').value = b.title||'';
-    document.getElementById('bDesc').value  = b.description||'';
-    document.getElementById('bPrice').value = b.price||'';
-    document.getElementById('bGrade').value = b.gradeKey||'';
-    document.getElementById('bPages').value = b.pages||'';
-    document.getElementById('bOrder').value = b.order||'';
-    document.getElementById('bCover').value = b.coverUrl||'';
-    document.getElementById('bNote').value  = b.note||'';
-    previewCover(b.coverUrl||'');
-    window.scrollTo({top:0,behavior:'smooth'});
-    toast('جاهز للتعديل ✏️','ok');
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-};
-
-// ── Toggle availability ──
-window.toggleBookAvail = async (id, state) => {
-  try{
-    await window._db.collection('books').doc(id).update({available:state});
-    loadBooks();
-    toast(state?'الكتاب متاح الآن ✓':'تم إخفاء الكتاب','ok');
-  }catch(e){ toast('خطأ','err'); }
-};
-
-// ── Delete Book ──
-window.deleteBook = async (id, title) => {
-  if(!confirm('حذف "'+title+'"؟')) return;
-  try{
-    await window._db.collection('books').doc(id).delete();
-    loadBooks();
-    toast('تم الحذف','ok');
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-};
-
-// ── Clear Book form ──
-function clearBook(){
-  ['bTitle','bDesc','bPrice','bPages','bOrder','bCover','bNote'].forEach(id=>{
-    document.getElementById(id).value='';
-  });
-  document.getElementById('bGrade').value='';
-  document.getElementById('bCoverPreview').style.display='none';
-  if(window._editId) delete window._editId.b;
 }
 
 // ── Toast ──
