@@ -732,14 +732,16 @@ function applyCoupon(){
       if(d.maxUses && (d.usedCount||0) >= d.maxUses){
         showCouponMsg('الكوبون استُنفد ❌','error'); return;
       }
-      var isFree = (d.type==='percent' && d.value>=100);
+      var subPrice = parseFloat(document.getElementById('sub-price').textContent) || 0;
+      // Calculate discounted price first
+      var discounted = d.type==='percent'
+        ? Math.max(0, subPrice - subPrice*(d.value/100))
+        : Math.max(0, subPrice - d.value);
+      // Free = 100% percent OR fixed that reaches 0
+      var isFree = (d.type==='percent' && d.value>=100) || (discounted === 0 && subPrice > 0) || (d.type==='percent' && d.value>=100);
       _activeCoupon = {id:cp.id, code:d.code, type:d.type, value:d.value, isFree:isFree, data:d};
       // Show price display
-      var subPrice = parseFloat(document.getElementById('sub-price').textContent) || 0;
       if(subPrice > 0){
-        var discounted = d.type==='percent'
-          ? Math.max(0, subPrice - subPrice*(d.value/100))
-          : Math.max(0, subPrice - d.value);
         document.getElementById('orig-price').textContent = subPrice+' جنيه';
         document.getElementById('disc-price').textContent = isFree ? 'مجاناً 🎉' : Math.round(discounted)+' جنيه';
         document.getElementById('price-display').style.display='block';
