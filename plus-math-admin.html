@@ -886,6 +886,23 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
 
           <div class="card">
+            <h4>💳 إعدادات الدفع والمحافظ</h4>
+            <div class="ff"><label>رقم Vodafone Cash</label>
+              <input type="text" id="pay-vf" placeholder="مثال: 01XXXXXXXXX"/></div>
+            <div class="ff"><label>رقم InstaPay / Orange Cash</label>
+              <input type="text" id="pay-ip" placeholder="مثال: 01XXXXXXXXX"/></div>
+            <div class="ff"><label>اسم صاحب المحفظة</label>
+              <input type="text" id="pay-name" placeholder="مثال: مهدي حسن"/></div>
+            <div class="ff"><label>تعليمات الدفع (بتظهر للطالب)</label>
+              <textarea id="pay-note" rows="3" placeholder="مثال: حوّل المبلغ وابعت screenshot على واتساب..."></textarea></div>
+            <div class="ff"><label>رقم واتساب للتأكيد</label>
+              <input type="text" id="pay-wa" placeholder="مثال: 01XXXXXXXXX"/></div>
+            <button class="btn ok" style="width:100%;justify-content:center" onclick="savePaySettings()">
+              <svg><use href="#ic-check"/></svg>حفظ إعدادات الدفع
+            </button>
+          </div>
+
+          <div class="card">
             <h4><svg><use href="#ic-lock"/></svg>تغيير كلمة المرور</h4>
             <div class="ff"><label>الكلمة الحالية</label>
               <input type="password" id="old-p" placeholder="••••••••"/></div>
@@ -1331,6 +1348,16 @@ window.wloadSettings = async ()=>{
     }
     const adm = await db.collection('settings').doc('admin').get();
     if(adm.exists) window._ap = adm.data().pass;
+    // Load payment settings
+    const pay = await db.collection('settings').doc('payment').get();
+    if(pay.exists){
+      const pd = pay.data();
+      document.getElementById('pay-vf').value   = pd.vodafone||'';
+      document.getElementById('pay-ip').value   = pd.instapay||'';
+      document.getElementById('pay-name').value = pd.ownerName||'';
+      document.getElementById('pay-note').value = pd.note||'';
+      document.getElementById('pay-wa').value   = pd.whatsapp||'';
+    }
   }catch(e){ console.warn('settings:',e.message); }
 };
 
@@ -1356,6 +1383,21 @@ window.saveSub = async ()=>{
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     toast('تم حفظ الإعدادات ✓','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── SAVE PAYMENT SETTINGS ──
+window.savePaySettings = async ()=>{
+  try{
+    await db.collection('settings').doc('payment').set({
+      vodafone:  document.getElementById('pay-vf').value.trim(),
+      instapay:  document.getElementById('pay-ip').value.trim(),
+      ownerName: document.getElementById('pay-name').value.trim(),
+      note:      document.getElementById('pay-note').value.trim(),
+      whatsapp:  document.getElementById('pay-wa').value.trim(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('تم حفظ إعدادات الدفع ✓','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
@@ -2105,7 +2147,7 @@ window.dispatchEvent(new Event('fbReady'));
 // ═══ STATE ═══
 let PASS = 'plus2026';
 let _uf = 'all', _cf = 'all';
-let _loggedAdmin = null;
+window._loggedAdmin = null;
 
 // ═══ AUTH ═══
 async function tryLogin(){
@@ -2128,7 +2170,7 @@ async function tryLogin(){
     // 1. Check super admin
     const storedPass = window._ap || PASS;
     if(u === 'admin' && (p === storedPass || p === PASS)){
-      _loggedAdmin = {name:'المدير', username:'admin', isSuperAdmin:true,
+      window._loggedAdmin = {name:'المدير', username:'admin', isSuperAdmin:true,
         permissions:{users:true,content:true,codes:true,broadcast:true}};
       if(btn){ btn.textContent='دخول'; btn.disabled=false; }
       openDashboard(); return;
@@ -2141,7 +2183,7 @@ async function tryLogin(){
         const doc = snap.docs[0];
         const data = doc.data();
         if(data.password === btoa(p)){
-          _loggedAdmin = { id:doc.id, ...data, isSuperAdmin:false };
+          window._loggedAdmin = { id:doc.id, ...data, isSuperAdmin:false };
           window._adminPerms = data.permissions || {};
           if(btn){ btn.textContent='دخول'; btn.disabled=false; }
           openDashboard();
@@ -2158,7 +2200,7 @@ async function tryLogin(){
   }catch(e){
     // Firebase error — try default admin only
     const sp = window._ap || PASS;
-    if(u==='admin' && (p===sp||p===PASS)){ _loggedAdmin={name:'المدير',username:'admin',isSuperAdmin:true}; openDashboard(); }
+    if(u==='admin' && (p===sp||p===PASS)){ window._loggedAdmin = {name:'المدير',username:'admin',isSuperAdmin:true}; openDashboard(); }
     else showLoginErr('تعذر الاتصال — حاول تاني');
   }
   if(btn){ btn.textContent='دخول'; btn.disabled=false; }

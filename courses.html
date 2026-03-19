@@ -15,6 +15,87 @@
 }
 html,body{min-height:100dvh;overflow-x:hidden}
 body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
+
+/* ══ SCREENSHOT PROTECTION ══ */
+#courseView, .overlay, #playerModal, #mcqModal, #imgModal {
+  -webkit-user-select:none;-moz-user-select:none;user-select:none;
+}
+/* Watermark overlay on video player */
+.player-iframe-wrap{position:relative}
+.player-iframe-wrap::after{
+  content:attr(data-wm);
+  position:absolute;inset:0;pointer-events:none;z-index:5;
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(11px,2.5vw,14px);font-weight:700;color:rgba(255,255,255,0.12);
+  transform:rotate(-25deg);letter-spacing:2px;
+  background:repeating-linear-gradient(
+    -45deg,transparent,transparent 60px,
+    rgba(255,255,255,0.015) 60px,rgba(255,255,255,0.015) 61px
+  );
+}
+
+/* ══ BOOKS STYLES ══ */
+.books-grid-inline{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.book-card-sm{background:var(--s2);border:1px solid var(--b2);border-radius:12px;
+  overflow:hidden;transition:all .2s;cursor:pointer}
+.book-card-sm:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);border-color:var(--gold)}
+.bc-cover{width:100%;aspect-ratio:3/4;object-fit:cover;background:linear-gradient(135deg,var(--navy),rgba(201,168,76,.2))}
+.bc-cover-ph{width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,rgba(26,50,112,.5),rgba(12,18,40,.8));
+  display:flex;align-items:center;justify-content:center;font-size:36px}
+.bc-info{padding:10px}
+.bc-title{font-size:12px;font-weight:800;line-height:1.4;margin-bottom:4px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bc-price{font-size:14px;font-weight:900;color:var(--gold2)}
+.bc-buy{width:100%;margin-top:6px;padding:7px;border:none;border-radius:7px;
+  background:linear-gradient(135deg,var(--gold),#8a5810);color:#fff;
+  cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:800}
+
+/* Book detail sheet */
+.book-sheet-bg{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.75);
+  backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.book-sheet-bg.open{display:flex}
+.book-sheet{background:rgba(8,13,28,.98);border:1px solid var(--b1);
+  border-radius:20px 20px 0 0;width:100%;max-width:520px;
+  max-height:90dvh;overflow-y:auto;
+  animation:slideUp .3s cubic-bezier(.22,1,.36,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.bs-head{display:flex;gap:14px;padding:18px 18px 0}
+.bs-cover{width:80px;height:107px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--b2)}
+.bs-cover-ph{width:80px;height:107px;border-radius:8px;flex-shrink:0;border:1px solid var(--b2);
+  background:linear-gradient(135deg,rgba(26,50,112,.5),rgba(12,18,40,.8));
+  display:flex;align-items:center;justify-content:center;font-size:30px}
+.bs-info{flex:1;min-width:0}
+.bs-title{font-size:15px;font-weight:900;line-height:1.4;margin-bottom:4px}
+.bs-grade{font-size:11px;color:var(--blue);font-weight:700;margin-bottom:6px}
+.bs-price{font-size:20px;font-weight:900;color:var(--gold2)}
+.bs-pages{font-size:11px;color:var(--muted);margin-top:2px}
+.bs-body{padding:14px 18px}
+.bs-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px}
+.bs-note{font-size:12px;color:var(--warn);background:rgba(245,166,35,.06);
+  border:1px solid rgba(245,166,35,.2);border-radius:8px;padding:9px 11px;
+  margin-bottom:12px;line-height:1.7}
+.bs-pay{background:rgba(6,10,22,.7);border:1px solid var(--b1);border-radius:12px;padding:14px}
+.bs-pay-title{font-size:12px;font-weight:800;color:var(--gold2);margin-bottom:10px}
+.pay-row{display:flex;align-items:center;gap:10px;padding:9px 10px;
+  background:rgba(74,127,212,.05);border:1px solid var(--b2);border-radius:9px;margin-bottom:8px}
+.pay-row-ico{font-size:18px;flex-shrink:0}
+.pay-row-info{flex:1}
+.pay-row-name{font-size:11px;font-weight:800}
+.pay-row-num{font-size:14px;font-weight:900;color:var(--gold2);direction:ltr;letter-spacing:1px}
+.pay-row-owner{font-size:10px;color:var(--muted)}
+.copy-btn{padding:4px 9px;border:1px solid var(--b2);border-radius:6px;background:transparent;
+  color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px}
+.copy-btn:hover{border-color:var(--gold);color:var(--gold)}
+.bs-steps{font-size:12px;color:var(--muted);line-height:2;margin:10px 0 12px}
+.bs-steps b{color:var(--text)}
+.wa-buy-btn{width:100%;padding:12px;border:none;border-radius:10px;cursor:pointer;
+  background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;
+  font-family:'Tajawal',sans-serif;font-size:13px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;gap:8px}
+.bs-close{position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:50%;
+  border:1px solid var(--b2);background:rgba(8,13,28,.8);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.bs-close svg{width:12px;height:12px}
 .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:linear-gradient(rgba(74,127,212,0.04) 1px,transparent 1px),
   linear-gradient(90deg,rgba(74,127,212,0.04) 1px,transparent 1px);background-size:44px 44px}
@@ -255,6 +336,9 @@ nav{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center
     <button class="cv-tab" onclick="switchTab('homework',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>الواجبات
     </button>
+    <button class="cv-tab" onclick="switchTab('books',this)">
+      📚 الكتب
+    </button>
     <button class="cv-tab" onclick="switchTab('progress',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>تقدمك
     </button>
@@ -263,6 +347,7 @@ nav{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center
     <div class="tab-pane on" id="tp-videos"><div class="video-list" id="videoList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-exams"><div class="exam-list" id="examList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-homework"><div class="hw-list" id="hwList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
+    <div class="tab-pane" id="tp-books"><div id="booksList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-progress">
       <div class="prog-card">
         <h4>📊 تقدمك الدراسي</h4>
@@ -314,6 +399,17 @@ nav{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center
 
 <div class="toast" id="toast"><span id="tMsg"></span></div>
 
+<!-- Book Detail Sheet -->
+<div class="book-sheet-bg" id="bookSheet" onclick="handleSheetClick(event)">
+  <div class="book-sheet" id="bookSheetContent" style="position:relative">
+    <button class="bs-close" onclick="closeBookSheet()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="bsHead" class="bs-head"></div>
+    <div id="bsBody" class="bs-body"></div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -322,6 +418,7 @@ import { getFirestore, doc, getDoc, getDocs, collection, setDoc } from "https://
 const app  = initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
 const auth = getAuth(app);
 const db   = getFirestore(app);
+window._db = db;
 let _user,_userData,_progress={},_playerData=null,_imgData=null;
 
 onAuthStateChanged(auth,async(user)=>{
@@ -333,7 +430,17 @@ onAuthStateChanged(auth,async(user)=>{
     _userData=ud.data();
     if(_userData.expiresAt){
       const exp=_userData.expiresAt.toDate?_userData.expiresAt.toDate():new Date(_userData.expiresAt);
-      if(new Date()>exp){window.location.href='plus-math-auth.html';return;}
+      if(new Date()>exp){
+        // ── انتهى الاشتراك: امسح الكود والاشتراك، الحساب والصف يفضل ──
+        setDoc(doc(db,'users',user.uid),{
+          subscriptionActive:false,
+          subscriptionCode:'',
+          expiresAt:null,
+          activatedAt:null
+        },{merge:true}).catch(()=>{});
+        window.location.href='plus-math-auth.html';
+        return;
+      }
     }
     document.getElementById('loadingScreen').style.display='none';
     document.getElementById('navbar').style.display='flex';
@@ -341,6 +448,9 @@ onAuthStateChanged(auth,async(user)=>{
     document.getElementById('userName').textContent=_userData.name?.split(' ')[0]||'طالب';
     document.getElementById('statGrade').textContent=_userData.grade||'—';
     document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
+    window._userData = _userData;
+    // Set video watermark with student info
+    setTimeout(()=>{ if(window.setWatermark) window.setWatermark(_userData.name||'طالب', _userData.phone||''); }, 500);
     try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
     try{const pr=await getDoc(doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={};}
     buildGrades();
@@ -636,6 +746,144 @@ function switchTab(name,btn){
   document.querySelectorAll('.cv-tab').forEach(b=>b.classList.remove('on'));
   document.getElementById('tp-'+name)?.classList.add('on');
   if(btn)btn.classList.add('on');
+  if(name==='books') loadBooksTab();
+}
+
+// ══════════════════════════════════════
+// ── SCREENSHOT PROTECTION ──
+// ══════════════════════════════════════
+// Disable right-click on course view
+document.getElementById('courseView').addEventListener('contextmenu',e=>e.preventDefault());
+
+// Disable screenshot shortcuts & print
+document.addEventListener('keydown',e=>{
+  // PrintScreen
+  if(e.key==='PrintScreen'||e.keyCode===44){
+    e.preventDefault();
+    // Blank the screen for 1 second
+    const cover=document.createElement('div');
+    cover.style.cssText='position:fixed;inset:0;background:#000;z-index:9999';
+    document.body.appendChild(cover);
+    setTimeout(()=>cover.remove(),1200);
+    return false;
+  }
+  // Ctrl+P (print), Ctrl+S (save), Ctrl+Shift+I (devtools), F12
+  if((e.ctrlKey||e.metaKey) && (e.key==='p'||e.key==='s'||e.key==='u')){e.preventDefault();return false;}
+  if((e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||(e.key==='F12')){e.preventDefault();return false;}
+  if(e.key==='Escape') closeCourse();
+});
+
+// Disable text selection on content
+document.getElementById('courseView').addEventListener('selectstart',e=>e.preventDefault());
+
+// Add watermark to video player with student info
+function setWatermark(name,phone){
+  const wrap = document.querySelector('.player-iframe-wrap');
+  if(wrap) wrap.setAttribute('data-wm', name+' · '+phone);
+}
+
+// ══════════════════════════════════════
+// ── BOOKS TAB ──
+// ══════════════════════════════════════
+let _books=[], _paySettings={};
+
+async function loadBooksTab(){
+  const el = document.getElementById('booksList');
+  if(_books.length){ renderBooksTab(); return; }
+  el.innerHTML='<div class="empty"><p>جاري التحميل...</p></div>';
+  try{
+    // Load books + payment settings in parallel
+    const [bSnap, payDoc] = await Promise.all([
+      window._db ? window._db.collection('books').get() : Promise.resolve({docs:[]}),
+      window._db ? window._db.collection('settings').doc('payment').get() : Promise.resolve({exists:false})
+    ]);
+    _books = bSnap.docs.map(d=>({id:d.id,...d.data()}))
+      .filter(b=>b.available!==false)
+      .sort((a,b)=>(a.order||0)-(b.order||0));
+    if(payDoc.exists) _paySettings = payDoc.data();
+    renderBooksTab();
+  }catch(e){ el.innerHTML='<div class="empty"><p>تعذر تحميل الكتب</p></div>'; }
+}
+
+const GL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};
+
+function renderBooksTab(){
+  const el = document.getElementById('booksList');
+  if(!_books.length){ el.innerHTML='<div class="empty"><p>لا يوجد كتب متاحة حالياً</p></div>'; return; }
+  el.innerHTML=`<div class="books-grid-inline">${_books.map(b=>`
+    <div class="book-card-sm" onclick="openBookSheet('${b.id}')">
+      ${b.coverUrl
+        ?`<img class="bc-cover" src="${b.coverUrl}" alt="${b.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="bc-cover-ph" style="display:none">📚</div>`
+        :`<div class="bc-cover-ph">📚</div>`}
+      <div class="bc-info">
+        <div class="bc-title">${b.title}</div>
+        <div class="bc-price">${b.price} جنيه</div>
+        <button class="bc-buy" onclick="event.stopPropagation();openBookSheet('${b.id}')">اشتري الآن</button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function openBookSheet(id){
+  const b = _books.find(x=>x.id===id);
+  if(!b) return;
+  const pay = _paySettings;
+  const ud  = window._userData||{};
+
+  document.getElementById('bsHead').innerHTML=`
+    ${b.coverUrl
+      ?`<img class="bs-cover" src="${b.coverUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="bs-cover-ph" style="display:none">📚</div>`
+      :`<div class="bs-cover-ph">📚</div>`}
+    <div class="bs-info">
+      <div class="bs-title">${b.title}</div>
+      <div class="bs-grade">${b.gradeKey?GL[b.gradeKey]:'مناسب لكل الصفوف'}</div>
+      <div class="bs-price">${b.price} جنيه</div>
+      ${b.pages?`<div class="bs-pages">📄 ${b.pages} صفحة</div>`:''}
+    </div>`;
+
+  const methods=[];
+  if(pay.vodafone) methods.push({ico:'🔴',name:'Vodafone Cash',num:pay.vodafone,owner:pay.ownerName||''});
+  if(pay.instapay) methods.push({ico:'💙',name:'InstaPay / Orange Cash',num:pay.instapay,owner:pay.ownerName||''});
+  const methodsHtml = methods.map(m=>`
+    <div class="pay-row">
+      <div class="pay-row-ico">${m.ico}</div>
+      <div class="pay-row-info">
+        <div class="pay-row-name">${m.name}</div>
+        <div class="pay-row-num">${m.num}</div>
+        ${m.owner?`<div class="pay-row-owner">${m.owner}</div>`:''}
+      </div>
+      <button class="copy-btn" onclick="copyNum('${m.num}')">نسخ</button>
+    </div>`).join('');
+
+  const waNum = pay.whatsapp?'20'+(pay.whatsapp||'').replace(/^0/,'').replace(/\D/g,''):'';
+  const waMsg = encodeURIComponent(`مرحباً، عايز أشتري كتاب "${b.title}" بسعر ${b.price} جنيه\nاسمي: ${ud.name||''}\nالصف: ${ud.grade||''}`);
+
+  document.getElementById('bsBody').innerHTML=`
+    ${b.description?`<div class="bs-desc">${b.description}</div>`:''}
+    ${b.note?`<div class="bs-note">📌 ${b.note}</div>`:''}
+    <div class="bs-pay">
+      <div class="bs-pay-title">💳 طريقة الشراء</div>
+      ${methodsHtml||'<div style="font-size:12px;color:var(--muted)">سيتم إضافة طرق الدفع قريباً</div>'}
+      <div class="bs-steps">${pay.note||`<b>الخطوات:</b><br>1️⃣ حوّل <b>${b.price} جنيه</b><br>2️⃣ صوّر الإيصال<br>3️⃣ ابعته على واتساب 📦`}</div>
+      ${waNum?`<button class="wa-buy-btn" onclick="window.open('https://wa.me/${waNum}?text=${waMsg}','_blank')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        تأكيد الشراء على واتساب
+      </button>`:''}
+    </div>`;
+
+  document.getElementById('bookSheet').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeBookSheet(){
+  document.getElementById('bookSheet').classList.remove('open');
+  document.body.style.overflow='';
+}
+function handleSheetClick(e){ if(e.target===document.getElementById('bookSheet')) closeBookSheet(); }
+
+function copyNum(num){
+  if(navigator.clipboard) navigator.clipboard.writeText(num);
+  else{const t=document.createElement('textarea');t.value=num;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);}
+  showToast('تم نسخ الرقم ✓','ok');
 }
 let tTimer;
 function showToast(msg,type='ok'){

@@ -225,6 +225,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></symbol>
   <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
   <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></symbol>
 </svg>
 
 <div class="bg-grid"></div>
@@ -283,13 +285,30 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </optgroup>
       </select>
       <span class="grade-info" id="gInfo"></span>
+      <!-- Quick stats -->
+      <div id="gStats" style="display:none;display:flex;gap:10px;margin-right:auto;flex-wrap:wrap">
+        <span id="gst-v" style="font-size:11px;color:var(--blue);font-weight:700;padding:3px 8px;background:rgba(74,127,212,0.1);border-radius:6px">—</span>
+        <span id="gst-e" style="font-size:11px;color:var(--gold);font-weight:700;padding:3px 8px;background:rgba(201,168,76,0.1);border-radius:6px">—</span>
+        <span id="gst-h" style="font-size:11px;color:var(--purple);font-weight:700;padding:3px 8px;background:rgba(167,139,250,0.1);border-radius:6px">—</span>
+      </div>
     </div>
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="tbtn on" id="tv" onclick="switchTab('v')"><svg><use href="#i-yt"/></svg>الفيديوهات</button>
-      <button class="tbtn" id="te" onclick="switchTab('e')"><svg><use href="#i-check"/></svg>الامتحانات</button>
-      <button class="tbtn" id="th" onclick="switchTab('h')"><svg><use href="#i-file"/></svg>الواجبات</button>
+      <button class="tbtn on" id="tv" onclick="switchTab('v')"><svg><use href="#i-yt"/></svg>الفيديوهات <span id="cnt-v" style="font-size:10px;opacity:.7"></span></button>
+      <button class="tbtn" id="te" onclick="switchTab('e')"><svg><use href="#i-check"/></svg>الامتحانات <span id="cnt-e" style="font-size:10px;opacity:.7"></span></button>
+      <button class="tbtn" id="th" onclick="switchTab('h')"><svg><use href="#i-file"/></svg>الواجبات <span id="cnt-h" style="font-size:10px;opacity:.7"></span></button>
+      <button class="tbtn" id="tb" onclick="switchTab('b')" style="background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border-color:rgba(201,168,76,0.3);color:var(--gold)">📚 الكتب <span id="cnt-b" style="font-size:10px;opacity:.7"></span></button>
+    </div>
+
+    <!-- Search bar (shown when grade selected) -->
+    <div id="searchBar" style="display:none;padding:0 clamp(14px,4vw,24px);margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(6,10,22,0.6);border:1px solid var(--b2);border-radius:10px;padding:8px 12px">
+        <svg width="14" height="14" style="color:var(--muted);flex-shrink:0"><use href="#i-search"/></svg>
+        <input id="contentSearchInput" placeholder="بحث في المحتوى..." oninput="filterItems()"
+          style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;width:100%"/>
+        <button onclick="document.getElementById('contentSearchInput').value='';filterItems()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0">×</button>
+      </div>
     </div>
 
     <!-- ══════════════════ VIDEOS ══════════════════ -->
@@ -485,6 +504,85 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </div>
         <div id="hList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
       </div>
+    </div>
+
+    <!-- ══════════════════ BOOKS ══════════════════ -->
+    <div id="sb" style="display:none">
+
+      <!-- Add Book -->
+      <div class="card">
+        <div class="card-head">
+          <h3>📚 إضافة كتاب</h3>
+          <button class="btn sm ghost" onclick="clearBook()">مسح</button>
+          <button class="btn sm gold" id="bSaveBtn" onclick="saveBook()"><svg><use href="#i-save"/></svg>حفظ</button>
+        </div>
+
+        <div class="fgrid">
+          <div class="ff full">
+            <label>عنوان الكتاب</label>
+            <input type="text" id="bTitle" placeholder="مثال: كتاب الرياضيات — الصف الثالث الثانوي"/>
+          </div>
+          <div class="ff full">
+            <label>وصف الكتاب</label>
+            <textarea id="bDesc" rows="2" placeholder="محتويات الكتاب، عدد الصفحات، إلخ..."></textarea>
+          </div>
+          <div class="ff">
+            <label>السعر (جنيه)</label>
+            <input type="number" id="bPrice" placeholder="مثال: 150" min="0"/>
+          </div>
+          <div class="ff">
+            <label>الصف المخصص له (اختياري)</label>
+            <select id="bGrade">
+              <option value="">كل الصفوف</option>
+              <optgroup label="ابتدائي">
+                <option value="primary-4">رابع ابتدائي</option>
+                <option value="primary-5">خامس ابتدائي</option>
+                <option value="primary-6">سادس ابتدائي</option>
+              </optgroup>
+              <optgroup label="إعدادي">
+                <option value="prep-1">أول إعدادي</option>
+                <option value="prep-2">ثاني إعدادي</option>
+                <option value="prep-3">ثالث إعدادي</option>
+              </optgroup>
+              <optgroup label="ثانوي">
+                <option value="sec-1">أول ثانوي</option>
+                <option value="sec-2">ثاني ثانوي</option>
+                <option value="sec-3">ثالث ثانوي</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="ff">
+            <label>عدد الصفحات (اختياري)</label>
+            <input type="number" id="bPages" placeholder="مثال: 120"/>
+          </div>
+          <div class="ff">
+            <label>الترتيب</label>
+            <input type="number" id="bOrder" placeholder="1" min="1"/>
+          </div>
+          <!-- Cover image URL -->
+          <div class="ff full">
+            <label>رابط صورة الغلاف (اختياري)</label>
+            <input type="url" id="bCover" placeholder="https://..." oninput="previewCover(this.value)"/>
+            <div id="bCoverPreview" style="display:none;margin-top:8px">
+              <img id="bCoverImg" style="width:80px;height:110px;object-fit:cover;border-radius:8px;border:1px solid var(--b2)"/>
+            </div>
+          </div>
+          <div class="ff full">
+            <label>ملاحظات إضافية للطالب</label>
+            <textarea id="bNote" rows="2" placeholder="مثال: الكتاب متاح للتوصيل — تواصل معنا بعد الدفع"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Books List -->
+      <div class="card">
+        <div class="card-head">
+          <h3>📚 الكتب المضافة</h3>
+          <button class="btn sm ghost" onclick="loadBooks()"><svg><use href="#i-refresh"/></svg></button>
+        </div>
+        <div id="bList"><div class="empty"><p>لا يوجد كتب بعد</p></div></div>
+      </div>
+
     </div>
 
   </div>
@@ -800,9 +898,10 @@ function onGrade(){
 
 function switchTab(t){
   _curTab=t;
-  ['v','e','h'].forEach(x=>document.getElementById('t'+x).classList.toggle('on',x===t));
-  ['sv','se','sh'].forEach(x=>document.getElementById('s'+x.slice(1)).style.display=x.slice(1)===t?'block':'none');
+  ['v','e','h','b'].forEach(x=>document.getElementById('t'+x)?.classList.toggle('on',x===t));
+  ['sv','se','sh','sb'].forEach(x=>document.getElementById('s'+x.slice(1)).style.display=x.slice(1)===t?'block':'none');
   const grade=document.getElementById('gSel').value;
+  if(t==='b'){ loadBooks(); return; }
   if(grade){
     const tab=t==='v'?'videos':t==='e'?'exams':'homework';
     const el=t==='v'?'vList':t==='e'?'eList':'hList';
@@ -882,6 +981,134 @@ function clearHFile(){
   document.getElementById('hFileUrl').value='';
   document.getElementById('hPreview').classList.remove('show');
   document.getElementById('hFile').value='';
+}
+
+// ── Cover preview ──
+function previewCover(url){
+  const wrap = document.getElementById('bCoverPreview');
+  const img  = document.getElementById('bCoverImg');
+  if(url){ img.src=url; wrap.style.display='block'; }
+  else wrap.style.display='none';
+}
+
+// ── Save Book ──
+window.saveBook = async () => {
+  const title = document.getElementById('bTitle').value.trim();
+  const price = document.getElementById('bPrice').value;
+  if(!title || !price){ toast('ادخل العنوان والسعر','err'); return; }
+  const btn = document.getElementById('bSaveBtn');
+  btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
+  try{
+    const data = {
+      title,
+      description: document.getElementById('bDesc').value.trim(),
+      price: parseFloat(price)||0,
+      gradeKey: document.getElementById('bGrade').value,
+      pages: parseInt(document.getElementById('bPages').value)||0,
+      order: parseInt(document.getElementById('bOrder').value)||1,
+      coverUrl: document.getElementById('bCover').value.trim(),
+      note: document.getElementById('bNote').value.trim(),
+      available: true,
+      updatedAt: serverTimestamp()
+    };
+    if(window._editId?.b){
+      await updateDoc(doc(db,'books',window._editId.b), data);
+      delete window._editId.b;
+      toast('تم تعديل الكتاب ✓','ok');
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db,'books'), data);
+      toast('تم إضافة الكتاب ✓','ok');
+    }
+    clearBook(); loadBooks();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ'; btn.disabled=false;
+};
+
+// ── Load Books ──
+window.loadBooks = async () => {
+  const el = document.getElementById('bList');
+  el.innerHTML='<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
+  try{
+    const snap = await getDocs(collection(db,'books'));
+    const books = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+    const cnt = document.getElementById('cnt-b');
+    if(cnt) cnt.textContent = books.length ? '('+books.length+')':'';
+    if(!books.length){ el.innerHTML='<div class="empty"><p>لا يوجد كتب — ابدأ بالإضافة ⬆️</p></div>'; return; }
+    const GRADE_LABEL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};
+    el.innerHTML=`<div class="items">${books.map((b,i)=>`
+      <div class="item" style="align-items:flex-start;gap:12px">
+        ${b.coverUrl?`<img src="${b.coverUrl}" style="width:48px;height:64px;object-fit:cover;border-radius:6px;flex-shrink:0;border:1px solid var(--b2)"/>`:`<div style="width:48px;height:64px;border-radius:6px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📚</div>`}
+        <div class="item-info" style="flex:1">
+          <div class="item-title">${b.title}</div>
+          <div class="item-meta">
+            <span style="color:var(--gold);font-weight:800">${b.price} جنيه</span>
+            ${b.gradeKey?`<span class="tag e">${GRADE_LABEL[b.gradeKey]||b.gradeKey}</span>`:'<span class="tag v">كل الصفوف</span>'}
+            ${b.pages?`<span>📄 ${b.pages} صفحة</span>`:''}
+            <span class="tag ${b.available?'ok':'h'}">${b.available?'متاح':'غير متاح'}</span>
+          </div>
+          ${b.description?`<div style="font-size:11px;color:var(--muted);margin-top:3px">${b.description}</div>`:''}
+        </div>
+        <div class="item-acts">
+          <button class="ia" onclick="editBook('${b.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
+          <button class="ia" onclick="toggleBookAvail('${b.id}',${!b.available})" title="${b.available?'إخفاء':'إظهار'}" style="color:${b.available?'var(--warn)':'var(--ok)'}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px">${b.available?'<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>':'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'}</svg>
+          </button>
+          <button class="ia del" onclick="deleteBook('${b.id}','${(b.title||'').replace(/'/g,"\\'")}')"><svg><use href="#i-trash"/></svg></button>
+        </div>
+      </div>`).join('')}</div>`;
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── Edit Book ──
+window.editBook = async (id) => {
+  try{
+    const d = await getDoc(doc(db,'books',id));
+    if(!d.exists()) return;
+    const b = d.data();
+    window._editId = window._editId||{};
+    window._editId.b = id;
+    document.getElementById('bTitle').value = b.title||'';
+    document.getElementById('bDesc').value  = b.description||'';
+    document.getElementById('bPrice').value = b.price||'';
+    document.getElementById('bGrade').value = b.gradeKey||'';
+    document.getElementById('bPages').value = b.pages||'';
+    document.getElementById('bOrder').value = b.order||'';
+    document.getElementById('bCover').value = b.coverUrl||'';
+    document.getElementById('bNote').value  = b.note||'';
+    previewCover(b.coverUrl||'');
+    window.scrollTo({top:0,behavior:'smooth'});
+    toast('جاهز للتعديل ✏️','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── Toggle availability ──
+window.toggleBookAvail = async (id, state) => {
+  try{
+    await updateDoc(doc(db,'books',id),{available:state});
+    loadBooks();
+    toast(state?'الكتاب متاح الآن ✓':'تم إخفاء الكتاب','ok');
+  }catch(e){ toast('خطأ','err'); }
+};
+
+// ── Delete Book ──
+window.deleteBook = async (id, title) => {
+  if(!confirm('حذف "'+title+'"؟')) return;
+  try{
+    await deleteDoc(doc(db,'books',id));
+    loadBooks();
+    toast('تم الحذف','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── Clear Book form ──
+function clearBook(){
+  ['bTitle','bDesc','bPrice','bPages','bOrder','bCover','bNote'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('bGrade').value='';
+  document.getElementById('bCoverPreview').style.display='none';
+  if(window._editId) delete window._editId.b;
 }
 
 // ── Toast ──
