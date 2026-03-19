@@ -458,8 +458,19 @@ window.handleExam=(el)=>{
 function renderHw(hw,done,gradeKey,isMine){
   const el=document.getElementById('hwList');
   if(!hw.length){el.innerHTML='<div class="empty"><p>لا يوجد واجبات بعد</p></div>';return;}
+  const ud=window._userData||{};
   el.innerHTML=hw.map(h=>{
     const isDone=done.includes(h.id);
+    // WhatsApp message with student info + homework details
+    const waMsg=encodeURIComponent(
+      'مرحباً أستاذ مهدي 👋\n'+
+      'اسمي: '+(ud.name||'—')+'\n'+
+      'صفي: '+(ud.grade||'—')+'\n'+
+      'رقم هاتفي: '+(ud.phone||'—')+'\n\n'+
+      '📝 تسليم واجب: '+(h.title||'واجب')+'\n'+
+      (h.description?'التفاصيل: '+h.description+'\n':'')+
+      (h.deadline?'موعد التسليم: '+h.deadline+'\n':'')
+    );
     return `<div class="hw-item">
       <div class="hw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
       <div class="hw-info">
@@ -468,6 +479,7 @@ function renderHw(hw,done,gradeKey,isMine){
         <div class="hw-links">
           ${h.fileUrl?`<a href="${h.fileUrl}" target="_blank" class="hw-link file">📎 فتح الملف</a>`:''}
           ${h.url&&!h.fileUrl?`<a href="${h.url}" target="_blank" class="hw-link file">🔗 رابط</a>`:''}
+          ${isMine?`<a href="https://wa.me/201007586279?text=${waMsg}" target="_blank" class="hw-link" style="background:rgba(37,211,102,0.12);color:#25D366;border:1px solid rgba(37,211,102,0.25)">📲 تسليم على واتساب</a>`:''}
         </div>
       </div>
       ${isMine&&!isDone?`<button onclick="markDone('${gradeKey}','homework','${h.id}')" style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">سلّمت ✓</button>`:isDone?'<span style="color:var(--ok);font-size:14px;flex-shrink:0">✅</span>':''}
@@ -594,17 +606,18 @@ function buildGrades(){
     const grid=document.getElementById('grid-'+stage);if(!grid)return;
     grid.innerHTML=GRADES[stage].map(g=>{
       const isMine=ud.gradeKey===g.key;
+      const isLocked=ud.gradeKey && !isMine; // locked if student has a grade but this isn't it
       return `<div id="gcard-${g.key}" class="grade-card"
-        onclick="openCourse('${g.key}','${g.label}','${g.stage}')"
-        style="${isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':''}">
+        onclick="${isMine?`openCourse('${g.key}','${g.label}','${g.stage}')`:`showToast('هذا الصف مش صفك — اشترك في الصف الصح 🔒','err')`}"
+        style="${isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':isLocked?'opacity:.45;cursor:not-allowed':''}">
         <img src="${g.img}" class="gc-img" onerror="this.style.display='none'"/>
-        ${isMine?'<div class="gc-badge mine">صفك ✓</div>':''}
+        ${isMine?'<div class="gc-badge mine">صفك ✓</div>':isLocked?'<div class="gc-badge" style="background:rgba(255,77,109,0.8);color:#fff">🔒</div>':''}
         <div class="gc-body">
           <div class="gc-title">${g.label}</div>
-          <div class="gc-sub">${isMine?'📚 محتواك الأساسي':g.sub}</div>
+          <div class="gc-sub">${isMine?'📚 محتواك الأساسي':isLocked?'مش صفك':g.sub}</div>
         </div>
         <div class="gc-foot">
-          <span>${isMine?'فيديوهات · امتحانات · واجبات':'اضغط للمشاهدة'}</span>
+          <span>${isMine?'فيديوهات · امتحانات · واجبات':isLocked?'اشترك في صفك':'اضغط للمشاهدة'}</span>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
         </div>
       </div>`;
