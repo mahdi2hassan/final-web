@@ -23,48 +23,34 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 .o2{width:300px;height:300px;background:rgba(110,75,10,0.3);bottom:-60px;right:-60px}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
-/* ── LOADING ── */
 #loadingScreen{position:fixed;inset:0;z-index:200;background:var(--bg);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .loader{width:44px;height:44px;border:3px solid rgba(74,127,212,0.2);
   border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
 #loadingScreen p{font-size:13px;color:var(--muted)}
-
-/* ── BANNER ── */
 #annBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:100;
   padding:9px 16px;align-items:center;justify-content:center;gap:10px;
   font-size:12px;font-weight:600;color:#fff;
-  background:linear-gradient(135deg,var(--navy),var(--blue));
-  box-shadow:0 2px 12px rgba(74,127,212,0.4)}
+  background:linear-gradient(135deg,var(--navy),var(--blue));box-shadow:0 2px 12px rgba(74,127,212,0.4)}
 #annBanner.show{display:flex}
-
-/* ── NAV ── */
-nav{position:sticky;top:0;z-index:50;height:58px;
-  display:flex;align-items:center;gap:12px;padding:0 clamp(14px,4vw,24px);
-  background:var(--s1);backdrop-filter:blur(20px);border-bottom:1px solid var(--b2)}
+nav{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center;gap:12px;
+  padding:0 clamp(14px,4vw,24px);background:var(--s1);backdrop-filter:blur(20px);border-bottom:1px solid var(--b2)}
 .nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
 .nav-logo img{width:32px;height:32px;object-fit:contain}
-.nav-logo h2{font-size:13px;font-weight:900;
-  background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-logo h2{font-size:13px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .nav-mid{flex:1;text-align:center;font-size:13px;color:var(--muted)}
 .nav-mid strong{color:var(--text);font-weight:700}
 .nav-btn{padding:7px 14px;border:1px solid var(--b1);border-radius:9px;background:transparent;
-  color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
-.nav-btn:hover{border-color:var(--blue);color:var(--text)}
-
-/* ── HERO BAR ── */
+  color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
 .hero-bar{background:linear-gradient(135deg,var(--navy),rgba(26,50,112,0.6));
   border-bottom:1px solid var(--b1);padding:clamp(14px,4vw,20px) clamp(14px,4vw,24px);
   display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 .hero-bar h1{font-size:clamp(15px,4vw,20px);font-weight:900}
 .hero-bar p{font-size:clamp(11px,2.5vw,13px);color:rgba(255,255,255,.65);margin-top:3px}
-.hero-stats{display:flex;gap:clamp(14px,4vw,28px);margin-right:auto;flex-wrap:wrap}
+.hero-stats{display:flex;gap:clamp(14px,4vw,28px);margin-right:auto}
 .hs{text-align:center}
 .hs-v{font-size:clamp(18px,4vw,24px);font-weight:900;color:var(--gold2)}
 .hs-l{font-size:10px;color:rgba(255,255,255,.55);font-weight:600}
-
-/* ── SECTION ── */
 .section{padding:clamp(14px,4vw,24px) clamp(14px,4vw,24px)}
 .section-head{display:flex;align-items:center;gap:10px;margin-bottom:clamp(14px,3vw,18px)}
 .sh-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -75,38 +61,24 @@ nav{position:sticky;top:0;z-index:50;height:58px;
 .section-head h2{font-size:clamp(15px,3.5vw,17px);font-weight:900}
 .section-head p{font-size:11px;color:var(--muted);margin-top:2px}
 .sdiv{height:1px;background:var(--b2);margin:0 clamp(14px,4vw,24px)}
-
-/* ── GRADE CARDS ── */
 .grades-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(145px,28vw,190px),1fr));gap:clamp(10px,2.5vw,14px)}
-.grade-card{background:var(--s2);border:1px solid var(--b2);border-radius:14px;
-  overflow:hidden;cursor:pointer;transition:all .25s;position:relative;display:block;text-decoration:none;color:var(--text)}
+.grade-card{background:var(--s2);border:1px solid var(--b2);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s;position:relative}
 .grade-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.4);border-color:var(--b1)}
-.gc-img{width:100%;height:clamp(90px,18vw,120px);object-fit:cover;display:block;
-  background:linear-gradient(135deg,var(--navy),var(--blue))}
-.gc-badge{position:absolute;top:7px;right:7px;padding:3px 8px;border-radius:6px;
-  font-size:10px;font-weight:700;backdrop-filter:blur(8px)}
+.gc-img{width:100%;height:clamp(90px,18vw,120px);object-fit:cover;display:block;background:linear-gradient(135deg,var(--navy),var(--blue))}
+.gc-badge{position:absolute;top:7px;right:7px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700}
 .gc-badge.mine{background:rgba(0,214,143,0.85);color:#000}
 .gc-body{padding:clamp(10px,2.5vw,13px)}
 .gc-title{font-size:clamp(12px,3vw,13px);font-weight:800;margin-bottom:3px}
 .gc-sub{font-size:11px;color:var(--muted)}
-.gc-foot{padding:8px clamp(10px,2.5vw,13px);border-top:1px solid var(--b2);
-  display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted)}
-
-/* ── COURSE VIEW ── */
+.gc-foot{padding:8px clamp(10px,2.5vw,13px);border-top:1px solid var(--b2);display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted)}
 #courseView{display:none;position:fixed;inset:0;z-index:150;background:var(--bg);overflow-y:auto}
 #courseView.open{display:block;animation:fadeUp .25s ease both}
 .cv-hd{position:sticky;top:0;z-index:10;background:var(--s1);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--b2);padding:12px clamp(14px,4vw,20px);
-  display:flex;align-items:center;gap:12px}
-.cv-back{width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);
-  background:transparent;cursor:pointer;color:var(--muted);transition:all .2s;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.cv-back:hover{border-color:var(--blue);color:var(--text)}
+  border-bottom:1px solid var(--b2);padding:12px clamp(14px,4vw,20px);display:flex;align-items:center;gap:12px}
+.cv-back{width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cv-back svg{width:16px;height:16px}
 .cv-hd-info h2{font-size:clamp(13px,3.5vw,16px);font-weight:800}
 .cv-hd-info p{font-size:11px;color:var(--muted)}
-
-/* ── TABS ── */
 .cv-tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--b2);overflow-x:auto}
 .cv-tabs::-webkit-scrollbar{display:none}
 .cv-tab{padding:12px 16px;border:none;background:none;color:var(--muted);cursor:pointer;
@@ -119,12 +91,8 @@ nav{position:sticky;top:0;z-index:50;height:58px;
 .cv-body{padding:clamp(14px,4vw,20px)}
 .tab-pane{display:none}
 .tab-pane.on{display:block;animation:fadeUp .2s ease}
-
-/* ── VIDEO ITEMS ── */
-.video-list{display:flex;flex-direction:column;gap:10px}
-.video-item{background:var(--s2);border:1px solid var(--b2);border-radius:13px;
-  padding:clamp(10px,3vw,14px);transition:all .2s}
-.video-item:hover{border-color:var(--b1)}
+.video-list,.exam-list,.hw-list{display:flex;flex-direction:column;gap:10px}
+.video-item{background:var(--s2);border:1px solid var(--b2);border-radius:13px;padding:clamp(10px,3vw,14px)}
 .video-player{display:none;width:100%;margin-bottom:10px;border-radius:10px;overflow:hidden;background:#000}
 .video-player iframe{width:100%;height:clamp(170px,38vw,240px);border:none;display:block}
 .video-player-bar{padding:8px 12px;background:rgba(8,13,28,0.8);display:flex;gap:8px}
@@ -137,12 +105,8 @@ nav{position:sticky;top:0;z-index:50;height:58px;
 .vinfo{flex:1;min-width:0}
 .vtitle{font-size:clamp(12px,3vw,14px);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vmeta{font-size:11px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-
-/* ── EXAM ITEMS ── */
-.exam-list{display:flex;flex-direction:column;gap:10px}
 .exam-item{background:var(--s2);border:1px solid var(--b2);border-radius:13px;
-  padding:clamp(10px,3vw,14px);display:flex;align-items:center;gap:12px;
-  cursor:pointer;transition:all .2s}
+  padding:clamp(10px,3vw,14px);display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s}
 .exam-item:hover{border-color:var(--b1)}
 .exam-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .exam-ico svg{width:18px;height:18px}
@@ -152,27 +116,17 @@ nav{position:sticky;top:0;z-index:50;height:58px;
 .ebadge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
 .ebadge.new{background:rgba(0,214,143,0.1);color:var(--ok);border:1px solid rgba(0,214,143,0.2)}
 .ebadge.done{background:rgba(74,127,212,0.1);color:var(--blue);border:1px solid rgba(74,127,212,0.2)}
-
-/* ── HW ITEMS ── */
-.hw-list{display:flex;flex-direction:column;gap:10px}
-.hw-item{background:var(--s2);border:1px solid var(--b2);border-radius:13px;
-  padding:clamp(10px,3vw,14px);display:flex;align-items:center;gap:12px;transition:all .2s}
-.hw-item:hover{border-color:var(--b1)}
-.hw-ico{width:40px;height:40px;border-radius:10px;background:rgba(167,139,250,0.1);
-  color:var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hw-item{background:var(--s2);border:1px solid var(--b2);border-radius:13px;padding:clamp(10px,3vw,14px);display:flex;align-items:center;gap:12px}
+.hw-ico{width:40px;height:40px;border-radius:10px;background:rgba(167,139,250,0.1);color:var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .hw-ico svg{width:18px;height:18px}
 .hw-info{flex:1}
 .hw-title{font-size:clamp(12px,3vw,14px);font-weight:700;margin-bottom:3px}
 .hw-meta{font-size:11px;color:var(--muted)}
 .hw-links{display:flex;gap:7px;margin-top:6px;flex-wrap:wrap}
-.hw-link{font-size:11px;font-weight:700;text-decoration:none;padding:4px 10px;
-  border-radius:7px;transition:all .2s;cursor:pointer;border:none;font-family:'Tajawal',sans-serif}
-.hw-link.pdf{color:var(--err);background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.2)}
+.hw-link{font-size:11px;font-weight:700;text-decoration:none;padding:4px 10px;border-radius:7px;cursor:pointer;border:none;font-family:'Tajawal',sans-serif}
 .hw-link.file{color:var(--blue);background:rgba(74,127,212,0.1);border:1px solid rgba(74,127,212,0.2)}
-
-/* ── PROGRESS ── */
 .prog-card{background:var(--s2);border:1px solid var(--b2);border-radius:13px;padding:16px;margin-bottom:12px}
-.prog-card h4{font-size:13px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:var(--text)}
+.prog-card h4{font-size:13px;font-weight:800;margin-bottom:12px;color:var(--text)}
 .prog-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .prog-lbl{font-size:12px;color:var(--muted);min-width:78px;font-weight:600}
 .prog-bar{flex:1;height:7px;background:rgba(74,127,212,0.1);border-radius:4px;overflow:hidden}
@@ -181,26 +135,18 @@ nav{position:sticky;top:0;z-index:50;height:58px;
 .prog-fill.gold{background:linear-gradient(90deg,var(--gold),#8a6010)}
 .prog-fill.ok{background:linear-gradient(90deg,var(--ok),#006040)}
 .prog-val{font-size:12px;font-weight:800;min-width:32px;text-align:left}
-
-/* ── MODALS ── */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
   z-index:300;display:none;align-items:center;justify-content:center;padding:16px}
 .overlay.open{display:flex}
 .modal{background:rgba(8,13,28,0.98);border:1px solid var(--b1);border-radius:18px;
-  padding:clamp(16px,4vw,22px);width:100%;max-width:500px;max-height:90dvh;
-  overflow-y:auto;animation:fadeUp .3s ease}
+  padding:clamp(16px,4vw,22px);width:100%;max-width:500px;max-height:90dvh;overflow-y:auto;animation:fadeUp .3s ease}
 .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--b2)}
 .modal-head h3{font-size:15px;font-weight:800}
-.mclose{width:32px;height:32px;border-radius:9px;border:1px solid var(--b2);background:transparent;
-  cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center}
-.mclose:hover{border-color:var(--err);color:var(--err)}
+.mclose{width:32px;height:32px;border-radius:9px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center}
 .mclose svg{width:14px;height:14px}
-
-/* MCQ */
 .mcq-q{background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:11px;padding:14px;margin-bottom:10px}
 .mcq-q-text{font-size:14px;font-weight:700;margin-bottom:10px;line-height:1.6}
-.mcq-opt{padding:10px 13px;border:1.5px solid var(--b2);border-radius:9px;cursor:pointer;
-  font-size:13px;font-weight:600;margin-bottom:6px;transition:all .2s}
+.mcq-opt{padding:10px 13px;border:1.5px solid var(--b2);border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:6px;transition:all .2s}
 .mcq-opt:hover{border-color:var(--blue);background:rgba(74,127,212,0.06)}
 .mcq-opt.sel{border-color:var(--blue);background:rgba(74,127,212,0.1);color:var(--blue)}
 .mcq-opt.correct{border-color:var(--ok);background:rgba(0,214,143,0.1);color:var(--ok)}
@@ -210,57 +156,28 @@ nav{position:sticky;top:0;z-index:50;height:58px;
   font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;
   background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;margin-top:8px}
 .mcq-result{text-align:center;padding:20px 0;display:none}
-
-/* PLAYER */
 .player-iframe-wrap{border-radius:10px;overflow:hidden;background:#000;margin-bottom:14px}
 .player-iframe-wrap iframe{width:100%;height:clamp(180px,45vw,260px);border:none;display:block}
 .player-btns{display:flex;gap:8px;flex-wrap:wrap}
-.pbtn{padding:9px 16px;border:none;border-radius:9px;cursor:pointer;
-  font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;transition:all .2s;display:flex;align-items:center;gap:6px}
-.pbtn svg{width:13px;height:13px}
+.pbtn{padding:9px 16px;border:none;border-radius:9px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
 .pbtn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff}
 .pbtn.ghost{background:transparent;border:1px solid var(--b1);color:var(--muted)}
-.pbtn.ghost:hover{border-color:var(--blue);color:var(--text)}
-
-/* IMG VIEWER */
-#imgViewer .modal{max-width:700px;padding:12px}
-#imgViewer img{width:100%;border-radius:10px;display:block}
-
-/* ESSAY */
-.essay-text{font-size:14px;line-height:1.8;padding:12px;background:rgba(8,13,28,0.4);
-  border-radius:10px;margin-bottom:12px;white-space:pre-wrap}
-.essay-area{width:100%;padding:10px 12px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);
-  border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
-  outline:none;resize:vertical;min-height:100px;transition:border-color .2s}
+.essay-text{font-size:14px;line-height:1.8;padding:12px;background:rgba(8,13,28,0.4);border-radius:10px;margin-bottom:12px;white-space:pre-wrap}
+.essay-area{width:100%;padding:10px 12px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;resize:vertical;min-height:100px}
 .essay-area:focus{border-color:var(--blue)}
-
-/* BTN */
-.btn{padding:9px 16px;border:none;border-radius:9px;cursor:pointer;
-  font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;
-  display:inline-flex;align-items:center;gap:5px;transition:all .15s}
-.btn:hover{transform:translateY(-1px)}
-.btn svg{width:13px;height:13px}
-.btn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff;box-shadow:0 4px 12px rgba(0,214,143,0.2)}
+.btn{padding:9px 16px;border:none;border-radius:9px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:5px}
+.btn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff}
 .btn.ghost{background:transparent;border:1px solid var(--b1);color:var(--muted)}
-.btn.ghost:hover{border-color:var(--blue);color:var(--text)}
-
-/* EMPTY */
 .empty{text-align:center;padding:clamp(22px,5vw,36px) 20px;color:var(--muted)}
-.empty svg{width:32px;height:32px;opacity:.2;display:block;margin:0 auto 10px}
-.empty h3{font-size:14px;font-weight:700;margin-bottom:5px;color:var(--text)}
 .empty p{font-size:13px}
-
-/* TOAST */
 .toast{position:fixed;bottom:clamp(12px,3vw,18px);left:50%;
   transform:translateX(-50%) translateY(80px);background:rgba(10,15,34,0.97);
   backdrop-filter:blur(16px);border:1px solid var(--b1);border-radius:11px;
   padding:9px 16px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.5);transition:transform .3s cubic-bezier(.22,1,.36,1);
-  z-index:999;pointer-events:none}
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);transition:transform .3s cubic-bezier(.22,1,.36,1);z-index:999;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.ok{color:var(--ok);border-color:rgba(0,214,143,0.3)}
 .toast.err{color:var(--err);border-color:rgba(255,77,109,0.3)}
-.toast svg{width:13px;height:13px}
 </style>
 </head>
 <body>
@@ -268,20 +185,17 @@ nav{position:sticky;top:0;z-index:50;height:58px;
 <div class="o1 orb"></div>
 <div class="o2 orb"></div>
 
-<!-- Announcement Banner -->
 <div id="annBanner">
   <span id="annText"></span>
   <span onclick="this.parentElement.classList.remove('show')" style="cursor:pointer;margin-right:auto;opacity:.7">✕</span>
 </div>
 
-<!-- Loading -->
 <div id="loadingScreen">
   <img src="https://plusedu.vercel.app/store/1/fonts/221.png" style="width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 4px 14px rgba(74,127,212,0.5))"/>
   <div class="loader"></div>
   <p>جاري التحقق من حسابك...</p>
 </div>
 
-<!-- Nav -->
 <nav id="navbar" style="display:none">
   <a href="index.html" class="nav-logo">
     <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.display='none'"/>
@@ -291,21 +205,14 @@ nav{position:sticky;top:0;z-index:50;height:58px;
   <button class="nav-btn" onclick="doSignOut()">خروج</button>
 </nav>
 
-<!-- Main -->
 <main id="mainContent" style="display:none">
   <div class="hero-bar">
-    <div>
-      <h1>مرحباً في Plus Mathematics 🎓</h1>
-      <p>اختار صفك الدراسي وابدأ مذاكرتك</p>
-    </div>
+    <div><h1>مرحباً في Plus Mathematics 🎓</h1><p>اضغط على صفك لتبدأ</p></div>
     <div class="hero-stats">
-      <div class="hs"><div class="hs-v">9</div><div class="hs-l">صف دراسي</div></div>
       <div class="hs"><div class="hs-v" id="statGrade">—</div><div class="hs-l">صفك</div></div>
       <div class="hs"><div class="hs-v" id="statStage">—</div><div class="hs-l">مرحلتك</div></div>
     </div>
   </div>
-
-  <!-- Primary -->
   <div class="section">
     <div class="section-head">
       <div class="sh-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
@@ -314,8 +221,6 @@ nav{position:sticky;top:0;z-index:50;height:58px;
     <div class="grades-grid" id="grid-primary"></div>
   </div>
   <div class="sdiv"></div>
-
-  <!-- Prep -->
   <div class="section">
     <div class="section-head">
       <div class="sh-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
@@ -324,7 +229,6 @@ nav{position:sticky;top:0;z-index:50;height:58px;
     <div class="grades-grid" id="grid-prep"></div>
   </div>
   <div class="sdiv"></div>
-  <!-- Secondary -->
   <div class="section">
     <div class="section-head">
       <div class="sh-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
@@ -334,18 +238,13 @@ nav{position:sticky;top:0;z-index:50;height:58px;
   </div>
 </main>
 
-<!-- Course View -->
 <div id="courseView">
   <div class="cv-hd">
     <button class="cv-back" onclick="closeCourse()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
     </button>
-    <div class="cv-hd-info">
-      <h2 id="cvTitle"></h2>
-      <p id="cvSub"></p>
-    </div>
+    <div class="cv-hd-info"><h2 id="cvTitle"></h2><p id="cvSub"></p></div>
   </div>
-
   <div class="cv-tabs">
     <button class="cv-tab on" onclick="switchTab('videos',this)">
       <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>الشرح
@@ -360,23 +259,10 @@ nav{position:sticky;top:0;z-index:50;height:58px;
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>تقدمك
     </button>
   </div>
-
   <div class="cv-body">
-    <div class="tab-pane on" id="tp-videos">
-      <div class="video-list" id="videoList">
-        <div class="empty"><p>جاري التحميل...</p></div>
-      </div>
-    </div>
-    <div class="tab-pane" id="tp-exams">
-      <div class="exam-list" id="examList">
-        <div class="empty"><p>جاري التحميل...</p></div>
-      </div>
-    </div>
-    <div class="tab-pane" id="tp-homework">
-      <div class="hw-list" id="hwList">
-        <div class="empty"><p>جاري التحميل...</p></div>
-      </div>
-    </div>
+    <div class="tab-pane on" id="tp-videos"><div class="video-list" id="videoList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
+    <div class="tab-pane" id="tp-exams"><div class="exam-list" id="examList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
+    <div class="tab-pane" id="tp-homework"><div class="hw-list" id="hwList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-progress">
       <div class="prog-card">
         <h4>📊 تقدمك الدراسي</h4>
@@ -384,184 +270,127 @@ nav{position:sticky;top:0;z-index:50;height:58px;
         <div class="prog-row"><div class="prog-lbl">الامتحانات</div><div class="prog-bar"><div class="prog-fill gold" id="pe" style="width:0%"></div></div><div class="prog-val" id="pet">0%</div></div>
         <div class="prog-row"><div class="prog-lbl">الواجبات</div><div class="prog-bar"><div class="prog-fill ok" id="ph" style="width:0%"></div></div><div class="prog-val" id="pht">0%</div></div>
       </div>
-      <div class="empty"><p>بذاكر أكتر — هيظهر تقدمك 📈</p></div>
     </div>
   </div>
 </div>
 
-<!-- Video Player Modal -->
 <div class="overlay" id="playerModal">
   <div class="modal">
-    <div class="modal-head">
-      <h3 id="playerTitle">الفيديو</h3>
+    <div class="modal-head"><h3 id="playerTitle">الفيديو</h3>
       <button class="mclose" onclick="closePlayer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="player-iframe-wrap">
-      <iframe id="playerFrame" src="" allowfullscreen allow="autoplay"></iframe>
-    </div>
+    <div class="player-iframe-wrap"><iframe id="playerFrame" src="" allowfullscreen allow="autoplay"></iframe></div>
     <div class="player-btns">
-      <button class="pbtn ok" onclick="playerDone()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>انهيت الدرس ✓
-      </button>
+      <button class="pbtn ok" onclick="playerDone()">انهيت الدرس ✓</button>
       <button class="pbtn ghost" onclick="closePlayer()">إغلاق</button>
     </div>
   </div>
 </div>
 
-<!-- MCQ Modal -->
 <div class="overlay" id="mcqModal">
   <div class="modal">
-    <div class="modal-head">
-      <h3 id="mcqTitle">امتحان</h3>
+    <div class="modal-head"><h3 id="mcqTitle">امتحان</h3>
       <button class="mclose" onclick="closeMcq()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div class="mcq-progress" id="mcqProg"></div>
     <div id="mcqBody"></div>
     <div class="mcq-result" id="mcqResult"></div>
-    <button class="mcq-submit" id="mcqBtn" onclick="submitMcq()" style="display:none">تسليم الإجابات</button>
+    <button class="mcq-submit" id="mcqBtn" style="display:none">تسليم الإجابات</button>
   </div>
 </div>
 
-<!-- Image Viewer Modal -->
 <div class="overlay" id="imgModal">
   <div class="modal" style="max-width:700px;padding:12px">
-    <div class="modal-head">
-      <h3 id="imgTitle">صورة الامتحان</h3>
+    <div class="modal-head"><h3 id="imgTitle">الامتحان</h3>
       <button class="mclose" onclick="closeImg()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <div id="imgBody"></div>
     <div style="margin-top:12px;display:flex;gap:8px">
-      <button class="btn ok" id="imgDoneBtn" onclick="imgDone()" style="display:none">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>تم المشاهدة ✓
-      </button>
+      <button class="btn ok" id="imgDoneBtn" onclick="imgDone()" style="display:none">تم المشاهدة ✓</button>
       <button class="btn ghost" onclick="closeImg()">إغلاق</button>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast">
-  <svg id="tIc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>
-  <span id="tMsg"></span>
-</div>
+<div class="toast" id="toast"><span id="tMsg"></span></div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, collection, setDoc, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, getDocs, collection, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const cfg = {
-  apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
-  authDomain:"plusinmath-web.firebaseapp.com",
-  projectId:"plusinmath-web",
-  storageBucket:"plusinmath-web.firebasestorage.app",
-  messagingSenderId:"444492731461",
-  appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
-};
-const app  = initializeApp(cfg);
+const app  = initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
 const auth = getAuth(app);
 const db   = getFirestore(app);
+let _user,_userData,_progress={},_playerData=null,_imgData=null;
 
-let _user, _userData, _progress = {};
-let _playerData = null, _mcqData = null, _imgData = null;
-
-// ── AUTH ──
-onAuthStateChanged(auth, async (user) => {
-  if(!user){ window.location.href='plus-math-auth.html'; return; }
-  _user = user;
-  try {
-    const ud = await getDoc(doc(db,'users',user.uid));
-    if(!ud.exists()||!ud.data().subscriptionActive){
-      window.location.href='plus-math-auth.html'; return;
+onAuthStateChanged(auth,async(user)=>{
+  if(!user){window.location.href='plus-math-auth.html';return;}
+  _user=user;
+  try{
+    const ud=await getDoc(doc(db,'users',user.uid));
+    if(!ud.exists()||!ud.data().subscriptionActive){window.location.href='plus-math-auth.html';return;}
+    _userData=ud.data();
+    if(_userData.expiresAt){
+      const exp=_userData.expiresAt.toDate?_userData.expiresAt.toDate():new Date(_userData.expiresAt);
+      if(new Date()>exp){window.location.href='plus-math-auth.html';return;}
     }
-    _userData = ud.data();
     document.getElementById('loadingScreen').style.display='none';
     document.getElementById('navbar').style.display='flex';
     document.getElementById('mainContent').style.display='block';
-    document.getElementById('userName').textContent = _userData.name?.split(' ')[0]||'طالب';
-    document.getElementById('statGrade').textContent = _userData.grade||'—';
-    document.getElementById('statStage').textContent = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
-    try {
-      const ann = await getDoc(doc(db,'settings','announcement'));
-      if(ann.exists()&&ann.data().show&&ann.data().text){
-        document.getElementById('annText').textContent=ann.data().text;
-        document.getElementById('annBanner').classList.add('show');
-      }
-    }catch(e){}
-    try {
-      const pr = await getDoc(doc(db,'progress',user.uid));
-      _progress = pr.exists()?pr.data():{};
-    }catch(e){ _progress={}; }
+    document.getElementById('userName').textContent=_userData.name?.split(' ')[0]||'طالب';
+    document.getElementById('statGrade').textContent=_userData.grade||'—';
+    document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
+    try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
+    try{const pr=await getDoc(doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={};}
     buildGrades();
-    // Auto-scroll to my grade
-    setTimeout(()=>{
-      if(_userData.gradeKey){
-        const el=document.getElementById('gcard-'+_userData.gradeKey);
-        if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
-      }
-    },700);
+    // ── AUTO-OPEN صف الطالب ──
+    if(_userData.gradeKey){
+      const g=window._GM[_userData.gradeKey];
+      if(g) setTimeout(()=>openCourse(_userData.gradeKey,g.label,g.stage),600);
+    }
   }catch(e){
     console.error(e);
-    if(e.code==='permission-denied'||e.code==='unauthenticated'){
-      window.location.href='plus-math-auth.html';
-    } else {
-      document.getElementById('loadingScreen').style.display='none';
-      document.getElementById('navbar').style.display='flex';
-      document.getElementById('mainContent').style.display='block';
-      buildGrades();
-    }
+    document.getElementById('loadingScreen').style.display='none';
+    document.getElementById('navbar').style.display='flex';
+    document.getElementById('mainContent').style.display='block';
+    buildGrades();
   }
 });
 
-// ── OPEN COURSE ──
-window.openCourse = async (gradeKey, label, stage) => {
-  document.getElementById('cvTitle').textContent = label;
-  document.getElementById('cvSub').textContent = stage;
+window.openCourse=async(gradeKey,label,stage)=>{
+  document.getElementById('cvTitle').textContent=label;
+  document.getElementById('cvSub').textContent=stage;
+  document.getElementById('courseView').style.display='block';
   document.getElementById('courseView').classList.add('open');
   document.body.style.overflow='hidden';
-  switchTab('videos', document.querySelector('.cv-tab'));
-  window._openGrade = gradeKey;
-  const isMine = gradeKey===_userData?.gradeKey;
-  const gp = _progress[gradeKey]||{};
-  const dV=gp.videos||[], dE=gp.exams||[], dH=gp.homework||[];
-  const [vids,exams,hw] = await Promise.all([
-    loadList(gradeKey,'videos'),
-    loadList(gradeKey,'exams'),
-    loadList(gradeKey,'homework')
-  ]);
+  switchTab('videos',document.querySelector('.cv-tab'));
+  window._openGrade=gradeKey;
+  const isMine=gradeKey===_userData?.gradeKey;
+  const gp=_progress[gradeKey]||{};
+  const dV=gp.videos||[],dE=gp.exams||[],dH=gp.homework||[];
+  ['videoList','examList','hwList'].forEach(id=>document.getElementById(id).innerHTML='<div class="empty"><p>جاري التحميل...</p></div>');
+  const[vids,exams,hw]=await Promise.all([loadList(gradeKey,'videos'),loadList(gradeKey,'exams'),loadList(gradeKey,'homework')]);
   renderVideos(vids,dV,gradeKey,isMine);
   renderExams(exams,dE,gradeKey,isMine);
   renderHw(hw,dH,gradeKey,isMine);
-  setTimeout(()=>{
-    setProg('pv','pvt',vids.length,dV.length);
-    setProg('pe','pet',exams.length,dE.length);
-    setProg('ph','pht',hw.length,dH.length);
-  },400);
+  setTimeout(()=>{setProg('pv','pvt',vids.length,dV.length);setProg('pe','pet',exams.length,dE.length);setProg('ph','pht',hw.length,dH.length);},400);
 };
 
 async function loadList(grade,tab){
-  try{
-    const s=await getDocs(collection(db,'content',grade,tab));
-    return s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
-  }catch(e){return [];}
+  try{const s=await getDocs(collection(db,'content',grade,tab));return s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));}catch(e){return[];}
 }
 
-// ── RENDER VIDEOS ──
 function renderVideos(videos,done,gradeKey,isMine){
   const el=document.getElementById('videoList');
-  if(!videos.length){
-    el.innerHTML='<div class="empty"><p>لا يوجد فيديوهات بعد</p></div>'; return;
-  }
+  if(!videos.length){el.innerHTML='<div class="empty"><p>لا يوجد فيديوهات بعد</p></div>';return;}
   el.innerHTML=videos.map((v,i)=>{
     const isDone=done.includes(v.id);
     const isLocked=isMine&&i>0&&!done.includes(videos[i-1].id)&&!isDone;
     const ytId=getYtId(v.url||'');
     const thumb=ytId?`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`:'';
-    const encTitle=encodeURIComponent(v.title||'');
     return `<div class="video-item">
-      <div id="vp-${v.id}" class="video-player" style="display:none">
+      <div id="vp-${v.id}" class="video-player">
         <iframe id="vf-${v.id}" src="" allowfullscreen allow="autoplay"></iframe>
         <div class="video-player-bar">
           ${isMine&&!isDone?`<button class="pbtn ok" onclick="markVDone('${gradeKey}','${v.id}')">انهيت الدرس ✓</button>`:''}
@@ -574,18 +403,11 @@ function renderVideos(videos,done,gradeKey,isMine){
       >
         <div class="vthumb">
           ${thumb?`<img src="${thumb}" onerror="this.style.display='none'"/>`:''}
-          ${isLocked?`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="opacity:.7"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`:
-            isDone?`<svg viewBox="0 0 24 24" fill="none" stroke="#00d68f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>`:
-            `<svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)"><polygon points="5,3 19,12 5,21"/></svg>`}
+          ${isLocked?`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`:isDone?`<svg viewBox="0 0 24 24" fill="none" stroke="#00d68f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>`:`<svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)"><polygon points="5,3 19,12 5,21"/></svg>`}
         </div>
         <div class="vinfo">
           <div class="vtitle">${v.order?v.order+'. ':''}${v.title||'درس'}</div>
-          <div class="vmeta">
-            ${v.duration?`⏱ ${v.duration}`:''}
-            ${isLocked?'<span style="color:var(--err)">🔒 أكمل الدرس السابق</span>':
-              isDone?'<span style="color:var(--ok)">✅ تمت المشاهدة</span>':
-              '<span style="color:var(--blue)">▶ اضغط للتشغيل</span>'}
-          </div>
+          <div class="vmeta">${v.duration?`⏱ ${v.duration}`:''}${isLocked?'<span style="color:var(--err)">🔒 أكمل الدرس السابق</span>':isDone?'<span style="color:var(--ok)">✅ تمت المشاهدة</span>':'<span style="color:var(--blue)">▶ اضغط للتشغيل</span>'}</div>
         </div>
         ${isDone?'<span style="color:var(--ok);font-size:15px;flex-shrink:0">✅</span>':''}
       </div>
@@ -593,32 +415,21 @@ function renderVideos(videos,done,gradeKey,isMine){
   }).join('');
 }
 
-// ── RENDER EXAMS ──
+// ── RENDER EXAMS — uses data-eidx to avoid onclick string issues ──
 function renderExams(exams,done,gradeKey,isMine){
   const el=document.getElementById('examList');
-  if(!exams.length){
-    el.innerHTML='<div class="empty"><p>لا يوجد امتحانات بعد</p></div>'; return;
-  }
-  const tLabel={mcq:'اختيار متعدد',essay:'مقالي',images:'صور امتحان',link:'Google Form',pdf:'PDF'};
-  const tColor={mcq:'var(--gold)',essay:'var(--blue)',images:'var(--purple)',link:'var(--ok)',pdf:'var(--err)'};
+  window._CE={exams,done,gradeKey,isMine}; // store for click handler
+  if(!exams.length){el.innerHTML='<div class="empty"><p>لا يوجد امتحانات بعد</p></div>';return;}
+  const tL={mcq:'اختيار متعدد',essay:'مقالي',images:'صور امتحان',link:'Google Form',pdf:'PDF'};
+  const tC={mcq:'var(--gold)',essay:'var(--blue)',images:'var(--purple)',link:'var(--ok)',pdf:'var(--err)'};
   el.innerHTML=exams.map((e,i)=>{
     const isDone=done.includes(e.id);
     const isLocked=isMine&&i>0&&!done.includes(exams[i-1].id)&&!isDone;
-    const tl=tLabel[e.type]||'امتحان';
-    const tc=tColor[e.type]||'var(--gold)';
-    let click='';
-    if(!isLocked){
-      if(e.type==='mcq'&&e.mcqRaw)
-        click=`onclick="openMcq('${e.id}','${gradeKey}',${JSON.stringify(e.title||'')},${JSON.stringify(e.mcqRaw||'')})"`;
-      else if(e.type==='essay'&&e.essayText)
-        click=`onclick="openEssay('${e.id}','${gradeKey}',${JSON.stringify(e.title||'')},${JSON.stringify(e.essayText||'')})"`;
-      else if((e.type==='images'||e.type==='pdf')&&(e.imageUrls?.length||e.fileUrl||e.externalUrl)){
-        const urls=e.imageUrls?.length?e.imageUrls:(e.fileUrl?[e.fileUrl]:[e.externalUrl]);
-        click=`onclick="openImgs('${e.id}','${gradeKey}',${JSON.stringify(e.title||'')},${JSON.stringify(urls)})"`;
-      } else if(e.externalUrl||e.url)
-        click=`onclick="window.open('${e.externalUrl||e.url}','_blank')"`;
-    }
-    return `<div class="exam-item" style="${isLocked?'opacity:.55;cursor:not-allowed':''}" ${click}>
+    const tl=tL[e.type]||'امتحان',tc=tC[e.type]||'var(--gold)';
+    const hasAction=e.mcqRaw||e.essayText||e.imageUrls?.length||e.fileUrl||e.externalUrl||e.url;
+    return `<div class="exam-item" style="${isLocked?'opacity:.55;cursor:not-allowed':''}"
+      ${!isLocked&&hasAction?`data-eidx="${i}" onclick="handleExam(this)"`:''}
+    >
       <div class="exam-ico" style="background:${tc}18;color:${tc}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
       </div>
@@ -631,208 +442,132 @@ function renderExams(exams,done,gradeKey,isMine){
   }).join('');
 }
 
-// ── RENDER HOMEWORK ──
+window.handleExam=(el)=>{
+  const i=parseInt(el.getAttribute('data-eidx'));
+  const{exams,gradeKey}=window._CE||{};
+  if(!exams||isNaN(i)) return;
+  const e=exams[i];
+  if(e.type==='mcq'&&e.mcqRaw) openMcq(e.id,gradeKey,e.title||'',e.mcqRaw);
+  else if(e.type==='essay'&&e.essayText) openEssay(e.id,gradeKey,e.title||'',e.essayText);
+  else if((e.type==='images'||e.type==='pdf')&&(e.imageUrls?.length||e.fileUrl||e.externalUrl)){
+    const urls=e.imageUrls?.length?e.imageUrls:(e.fileUrl?[e.fileUrl]:[e.externalUrl]);
+    openImgs(e.id,gradeKey,e.title||'',urls);
+  } else if(e.externalUrl||e.url) window.open(e.externalUrl||e.url,'_blank');
+};
+
 function renderHw(hw,done,gradeKey,isMine){
   const el=document.getElementById('hwList');
-  if(!hw.length){
-    el.innerHTML='<div class="empty"><p>لا يوجد واجبات بعد</p></div>'; return;
-  }
-  el.innerHTML=hw.map((h,i)=>{
+  if(!hw.length){el.innerHTML='<div class="empty"><p>لا يوجد واجبات بعد</p></div>';return;}
+  el.innerHTML=hw.map(h=>{
     const isDone=done.includes(h.id);
     return `<div class="hw-item">
-      <div class="hw-ico">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
-      </div>
+      <div class="hw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
       <div class="hw-info">
         <div class="hw-title">${h.order?h.order+'. ':''}${h.title||'واجب'}</div>
         <div class="hw-meta">${h.description||''}${h.deadline?' · 📅 '+h.deadline:''}</div>
         <div class="hw-links">
           ${h.fileUrl?`<a href="${h.fileUrl}" target="_blank" class="hw-link file">📎 فتح الملف</a>`:''}
-          ${h.pdfUrl?`<a href="${h.pdfUrl}" target="_blank" class="hw-link pdf">📄 PDF</a>`:''}
-          ${h.imageUrl?`<button class="hw-link file" onclick="viewOneImg('${h.imageUrl}')">🖼 عرض صورة</button>`:''}
-          ${h.url&&!h.fileUrl&&!h.pdfUrl?`<a href="${h.url}" target="_blank" class="hw-link file">🔗 رابط</a>`:''}
+          ${h.url&&!h.fileUrl?`<a href="${h.url}" target="_blank" class="hw-link file">🔗 رابط</a>`:''}
         </div>
       </div>
-      ${isMine&&!isDone?`<button onclick="markDone('${gradeKey}','homework','${h.id}')"
-        style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">سلّمت ✓</button>`
-        :isDone?'<span style="color:var(--ok);font-size:14px;flex-shrink:0">✅</span>':''}
+      ${isMine&&!isDone?`<button onclick="markDone('${gradeKey}','homework','${h.id}')" style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">سلّمت ✓</button>`:isDone?'<span style="color:var(--ok);font-size:14px;flex-shrink:0">✅</span>':''}
     </div>`;
   }).join('');
 }
 
-// ── VIDEO PLAYER ──
-window.openVid = (id, ytId) => {
-  document.querySelectorAll('[id^="vp-"]').forEach(w=>{
-    w.style.display='none';
-    const f=w.querySelector('iframe'); if(f) f.src='';
-  });
-  const wrap=document.getElementById('vp-'+id);
-  const frame=document.getElementById('vf-'+id);
-  if(wrap&&frame){ wrap.style.display='block'; frame.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`; }
+window.openVid=(id,ytId)=>{
+  document.querySelectorAll('[id^="vp-"]').forEach(w=>{w.style.display='none';const f=w.querySelector('iframe');if(f)f.src='';});
+  const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);
+  if(w&&f){w.style.display='block';f.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;}
 };
-window.closeVid = (id) => {
-  const w=document.getElementById('vp-'+id), f=document.getElementById('vf-'+id);
-  if(w) w.style.display='none'; if(f) f.src='';
-};
-window.markVDone = (gradeKey,id) => { markDone(gradeKey,'videos',id); closeVid(id); };
+window.closeVid=(id)=>{const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);if(w)w.style.display='none';if(f)f.src='';};
+window.markVDone=(g,id)=>{markDone(g,'videos',id);closeVid(id);};
 
-// ── MCQ ──
 let _mcq={questions:[],answers:{},gradeKey:'',examId:''};
-window.openMcq = (examId,gradeKey,title,raw) => {
+function openMcq(examId,gradeKey,title,raw){
   _mcq={questions:parseMcq(raw),answers:{},gradeKey,examId};
   document.getElementById('mcqTitle').textContent=title;
   document.getElementById('mcqResult').style.display='none';
-  document.getElementById('mcqBtn').style.display='block';
+  const btn=document.getElementById('mcqBtn');
+  btn.textContent='تسليم الإجابات';btn.style.display='block';btn.onclick=submitMcq;
   renderMcq();
-  document.getElementById('mcqModal').classList.add('open');
-  document.body.style.overflow='hidden';
-};
+  document.getElementById('mcqModal').classList.add('open');document.body.style.overflow='hidden';
+}
 function parseMcq(raw){
-  return raw.split(/\n?---\n?/).filter(Boolean).map(block=>{
-    const lines=block.split('\n').filter(l=>l.trim());
-    const q=lines[0];
-    const opts=lines.slice(1).map(l=>({text:l.replace(/^\*\s*/,''),correct:l.startsWith('*')}));
-    return {q,opts};
+  return raw.split(/\n?---\n?/).filter(Boolean).map(b=>{
+    const lines=b.split('\n').filter(l=>l.trim());
+    return{q:lines[0],opts:lines.slice(1).map(l=>({text:l.replace(/^\*\s*/,''),correct:l.trimStart().startsWith('*')}))};
   });
 }
 function renderMcq(){
-  const qs=_mcq.questions;
-  document.getElementById('mcqProg').textContent=qs.length+' سؤال';
-  document.getElementById('mcqBody').innerHTML=qs.map((q,qi)=>`
+  document.getElementById('mcqProg').textContent=_mcq.questions.length+' سؤال';
+  document.getElementById('mcqBody').innerHTML=_mcq.questions.map((q,qi)=>`
     <div class="mcq-q">
       <div class="mcq-q-text">${qi+1}. ${q.q}</div>
       ${q.opts.map((o,oi)=>`<div class="mcq-opt" id="opt-${qi}-${oi}" onclick="pickOpt(${qi},${oi})">${o.text}</div>`).join('')}
     </div>`).join('');
 }
-window.pickOpt = (qi,oi) => {
-  _mcq.answers[qi]=oi;
-  document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach(el=>el.classList.remove('sel'));
-  document.getElementById(`opt-${qi}-${oi}`)?.classList.add('sel');
-};
-window.submitMcq = () => {
-  let score=0;
+window.pickOpt=(qi,oi)=>{_mcq.answers[qi]=oi;document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach(e=>e.classList.remove('sel'));document.getElementById(`opt-${qi}-${oi}`)?.classList.add('sel');};
+function submitMcq(){
+  let sc=0;
   _mcq.questions.forEach((q,qi)=>{
     const ai=_mcq.answers[qi];
-    q.opts.forEach((o,oi)=>{
-      const el=document.getElementById(`opt-${qi}-${oi}`);
-      if(!el) return;
-      el.onclick=null;
-      if(o.correct){el.classList.add('correct');el.classList.remove('sel');}
-      else if(oi===ai){el.classList.add('wrong');el.classList.remove('sel');}
-    });
-    if(ai!==undefined&&q.opts[ai]?.correct) score++;
+    q.opts.forEach((o,oi)=>{const e=document.getElementById(`opt-${qi}-${oi}`);if(!e)return;e.onclick=null;if(o.correct){e.classList.add('correct');e.classList.remove('sel');}else if(oi===ai){e.classList.add('wrong');e.classList.remove('sel');}});
+    if(ai!==undefined&&q.opts[ai]?.correct)sc++;
   });
-  const pct=Math.round(score/_mcq.questions.length*100);
+  const pct=Math.round(sc/_mcq.questions.length*100);
   document.getElementById('mcqResult').style.display='block';
-  document.getElementById('mcqResult').innerHTML=`
-    <div style="font-size:36px">${pct>=60?'🎉':'💪'}</div>
-    <div style="font-size:18px;font-weight:900;margin:8px 0">${score}/${_mcq.questions.length} صح</div>
-    <div style="font-size:14px;color:var(--muted)">${pct}% — ${pct>=80?'ممتاز':pct>=60?'جيد':'حاول تاني 💪'}</div>`;
+  document.getElementById('mcqResult').innerHTML=`<div style="font-size:36px">${pct>=60?'🎉':'💪'}</div><div style="font-size:18px;font-weight:900;margin:8px 0">${sc}/${_mcq.questions.length} صح</div><div style="font-size:14px;color:var(--muted)">${pct}% — ${pct>=80?'ممتاز':pct>=60?'جيد':'حاول تاني 💪'}</div>`;
   document.getElementById('mcqBtn').style.display='none';
-  if(pct>=50) markDone(_mcq.gradeKey,'exams',_mcq.examId);
-};
-window.closeMcq = () => { document.getElementById('mcqModal').classList.remove('open'); document.body.style.overflow=''; };
+  if(pct>=50)markDone(_mcq.gradeKey,'exams',_mcq.examId);
+}
+window.closeMcq=()=>{document.getElementById('mcqModal').classList.remove('open');document.body.style.overflow='';};
 
-// ── ESSAY ──
-window.openEssay = (examId,gradeKey,title,text) => {
+function openEssay(examId,gradeKey,title,text){
   document.getElementById('mcqTitle').textContent=title;
   document.getElementById('mcqProg').textContent='امتحان مقالي';
   document.getElementById('mcqResult').style.display='none';
-  document.getElementById('mcqBody').innerHTML=`
-    <div class="essay-text">${text}</div>
-    <textarea class="essay-area" id="essayAns" placeholder="اكتب إجابتك هنا..."></textarea>`;
-  document.getElementById('mcqBtn').textContent='تسليم الإجابة ✓';
-  document.getElementById('mcqBtn').style.display='block';
-  document.getElementById('mcqBtn').onclick=()=>{
-    markDone(gradeKey,'exams',examId);
-    document.getElementById('mcqResult').style.display='block';
-    document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin-top:8px">تم التسليم!</div>';
-    document.getElementById('mcqBtn').style.display='none';
-  };
-  document.getElementById('mcqModal').classList.add('open');
-  document.body.style.overflow='hidden';
-};
+  document.getElementById('mcqBody').innerHTML=`<div class="essay-text">${text}</div><textarea class="essay-area" placeholder="اكتب إجابتك هنا..."></textarea>`;
+  const btn=document.getElementById('mcqBtn');btn.textContent='تسليم ✓';btn.style.display='block';
+  btn.onclick=()=>{markDone(gradeKey,'exams',examId);document.getElementById('mcqResult').style.display='block';document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin-top:8px">تم التسليم!</div>';btn.style.display='none';};
+  document.getElementById('mcqModal').classList.add('open');document.body.style.overflow='hidden';
+}
 
-// ── IMAGE EXAM ──
-window.openImgs = (examId,gradeKey,title,urls) => {
+function openImgs(examId,gradeKey,title,urls){
   _imgData={examId,gradeKey};
   document.getElementById('imgTitle').textContent=title;
   document.getElementById('imgBody').innerHTML=urls.map((u,i)=>`
     <div style="margin-bottom:10px">
       <div style="font-size:11px;color:var(--muted);margin-bottom:4px">صفحة ${i+1}</div>
-      ${u.toLowerCase().endsWith('.pdf')||u.includes('application/pdf')
-        ?`<a href="${u}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(74,127,212,0.07);border:1px solid var(--b1);border-radius:10px;color:var(--blue);text-decoration:none;font-weight:700">📄 فتح الصفحة ${i+1}</a>`
-        :`<img src="${u}" style="width:100%;border-radius:10px;display:block" onclick="window.open('${u}','_blank')" style="cursor:pointer"/>`}
+      ${u.toLowerCase().includes('.pdf')?`<a href="${u}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(74,127,212,0.07);border:1px solid var(--b1);border-radius:10px;color:var(--blue);text-decoration:none;font-weight:700">📄 فتح الصفحة ${i+1}</a>`:`<img src="${u}" style="width:100%;border-radius:10px;display:block;cursor:pointer" onclick="window.open('${u}','_blank')"/>`}
     </div>`).join('');
   document.getElementById('imgDoneBtn').style.display='flex';
-  document.getElementById('imgModal').classList.add('open');
-  document.body.style.overflow='hidden';
-};
-window.viewOneImg = (src) => {
-  _imgData=null;
-  document.getElementById('imgTitle').textContent='صورة';
-  document.getElementById('imgBody').innerHTML=`<img src="${src}" style="width:100%;border-radius:10px;display:block"/>`;
-  document.getElementById('imgDoneBtn').style.display='none';
-  document.getElementById('imgModal').classList.add('open');
-  document.body.style.overflow='hidden';
-};
-window.imgDone = () => {
-  if(_imgData) markDone(_imgData.gradeKey,'exams',_imgData.examId);
-  closeImg();
-};
-window.closeImg = () => { document.getElementById('imgModal').classList.remove('open'); document.body.style.overflow=''; };
+  document.getElementById('imgModal').classList.add('open');document.body.style.overflow='hidden';
+}
+window.imgDone=()=>{if(_imgData)markDone(_imgData.gradeKey,'exams',_imgData.examId);closeImg();};
+window.closeImg=()=>{document.getElementById('imgModal').classList.remove('open');document.body.style.overflow='';};
+window.closePlayer=()=>{document.getElementById('playerFrame').src='';document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';};
+window.playerDone=()=>{if(_playerData)markDone(_playerData.gradeKey,'videos',_playerData.id);closePlayer();};
 
-// ── PLAYER MODAL (fallback) ──
-window.openPlayerModal = (ytId,title,id,gradeKey) => {
-  _playerData={id,gradeKey};
-  document.getElementById('playerTitle').textContent=title;
-  document.getElementById('playerFrame').src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
-  document.getElementById('playerModal').classList.add('open');
-  document.body.style.overflow='hidden';
-};
-window.closePlayer = () => {
-  document.getElementById('playerFrame').src='';
-  document.getElementById('playerModal').classList.remove('open');
-  document.body.style.overflow='';
-};
-window.playerDone = () => {
-  if(_playerData) markDone(_playerData.gradeKey,'videos',_playerData.id);
-  closePlayer();
-};
-
-// ── MARK DONE ──
-window.markDone = async (gradeKey,type,itemId) => {
+window.markDone=async(gradeKey,type,itemId)=>{
   try{
     const gp=_progress[gradeKey]||{};
     const list=[...(gp[type]||[])];
-    if(list.includes(itemId)){ showToast('تم التسجيل مسبقاً','ok'); return; }
-    list.push(itemId);
-    _progress[gradeKey]={...gp,[type]:list};
+    if(list.includes(itemId)){showToast('تم التسجيل مسبقاً','ok');return;}
+    list.push(itemId);_progress[gradeKey]={...gp,[type]:list};
     await setDoc(doc(db,'progress',_user.uid),_progress,{merge:true});
     const gk=window._openGrade;
-    if(gk) openCourse(gk,document.getElementById('cvTitle').textContent,document.getElementById('cvSub').textContent);
+    if(gk)openCourse(gk,document.getElementById('cvTitle').textContent,document.getElementById('cvSub').textContent);
     showToast('تم التسجيل ✓','ok');
-  }catch(e){ showToast('خطأ: '+e.message,'err'); }
+  }catch(e){showToast('خطأ: '+e.message,'err');}
 };
-
-// ── SIGN OUT ──
-window.doSignOut = async () => { await signOut(auth); window.location.href='index.html'; };
-
-// ── HELPERS ──
-function getYtId(url){
-  const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
-  return m?m[1]:'';
-}
-function setProg(fillId,valId,total,done){
-  const pct=total?Math.round(done/total*100):0;
-  const f=document.getElementById(fillId), v=document.getElementById(valId);
-  if(f) f.style.width=pct+'%'; if(v) v.textContent=pct+'%';
-}
+window.doSignOut=async()=>{await signOut(auth);window.location.href='index.html';};
+function getYtId(url){const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);return m?m[1]:'';}
+function setProg(fId,vId,tot,done){const p=tot?Math.round(done/tot*100):0;const f=document.getElementById(fId),v=document.getElementById(vId);if(f)f.style.width=p+'%';if(v)v.textContent=p+'%';}
 </script>
 
 <script>
-// ── GRADE DATA ──
-const GRADES = {
+const GRADES={
   primary:[
     {key:'primary-4',label:'الصف الرابع الابتدائي',sub:'كل محتوى الصف الرابع',img:'https://plusedu.vercel.app/store/1/ye 1.png',stage:'ابتدائي'},
     {key:'primary-5',label:'الصف الخامس الابتدائي',sub:'كل محتوى الصف الخامس',img:'https://plusedu.vercel.app/store/1/ye-2.jpg',stage:'ابتدائي'},
@@ -849,12 +584,14 @@ const GRADES = {
     {key:'sec-3',label:'الصف الثالث الثانوي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/year-3.jpg',stage:'ثانوي'},
   ]
 };
+// Grade map for auto-open
+window._GM={};
+Object.values(GRADES).flat().forEach(g=>{window._GM[g.key]=g;});
 
 function buildGrades(){
   const ud=window._userData||{};
   ['primary','prep','sec'].forEach(stage=>{
-    const grid=document.getElementById('grid-'+stage);
-    if(!grid) return;
+    const grid=document.getElementById('grid-'+stage);if(!grid)return;
     grid.innerHTML=GRADES[stage].map(g=>{
       const isMine=ud.gradeKey===g.key;
       return `<div id="gcard-${g.key}" class="grade-card"
@@ -877,42 +614,27 @@ function buildGrades(){
 
 function closeCourse(){
   document.getElementById('courseView').classList.remove('open');
+  document.getElementById('courseView').style.display='none';
   document.body.style.overflow='';
-  document.querySelectorAll('[id^="vp-"]').forEach(w=>{
-    w.style.display='none';
-    const f=w.querySelector('iframe'); if(f) f.src='';
-  });
+  document.querySelectorAll('[id^="vp-"]').forEach(w=>{w.style.display='none';const f=w.querySelector('iframe');if(f)f.src='';});
 }
-
 function switchTab(name,btn){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.cv-tab').forEach(b=>b.classList.remove('on'));
   document.getElementById('tp-'+name)?.classList.add('on');
-  if(btn) btn.classList.add('on');
+  if(btn)btn.classList.add('on');
 }
-
 let tTimer;
 function showToast(msg,type='ok'){
-  const t=document.getElementById('toast');
-  t.className='toast '+type;
+  const t=document.getElementById('toast');t.className='toast '+type;
   document.getElementById('tMsg').textContent=msg;
-  t.classList.add('show'); clearTimeout(tTimer);
-  tTimer=setTimeout(()=>t.classList.remove('show'),3000);
+  t.classList.add('show');clearTimeout(tTimer);tTimer=setTimeout(()=>t.classList.remove('show'),3000);
 }
-
-// Close modals on overlay click
 ['playerModal','mcqModal','imgModal'].forEach(id=>{
   const el=document.getElementById(id);
-  if(el) el.addEventListener('click',function(e){
-    if(e.target===this){
-      if(id==='playerModal') closePlayer();
-      else if(id==='mcqModal') closeMcq();
-      else closeImg();
-    }
-  });
+  if(el)el.addEventListener('click',function(e){if(e.target===this){if(id==='playerModal')closePlayer();else if(id==='mcqModal')closeMcq();else closeImg();}});
 });
-
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeCourse(); });
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCourse();});
 </script>
 </body>
 </html>
