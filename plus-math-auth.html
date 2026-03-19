@@ -376,9 +376,9 @@ input::placeholder{color:var(--muted);opacity:.5}
 
 <!-- Firebase -->
 <!-- Firebase Compat (global scope) -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
 
 // ── Firebase Init ──
@@ -448,7 +448,13 @@ auth.onAuthStateChanged(function(user){
     if(data.expiresAt){
       var exp = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
       if(new Date() > exp){
-        db.collection('users').doc(user.uid).update({subscriptionActive:false});
+        // ── انتهى الاشتراك: امسح الكود والاشتراك، افضل الحساب والصف ──
+        db.collection('users').doc(user.uid).update({
+          subscriptionActive: false,
+          subscriptionCode: '',
+          expiresAt: null,
+          activatedAt: null
+        });
         showExpiredStep(data.grade||'', data.gradeKey||'');
         return;
       }
@@ -613,11 +619,13 @@ function submitCode(){
           showMsg('code-msg','الكود مخصص لـ "'+( GRADE_LABELS[codeData.gradeKey]||codeData.gradeKey)+'" — مش صفك ❌','error');
           setLoad(btn,false); return;
         }
-        var expiry = new Date(Date.now() + 30*24*60*60*1000);
+        // ── 29-day expiry ──
+        var expiry = new Date(Date.now() + 29*24*60*60*1000);
         return cd.ref.update({used:true, usedBy:user.uid, usedAt:firebase.firestore.FieldValue.serverTimestamp()})
           .then(function(){
             return db.collection('users').doc(user.uid).update({
-              subscriptionActive:true, subscriptionCode:code,
+              subscriptionActive:true,
+              subscriptionCode:code,
               activatedAt:firebase.firestore.FieldValue.serverTimestamp(),
               expiresAt:expiry,
               stage:  (ud.data().stage||codeData.stage||''),
