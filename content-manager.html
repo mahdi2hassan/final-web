@@ -860,6 +860,15 @@ try{
   const ad = await getDoc(doc(db,'settings','admin'));
   if(ad.exists()) window._adminPass = ad.data().pass;
 }catch(e){}
+// ── Expose Firebase to window for books functions ──
+window._db = db;
+window._getDocs = getDocs;
+window._addDoc = addDoc;
+window._updateDoc = updateDoc;
+window._deleteDoc = deleteDoc;
+window._doc = doc;
+window._collection = collection;
+window._serverTimestamp = serverTimestamp;
 window._fbReady=true;
 </script>
 
@@ -996,6 +1005,7 @@ window.saveBook = async () => {
   const title = document.getElementById('bTitle').value.trim();
   const price = document.getElementById('bPrice').value;
   if(!title || !price){ toast('ادخل العنوان والسعر','err'); return; }
+  if(!window._db){ toast('Firebase مش جاهز — انتظر ثانية','err'); return; }
   const btn = document.getElementById('bSaveBtn');
   btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
   try{
@@ -1009,15 +1019,15 @@ window.saveBook = async () => {
       coverUrl: document.getElementById('bCover').value.trim(),
       note: document.getElementById('bNote').value.trim(),
       available: true,
-      updatedAt: serverTimestamp()
+      updatedAt: window._serverTimestamp()
     };
     if(window._editId?.b){
-      await updateDoc(doc(db,'books',window._editId.b), data);
+      await window._db.collection('books').doc(window._editId.b).update(data);
       delete window._editId.b;
       toast('تم تعديل الكتاب ✓','ok');
     } else {
-      data.createdAt = serverTimestamp();
-      await addDoc(collection(db,'books'), data);
+      data.createdAt = window._serverTimestamp();
+      await window._db.collection('books').add(data);
       toast('تم إضافة الكتاب ✓','ok');
     }
     clearBook(); loadBooks();
@@ -1029,8 +1039,9 @@ window.saveBook = async () => {
 window.loadBooks = async () => {
   const el = document.getElementById('bList');
   el.innerHTML='<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
+  if(!window._db){ el.innerHTML='<div class="empty"><p>Firebase مش جاهز — انتظر وحاول تاني</p></div>'; return; }
   try{
-    const snap = await getDocs(collection(db,'books'));
+    const snap = await window._db.collection('books').get();
     const books = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
     const cnt = document.getElementById('cnt-b');
     if(cnt) cnt.textContent = books.length ? '('+books.length+')':'';
@@ -1063,8 +1074,8 @@ window.loadBooks = async () => {
 // ── Edit Book ──
 window.editBook = async (id) => {
   try{
-    const d = await getDoc(doc(db,'books',id));
-    if(!d.exists()) return;
+    const d = await window._db.collection('books').doc(id).get();
+    if(!d.exists) return;
     const b = d.data();
     window._editId = window._editId||{};
     window._editId.b = id;
@@ -1085,7 +1096,7 @@ window.editBook = async (id) => {
 // ── Toggle availability ──
 window.toggleBookAvail = async (id, state) => {
   try{
-    await updateDoc(doc(db,'books',id),{available:state});
+    await window._db.collection('books').doc(id).update({available:state});
     loadBooks();
     toast(state?'الكتاب متاح الآن ✓':'تم إخفاء الكتاب','ok');
   }catch(e){ toast('خطأ','err'); }
@@ -1095,7 +1106,7 @@ window.toggleBookAvail = async (id, state) => {
 window.deleteBook = async (id, title) => {
   if(!confirm('حذف "'+title+'"؟')) return;
   try{
-    await deleteDoc(doc(db,'books',id));
+    await window._db.collection('books').doc(id).delete();
     loadBooks();
     toast('تم الحذف','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }

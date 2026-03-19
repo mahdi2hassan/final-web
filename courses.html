@@ -791,18 +791,24 @@ async function loadBooksTab(){
   const el = document.getElementById('booksList');
   if(_books.length){ renderBooksTab(); return; }
   el.innerHTML='<div class="empty"><p>جاري التحميل...</p></div>';
+  // Wait for Firebase db to be ready (max 5 seconds)
+  let waited = 0;
+  while(!window._db && waited < 5000){
+    await new Promise(r=>setTimeout(r,200));
+    waited += 200;
+  }
+  if(!window._db){ el.innerHTML='<div class="empty"><p>تعذر الاتصال بالإنترنت — حاول تاني</p></div>'; return; }
   try{
-    // Load books + payment settings in parallel
     const [bSnap, payDoc] = await Promise.all([
-      window._db ? window._db.collection('books').get() : Promise.resolve({docs:[]}),
-      window._db ? window._db.collection('settings').doc('payment').get() : Promise.resolve({exists:false})
+      window._db.collection('books').get(),
+      window._db.collection('settings').doc('payment').get()
     ]);
     _books = bSnap.docs.map(d=>({id:d.id,...d.data()}))
       .filter(b=>b.available!==false)
       .sort((a,b)=>(a.order||0)-(b.order||0));
     if(payDoc.exists) _paySettings = payDoc.data();
     renderBooksTab();
-  }catch(e){ el.innerHTML='<div class="empty"><p>تعذر تحميل الكتب</p></div>'; }
+  }catch(e){ el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`; }
 }
 
 const GL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};
@@ -912,6 +918,7 @@ async function applyBookCoupon(){
   if(!code){ return; }
   const msgEl = document.getElementById('book-coupon-msg');
   msgEl.textContent='...'; msgEl.style.display='block'; msgEl.style.color='var(--muted)';
+  if(!window._db){ msgEl.textContent='مش متصل — حاول تاني'; msgEl.style.color='var(--err)'; return; }
   try{
     const snap = await window._db.collection('coupons')
       .where('code','==',code).where('active','==',true).get();
