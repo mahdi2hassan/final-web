@@ -704,6 +704,10 @@ function resetCoupon(){
   _activeCoupon = null;
   document.getElementById('coupon-msg').style.display='none';
   document.getElementById('price-display').style.display='none';
+  document.getElementById('sub-code').style.display='';
+  document.getElementById('code-btn').style.display='';
+  var freeBtn = document.getElementById('free-coupon-btn');
+  if(freeBtn) freeBtn.style.display='none';
 }
 
 function applyCoupon(){
@@ -741,12 +745,29 @@ function applyCoupon(){
         document.getElementById('price-display').style.display='block';
       }
       if(isFree){
-        showCouponMsg('✅ كوبون مجاني! اضغط "تفعيل الاشتراك" بدون كود','success');
-        // Hide the code input and show activate button directly
-        document.getElementById('sub-code').placeholder='اترك فارغاً مع الكوبون المجاني';
+        showCouponMsg('✅ كوبون مجاني! اضغط الزرار أدناه للتفعيل','success');
+        document.getElementById('sub-code').style.display='none';
+        // Show free activate button
+        var freeBtn = document.getElementById('free-coupon-btn');
+        if(!freeBtn){
+          freeBtn = document.createElement('button');
+          freeBtn.id = 'free-coupon-btn';
+          freeBtn.className = 'btn';
+          freeBtn.style.cssText = 'margin-top:10px;background:linear-gradient(135deg,var(--ok),#006040)';
+          freeBtn.innerHTML = '<span class="btn-text">🎉 تفعيل مجاناً بالكوبون</span><div class="spin"></div>';
+          freeBtn.onclick = function(){ submitCode(); };
+          document.getElementById('code-btn').insertAdjacentElement('afterend', freeBtn);
+        }
+        freeBtn.style.display='flex';
+        document.getElementById('code-btn').style.display='none';
       } else {
+        // Show code input again if it was hidden
+        document.getElementById('sub-code').style.display='';
+        document.getElementById('code-btn').style.display='';
+        var freeBtn2 = document.getElementById('free-coupon-btn');
+        if(freeBtn2) freeBtn2.style.display='none';
         var label = d.type==='percent' ? d.value+'% خصم' : d.value+' جنيه خصم';
-        showCouponMsg('✅ تم تطبيق كوبون '+label,'success');
+        showCouponMsg('✅ تم تطبيق كوبون '+label+' — ادخل كود الاشتراك وفعّله','success');
       }
     })
     .catch(function(e){ btn.textContent='تطبيق'; btn.disabled=false; showCouponMsg('خطأ: '+e.message,'error'); });
