@@ -313,6 +313,27 @@ input::placeholder{color:var(--muted);opacity:.5}
         <span class="btn-text"><svg><use href="#i-key"/></svg>تفعيل الاشتراك</span>
         <div class="spin"></div>
       </button>
+
+      <!-- ── COUPON SECTION ── -->
+      <div style="margin-top:14px;padding:12px 14px;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.18);border-radius:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--gold2);margin-bottom:8px">🎟️ عندك كوبون خصم؟</div>
+        <div style="display:flex;gap:7px">
+          <input type="text" id="coupon-code" placeholder="كود الكوبون"
+            style="flex:1;padding:9px 12px;background:var(--input);border:1.5px solid var(--border2);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;text-transform:uppercase"
+            oninput="this.value=this.value.toUpperCase();resetCoupon()"/>
+          <button onclick="applyCoupon()" id="coupon-btn"
+            style="padding:9px 14px;border:1px solid var(--gold);background:rgba(201,168,76,0.1);color:var(--gold2);border-radius:9px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;white-space:nowrap;transition:all .2s">
+            تطبيق
+          </button>
+        </div>
+        <div id="coupon-msg" style="font-size:12px;margin-top:6px;display:none"></div>
+        <!-- Price display -->
+        <div id="price-display" style="display:none;margin-top:8px;padding:8px 10px;background:rgba(0,214,143,0.07);border:1px solid rgba(0,214,143,0.2);border-radius:8px;font-size:12px">
+          <span style="color:var(--muted)">السعر الأصلي: </span><span id="orig-price" style="text-decoration:line-through;color:var(--muted)"></span>
+          <span style="color:var(--ok);font-weight:800;margin-right:8px">← بعد الخصم: </span><span id="disc-price" style="color:var(--ok);font-weight:900;font-size:14px"></span>
+        </div>
+      </div>
+
       <div class="divider">مش عندك كود؟</div>
       <button class="btn-wa" onclick="openWaCode()">
         <svg><use href="#i-wa"/></svg>
@@ -675,6 +696,97 @@ function submitCode(){
     setLoad(btn,false);
   });
 }
+
+// ── COUPON LOGIC ──
+var _activeCoupon = null; // {id, code, type:'percent'|'fixed', value, isFree}
+
+function resetCoupon(){
+  _activeCoupon = null;
+  document.getElementById('coupon-msg').style.display='none';
+  document.getElementById('price-display').style.display='none';
+}
+
+function applyCoupon(){
+  var code = document.getElementById('coupon-code').value.trim().toUpperCase();
+  if(!code){ showCouponMsg('ادخل كود الكوبون','error'); return; }
+  var btn = document.getElementById('coupon-btn');
+  btn.textContent='...'; btn.disabled=true;
+  db.collection('coupons')
+    .where('code','==',code)
+    .where('active','==',true)
+    .get()
+    .then(function(snap){
+      btn.textContent='تطبيق'; btn.disabled=false;
+      if(snap.empty){ showCouponMsg('الكوبون غلط أو منتهي ❌','error'); return; }
+      var cp = snap.docs[0];
+      var d  = cp.data();
+      // Check expiry
+      if(d.expiresAt && new Date(d.expiresAt) < new Date()){
+        showCouponMsg('الكوبون انتهت صلاحيته ❌','error'); return;
+      }
+      // Check max uses
+      if(d.maxUses && (d.usedCount||0) >= d.maxUses){
+        showCouponMsg('الكوبون استُنفد ❌','error'); return;
+      }
+      var isFree = (d.type==='percent' && d.value>=100);
+      _activeCoupon = {id:cp.id, code:d.code, type:d.type, value:d.value, isFree:isFree, data:d};
+      // Show price display
+      var subPrice = parseFloat(document.getElementById('sub-price').textContent) || 0;
+      if(subPrice > 0){
+        var discounted = d.type==='percent'
+          ? Math.max(0, subPrice - subPrice*(d.value/100))
+          : Math.max(0, subPrice - d.value);
+        document.getElementById('orig-price').textContent = subPrice+' جنيه';
+        document.getElementById('disc-price').textContent = isFree ? 'مجاناً 🎉' : Math.round(discounted)+' جنيه';
+        document.getElementById('price-display').style.display='block';
+      }
+      if(isFree){
+        showCouponMsg('✅ كوبون مجاني! اضغط "تفعيل الاشتراك" بدون كود','success');
+        // Hide the code input and show activate button directly
+        document.getElementById('sub-code').placeholder='اترك فارغاً مع الكوبون المجاني';
+      } else {
+        var label = d.type==='percent' ? d.value+'% خصم' : d.value+' جنيه خصم';
+        showCouponMsg('✅ تم تطبيق كوبون '+label,'success');
+      }
+    })
+    .catch(function(e){ btn.textContent='تطبيق'; btn.disabled=false; showCouponMsg('خطأ: '+e.message,'error'); });
+}
+
+function showCouponMsg(msg, type){
+  var el = document.getElementById('coupon-msg');
+  el.textContent = msg;
+  el.style.color = type==='success'?'var(--ok)':'var(--err)';
+  el.style.display='block';
+}
+
+// Override submitCode to handle coupons
+var _origSubmitCode = submitCode;
+submitCode = function(){
+  var cp = _activeCoupon;
+  // If free coupon — activate without subscription code
+  if(cp && cp.isFree){
+    var btn = document.getElementById('code-btn');
+    setLoad(btn,true);
+    var user = auth.currentUser;
+    db.collection('users').doc(user.uid).get().then(function(ud){
+      var myGradeKey = (ud.data()||{}).gradeKey || window._savedGradeKey || '';
+      if(!myGradeKey){ showMsg('code-msg','اختار صفك أولاً','error'); setLoad(btn,false); return; }
+      var expiry = new Date(Date.now() + 29*24*60*60*1000);
+      // Increment coupon usedCount
+      db.collection('coupons').doc(cp.id).update({
+        usedCount: firebase.firestore.FieldValue.increment(1)
+      });
+      return db.collection('users').doc(user.uid).update({
+        subscriptionActive:true, subscriptionCode:'COUPON-'+cp.code,
+        activatedAt:firebase.firestore.FieldValue.serverTimestamp(),
+        expiresAt:expiry
+      }).then(function(){ showStep('step-success'); });
+    }).catch(function(e){ showMsg('code-msg','خطأ: '+e.message,'error'); setLoad(btn,false); });
+    return;
+  }
+  // Normal code — run original
+  _origSubmitCode();
+};
 
 // ── BANNER & PRICE ──
 function loadBanner(){

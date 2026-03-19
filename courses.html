@@ -855,7 +855,10 @@ function openBookSheet(id){
     </div>`).join('');
 
   const waNum = pay.whatsapp?'20'+(pay.whatsapp||'').replace(/^0/,'').replace(/\D/g,''):'';
-  const waMsg = encodeURIComponent(`مرحباً، عايز أشتري كتاب "${b.title}" بسعر ${b.price} جنيه\nاسمي: ${ud.name||''}\nالصف: ${ud.grade||''}`);
+  // waMsg will be built dynamically after coupon applied
+  window._currentBook = b;
+  window._bookOrigPrice = b.price;
+  window._bookFinalPrice = b.price;
 
   document.getElementById('bsBody').innerHTML=`
     ${b.description?`<div class="bs-desc">${b.description}</div>`:''}
@@ -863,8 +866,25 @@ function openBookSheet(id){
     <div class="bs-pay">
       <div class="bs-pay-title">💳 طريقة الشراء</div>
       ${methodsHtml||'<div style="font-size:12px;color:var(--muted)">سيتم إضافة طرق الدفع قريباً</div>'}
-      <div class="bs-steps">${pay.note||`<b>الخطوات:</b><br>1️⃣ حوّل <b>${b.price} جنيه</b><br>2️⃣ صوّر الإيصال<br>3️⃣ ابعته على واتساب 📦`}</div>
-      ${waNum?`<button class="wa-buy-btn" onclick="window.open('https://wa.me/${waNum}?text=${waMsg}','_blank')">
+      <div class="bs-steps">${pay.note||`<b>الخطوات:</b><br>1️⃣ حوّل <b><span id="bs-final-price">${b.price}</span> جنيه</b><br>2️⃣ صوّر الإيصال<br>3️⃣ ابعته على واتساب 📦`}</div>
+
+      <!-- ── BOOK COUPON ── -->
+      <div style="margin-bottom:12px;padding:10px 12px;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);border-radius:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--gold2);margin-bottom:7px">🎟️ كوبون خصم على الكتاب</div>
+        <div style="display:flex;gap:6px">
+          <input id="book-coupon-inp" type="text" placeholder="كود الكوبون"
+            style="flex:1;padding:8px 10px;background:rgba(6,10,22,.8);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;text-transform:uppercase"
+            oninput="this.value=this.value.toUpperCase()"/>
+          <button onclick="applyBookCoupon()" style="padding:8px 12px;border:1px solid var(--gold);background:rgba(201,168,76,.1);color:var(--gold2);border-radius:8px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">تطبيق</button>
+        </div>
+        <div id="book-coupon-msg" style="font-size:11px;margin-top:5px;display:none"></div>
+        <div id="book-price-display" style="display:none;margin-top:7px;font-size:12px">
+          <span style="color:var(--muted)">الأصلي: </span><span id="book-orig-pr" style="text-decoration:line-through;color:var(--muted)"></span>
+          <span style="color:var(--ok);font-weight:800"> ← </span><span id="book-disc-pr" style="color:var(--ok);font-weight:900;font-size:13px"></span>
+        </div>
+      </div>
+
+      ${waNum?`<button class="wa-buy-btn" onclick="confirmBookOnWA('${waNum}')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         تأكيد الشراء على واتساب
       </button>`:''}
@@ -884,6 +904,53 @@ function copyNum(num){
   if(navigator.clipboard) navigator.clipboard.writeText(num);
   else{const t=document.createElement('textarea');t.value=num;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);}
   showToast('تم نسخ الرقم ✓','ok');
+}
+
+// ── BOOK COUPON ──
+async function applyBookCoupon(){
+  const code = document.getElementById('book-coupon-inp')?.value.trim().toUpperCase();
+  if(!code){ return; }
+  const msgEl = document.getElementById('book-coupon-msg');
+  msgEl.textContent='...'; msgEl.style.display='block'; msgEl.style.color='var(--muted)';
+  try{
+    const snap = await window._db.collection('coupons')
+      .where('code','==',code).where('active','==',true).get();
+    if(snap.empty){ msgEl.textContent='الكوبون غلط أو منتهي ❌'; msgEl.style.color='var(--err)'; return; }
+    const d = snap.docs[0].data();
+    if(d.expiresAt && new Date(d.expiresAt)<new Date()){ msgEl.textContent='الكوبون انتهت صلاحيته ❌'; msgEl.style.color='var(--err)'; return; }
+    if(d.maxUses && (d.usedCount||0)>=d.maxUses){ msgEl.textContent='الكوبون استُنفد ❌'; msgEl.style.color='var(--err)'; return; }
+    const orig = window._bookOrigPrice||0;
+    const discounted = d.type==='percent'
+      ? Math.max(0, orig - orig*(d.value/100))
+      : Math.max(0, orig - d.value);
+    window._bookFinalPrice = Math.round(discounted);
+    window._bookCouponId = snap.docs[0].id;
+    const label = d.type==='percent'?d.value+'% خصم':d.value+' جنيه خصم';
+    msgEl.textContent='✅ تم تطبيق كوبون '+label; msgEl.style.color='var(--ok)';
+    document.getElementById('book-orig-pr').textContent = orig+' جنيه';
+    document.getElementById('book-disc-pr').textContent = discounted===0?'مجاناً 🎉':Math.round(discounted)+' جنيه';
+    document.getElementById('book-price-display').style.display='block';
+    // Update price in steps text
+    const prEl = document.getElementById('bs-final-price');
+    if(prEl) prEl.textContent = discounted===0?'مجاناً':Math.round(discounted);
+  }catch(e){ msgEl.textContent='خطأ في التحقق'; msgEl.style.color='var(--err)'; }
+}
+
+function confirmBookOnWA(waNum){
+  const b = window._currentBook||{};
+  const ud = window._userData||{};
+  const finalPrice = window._bookFinalPrice??b.price;
+  const couponNote = window._bookCouponId ? '\nكوبون الخصم: '+document.getElementById('book-coupon-inp').value : '';
+  const msg = encodeURIComponent(
+    `مرحباً، عايز أشتري كتاب "${b.title}"\nالسعر: ${finalPrice===0?'مجاناً':finalPrice+' جنيه'}${couponNote}\nاسمي: ${ud.name||''}\nالصف: ${ud.grade||''}`
+  );
+  // Increment coupon if used
+  if(window._bookCouponId){
+    window._db.collection('coupons').doc(window._bookCouponId).update({
+      usedCount: firebase.firestore.FieldValue.increment(1)
+    }).catch(()=>{});
+  }
+  window.open(`https://wa.me/${waNum}?text=${msg}`,'_blank');
 }
 let tTimer;
 function showToast(msg,type='ok'){
