@@ -512,43 +512,43 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       </div>
 
       <div class="sb-sec">القائمة</div>
-      <div class="sb-item on" onclick="goPage('overview')">
+      <div class="sb-item on" onclick="goPage('overview')" data-perm="all">
         <svg><use href="#ic-dash"/></svg><span>نظرة عامة</span>
       </div>
-      <div class="sb-item" onclick="goPage('analytics')">
+      <div class="sb-item" onclick="goPage('analytics')" data-perm="all">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         <span>الإحصائيات</span>
       </div>
-      <div class="sb-item" onclick="goPage('users')">
+      <div class="sb-item" onclick="goPage('users')" data-perm="users">
         <svg><use href="#ic-users"/></svg><span>الطلاب</span>
         <span class="sb-badge" id="pendBadge" style="display:none">0</span>
       </div>
-      <div class="sb-item" onclick="goPage('codes')">
+      <div class="sb-item" onclick="goPage('codes')" data-perm="codes">
         <svg><use href="#ic-key"/></svg><span>الأكواد</span>
       </div>
-      <div class="sb-item" onclick="goPage('coupons')">
+      <div class="sb-item" onclick="goPage('coupons')" data-perm="codes">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
         <span>الكوبونات</span>
       </div>
-      <div class="sb-item" onclick="goPage('content')">
+      <div class="sb-item" onclick="goPage('content')" data-perm="content">
         <svg><use href="#ic-book"/></svg><span>المحتوى</span>
       </div>
-      <div class="sb-item" onclick="goPage('broadcast')">
+      <div class="sb-item" onclick="goPage('broadcast')" data-perm="broadcast">
         <svg><use href="#ic-send"/></svg><span>إرسال جماعي</span>
       </div>
-      <div class="sb-item" onclick="goPage('notifications')">
+      <div class="sb-item" onclick="goPage('notifications')" data-perm="all">
         <svg><use href="#ic-bell"/></svg><span>الإشعارات</span>
         <span class="sb-badge" id="notifBadge" style="display:none;background:var(--err)">0</span>
       </div>
-      <div class="sb-item" onclick="goPage('activity')">
+      <div class="sb-item" onclick="goPage('activity')" data-perm="all">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
         <span>سجل النشاط</span>
       </div>
-      <div class="sb-item" onclick="goPage('admins')">
+      <div class="sb-item" onclick="goPage('admins')" data-perm="super">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
         <span>المشرفون</span>
       </div>
-      <div class="sb-item" onclick="goPage('settings')">
+      <div class="sb-item" onclick="goPage('settings')" data-perm="super">
         <svg><use href="#ic-settings"/></svg><span>الإعدادات</span>
       </div>
 
@@ -2175,8 +2175,52 @@ function openDashboard(){
   document.getElementById('loginWrap').style.display = 'none';
   const sh = document.getElementById('shell');
   sh.classList.add('open');
-  // Load data when Firebase is ready
+  applyPermissions();
   waitLoad();
+}
+
+// ── APPLY PERMISSIONS based on logged admin ──
+function applyPermissions(){
+  const admin = window._loggedAdmin || {};
+  const perms  = admin.permissions || {};
+  const isSuper = admin.isSuperAdmin === true;
+
+  // Show/hide sidebar items based on data-perm
+  document.querySelectorAll('.sb-item[data-perm]').forEach(el=>{
+    const perm = el.getAttribute('data-perm');
+    let visible = false;
+    if(perm === 'all')    visible = true;
+    else if(perm === 'super') visible = isSuper;
+    else visible = isSuper || !!perms[perm];
+    el.style.display = visible ? '' : 'none';
+  });
+
+  // Show/hide topbar actions for non-super
+  if(!isSuper){
+    // Hide export and settings from topbar
+    const exportBtn = document.querySelector('.tb-btn[onclick*="exportCSV"]');
+    if(exportBtn && !perms.users) exportBtn.style.display='none';
+  }
+
+  // Navigate to first allowed page
+  if(!isSuper){
+    const allowed = ['overview'];
+    if(perms.users)     allowed.push('users');
+    if(perms.content)   allowed.push('content');
+    if(perms.codes)     allowed.push('codes','coupons');
+    if(perms.broadcast) allowed.push('broadcast');
+    allowed.push('notifications','activity');
+    // Default: go to first meaningful page
+    const first = perms.users?'users':perms.content?'content':perms.codes?'codes':perms.broadcast?'broadcast':'overview';
+    setTimeout(()=>goPage(first), 100);
+  }
+
+  // Show admin name badge
+  const av = document.querySelector('.tb-avatar');
+  if(av && admin.name){
+    av.textContent = admin.name.slice(0,2);
+    av.title = admin.name + (isSuper?' (مدير)':' (مشرف)');
+  }
 }
 
 function waitLoad(){
@@ -2232,6 +2276,19 @@ const pageLabels={
   admins:'المشرفون', settings:'الإعدادات'
 };
 function goPage(p){
+  // Permission check for non-super admins
+  const admin = window._loggedAdmin || {};
+  const perms  = admin.permissions || {};
+  const isSuper = admin.isSuperAdmin === true;
+  if(!isSuper){
+    const permMap = {
+      users:'users', codes:'codes', coupons:'codes',
+      content:'content', broadcast:'broadcast',
+      admins:null, settings:null  // null = super only
+    };
+    if(p in permMap && !permMap[p]){ toast('ليس لديك صلاحية لهذه الصفحة','err'); return; }
+    if(p in permMap && permMap[p] && !perms[permMap[p]]){ toast('ليس لديك صلاحية لهذه الصفحة','err'); return; }
+  }
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('on'));
   document.getElementById('page-'+p)?.classList.add('on');
   const allPages=['overview','analytics','users','codes','coupons','content','broadcast','notifications','activity','admins','settings'];
