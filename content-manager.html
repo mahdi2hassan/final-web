@@ -60,15 +60,38 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 /* ── MAIN ── */
 .main{position:relative;z-index:1;padding:clamp(14px,3vw,20px) clamp(14px,4vw,24px);max-width:900px;margin:0 auto}
 
-/* ── GRADE BAR ── */
-.grade-bar{background:var(--s2);border:1px solid var(--b2);border-radius:14px;
-  padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.grade-bar label{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
-.gsel{padding:9px 14px;background:var(--inp);border:1.5px solid var(--b1);border-radius:10px;
-  color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;
-  appearance:none;cursor:pointer;min-width:200px;transition:border-color .2s}
-.gsel:focus{border-color:var(--blue)}
-.grade-info{margin-right:auto;font-size:12px;color:var(--ok);font-weight:700;display:none}
+/* ── GRADE CARDS ── */
+.stage-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.stage-sec{background:var(--s2);border:1px solid var(--b2);border-radius:14px;padding:14px 16px}
+.stage-lbl{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.grade-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gc{background:rgba(8,13,28,0.5);border:1.5px solid var(--b2);border-radius:12px;
+  padding:12px 8px;text-align:center;cursor:pointer;transition:all .22s cubic-bezier(.22,1,.36,1)}
+.gc:hover{transform:translateY(-2px);border-color:var(--b1);box-shadow:0 6px 20px rgba(0,0,0,0.3)}
+.gc.sel{border-color:var(--blue);background:linear-gradient(135deg,rgba(74,127,212,0.15),rgba(26,50,112,0.2));box-shadow:0 4px 18px rgba(74,127,212,0.25)}
+.gc.sel::before{content:'';display:block;height:2px;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:2px;margin-bottom:8px}
+.gc-num{font-size:22px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.gc-name{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+.gc-stats{font-size:9px;color:var(--muted);margin-top:6px;display:flex;justify-content:center;gap:5px;flex-wrap:wrap;min-height:14px}
+
+/* ── GRADE HEADER (shown after selection) ── */
+.grade-header{display:none;align-items:center;gap:10px;padding:12px 16px;
+  background:var(--s2);border:1px solid var(--b2);border-radius:14px;margin-bottom:14px}
+.grade-header.show{display:flex}
+.gh-back{width:32px;height:32px;border-radius:9px;border:1px solid var(--b2);background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .2s;flex-shrink:0}
+.gh-back:hover{border-color:var(--blue);color:var(--text)}
+.gh-back svg{width:14px;height:14px}
+.gh-info{flex:1}
+.gh-title{font-size:14px;font-weight:900}
+.gh-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.gh-stats{display:flex;gap:10px;flex-shrink:0}
+.gh-stat{font-size:11px;font-weight:700;display:flex;align-items:center;gap:4px}
+.gh-stat svg{width:12px;height:12px}
+
+/* ── GRADE BAR (legacy - hidden) ── */
+.grade-bar{display:none}
+.grade-info{display:none}
 
 /* ── TABS ── */
 .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
@@ -261,39 +284,62 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
   <div class="main">
 
-    <!-- Grade selector -->
-    <div class="grade-bar">
-      <label>📚 الصف:</label>
-      <select class="gsel" id="gSel" onchange="onGrade()">
-        <option value="">— اختار الصف —</option>
-        <optgroup label="ابتدائي">
-          <option value="primary-4">الصف الرابع الابتدائي</option>
-          <option value="primary-5">الصف الخامس الابتدائي</option>
-          <option value="primary-6">الصف السادس الابتدائي</option>
-        </optgroup>
-        <optgroup label="إعدادي">
-          <option value="prep-1">الصف الأول الإعدادي</option>
-          <option value="prep-2">الصف الثاني الإعدادي</option>
-          <option value="prep-3">الصف الثالث الإعدادي</option>
-        </optgroup>
-        <optgroup label="ثانوي">
-          <option value="sec-1">الصف الأول الثانوي</option>
-          <option value="sec-2">الصف الثاني الثانوي</option>
-          <option value="sec-3">الصف الثالث الثانوي</option>
-        </optgroup>
-      </select>
-      <span class="grade-info" id="gInfo"></span>
+    <!-- Grade Cards -->
+    <div class="stage-wrap" id="stageWrap">
+      <div class="stage-sec">
+        <div class="stage-lbl">🏫 ابتدائي</div>
+        <div class="grade-row">
+          <div class="gc" onclick="pickGrade('primary-4',this)"><div class="gc-num">٤</div><div class="gc-name">رابع</div><div class="gc-stats" id="gs-primary-4"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('primary-5',this)"><div class="gc-num">٥</div><div class="gc-name">خامس</div><div class="gc-stats" id="gs-primary-5"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('primary-6',this)"><div class="gc-num">٦</div><div class="gc-name">سادس</div><div class="gc-stats" id="gs-primary-6"><span style="opacity:.4">...</span></div></div>
+        </div>
+      </div>
+      <div class="stage-sec">
+        <div class="stage-lbl">🏛️ إعدادي</div>
+        <div class="grade-row">
+          <div class="gc" onclick="pickGrade('prep-1',this)"><div class="gc-num">١</div><div class="gc-name">أول</div><div class="gc-stats" id="gs-prep-1"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('prep-2',this)"><div class="gc-num">٢</div><div class="gc-name">ثاني</div><div class="gc-stats" id="gs-prep-2"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('prep-3',this)"><div class="gc-num">٣</div><div class="gc-name">ثالث</div><div class="gc-stats" id="gs-prep-3"><span style="opacity:.4">...</span></div></div>
+        </div>
+      </div>
+      <div class="stage-sec">
+        <div class="stage-lbl">🎓 ثانوي</div>
+        <div class="grade-row">
+          <div class="gc" onclick="pickGrade('sec-1',this)"><div class="gc-num">١</div><div class="gc-name">أول</div><div class="gc-stats" id="gs-sec-1"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('sec-2',this)"><div class="gc-num">٢</div><div class="gc-name">ثاني</div><div class="gc-stats" id="gs-sec-2"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('sec-3',this)"><div class="gc-num">٣</div><div class="gc-name">ثالث</div><div class="gc-stats" id="gs-sec-3"><span style="opacity:.4">...</span></div></div>
+        </div>
+      </div>
     </div>
 
+    <!-- Grade Header (after selection) -->
+    <div class="grade-header" id="gradeHeader">
+      <button class="gh-back" onclick="backToGrades()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+      </button>
+      <div class="gh-info">
+        <div class="gh-title" id="ghTitle">—</div>
+        <div class="gh-sub" id="ghSub">اختار التاب لعرض المحتوى</div>
+      </div>
+      <div class="gh-stats">
+        <span class="gh-stat" style="color:var(--blue)"><svg><use href="#i-yt"/></svg><span id="ghs-v">—</span></span>
+        <span class="gh-stat" style="color:var(--gold)"><svg><use href="#i-check"/></svg><span id="ghs-e">—</span></span>
+        <span class="gh-stat" style="color:var(--purple)"><svg><use href="#i-file"/></svg><span id="ghs-h">—</span></span>
+      </div>
+    </div>
+
+    <!-- hidden select kept for JS compatibility -->
+    <select id="gSel" style="display:none"></select>
+
     <!-- Tabs -->
-    <div class="tabs">
+    <div class="tabs" id="mainTabs" style="display:none">
       <button class="tbtn on" id="tv" onclick="switchTab('v')"><svg><use href="#i-yt"/></svg>الفيديوهات</button>
       <button class="tbtn" id="te" onclick="switchTab('e')"><svg><use href="#i-check"/></svg>الامتحانات</button>
       <button class="tbtn" id="th" onclick="switchTab('h')"><svg><use href="#i-file"/></svg>الواجبات</button>
     </div>
 
     <!-- ══════════════════ VIDEOS ══════════════════ -->
-    <div id="sv">
+    <div id="sv" style="display:none">
 
       <div class="card">
         <div class="card-head">
@@ -526,6 +572,12 @@ window.uploadFile = (file, path, onProgress) => {
   });
 };
 
+// ── Count helper ──
+window._loadCount = async (col, grade, tab) => {
+  const snap = await getDocs(collection(db, col, grade, tab));
+  return snap.size;
+};
+
 // ── Load list ──
 window.loadList = async (tab, elId) => {
   const grade = document.getElementById('gSel').value;
@@ -538,10 +590,8 @@ window.loadList = async (tab, elId) => {
     window._cache = window._cache||{};
     window._cache[tab] = items;
     renderItems(tab, items, elId);
-    // update grade info
-    const gi = document.getElementById('gInfo');
-    gi.style.display='inline';
-    gi.textContent = (window._cache.videos?.length||0)+' فيديو · '+(window._cache.exams?.length||0)+' امتحان · '+(window._cache.homework?.length||0)+' واجب';
+    // refresh grade header stats
+    if(window.updateGradeHeaderStats) updateGradeHeaderStats(grade);
   } catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
@@ -773,6 +823,7 @@ function doLogin(){
     document.getElementById('loginWrap').style.display='none';
     document.getElementById('app').style.display='block';
     toast('أهلاً بك 👋','ok');
+    loadAllGradeStats();
   } else {
     document.getElementById('lerr').style.display='block';
     setTimeout(()=>document.getElementById('lerr').style.display='none',3000);
@@ -785,23 +836,84 @@ function doLogout(){
 }
 document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
 
-let _curTab='v';
-const GRADES_LABEL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};
+// ── Grade Labels ──
+const GRADES_LABEL={'primary-4':'الرابع الابتدائي','primary-5':'الخامس الابتدائي','primary-6':'السادس الابتدائي','prep-1':'الأول الإعدادي','prep-2':'الثاني الإعدادي','prep-3':'الثالث الإعدادي','sec-1':'الأول الثانوي','sec-2':'الثاني الثانوي','sec-3':'الثالث الثانوي'};
 
-function onGrade(){
-  const g = document.getElementById('gSel').value;
-  if(!g) return;
-  const gi=document.getElementById('gInfo');
-  gi.style.display='inline';gi.textContent=GRADES_LABEL[g]||g;
-  const tab = _curTab==='v'?'videos':_curTab==='e'?'exams':'homework';
-  const elId = _curTab==='v'?'vList':_curTab==='e'?'eList':'hList';
-  loadList(tab, elId);
+// ── Load stats for all grade cards ──
+async function loadAllGradeStats(){
+  const grades=Object.keys(GRADES_LABEL);
+  for(const g of grades){
+    try{
+      const[vs,es,hs]=await Promise.all([
+        window._loadCount('content',g,'videos'),
+        window._loadCount('content',g,'exams'),
+        window._loadCount('content',g,'homework')
+      ]);
+      const el=document.getElementById('gs-'+g);
+      if(el) el.innerHTML=`<span style="color:var(--blue)">▶${vs}</span><span style="color:var(--gold)">✍${es}</span><span style="color:var(--purple)">📄${hs}</span>`;
+    }catch(e){}
+  }
 }
 
+// ── Pick Grade (card click) ──
+function pickGrade(g, el){
+  document.querySelectorAll('.gc').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  // set hidden select value
+  document.getElementById('gSel').value = g;
+  // show grade header
+  document.getElementById('stageWrap').style.display='none';
+  document.getElementById('gradeHeader').classList.add('show');
+  document.getElementById('ghTitle').textContent = 'الصف ' + (GRADES_LABEL[g]||g);
+  document.getElementById('ghSub').textContent = 'إدارة المحتوى · اختار التاب';
+  document.getElementById('mainTabs').style.display='flex';
+  // show current tab content
+  const tab=_curTab==='v'?'videos':_curTab==='e'?'exams':'homework';
+  const elId=_curTab==='v'?'vList':_curTab==='e'?'eList':'hList';
+  ['sv','se','sh'].forEach(id=>{
+    document.getElementById(id).style.display = id==='s'+_curTab?'block':'none';
+  });
+  loadList(tab, elId);
+  updateGradeHeaderStats(g);
+}
+
+// ── Back to grade cards ──
+function backToGrades(){
+  document.getElementById('stageWrap').style.display='flex';
+  document.getElementById('gradeHeader').classList.remove('show');
+  document.getElementById('mainTabs').style.display='none';
+  ['sv','se','sh'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('gSel').value='';
+}
+
+// ── Update header stats ──
+async function updateGradeHeaderStats(g){
+  try{
+    const[vs,es,hs]=await Promise.all([
+      window._loadCount('content',g,'videos'),
+      window._loadCount('content',g,'exams'),
+      window._loadCount('content',g,'homework')
+    ]);
+    document.getElementById('ghs-v').textContent=vs;
+    document.getElementById('ghs-e').textContent=es;
+    document.getElementById('ghs-h').textContent=hs;
+    document.getElementById('ghSub').textContent=`${vs} فيديو · ${es} امتحان · ${hs} واجب`;
+    // update card stats too
+    const cEl=document.getElementById('gs-'+g);
+    if(cEl) cEl.innerHTML=`<span style="color:var(--blue)">▶${vs}</span><span style="color:var(--gold)">✍${es}</span><span style="color:var(--purple)">📄${hs}</span>`;
+  }catch(e){}
+}
+
+// onGrade kept for compatibility
+function onGrade(){ const g=document.getElementById('gSel').value; if(!g)return; }
+
+let _curTab='v';
 function switchTab(t){
   _curTab=t;
-  ['v','e','h'].forEach(x=>document.getElementById('t'+x).classList.toggle('on',x===t));
-  ['sv','se','sh'].forEach(x=>document.getElementById('s'+x.slice(1)).style.display=x.slice(1)===t?'block':'none');
+  ['v','e','h'].forEach(x=>{
+    document.getElementById('t'+x).classList.toggle('on',x===t);
+    document.getElementById('s'+x).style.display=x===t?'block':'none';
+  });
   const grade=document.getElementById('gSel').value;
   if(grade){
     const tab=t==='v'?'videos':t==='e'?'exams':'homework';
