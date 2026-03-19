@@ -599,411 +599,377 @@ nav{position:sticky;top:0;z-index:50;height:58px;
 </div>
 
 <!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, collection, setDoc, updateDoc, serverTimestamp, query, where }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<!-- Firebase Compat -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+window.addEventListener("load", function(){
 
-const cfg = {
+firebase.initializeApp({
   apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
   authDomain:"plusinmath-web.firebaseapp.com",
   projectId:"plusinmath-web",
   storageBucket:"plusinmath-web.firebasestorage.app",
   messagingSenderId:"444492731461",
-  appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
-};
-const app  = initializeApp(cfg);
-const auth = getAuth(app);
-const db   = getFirestore(app);
+  appId:"1:444492731441:web:14529f08d9ccf047dabf2c"
+});
+var auth = firebase.auth();
+var db   = firebase.firestore();
+var _user, _userData, _progress = {};
 
-let _user, _userData, _progress = {};
-let _playerData = null, _mcqData = null, _imgData = null;
-
-// ── AUTH ──
-onAuthStateChanged(auth, async (user) => {
+// ── AUTH CHECK ──
+auth.onAuthStateChanged(function(user){
   if(!user){ window.location.href='plus-math-auth.html'; return; }
   _user = user;
-  try {
-    const ud = await getDoc(doc(db,'users',user.uid));
-    if(!ud.exists()||!ud.data().subscriptionActive){
+  db.collection('users').doc(user.uid).get().then(function(ud){
+    if(!ud.exists || !ud.data().subscriptionActive){
       window.location.href='plus-math-auth.html'; return;
     }
-
-    const data = ud.data();
-
-    // ── Check 30-day expiry ──
+    var data = ud.data();
     if(data.expiresAt){
-      const expiry = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
-      if(new Date() > expiry){
-        try{ await updateDoc(doc(db,'users',user.uid),{subscriptionActive:false}); }catch(e){}
+      var exp = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
+      if(new Date() > exp){
+        db.collection('users').doc(user.uid).update({subscriptionActive:false});
         window.location.href='plus-math-auth.html'; return;
       }
     }
-
     _userData = data;
-    document.getElementById('loadingScreen').style.display='none';
-    document.getElementById('navbar').style.display='flex';
-    document.getElementById('mainContent').style.display='block';
-    document.getElementById('userName').textContent = _userData.name?.split(' ')[0]||'طالب';
-    document.getElementById('statGrade').textContent = _userData.grade||'—';
-    document.getElementById('statStage').textContent = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
-    try {
-      const ann = await getDoc(doc(db,'settings','announcement'));
-      if(ann.exists()&&ann.data().show&&ann.data().text){
-        document.getElementById('annText').textContent=ann.data().text;
-        document.getElementById('annBanner').classList.add('show');
-      }
+    try{
+      db.collection('settings').doc('announcement').get().then(function(ann){
+        if(ann.exists && ann.data().show && ann.data().text){
+          document.getElementById('annText').textContent = ann.data().text;
+          document.getElementById('annBanner').classList.add('show');
+        }
+      });
     }catch(e){}
-    try {
-      const pr = await getDoc(doc(db,'progress',user.uid));
-      _progress = pr.exists()?pr.data():{};
-    }catch(e){ _progress={}; }
-    window.buildGrades();
-    // Auto-scroll to my grade
-    setTimeout(()=>{
-      if(_userData.gradeKey){
-        const el=document.getElementById('gcard-'+_userData.gradeKey);
-        if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
-      }
-    },700);
-  }catch(e){
-    console.error(e);
-    if(e.code==='permission-denied'||e.code==='unauthenticated'){
-      window.location.href='plus-math-auth.html';
-    } else {
+    db.collection('progress').doc(user.uid).get().then(function(pr){
+      _progress = pr.exists ? pr.data() : {};
+    }).catch(function(){ _progress={}; }).then(function(){
       document.getElementById('loadingScreen').style.display='none';
       document.getElementById('navbar').style.display='flex';
       document.getElementById('mainContent').style.display='block';
-      window.buildGrades();
-    }
-  }
+      document.getElementById('userName').textContent = (_userData.name||'طالب').split(' ')[0];
+      document.getElementById('statGrade').textContent = _userData.grade||'—';
+      var sm = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'};
+      document.getElementById('statStage').textContent = sm[_userData.stage]||'—';
+      buildGrades();
+      setTimeout(function(){
+        if(_userData.gradeKey){
+          var el=document.getElementById('gcard-'+_userData.gradeKey);
+          if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+        }
+      },700);
+    });
+  }).catch(function(e){
+    console.error(e);
+    window.location.href='plus-math-auth.html';
+  });
 });
+
 // ── OPEN COURSE ──
-window.openCourse = async (gradeKey, label, stage) => {
+function openCourse(gradeKey, label, stage){
   document.getElementById('cvTitle').textContent = label;
-  document.getElementById('cvSub').textContent = stage;
+  document.getElementById('cvSub').textContent   = stage;
   document.getElementById('courseView').classList.add('open');
-  document.body.style.overflow='hidden';
-  window.switchTab('videos', document.querySelector('.cv-tab'));
+  document.body.style.overflow = 'hidden';
+  switchTab('videos', document.querySelector('.cv-tab'));
   window._openGrade = gradeKey;
-  const isMine = gradeKey===_userData?.gradeKey;
-  const gp = _progress[gradeKey]||{};
-  const dV=gp.videos||[], dE=gp.exams||[], dH=gp.homework||[];
-  const [vids,exams,hw] = await Promise.all([
+  var isMine = gradeKey === (_userData||{}).gradeKey;
+  var gp = _progress[gradeKey]||{};
+  var dV=gp.videos||[], dE=gp.exams||[], dH=gp.homework||[];
+  Promise.all([
     loadList(gradeKey,'videos'),
     loadList(gradeKey,'exams'),
     loadList(gradeKey,'homework')
-  ]);
-  renderVideos(vids,dV,gradeKey,isMine);
-  renderExams(exams,dE,gradeKey,isMine);
-  renderHw(hw,dH,gradeKey,isMine);
-  setTimeout(()=>{
-    setProg('pv','pvt',vids.length,dV.length);
-    setProg('pe','pet',exams.length,dE.length);
-    setProg('ph','pht',hw.length,dH.length);
-  },400);
-};
+  ]).then(function(results){
+    renderVideos(results[0],dV,gradeKey,isMine);
+    renderExams(results[1],dE,gradeKey,isMine);
+    renderHw(results[2],dH,gradeKey,isMine);
+    setTimeout(function(){
+      setProg('pv','pvt',results[0].length,dV.length);
+      setProg('pe','pet',results[1].length,dE.length);
+      setProg('ph','pht',results[2].length,dH.length);
+    },400);
+  });
+}
 
-async function loadList(grade,tab){
-  try{
-    const s=await getDocs(collection(db,'content',grade,tab));
-    return s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
-  }catch(e){return [];}
+function loadList(grade,tab){
+  return db.collection('content').doc(grade).collection(tab).get()
+    .then(function(s){ return s.docs.map(function(d){ return Object.assign({id:d.id},d.data()); }).sort(function(a,b){ return (a.order||0)-(b.order||0); }); })
+    .catch(function(){ return []; });
 }
 
 function renderVideos(videos,done,gradeKey,isMine){
-  const el=document.getElementById('videoList');
+  var el=document.getElementById('videoList');
   if(!videos.length){ el.innerHTML='<div class="empty"><p>لا يوجد فيديوهات بعد</p></div>'; return; }
-  el.innerHTML=videos.map((v,i)=>{
-    const isDone=done.includes(v.id);
-    const isLocked=isMine&&i>0&&!done.includes(videos[i-1].id)&&!isDone;
-    const ytId=getYtId(v.url||'');
-    const thumb=ytId?`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`:'';
-    return `<div class="video-item">
-      <div id="vp-${v.id}" class="video-player" style="display:none">
-        <iframe id="vf-${v.id}" src="" allowfullscreen allow="autoplay"></iframe>
-        <div class="video-player-bar">
-          ${isMine&&!isDone?`<button class="pbtn ok" onclick="markVDone('${gradeKey}','${v.id}')">انهيت الدرس ✓</button>`:''}
-          <button class="pbtn ghost" onclick="closeVid('${v.id}')">إغلاق</button>
-        </div>
-      </div>
-      <div class="video-row" style="${isLocked?'cursor:not-allowed;opacity:.55':''}"
-        ${!isLocked&&ytId?`onclick="openVid('${v.id}','${ytId}','${gradeKey}')"`:''}
-        ${!isLocked&&!ytId&&v.url?`onclick="window.open('${v.url}','_blank')"`:''}
-      >
-        <div class="vthumb">
-          ${thumb?`<img src="${thumb}" onerror="this.style.display='none'"/>`:''}
-          ${isLocked?'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="opacity:.7;width:20px;height:20px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>':
-            isDone?'<svg viewBox="0 0 24 24" fill="none" stroke="#00d68f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><polyline points="20,6 9,17 4,12"/></svg>':
-            '<svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)" style="width:20px;height:20px"><polygon points="5,3 19,12 5,21"/></svg>'}
-        </div>
-        <div class="vinfo">
-          <div class="vtitle">${v.order?v.order+'. ':''}${v.title||'درس'}</div>
-          <div class="vmeta">
-            ${v.duration?`⏱ ${v.duration}`:''}
-            ${isLocked?'<span style="color:var(--err)">🔒 أكمل الدرس السابق</span>':
-              isDone?'<span style="color:var(--ok)">✅ تمت المشاهدة</span>':
-              '<span style="color:var(--blue)">▶ اضغط للتشغيل</span>'}
-          </div>
-        </div>
-        ${isDone?'<span style="color:var(--ok);font-size:15px;flex-shrink:0">✅</span>':''}
-      </div>
-    </div>`;
+  el.innerHTML=videos.map(function(v,i){
+    var isDone=done.indexOf(v.id)>=0;
+    var isLocked=isMine&&i>0&&done.indexOf(videos[i-1].id)<0&&!isDone;
+    var ytId=getYtId(v.url||'');
+    var thumb=ytId?'https://img.youtube.com/vi/'+ytId+'/mqdefault.jpg':'';
+    var clickAttr = (!isLocked&&ytId) ? 'onclick="openVid(\''+v.id+'\',\''+ytId+'\',\''+gradeKey+'\')"' :
+                    (!isLocked&&v.url) ? 'onclick="window.open(\''+v.url+'\',\'_blank\')"' : '';
+    return '<div class="video-item">'+
+      '<div id="vp-'+v.id+'" class="video-player" style="display:none">'+
+        '<iframe id="vf-'+v.id+'" src="" allowfullscreen allow="autoplay"></iframe>'+
+        '<div class="video-player-bar">'+
+          (isMine&&!isDone?'<button class="pbtn ok" onclick="markVDone(\''+gradeKey+'\',\''+v.id+'\')">انهيت الدرس ✓</button>':'')+
+          '<button class="pbtn ghost" onclick="closeVid(\''+v.id+'\')">إغلاق</button>'+
+        '</div>'+
+      '</div>'+
+      '<div class="video-row" style="'+(isLocked?'cursor:not-allowed;opacity:.55':'')+'" '+clickAttr+'>'+
+        '<div class="vthumb">'+
+          (thumb?'<img src="'+thumb+'" onerror="this.style.display=\'none\'"/>'  :'')+
+          (isLocked?'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="opacity:.7;width:20px;height:20px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>':
+           isDone?'<svg viewBox="0 0 24 24" fill="none" stroke="#00d68f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><polyline points="20,6 9,17 4,12"/></svg>':
+           '<svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)" style="width:20px;height:20px"><polygon points="5,3 19,12 5,21"/></svg>')+
+        '</div>'+
+        '<div class="vinfo">'+
+          '<div class="vtitle">'+(v.order?v.order+'. ':'')+( v.title||'درس')+'</div>'+
+          '<div class="vmeta">'+
+            (v.duration?'⏱ '+v.duration:'')+
+            (isLocked?' <span style="color:var(--err)">🔒 أكمل الدرس السابق</span>':
+             isDone?' <span style="color:var(--ok)">✅ تمت المشاهدة</span>':
+             ' <span style="color:var(--blue)">▶ اضغط للتشغيل</span>')+
+          '</div>'+
+        '</div>'+
+        (isDone?'<span style="color:var(--ok);font-size:15px;flex-shrink:0">✅</span>':'')+
+      '</div>'+
+    '</div>';
   }).join('');
 }
 
 function renderExams(exams,done,gradeKey,isMine){
-  const el=document.getElementById('examList');
+  var el=document.getElementById('examList');
   if(!exams.length){ el.innerHTML='<div class="empty"><p>لا يوجد امتحانات بعد</p></div>'; return; }
-  const tLabel={mcq:'اختيار متعدد',essay:'مقالي',images:'صور امتحان',link:'Google Form',pdf:'PDF'};
-  const tColor={mcq:'var(--gold)',essay:'var(--blue)',images:'var(--purple)',link:'var(--ok)',pdf:'var(--err)'};
-  el.innerHTML=exams.map((e,i)=>{
-    const isDone=done.includes(e.id);
-    const isLocked=isMine&&i>0&&!done.includes(exams[i-1].id)&&!isDone;
-    const tl=tLabel[e.type]||'امتحان'; const tc=tColor[e.type]||'var(--gold)';
-    let click='';
+  var tLabel={mcq:'اختيار متعدد',essay:'مقالي',images:'صور امتحان',link:'Google Form',pdf:'PDF'};
+  var tColor={mcq:'var(--gold)',essay:'var(--blue)',images:'var(--purple)',link:'var(--ok)',pdf:'var(--err)'};
+  el.innerHTML=exams.map(function(e,i){
+    var isDone=done.indexOf(e.id)>=0;
+    var isLocked=isMine&&i>0&&done.indexOf(exams[i-1].id)<0&&!isDone;
+    var tl=tLabel[e.type]||'امتحان', tc=tColor[e.type]||'var(--gold)';
+    var click='';
     if(!isLocked){
-      if(e.type==='mcq'&&e.mcqRaw) click=`onclick="openMcq('${e.id}','${gradeKey}',${JSON.stringify(e.title||'')},${JSON.stringify(e.mcqRaw||'')})"`;
-      else if(e.type==='essay'&&e.essayText) click=`onclick="openEssay('${e.id}','${gradeKey}',${JSON.stringify(e.title||'')},${JSON.stringify(e.essayText||'')})"`;
-      else if((e.type==='images'||e.type==='pdf')&&(e.imageUrls?.length||e.fileUrl||e.externalUrl)){
-        const urls=e.imageUrls?.length?e.imageUrls:(e.fileUrl?[e.fileUrl]:[e.externalUrl]);
-        click=`onclick="openImgs('${e.id}','${gradeKey}',${JSON.stringify(e.title||'')},${JSON.stringify(urls)})"`;
-      } else if(e.externalUrl||e.url) click=`onclick="window.open('${e.externalUrl||e.url}','_blank')"`;
+      if(e.type==='mcq'&&e.mcqRaw) click='onclick="openMcq(\''+e.id+'\',\''+gradeKey+'\','+JSON.stringify(e.title||'')+','+JSON.stringify(e.mcqRaw||'')+')\"';
+      else if(e.type==='essay'&&e.essayText) click='onclick="openEssay(\''+e.id+'\',\''+gradeKey+'\','+JSON.stringify(e.title||'')+','+JSON.stringify(e.essayText||'')+')\"';
+      else if((e.type==='images'||e.type==='pdf')&&(e.imageUrls||e.fileUrl||e.externalUrl)){
+        var urls=e.imageUrls&&e.imageUrls.length?e.imageUrls:(e.fileUrl?[e.fileUrl]:[e.externalUrl]);
+        click='onclick="openImgs(\''+e.id+'\',\''+gradeKey+'\','+JSON.stringify(e.title||'')+','+JSON.stringify(urls)+')\"';
+      } else if(e.externalUrl||e.url) click='onclick="window.open(\''+(e.externalUrl||e.url)+'\',\'_blank\')"';
     }
-    return `<div class="exam-item" style="${isLocked?'opacity:.55;cursor:not-allowed':''}" ${click}>
-      <div class="exam-ico" style="background:${tc}18;color:${tc}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
-      </div>
-      <div class="exam-info">
-        <div class="exam-title">${e.order?e.order+'. ':''}${e.title||'امتحان'}</div>
-        <div class="exam-meta"><span style="color:${tc};font-weight:700">${tl}</span>${e.duration?' · ⏱ '+e.duration:''} ${isLocked?'· 🔒':''}</div>
-      </div>
-      <span class="ebadge ${isDone?'done':'new'}">${isDone?'تم ✓':'ابدأ'}</span>
-    </div>`;
+    return '<div class="exam-item" style="'+(isLocked?'opacity:.55;cursor:not-allowed':'')+'" '+click+'>'+
+      '<div class="exam-ico" style="background:'+tc+'18;color:'+tc+'">'+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>'+
+      '</div>'+
+      '<div class="exam-info">'+
+        '<div class="exam-title">'+(e.order?e.order+'. ':'')+( e.title||'امتحان')+'</div>'+
+        '<div class="exam-meta"><span style="color:'+tc+';font-weight:700">'+tl+'</span>'+(e.duration?' · ⏱ '+e.duration:'')+(isLocked?' · 🔒':'')+'</div>'+
+      '</div>'+
+      '<span class="ebadge '+(isDone?'done':'new')+'">'+(isDone?'تم ✓':'ابدأ')+'</span>'+
+    '</div>';
   }).join('');
 }
 
 function renderHw(hw,done,gradeKey,isMine){
-  const el=document.getElementById('hwList');
+  var el=document.getElementById('hwList');
   if(!hw.length){ el.innerHTML='<div class="empty"><p>لا يوجد واجبات بعد</p></div>'; return; }
-  el.innerHTML=hw.map((h,i)=>{
-    const isDone=done.includes(h.id);
-    return `<div class="hw-item">
-      <div class="hw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
-      <div class="hw-info">
-        <div class="hw-title">${h.order?h.order+'. ':''}${h.title||'واجب'}</div>
-        <div class="hw-meta">${h.description||''}${h.deadline?' · 📅 '+h.deadline:''}</div>
-        <div class="hw-links">
-          ${h.fileUrl?`<a href="${h.fileUrl}" target="_blank" class="hw-link file">📎 فتح الملف</a>`:''}
-          ${h.pdfUrl?`<a href="${h.pdfUrl}" target="_blank" class="hw-link pdf">📄 PDF</a>`:''}
-          ${h.imageUrl?`<button class="hw-link file" onclick="viewOneImg('${h.imageUrl}')">🖼 عرض</button>`:''}
-          ${h.url&&!h.fileUrl&&!h.pdfUrl?`<a href="${h.url}" target="_blank" class="hw-link file">🔗 رابط</a>`:''}
-        </div>
-      </div>
-      ${isMine&&!isDone?`<button onclick="markDone('${gradeKey}','homework','${h.id}')" style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">سلّمت ✓</button>`:isDone?'<span style="color:var(--ok);font-size:14px;flex-shrink:0">✅</span>':''}
-    </div>`;
+  el.innerHTML=hw.map(function(h){
+    var isDone=done.indexOf(h.id)>=0;
+    return '<div class="hw-item">'+
+      '<div class="hw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>'+
+      '<div class="hw-info">'+
+        '<div class="hw-title">'+(h.order?h.order+'. ':'')+( h.title||'واجب')+'</div>'+
+        '<div class="hw-meta">'+(h.description||'')+(h.deadline?' · 📅 '+h.deadline:'')+'</div>'+
+        '<div class="hw-links">'+
+          (h.fileUrl?'<a href="'+h.fileUrl+'" target="_blank" class="hw-link file">📎 فتح الملف</a>':'')+
+          (h.pdfUrl?'<a href="'+h.pdfUrl+'" target="_blank" class="hw-link pdf">📄 PDF</a>':'')+
+          (h.url&&!h.fileUrl&&!h.pdfUrl?'<a href="'+h.url+'" target="_blank" class="hw-link file">🔗 رابط</a>':'')+
+        '</div>'+
+      '</div>'+
+      (isMine&&!isDone?'<button onclick="markDone(\''+gradeKey+'\',\'homework\',\''+h.id+'\')" style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:\'Tajawal\',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">سلّمت ✓</button>':
+       isDone?'<span style="color:var(--ok);font-size:14px;flex-shrink:0">✅</span>':'')+
+    '</div>';
   }).join('');
 }
 
-window.openVid = (id, ytId, gradeKey) => {
-  document.querySelectorAll('[id^="vp-"]').forEach(w=>{w.style.display='none';const f=w.querySelector('iframe');if(f)f.src='';});
-  const wrap=document.getElementById('vp-'+id), frame=document.getElementById('vf-'+id);
-  if(wrap&&frame){wrap.style.display='block';frame.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;}
-};
-window.closeVid=(id)=>{const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);if(w)w.style.display='none';if(f)f.src='';};
-window.markVDone=(gradeKey,id)=>{markDone(gradeKey,'videos',id);closeVid(id);};
+// ── VIDEO ──
+function openVid(id,ytId,gradeKey){
+  document.querySelectorAll('[id^="vp-"]').forEach(function(w){w.style.display='none';var f=w.querySelector('iframe');if(f)f.src='';});
+  var wrap=document.getElementById('vp-'+id), frame=document.getElementById('vf-'+id);
+  if(wrap&&frame){wrap.style.display='block';frame.src='https://www.youtube.com/embed/'+ytId+'?autoplay=1&rel=0';}
+}
+function closeVid(id){ var w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);if(w)w.style.display='none';if(f)f.src=''; }
+function markVDone(gradeKey,id){ markDone(gradeKey,'videos',id); closeVid(id); }
 
-let _mcq={questions:[],answers:{},gradeKey:'',examId:''};
-window.openMcq=(examId,gradeKey,title,raw)=>{
-  _mcq={questions:parseMcq(raw),answers:{},gradeKey,examId};
+// ── MCQ ──
+var _mcq={questions:[],answers:{},gradeKey:'',examId:''};
+function openMcq(examId,gradeKey,title,raw){
+  _mcq={questions:parseMcq(raw),answers:{},gradeKey:gradeKey,examId:examId};
   document.getElementById('mcqTitle').textContent=title;
   document.getElementById('mcqResult').style.display='none';
   document.getElementById('mcqBtn').style.display='block';
-  document.getElementById('mcqBtn').onclick=submitMcq;
   document.getElementById('mcqBtn').textContent='تسليم الإجابات';
-  renderMcq();
+  document.getElementById('mcqBtn').onclick=submitMcq;
+  renderMcqQ();
   document.getElementById('mcqModal').classList.add('open');
   document.body.style.overflow='hidden';
-};
+}
 function parseMcq(raw){
-  return raw.split(/
-?---
-?/).filter(Boolean).map(block=>{
-    const lines=block.split('
-').filter(l=>l.trim());
-    return {q:lines[0],opts:lines.slice(1).map(l=>({text:l.replace(/^\*\s*/,''),correct:l.startsWith('*')}))};
+  return raw.split(/\n?---\n?/).filter(Boolean).map(function(block){
+    var lines=block.split('\n').filter(function(l){return l.trim();});
+    return {q:lines[0], opts:lines.slice(1).map(function(l){ return {text:l.replace(/^\*\s*/,''),correct:l.indexOf('*')===0}; })};
   });
 }
-function renderMcq(){
-  const qs=_mcq.questions;
-  document.getElementById('mcqProg').textContent=qs.length+' سؤال';
-  document.getElementById('mcqBody').innerHTML=qs.map((q,qi)=>`
-    <div class="mcq-q">
-      <div class="mcq-q-text">${qi+1}. ${q.q}</div>
-      ${q.opts.map((o,oi)=>`<div class="mcq-opt" id="opt-${qi}-${oi}" onclick="pickOpt(${qi},${oi})">${o.text}</div>`).join('')}
-    </div>`).join('');
+function renderMcqQ(){
+  document.getElementById('mcqProg').textContent=_mcq.questions.length+' سؤال';
+  document.getElementById('mcqBody').innerHTML=_mcq.questions.map(function(q,qi){
+    return '<div class="mcq-q"><div class="mcq-q-text">'+(qi+1)+'. '+q.q+'</div>'+
+      q.opts.map(function(o,oi){ return '<div class="mcq-opt" id="opt-'+qi+'-'+oi+'" onclick="pickOpt('+qi+','+oi+')">'+o.text+'</div>'; }).join('')+'</div>';
+  }).join('');
 }
-window.pickOpt=(qi,oi)=>{
+function pickOpt(qi,oi){
   _mcq.answers[qi]=oi;
-  document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach(el=>el.classList.remove('sel'));
-  document.getElementById(`opt-${qi}-${oi}`)?.classList.add('sel');
-};
+  document.querySelectorAll('[id^="opt-'+qi+'-"]').forEach(function(el){el.classList.remove('sel');});
+  var opt=document.getElementById('opt-'+qi+'-'+oi); if(opt) opt.classList.add('sel');
+}
 function submitMcq(){
-  let score=0;
-  _mcq.questions.forEach((q,qi)=>{
-    const ai=_mcq.answers[qi];
-    q.opts.forEach((o,oi)=>{
-      const el=document.getElementById(`opt-${qi}-${oi}`);if(!el)return;
+  var score=0;
+  _mcq.questions.forEach(function(q,qi){
+    var ai=_mcq.answers[qi];
+    q.opts.forEach(function(o,oi){
+      var el=document.getElementById('opt-'+qi+'-'+oi); if(!el)return;
       el.onclick=null;
       if(o.correct){el.classList.add('correct');el.classList.remove('sel');}
       else if(oi===ai){el.classList.add('wrong');el.classList.remove('sel');}
     });
-    if(ai!==undefined&&q.opts[ai]?.correct)score++;
+    if(ai!==undefined&&q.opts[ai]&&q.opts[ai].correct) score++;
   });
-  const pct=Math.round(score/_mcq.questions.length*100);
+  var pct=Math.round(score/_mcq.questions.length*100);
   document.getElementById('mcqResult').style.display='block';
-  document.getElementById('mcqResult').innerHTML=`<div style="font-size:36px">${pct>=60?'🎉':'💪'}</div><div style="font-size:18px;font-weight:900;margin:8px 0">${score}/${_mcq.questions.length} صح</div><div style="font-size:14px;color:var(--muted)">${pct}%</div>`;
+  document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">'+(pct>=60?'🎉':'💪')+'</div><div style="font-size:18px;font-weight:900;margin:8px 0">'+score+'/'+_mcq.questions.length+' صح</div><div style="font-size:14px;color:var(--muted)">'+pct+'%</div>';
   document.getElementById('mcqBtn').style.display='none';
-  if(pct>=50)markDone(_mcq.gradeKey,'exams',_mcq.examId);
+  if(pct>=50) markDone(_mcq.gradeKey,'exams',_mcq.examId);
 }
-window.closeMcq=()=>{document.getElementById('mcqModal').classList.remove('open');document.body.style.overflow='';};
+function closeMcq(){ document.getElementById('mcqModal').classList.remove('open'); document.body.style.overflow=''; }
 
-window.openEssay=(examId,gradeKey,title,text)=>{
+// ── ESSAY ──
+function openEssay(examId,gradeKey,title,text){
   document.getElementById('mcqTitle').textContent=title;
   document.getElementById('mcqProg').textContent='امتحان مقالي';
   document.getElementById('mcqResult').style.display='none';
-  document.getElementById('mcqBody').innerHTML=`<div class="essay-text">${text}</div><textarea class="essay-area" placeholder="اكتب إجابتك هنا..."></textarea>`;
+  document.getElementById('mcqBody').innerHTML='<div class="essay-text">'+text+'</div><textarea class="essay-area" placeholder="اكتب إجابتك هنا..."></textarea>';
   document.getElementById('mcqBtn').textContent='تسليم ✓';
   document.getElementById('mcqBtn').style.display='block';
-  document.getElementById('mcqBtn').onclick=()=>{markDone(gradeKey,'exams',examId);document.getElementById('mcqResult').style.display='block';document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin-top:8px">تم التسليم!</div>';document.getElementById('mcqBtn').style.display='none';};
-  document.getElementById('mcqModal').classList.add('open');document.body.style.overflow='hidden';
-};
+  document.getElementById('mcqBtn').onclick=function(){
+    markDone(gradeKey,'exams',examId);
+    document.getElementById('mcqResult').style.display='block';
+    document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin-top:8px">تم التسليم!</div>';
+    document.getElementById('mcqBtn').style.display='none';
+  };
+  document.getElementById('mcqModal').classList.add('open'); document.body.style.overflow='hidden';
+}
 
-let _imgData=null;
-window.openImgs=(examId,gradeKey,title,urls)=>{
-  _imgData={examId,gradeKey};
+// ── IMAGES ──
+var _imgData=null;
+function openImgs(examId,gradeKey,title,urls){
+  _imgData={examId:examId,gradeKey:gradeKey};
   document.getElementById('imgTitle').textContent=title;
-  document.getElementById('imgBody').innerHTML=urls.map((u,i)=>`<div style="margin-bottom:10px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">صفحة ${i+1}</div>${u.toLowerCase().includes('.pdf')?`<a href="${u}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(74,127,212,0.07);border:1px solid var(--b1);border-radius:10px;color:var(--blue);text-decoration:none;font-weight:700">📄 فتح الصفحة ${i+1}</a>`:`<img src="${u}" style="width:100%;border-radius:10px;display:block;cursor:pointer" onclick="window.open('${u}','_blank')"/>`}</div>`).join('');
+  document.getElementById('imgBody').innerHTML=urls.map(function(u,i){
+    return '<div style="margin-bottom:10px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">صفحة '+(i+1)+'</div>'+
+      (u.toLowerCase().indexOf('.pdf')>=0?
+        '<a href="'+u+'" target="_blank" style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(74,127,212,0.07);border:1px solid var(--b1);border-radius:10px;color:var(--blue);text-decoration:none;font-weight:700">📄 فتح الصفحة '+(i+1)+'</a>':
+        '<img src="'+u+'" style="width:100%;border-radius:10px;display:block;cursor:pointer" onclick="window.open(\''+u+'\',\'_blank\')"/>')+
+    '</div>';
+  }).join('');
   document.getElementById('imgDoneBtn').style.display='flex';
-  document.getElementById('imgModal').classList.add('open');document.body.style.overflow='hidden';
-};
-window.viewOneImg=(src)=>{_imgData=null;document.getElementById('imgTitle').textContent='صورة';document.getElementById('imgBody').innerHTML=`<img src="${src}" style="width:100%;border-radius:10px;display:block"/>`;document.getElementById('imgDoneBtn').style.display='none';document.getElementById('imgModal').classList.add('open');document.body.style.overflow='hidden';};
-window.imgDone=()=>{if(_imgData)markDone(_imgData.gradeKey,'exams',_imgData.examId);window.closeImg();};
-window.closeImg=()=>{document.getElementById('imgModal').classList.remove('open');document.body.style.overflow='';};
+  document.getElementById('imgModal').classList.add('open'); document.body.style.overflow='hidden';
+}
+function viewOneImg(src){ _imgData=null; document.getElementById('imgTitle').textContent='صورة'; document.getElementById('imgBody').innerHTML='<img src="'+src+'" style="width:100%;border-radius:10px;display:block"/>'; document.getElementById('imgDoneBtn').style.display='none'; document.getElementById('imgModal').classList.add('open'); document.body.style.overflow='hidden'; }
+function imgDone(){ if(_imgData) markDone(_imgData.gradeKey,'exams',_imgData.examId); closeImg(); }
+function closeImg(){ document.getElementById('imgModal').classList.remove('open'); document.body.style.overflow=''; }
 
-window.openPlayerModal=(ytId,title,id,gradeKey)=>{
-  window._playerData={id,gradeKey};
-  document.getElementById('playerTitle').textContent=title;
-  document.getElementById('playerFrame').src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
-  document.getElementById('playerModal').classList.add('open');document.body.style.overflow='hidden';
-};
-window.closePlayer=()=>{document.getElementById('playerFrame').src='';document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';};
-window.playerDone=()=>{if(window._playerData)markDone(window._playerData.gradeKey,'videos',window._playerData.id);window.closePlayer();};
+// ── PLAYER ──
+var _playerData=null;
+function closePlayer(){ document.getElementById('playerFrame').src=''; document.getElementById('playerModal').classList.remove('open'); document.body.style.overflow=''; }
+function playerDone(){ if(_playerData) markDone(_playerData.gradeKey,'videos',_playerData.id); closePlayer(); }
 
-window.markDone=async(gradeKey,type,itemId)=>{
-  try{
-    const gp=_progress[gradeKey]||{};
-    const list=[...(gp[type]||[])];
-    if(list.includes(itemId)){window.showToast('تم التسجيل مسبقاً','ok');return;}
-    list.push(itemId);
-    _progress[gradeKey]={...gp,[type]:list};
-    await setDoc(doc(db,'progress',_user.uid),_progress,{merge:true});
-    const gk=window._openGrade;
-    if(gk) openCourse(gk,document.getElementById('cvTitle').textContent,document.getElementById('cvSub').textContent);
-    window.showToast('تم التسجيل ✓','ok');
-  }catch(e){window.showToast('خطأ: '+e.message,'err');}
-};
+// ── MARK DONE ──
+function markDone(gradeKey,type,itemId){
+  var gp=_progress[gradeKey]||{};
+  var list=(gp[type]||[]).slice();
+  if(list.indexOf(itemId)>=0){ showToast('تم التسجيل مسبقاً','ok'); return; }
+  list.push(itemId);
+  _progress[gradeKey]=Object.assign({},gp); _progress[gradeKey][type]=list;
+  db.collection('progress').doc(_user.uid).set(_progress,{merge:true})
+    .then(function(){
+      var gk=window._openGrade;
+      if(gk) openCourse(gk,document.getElementById('cvTitle').textContent,document.getElementById('cvSub').textContent);
+      showToast('تم التسجيل ✓','ok');
+    })
+    .catch(function(e){ showToast('خطأ: '+e.message,'err'); });
+}
 
-window.doSignOut=async()=>{await signOut(auth);window.location.href='index.html';};
+// ── SIGN OUT ──
+function doSignOut(){ auth.signOut().then(function(){ window.location.href='index.html'; }); }
 
-function getYtId(url){const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);return m?m[1]:'';}
-function setProg(fillId,valId,total,done){const pct=total?Math.round(done/total*100):0;const f=document.getElementById(fillId),v=document.getElementById(valId);if(f)f.style.width=pct+'%';if(v)v.textContent=pct+'%';}
+// ── HELPERS ──
+function getYtId(url){ var m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/); return m?m[1]:''; }
+function setProg(fId,vId,total,done){ var pct=total?Math.round(done/total*100):0; var f=document.getElementById(fId),v=document.getElementById(vId); if(f)f.style.width=pct+'%'; if(v)v.textContent=pct+'%'; }
 
+// ── GRADES ──
+var GRADES={primary:[{key:'primary-4',label:'الصف الرابع الابتدائي',sub:'كل محتوى الصف الرابع',img:'https://plusedu.vercel.app/store/1/ye 1.png',stage:'ابتدائي'},{key:'primary-5',label:'الصف الخامس الابتدائي',sub:'كل محتوى الصف الخامس',img:'https://plusedu.vercel.app/store/1/ye-2.jpg',stage:'ابتدائي'},{key:'primary-6',label:'الصف السادس الابتدائي',sub:'كل محتوى الصف السادس',img:'https://plusedu.vercel.app/store/1/ye-3.jpg',stage:'ابتدائي'}],prep:[{key:'prep-1',label:'الصف الأول الإعدادي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/yer 1.png',stage:'إعدادي'},{key:'prep-2',label:'الصف الثاني الإعدادي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/yer-2.jpg',stage:'إعدادي'},{key:'prep-3',label:'الصف الثالث الإعدادي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/yer-3.jpg',stage:'إعدادي'}],sec:[{key:'sec-1',label:'الصف الأول الثانوي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/year 1.png',stage:'ثانوي'},{key:'sec-2',label:'الصف الثاني الثانوي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/year-2.jpg',stage:'ثانوي'},{key:'sec-3',label:'الصف الثالث الثانوي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/year-3.jpg',stage:'ثانوي'}]};
 
-<script>
-// ── GRADE DATA ──
-const GRADES = {
-  primary:[
-    {key:'primary-4',label:'الصف الرابع الابتدائي',sub:'كل محتوى الصف الرابع',img:'https://plusedu.vercel.app/store/1/ye 1.png',stage:'ابتدائي'},
-    {key:'primary-5',label:'الصف الخامس الابتدائي',sub:'كل محتوى الصف الخامس',img:'https://plusedu.vercel.app/store/1/ye-2.jpg',stage:'ابتدائي'},
-    {key:'primary-6',label:'الصف السادس الابتدائي',sub:'كل محتوى الصف السادس',img:'https://plusedu.vercel.app/store/1/ye-3.jpg',stage:'ابتدائي'},
-  ],
-  prep:[
-    {key:'prep-1',label:'الصف الأول الإعدادي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/yer 1.png',stage:'إعدادي'},
-    {key:'prep-2',label:'الصف الثاني الإعدادي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/yer-2.jpg',stage:'إعدادي'},
-    {key:'prep-3',label:'الصف الثالث الإعدادي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/yer-3.jpg',stage:'إعدادي'},
-  ],
-  sec:[
-    {key:'sec-1',label:'الصف الأول الثانوي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/year 1.png',stage:'ثانوي'},
-    {key:'sec-2',label:'الصف الثاني الثانوي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/year-2.jpg',stage:'ثانوي'},
-    {key:'sec-3',label:'الصف الثالث الثانوي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/year-3.jpg',stage:'ثانوي'},
-  ]
-};
-
-window.buildGrades = function(){
-  const ud=window._userData||{};
-  ['primary','prep','sec'].forEach(stage=>{
-    const grid=document.getElementById('grid-'+stage);
-    if(!grid) return;
-    grid.innerHTML=GRADES[stage].map(g=>{
-      const isMine=ud.gradeKey===g.key;
-      return `<div id="gcard-${g.key}" class="grade-card"
-        onclick="openCourse('${g.key}','${g.label}','${g.stage}')"
-        style="${isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':''}">
-        <img src="${g.img}" class="gc-img" onerror="this.style.display='none'"/>
-        ${isMine?'<div class="gc-badge mine">صفك ✓</div>':''}
-        <div class="gc-body">
-          <div class="gc-title">${g.label}</div>
-          <div class="gc-sub">${isMine?'📚 محتواك الأساسي':g.sub}</div>
-        </div>
-        <div class="gc-foot">
-          <span>${isMine?'فيديوهات · امتحانات · واجبات':'اضغط للمشاهدة'}</span>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
-        </div>
-      </div>`;
+function buildGrades(){
+  var ud=_userData||{};
+  ['primary','prep','sec'].forEach(function(stage){
+    var grid=document.getElementById('grid-'+stage); if(!grid)return;
+    grid.innerHTML=GRADES[stage].map(function(g){
+      var isMine=ud.gradeKey===g.key;
+      return '<div id="gcard-'+g.key+'" class="grade-card" onclick="openCourse(\''+g.key+'\',\''+g.label+'\',\''+g.stage+'\')" style="'+(isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':'')+'">'+
+        '<img src="'+g.img+'" class="gc-img" onerror="this.style.display=\'none\'"/>'+
+        (isMine?'<div class="gc-badge mine">صفك ✓</div>':'')+
+        '<div class="gc-body"><div class="gc-title">'+g.label+'</div><div class="gc-sub">'+(isMine?'📚 محتواك الأساسي':g.sub)+'</div></div>'+
+        '<div class="gc-foot"><span>'+(isMine?'فيديوهات · امتحانات · واجبات':'اضغط للمشاهدة')+'</span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg></div>'+
+      '</div>';
     }).join('');
   });
-};
+}
 
-window.closeCourse = function(){
+function closeCourse(){
   document.getElementById('courseView').classList.remove('open');
   document.body.style.overflow='';
-  document.querySelectorAll('[id^="vp-"]').forEach(w=>{
-    w.style.display='none';
-    const f=w.querySelector('iframe'); if(f) f.src='';
-  });
-};
-
-window.switchTab = function(name,btn){
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.cv-tab').forEach(b=>b.classList.remove('on'));
-  document.getElementById('tp-'+name)?.classList.add('on');
+  document.querySelectorAll('[id^="vp-"]').forEach(function(w){w.style.display='none';var f=w.querySelector('iframe');if(f)f.src='';});
+}
+function switchTab(name,btn){
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.cv-tab').forEach(function(b){b.classList.remove('on');});
+  var tp=document.getElementById('tp-'+name); if(tp) tp.classList.add('on');
   if(btn) btn.classList.add('on');
-};
-
-let tTimer;
-window.showToast = function(msg,type='ok'){
-  const t=document.getElementById('toast');
+}
+var tTimer;
+function showToast(msg,type){
+  type=type||'ok';
+  var t=document.getElementById('toast');
   t.className='toast '+type;
   document.getElementById('tMsg').textContent=msg;
   t.classList.add('show'); clearTimeout(tTimer);
-  tTimer=setTimeout(()=>t.classList.remove('show'),3000);
-};
+  tTimer=setTimeout(function(){t.classList.remove('show');},3000);
+}
 
-// Close modals on overlay click
-['playerModal','mcqModal','imgModal'].forEach(id=>{
-  const el=document.getElementById(id);
+['playerModal','mcqModal','imgModal'].forEach(function(id){
+  var el=document.getElementById(id);
   if(el) el.addEventListener('click',function(e){
     if(e.target===this){
-      if(id==='playerModal') window.closePlayer();
-      else if(id==='mcqModal') window.closeMcq();
-      else window.closeImg();
+      if(id==='playerModal') closePlayer();
+      else if(id==='mcqModal') closeMcq();
+      else closeImg();
     }
   });
 });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeCourse(); });
 
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') window.closeCourse(); });
+});
 </script>
 </body>
 </html>
