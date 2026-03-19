@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Plus Mathematics – داش المشرف</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04060f;--s1:rgba(8,13,28,0.93);--s2:rgba(12,18,40,0.8);--s3:rgba(16,24,52,0.6);
+  --b1:rgba(74,127,212,0.22);--b2:rgba(74,127,212,0.12);
+  --blue:#4a7fd4;--navy:#1a3270;--gold:#c9a84c;--gold2:#f0d080;
+  --text:#eef2ff;--muted:#6a7a9e;--muted2:#4a5a7e;
+  --ok:#00d68f;--err:#ff4d6d;--warn:#f5a623;--purple:#a78bfa;
+  --inp:rgba(6,10,22,0.8);--r:14px;
+}
+html,body{min-height:100dvh;font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(74,127,212,0.04) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(74,127,212,0.04) 1px,transparent 1px);background-size:44px 44px}
+.orb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0}
+.o1{width:500px;height:500px;background:rgba(26,50,112,0.4);top:-150px;right:-150px}
+.o2{width:300px;height:300px;background:rgba(110,75,10,0.25);bottom:-60px;left:-60px}
+
+/* ═══ SCREENS ═══ */
+.screen{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
+.screen.active{display:flex}
+
+/* ═══ CARD ═══ */
+.card{background:var(--s2);backdrop-filter:blur(24px);border:1px solid var(--b1);
+  border-radius:22px;padding:clamp(26px,5vw,38px) clamp(20px,5vw,34px);
+  width:100%;max-width:380px;
+  box-shadow:0 32px 80px rgba(0,0,0,0.6);
+  animation:popIn .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes popIn{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+.card-logo{width:54px;height:54px;object-fit:contain;display:block;margin:0 auto 12px;
+  filter:drop-shadow(0 4px 14px rgba(74,127,212,.5))}
+.card-logo-fallback{width:54px;height:54px;border-radius:14px;
+  background:linear-gradient(135deg,var(--blue),var(--navy));
+  display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px}
+.card h2{font-size:17px;font-weight:900;text-align:center;
+  background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.card .subtitle{font-size:11px;color:var(--muted);text-align:center;margin:4px 0 24px}
+
+/* ═══ FORM FIELDS ═══ */
+.ff{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.ff label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
+.ff input{padding:12px 14px;background:var(--inp);border:1.5px solid var(--b1);
+  border-radius:11px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;width:100%}
+.ff input:focus{border-color:var(--blue)}
+.ff input.err-border{border-color:var(--err)}
+
+/* ═══ CODE INPUT ═══ */
+.code-input-wrap{display:flex;gap:8px;margin-bottom:12px}
+.code-input-wrap input{flex:1;padding:14px;background:var(--inp);border:2px solid var(--b1);
+  border-radius:11px;color:var(--gold2);font-family:monospace;font-size:22px;font-weight:900;
+  text-align:center;letter-spacing:4px;outline:none;text-transform:uppercase;transition:border-color .2s}
+.code-input-wrap input:focus{border-color:var(--blue)}
+
+/* ═══ BUTTONS ═══ */
+.btn{width:100%;padding:13px;border:none;border-radius:11px;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;margin-top:4px}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn.primary{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;
+  box-shadow:0 5px 20px rgba(74,127,212,.3)}
+.btn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff;
+  box-shadow:0 5px 20px rgba(0,214,143,.2)}
+.btn.ghost{background:transparent;border:1.5px solid var(--b1);color:var(--muted)}
+.btn.ghost:hover{border-color:var(--blue);color:var(--text)}
+.btn svg{width:14px;height:14px;flex-shrink:0}
+
+/* ═══ DIVIDER ═══ */
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--muted2);font-size:11px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--b2)}
+
+/* ═══ ERROR MSG ═══ */
+.err-msg{font-size:12px;color:var(--err);margin-top:8px;text-align:center;display:none}
+.err-msg.show{display:block}
+
+/* ═══ SUCCESS CARD (code reveal) ═══ */
+.code-reveal{text-align:center;padding:10px 0}
+.code-reveal .code-box{
+  background:linear-gradient(135deg,rgba(74,127,212,0.1),rgba(201,168,76,0.08));
+  border:2px solid var(--b1);border-radius:14px;padding:20px;margin:16px 0;
+  position:relative;overflow:hidden;
+}
+.code-reveal .code-box::before{
+  content:'';position:absolute;inset:-1px;border-radius:15px;z-index:-1;
+  background:linear-gradient(135deg,rgba(74,127,212,.3),rgba(201,168,76,.2));
+  background-size:200% 200%;animation:bAnim 4s linear infinite;
+}
+@keyframes bAnim{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.code-reveal .the-code{font-family:monospace;font-size:32px;font-weight:900;letter-spacing:6px;
+  background:linear-gradient(135deg,var(--gold2),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  display:block;margin-bottom:6px}
+.code-reveal .code-label{font-size:11px;color:var(--muted)}
+.copy-btn{padding:8px 18px;background:rgba(74,127,212,0.1);border:1px solid var(--b1);
+  border-radius:8px;color:var(--blue);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px;margin-top:10px}
+.copy-btn:hover{background:rgba(74,127,212,0.2);border-color:var(--blue)}
+.copy-btn svg{width:13px;height:13px}
+
+/* ═══ TOPBAR ═══ */
+.topbar{position:sticky;top:0;z-index:50;height:56px;display:flex;align-items:center;gap:12px;
+  padding:0 clamp(14px,4vw,24px);background:var(--s1);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--b2)}
+.tb-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.tb-logo img{width:28px;height:28px;object-fit:contain}
+.tb-logo h2{font-size:13px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tb-name{flex:1;font-size:13px;font-weight:700;color:var(--muted)}
+.tb-name strong{color:var(--text)}
+.tb-acts{display:flex;gap:8px;margin-right:auto}
+.tbtn{padding:7px 13px;border:1px solid var(--b1);border-radius:9px;background:transparent;
+  color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:5px;text-decoration:none;white-space:nowrap}
+.tbtn:hover{border-color:var(--blue);color:var(--text)}
+.tbtn svg{width:13px;height:13px}
+.tbtn.danger:hover{border-color:var(--err);color:var(--err)}
+
+/* ═══ APP CONTENT ═══ */
+#app{display:none;min-height:100dvh;position:relative;z-index:1}
+.main{padding:clamp(14px,3vw,20px) clamp(14px,4vw,24px);max-width:900px;margin:0 auto}
+
+/* ═══ WELCOME BANNER ═══ */
+.welcome-banner{background:linear-gradient(135deg,rgba(74,127,212,0.12),rgba(26,50,112,0.15));
+  border:1px solid var(--b1);border-radius:16px;padding:18px 20px;margin-bottom:18px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.wb-avatar{width:46px;height:46px;border-radius:13px;
+  background:linear-gradient(135deg,var(--blue),var(--navy));
+  display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;
+  color:#fff;flex-shrink:0}
+.wb-info h3{font-size:15px;font-weight:900}
+.wb-info p{font-size:12px;color:var(--muted);margin-top:3px}
+.wb-perms{margin-right:auto;display:flex;gap:6px;flex-wrap:wrap}
+.perm-tag{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;border:1px solid}
+.perm-tag.ok{background:rgba(0,214,143,.08);color:var(--ok);border-color:rgba(0,214,143,.2)}
+.perm-tag.no{background:rgba(255,77,109,.08);color:var(--err);border-color:rgba(255,77,109,.2);opacity:.7}
+
+/* ═══ GRADE CARDS ═══ */
+.stage-wrap{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.stage-sec{background:var(--s2);border:1px solid var(--b2);border-radius:14px;padding:14px 16px}
+.stage-lbl{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+.grade-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gc{background:rgba(8,13,28,0.5);border:1.5px solid var(--b2);border-radius:12px;
+  padding:12px 8px;text-align:center;cursor:pointer;transition:all .22s cubic-bezier(.22,1,.36,1)}
+.gc:hover{transform:translateY(-2px);border-color:var(--b1);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.gc.sel{border-color:var(--blue);background:linear-gradient(135deg,rgba(74,127,212,.15),rgba(26,50,112,.2));box-shadow:0 4px 18px rgba(74,127,212,.25)}
+.gc.sel::before{content:'';display:block;height:2px;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:2px;margin-bottom:8px}
+.gc-num{font-size:22px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.gc-name{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+.gc-stats{font-size:9px;margin-top:6px;display:flex;justify-content:center;gap:5px;min-height:14px}
+
+/* ═══ GRADE HEADER ═══ */
+.grade-header{display:none;align-items:center;gap:10px;padding:12px 16px;
+  background:var(--s2);border:1px solid var(--b2);border-radius:14px;margin-bottom:14px}
+.grade-header.show{display:flex}
+.gh-back{width:32px;height:32px;border-radius:9px;border:1px solid var(--b2);background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .2s;flex-shrink:0}
+.gh-back:hover{border-color:var(--blue);color:var(--text)}
+.gh-back svg{width:14px;height:14px}
+.gh-info{flex:1}
+.gh-title{font-size:14px;font-weight:900}
+.gh-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.gh-stats{display:flex;gap:10px}
+.gh-stat{font-size:11px;font-weight:700;display:flex;align-items:center;gap:4px}
+
+/* ═══ TABS ═══ */
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tbtn.on{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;border-color:transparent;box-shadow:0 3px 12px rgba(74,127,212,.3)}
+
+/* ═══ CONTENT CARDS ═══ */
+.ccard{background:var(--s2);border:1px solid var(--b2);border-radius:14px;padding:18px;margin-bottom:14px}
+.ccard-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--b2)}
+.ccard-head h3{font-size:14px;font-weight:800;flex:1;display:flex;align-items:center;gap:6px}
+.ccard-head h3 svg{width:14px;height:14px;color:var(--blue)}
+
+/* ═══ FORM ═══ */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:540px){.fgrid{grid-template-columns:1fr}}
+.ffield{display:flex;flex-direction:column;gap:5px}
+.ffield label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
+.ffield input,.ffield select,.ffield textarea{padding:10px 12px;background:var(--inp);border:1.5px solid var(--b1);
+  border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;appearance:none;width:100%;resize:vertical}
+.ffield input:focus,.ffield select:focus,.ffield textarea:focus{border-color:var(--blue)}
+.ffield.full{grid-column:1/-1}
+.note{font-size:11px;color:var(--muted);background:rgba(74,127,212,.06);
+  border:1px solid var(--b2);border-radius:8px;padding:8px 12px;margin-bottom:12px;line-height:1.8}
+.note strong{color:var(--blue)}
+
+/* ═══ EXAM TYPE ═══ */
+.etype-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+@media(max-width:500px){.etype-grid{grid-template-columns:repeat(2,1fr)}}
+.etype-card{border:1.5px solid var(--b2);border-radius:10px;padding:10px 8px;text-align:center;
+  cursor:pointer;transition:all .2s;font-size:12px;font-weight:700;color:var(--muted)}
+.etype-card:hover{border-color:var(--b1);color:var(--text)}
+.etype-card.sel{border-color:var(--blue);background:rgba(74,127,212,.1);color:var(--blue)}
+.etype-card svg{width:20px;height:20px;display:block;margin:0 auto 5px}
+.etype-fields{display:none}.etype-fields.show{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ═══ ITEMS ═══ */
+.items{display:flex;flex-direction:column;gap:8px}
+.item{background:rgba(8,13,28,.5);border:1px solid var(--b2);border-radius:10px;
+  padding:12px 14px;display:flex;align-items:center;gap:10px;transition:all .2s}
+.item:hover{border-color:var(--b1)}
+.item-num{width:26px;height:26px;border-radius:7px;
+  background:linear-gradient(135deg,var(--blue),var(--navy));
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.item-info{flex:1;min-width:0}
+.item-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.item-acts{display:flex;gap:5px;flex-shrink:0}
+.ia{width:28px;height:28px;border-radius:8px;border:1px solid var(--b2);background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--muted)}
+.ia:hover{border-color:var(--blue);background:rgba(74,127,212,.1);color:var(--text)}
+.ia.del:hover{border-color:var(--err);background:rgba(255,77,109,.1);color:var(--err)}
+.ia svg{width:12px;height:12px}
+.tag{display:inline-flex;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.tag.v{background:rgba(74,127,212,.1);color:var(--blue)}
+.tag.e{background:rgba(201,168,76,.1);color:var(--gold)}
+.tag.h{background:rgba(167,139,250,.1);color:var(--purple)}
+.tag.ok{background:rgba(0,214,143,.1);color:var(--ok)}
+
+/* ═══ SAVE BTNS ═══ */
+.sbtn{padding:9px 16px;border:none;border-radius:10px;cursor:pointer;font-family:'Tajawal',sans-serif;
+  font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.sbtn:hover{transform:translateY(-1px)}
+.sbtn svg{width:13px;height:13px}
+.sbtn.primary{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;box-shadow:0 4px 14px rgba(74,127,212,.25)}
+.sbtn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff}
+.sbtn.gold{background:linear-gradient(135deg,var(--gold),#7a5810);color:#fff}
+.sbtn.purple{background:linear-gradient(135deg,var(--purple),#5b21b6);color:#fff}
+.sbtn.ghost{background:transparent;border:1px solid var(--b1);color:var(--muted)}
+.sbtn.ghost:hover{border-color:var(--blue);color:var(--text)}
+.sbtn.sm{padding:7px 12px;font-size:12px}
+
+/* ═══ UPLOAD ═══ */
+.upload-zone{border:2px dashed var(--b1);border-radius:12px;padding:22px 16px;
+  text-align:center;cursor:pointer;transition:all .25s;position:relative}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:rgba(74,127,212,.05)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone-ico{width:40px;height:40px;border-radius:12px;background:rgba(74,127,212,.1);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.upload-zone-ico svg{width:20px;height:20px;color:var(--blue)}
+.upload-zone h4{font-size:13px;font-weight:700;margin-bottom:3px}
+.upload-zone p{font-size:11px;color:var(--muted)}
+.up-bar{height:6px;background:rgba(74,127,212,.15);border-radius:3px;overflow:hidden;margin:10px 0 4px}
+.up-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--ok));border-radius:3px;transition:width .2s;width:0}
+.up-txt{font-size:11px;color:var(--muted);display:flex;justify-content:space-between}
+.up-prog{display:none}.up-prog.show{display:block}
+.fp{display:none;align-items:center;gap:10px;background:rgba(74,127,212,.06);
+  border:1px solid var(--b2);border-radius:10px;padding:10px;margin-top:8px}
+.fp.show{display:flex}
+.fp-ico{width:34px;height:34px;border-radius:8px;background:rgba(74,127,212,.12);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fp-ico svg{width:16px;height:16px;color:var(--blue)}
+.fp-info{flex:1;min-width:0}
+.fp-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fp-size{font-size:10px;color:var(--muted)}
+.fp-del{background:transparent;border:none;cursor:pointer;color:var(--err);padding:4px}
+.yt-wrap{display:none;margin-top:8px;border-radius:10px;overflow:hidden;background:#000}
+.yt-wrap iframe{width:100%;height:clamp(160px,35vw,220px);border:none;display:block}
+.img-prevs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+
+/* ═══ EMPTY ═══ */
+.empty{text-align:center;padding:28px 20px;color:var(--muted)}
+.empty svg{width:30px;height:30px;opacity:.2;display:block;margin:0 auto 10px}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:rgba(10,15,34,.97);backdrop-filter:blur(16px);border:1px solid var(--b1);
+  border-radius:11px;padding:10px 18px;font-size:13px;font-weight:600;
+  display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,.5);
+  transition:transform .3s cubic-bezier(.22,1,.36,1);z-index:9999;pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{color:var(--ok);border-color:rgba(0,214,143,.3)}
+.toast.err{color:var(--err);border-color:rgba(255,77,109,.3)}
+.toast.info{color:var(--blue);border-color:rgba(74,127,212,.3)}
+.toast svg{width:14px;height:14px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+</style>
+</head>
+<body>
+
+<svg style="display:none">
+  <symbol id="i-yt" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+</svg>
+
+<div class="bg-grid"></div>
+<div class="o1 orb"></div>
+<div class="o2 orb"></div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 1: ENTER NAME (first visit)
+══════════════════════════════════════════ -->
+<div class="screen active" id="screenName">
+  <div class="card">
+    <img class="card-logo" src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+    <div class="card-logo-fallback" style="display:none">➕</div>
+    <h2>مرحباً بك في Plus</h2>
+    <p class="subtitle">داش المشرف · أدخل اسمك للمتابعة</p>
+    <div class="ff">
+      <label>اسمك</label>
+      <input type="text" id="inpName" placeholder="مثال: أحمد سالم" maxlength="40"
+        onkeydown="if(event.key==='Enter')goToCode()"/>
+    </div>
+    <button class="btn primary" onclick="goToCode()">
+      <svg><use href="#i-plus"/></svg>متابعة
+    </button>
+    <div class="err-msg" id="nameErr">ادخل اسمك أولاً</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 2: ENTER INVITE CODE
+══════════════════════════════════════════ -->
+<div class="screen" id="screenCode">
+  <div class="card">
+    <img class="card-logo" src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+    <div class="card-logo-fallback" style="display:none">➕</div>
+    <h2>كود الدعوة</h2>
+    <p class="subtitle" id="codeSubtitle">أدخل الكود اللي بعتهولك المسؤول</p>
+    <div class="code-input-wrap">
+      <input type="text" id="inpCode" placeholder="XXXXXXXX" maxlength="10"
+        oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')"
+        onkeydown="if(event.key==='Enter')verifyCode()"/>
+    </div>
+    <button class="btn primary" id="verifyBtn" onclick="verifyCode()">
+      <svg><use href="#i-key"/></svg>تحقق من الكود
+    </button>
+    <div class="err-msg" id="codeErr">الكود غلط أو منتهي الصلاحية</div>
+    <div class="divider">أو</div>
+    <button class="btn ghost" onclick="backToName()">
+      <svg style="width:12px;height:12px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+      رجوع
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 3: SUCCESS — Show My Code
+══════════════════════════════════════════ -->
+<div class="screen" id="screenSuccess">
+  <div class="card">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="width:56px;height:56px;border-radius:50%;background:rgba(0,214,143,.15);border:2px solid rgba(0,214,143,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+      </div>
+      <h2 style="font-size:18px">تم التسجيل! 🎉</h2>
+      <p style="font-size:12px;color:var(--muted);margin-top:6px">شارك الكود ده مع المشرف علشان يضيفك في الداشبورد</p>
+    </div>
+
+    <div class="code-reveal">
+      <div class="code-label">كود المشرف الخاص بيك</div>
+      <div class="code-box">
+        <span class="the-code" id="myCodeDisplay">--------</span>
+        <div style="font-size:10px;color:var(--muted)">احتفظ بيه — هيستخدم للدخول للمرة الجاية</div>
+      </div>
+      <button class="copy-btn" onclick="copyMyCode()">
+        <svg><use href="#i-copy"/></svg>نسخ الكود
+      </button>
+    </div>
+
+    <button class="btn ok" style="margin-top:16px" onclick="enterDashboard()">
+      <svg><use href="#i-play"/></svg>دخول الداشبورد
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     APP DASHBOARD
+══════════════════════════════════════════ -->
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="tb-logo">
+      <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.display='none'"/>
+      <h2>Plus Math</h2>
+    </a>
+    <div class="tb-name">مشرف: <strong id="tbName">—</strong></div>
+    <div class="tb-acts">
+      <button class="tbtn" onclick="showMyCode()"><svg><use href="#i-key"/></svg>كودي</button>
+      <button class="tbtn danger" onclick="doLogout()"><svg><use href="#i-out"/></svg>خروج</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div class="wb-avatar" id="wbAvatar">م</div>
+      <div class="wb-info">
+        <h3 id="wbName">—</h3>
+        <p>مشرف محتوى · Plus Mathematics 2026</p>
+      </div>
+      <div class="wb-perms" id="wbPerms"></div>
+    </div>
+
+    <!-- Grade Cards -->
+    <div class="stage-wrap" id="stageWrap">
+      <div class="stage-sec">
+        <div class="stage-lbl">🏫 ابتدائي</div>
+        <div class="grade-row">
+          <div class="gc" onclick="pickGrade('primary-4',this)"><div class="gc-num">٤</div><div class="gc-name">رابع</div><div class="gc-stats" id="gs-primary-4"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('primary-5',this)"><div class="gc-num">٥</div><div class="gc-name">خامس</div><div class="gc-stats" id="gs-primary-5"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('primary-6',this)"><div class="gc-num">٦</div><div class="gc-name">سادس</div><div class="gc-stats" id="gs-primary-6"><span style="opacity:.4">...</span></div></div>
+        </div>
+      </div>
+      <div class="stage-sec">
+        <div class="stage-lbl">🏛️ إعدادي</div>
+        <div class="grade-row">
+          <div class="gc" onclick="pickGrade('prep-1',this)"><div class="gc-num">١</div><div class="gc-name">أول</div><div class="gc-stats" id="gs-prep-1"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('prep-2',this)"><div class="gc-num">٢</div><div class="gc-name">ثاني</div><div class="gc-stats" id="gs-prep-2"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('prep-3',this)"><div class="gc-num">٣</div><div class="gc-name">ثالث</div><div class="gc-stats" id="gs-prep-3"><span style="opacity:.4">...</span></div></div>
+        </div>
+      </div>
+      <div class="stage-sec">
+        <div class="stage-lbl">🎓 ثانوي</div>
+        <div class="grade-row">
+          <div class="gc" onclick="pickGrade('sec-1',this)"><div class="gc-num">١</div><div class="gc-name">أول</div><div class="gc-stats" id="gs-sec-1"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('sec-2',this)"><div class="gc-num">٢</div><div class="gc-name">ثاني</div><div class="gc-stats" id="gs-sec-2"><span style="opacity:.4">...</span></div></div>
+          <div class="gc" onclick="pickGrade('sec-3',this)"><div class="gc-num">٣</div><div class="gc-name">ثالث</div><div class="gc-stats" id="gs-sec-3"><span style="opacity:.4">...</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grade Header -->
+    <div class="grade-header" id="gradeHeader">
+      <button class="gh-back" onclick="backToGrades()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+      </button>
+      <div class="gh-info">
+        <div class="gh-title" id="ghTitle">—</div>
+        <div class="gh-sub" id="ghSub">—</div>
+      </div>
+      <div class="gh-stats">
+        <span class="gh-stat" style="color:var(--blue)"><svg width="12" height="12"><use href="#i-yt"/></svg><span id="ghs-v">—</span></span>
+        <span class="gh-stat" style="color:var(--gold)"><svg width="12" height="12"><use href="#i-check"/></svg><span id="ghs-e">—</span></span>
+        <span class="gh-stat" style="color:var(--purple)"><svg width="12" height="12"><use href="#i-file"/></svg><span id="ghs-h">—</span></span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs" id="mainTabs" style="display:none">
+      <button class="tbtn on" id="tv" onclick="switchTab('v')"><svg><use href="#i-yt"/></svg>الفيديوهات</button>
+      <button class="tbtn" id="te" onclick="switchTab('e')"><svg><use href="#i-check"/></svg>الامتحانات</button>
+      <button class="tbtn" id="th" onclick="switchTab('h')"><svg><use href="#i-file"/></svg>الواجبات</button>
+    </div>
+
+    <!-- ══ VIDEOS ══ -->
+    <div id="sv" style="display:none">
+      <div class="ccard">
+        <div class="ccard-head">
+          <h3><svg><use href="#i-yt"/></svg>إضافة فيديو</h3>
+          <button class="sbtn sm ghost" onclick="clearV()">مسح</button>
+          <button class="sbtn sm primary" id="vSaveBtn" onclick="saveVideo()"><svg><use href="#i-save"/></svg>حفظ</button>
+        </div>
+        <div class="note">ارفع الفيديو على <strong>يوتيوب</strong> كـ <strong>Unlisted</strong> ثم الصق الرابط هنا 🎬</div>
+        <div class="fgrid">
+          <div class="ffield full">
+            <label>رابط يوتيوب</label>
+            <input type="url" id="vUrl" placeholder="https://youtube.com/watch?v=..." oninput="previewYt(this.value)"/>
+            <div class="yt-wrap" id="ytWrap"><iframe id="ytFrame" allowfullscreen></iframe></div>
+          </div>
+          <div class="ffield full"><label>عنوان الفيديو</label><input type="text" id="vTitle" placeholder="مثال: الدرس الأول — المعادلات"/></div>
+          <div class="ffield"><label>وصف مختصر</label><input type="text" id="vDesc" placeholder="موضوع الفيديو"/></div>
+          <div class="ffield"><label>المدة</label><input type="text" id="vDur" placeholder="45 دقيقة"/></div>
+          <div class="ffield"><label>الترتيب</label><input type="number" id="vOrder" placeholder="1" min="1"/></div>
+        </div>
+      </div>
+      <div class="ccard">
+        <div class="ccard-head">
+          <h3><svg><use href="#i-play"/></svg>الفيديوهات المضافة</h3>
+          <button class="sbtn sm ghost" onclick="loadList('videos','vList')"><svg><use href="#i-refresh"/></svg></button>
+        </div>
+        <div id="vList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
+      </div>
+    </div>
+
+    <!-- ══ EXAMS ══ -->
+    <div id="se" style="display:none">
+      <div class="ccard">
+        <div class="ccard-head">
+          <h3><svg><use href="#i-check"/></svg>إضافة امتحان</h3>
+          <button class="sbtn sm ghost" onclick="clearE()">مسح</button>
+          <button class="sbtn sm gold" id="eSaveBtn" onclick="saveExam()"><svg><use href="#i-save"/></svg>حفظ</button>
+        </div>
+        <div class="etype-grid">
+          <div class="etype-card sel" id="et-mcq" onclick="setEType('mcq')"><svg><use href="#i-check"/></svg>اختيار متعدد</div>
+          <div class="etype-card" id="et-essay" onclick="setEType('essay')"><svg><use href="#i-file"/></svg>مقالي</div>
+          <div class="etype-card" id="et-images" onclick="setEType('images')"><svg><use href="#i-img"/></svg>صور</div>
+          <div class="etype-card" id="et-link" onclick="setEType('link')"><svg><use href="#i-link"/></svg>Google Form</div>
+        </div>
+        <div class="fgrid">
+          <div class="ffield full"><label>عنوان الامتحان</label><input type="text" id="eTitle" placeholder="مثال: امتحان الفصل الأول"/></div>
+          <div class="ffield"><label>المدة (دقيقة)</label><input type="number" id="eDur" placeholder="60"/></div>
+          <div class="ffield"><label>الترتيب</label><input type="number" id="eOrder" placeholder="1" min="1"/></div>
+          <div class="ffield full etype-fields show" id="ef-mcq">
+            <label>الأسئلة — * قبل الإجابة الصح — فصل بـ ---</label>
+            <textarea id="eMcq" rows="6" placeholder="ما هو حل 2x+4=10؟&#10;* x=3&#10;x=2&#10;x=7&#10;---&#10;سؤال ثانٍ؟&#10;* الإجابة الصح"></textarea>
+          </div>
+          <div class="ffield full etype-fields" id="ef-essay">
+            <label>نص الامتحان المقالي</label>
+            <textarea id="eEssay" rows="5" placeholder="اكتب أسئلة الامتحان هنا..."></textarea>
+          </div>
+          <div class="ffield full etype-fields" id="ef-images">
+            <label>صور الامتحان</label>
+            <div class="upload-zone" id="eImgZone">
+              <input type="file" accept="image/*,.pdf" multiple id="eImgFile" onchange="handleExamFiles(this.files)"/>
+              <div class="upload-zone-ico"><svg><use href="#i-img"/></svg></div>
+              <h4>اضغط أو اسحب الصور هنا</h4>
+              <p>JPG, PNG, PDF — حتى 10 ملفات</p>
+            </div>
+            <div class="up-prog" id="eImgProgress">
+              <div class="up-bar"><div class="up-fill" id="eImgFill"></div></div>
+              <div class="up-txt"><span id="eImgTxt">جاري الرفع...</span><span id="eImgPct">0%</span></div>
+            </div>
+            <div class="img-prevs" id="eImgPreviews"></div>
+          </div>
+          <div class="ffield full etype-fields" id="ef-link">
+            <label>رابط Google Form</label>
+            <input type="url" id="eLink" placeholder="https://forms.google.com/..."/>
+          </div>
+        </div>
+      </div>
+      <div class="ccard">
+        <div class="ccard-head">
+          <h3><svg><use href="#i-check"/></svg>الامتحانات المضافة</h3>
+          <button class="sbtn sm ghost" onclick="loadList('exams','eList')"><svg><use href="#i-refresh"/></svg></button>
+        </div>
+        <div id="eList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
+      </div>
+    </div>
+
+    <!-- ══ HOMEWORK ══ -->
+    <div id="sh" style="display:none">
+      <div class="ccard">
+        <div class="ccard-head">
+          <h3><svg><use href="#i-file"/></svg>إضافة واجب</h3>
+          <button class="sbtn sm ghost" onclick="clearH()">مسح</button>
+          <button class="sbtn sm purple" id="hSaveBtn" onclick="saveHomework()"><svg><use href="#i-save"/></svg>حفظ</button>
+        </div>
+        <div class="fgrid">
+          <div class="ffield full"><label>عنوان الواجب</label><input type="text" id="hTitle" placeholder="مثال: واجب الأسبوع الأول"/></div>
+          <div class="ffield full"><label>التعليمات</label><textarea id="hDesc" rows="3" placeholder="حل التمارين من 1 إلى 10..."></textarea></div>
+          <div class="ffield"><label>موعد التسليم</label><input type="date" id="hDeadline"/></div>
+          <div class="ffield"><label>الترتيب</label><input type="number" id="hOrder" placeholder="1" min="1"/></div>
+          <div class="ffield full">
+            <label>ملف PDF / صورة (اختياري)</label>
+            <div class="upload-zone" id="hFileZone">
+              <input type="file" accept=".pdf,image/*" id="hFile" onchange="handleHwFile(this.files[0])"/>
+              <div class="upload-zone-ico"><svg><use href="#i-upload"/></svg></div>
+              <h4>ارفع ملف PDF أو صورة</h4>
+              <p>PDF · JPG · PNG</p>
+            </div>
+            <div class="up-prog" id="hProgress">
+              <div class="up-bar"><div class="up-fill" id="hFill"></div></div>
+              <div class="up-txt"><span id="hTxt">جاري الرفع...</span><span id="hPct">0%</span></div>
+            </div>
+            <div class="fp" id="hPreview">
+              <div class="fp-ico"><svg><use href="#i-file"/></svg></div>
+              <div class="fp-info"><div class="fp-name" id="hFileName"></div><div class="fp-size" id="hFileSize"></div></div>
+              <button class="fp-del" onclick="clearHFile()"><svg><use href="#i-x"/></svg></button>
+            </div>
+          </div>
+          <input type="hidden" id="hFileUrl"/>
+        </div>
+      </div>
+      <div class="ccard">
+        <div class="ccard-head">
+          <h3><svg><use href="#i-file"/></svg>الواجبات المضافة</h3>
+          <button class="sbtn sm ghost" onclick="loadList('homework','hList')"><svg><use href="#i-refresh"/></svg></button>
+        </div>
+        <div id="hList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
+      </div>
+    </div>
+
+  </div><!-- main -->
+</div><!-- app -->
+
+<!-- Toast -->
+<div class="toast" id="toast"><svg id="tIc"><use href="#i-check"/></svg><span id="tMsg"></span></div>
+
+<!-- ══════════════════ FIREBASE ══════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, setDoc, serverTimestamp, query, where }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+const cfg = {
+  apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
+  authDomain:"plusinmath-web.firebaseapp.com",
+  projectId:"plusinmath-web",
+  storageBucket:"plusinmath-web.firebasestorage.app",
+  messagingSenderId:"444492731461",
+  appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
+};
+const app  = initializeApp(cfg);
+const db   = getFirestore(app);
+const stor = getStorage(app);
+
+// ── Count helper ──
+window._loadCount = async (g, tab) => {
+  const snap = await getDocs(collection(db,'content',g,tab));
+  return snap.size;
+};
+
+// ── Verify invite code ──
+window._verifyInviteCode = async (code) => {
+  try {
+    // codes stored in Firestore: supervisorCodes/{code} = { active:true, createdAt, ... }
+    const docRef = doc(db, 'supervisorCodes', code.toUpperCase());
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return { ok: false, msg: 'الكود غير موجود' };
+    const d = snap.data();
+    if (!d.active) return { ok: false, msg: 'الكود غير فعال' };
+    return { ok: true, data: d };
+  } catch(e) {
+    return { ok: false, msg: 'خطأ في الاتصال' };
+  }
+};
+
+// ── Register supervisor ──
+window._registerSupervisor = async (name, inviteCode) => {
+  try {
+    // Generate unique supervisor code (6 chars)
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const myCode = Array.from({length:6}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+    // Save supervisor in Firestore
+    await setDoc(doc(db,'supervisors', myCode), {
+      name, myCode, inviteCode,
+      createdAt: serverTimestamp(),
+      active: true,
+      permissions: { videos: true, exams: true, homework: true }
+    });
+    return { ok: true, myCode };
+  } catch(e) {
+    return { ok: false, msg: e.message };
+  }
+};
+
+// ── Login with supervisor code ──
+window._loginWithCode = async (code) => {
+  try {
+    const snap = await getDoc(doc(db,'supervisors', code.toUpperCase()));
+    if (!snap.exists()) return null;
+    const d = snap.data();
+    if (!d.active) return null;
+    return d;
+  } catch(e) { return null; }
+};
+
+// ── Load list ──
+window.loadList = async (tab, elId) => {
+  const grade = window._curGrade;
+  if(!grade){ toast('اختار صف أولاً','err'); return; }
+  const el = document.getElementById(elId);
+  el.innerHTML = '<div class="empty"><div style="width:22px;height:22px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
+  try {
+    const snap = await getDocs(collection(db,'content',grade,tab));
+    const items = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+    window._cache = window._cache||{};
+    window._cache[tab] = items;
+    renderItems(tab, items, elId);
+    updateGradeHeaderStats(grade);
+  } catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── Save Video ──
+window.saveVideo = async () => {
+  const grade = window._curGrade;
+  if(!grade){ toast('اختار صف','err'); return; }
+  const url = document.getElementById('vUrl').value.trim();
+  const title = document.getElementById('vTitle').value.trim();
+  if(!url||!title){ toast('ادخل الرابط والعنوان','err'); return; }
+  const btn = document.getElementById('vSaveBtn');
+  btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
+  try {
+    const data = {
+      title, type:'video', url,
+      description: document.getElementById('vDesc').value.trim(),
+      duration: document.getElementById('vDur').value.trim(),
+      order: parseInt(document.getElementById('vOrder').value)||1,
+      updatedAt: serverTimestamp()
+    };
+    if(window._editId?.v){ await updateDoc(doc(db,'content',grade,'videos',window._editId.v),data); delete window._editId.v; toast('تم التعديل ✓','ok'); }
+    else { data.createdAt=serverTimestamp(); await addDoc(collection(db,'content',grade,'videos'),data); toast('تم حفظ الفيديو ✓','ok'); }
+    clearV(); loadList('videos','vList');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
+};
+
+// ── Save Exam ──
+window.saveExam = async () => {
+  const grade = window._curGrade;
+  if(!grade){ toast('اختار صف','err'); return; }
+  const title = document.getElementById('eTitle').value.trim();
+  if(!title){ toast('ادخل عنوان الامتحان','err'); return; }
+  const btn = document.getElementById('eSaveBtn');
+  btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
+  try {
+    const data = {
+      title, type: window._eType||'mcq',
+      duration: document.getElementById('eDur').value.trim(),
+      order: parseInt(document.getElementById('eOrder').value)||1,
+      mcqRaw: document.getElementById('eMcq').value.trim(),
+      essayText: document.getElementById('eEssay').value.trim(),
+      externalUrl: document.getElementById('eLink').value.trim(),
+      imageUrls: window._examImgUrls||[],
+      updatedAt: serverTimestamp()
+    };
+    if(window._editId?.e){ await updateDoc(doc(db,'content',grade,'exams',window._editId.e),data); delete window._editId.e; toast('تم التعديل ✓','ok'); }
+    else { data.createdAt=serverTimestamp(); await addDoc(collection(db,'content',grade,'exams'),data); toast('تم حفظ الامتحان ✓','ok'); }
+    clearE(); loadList('exams','eList');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
+};
+
+// ── Save Homework ──
+window.saveHomework = async () => {
+  const grade = window._curGrade;
+  if(!grade){ toast('اختار صف','err'); return; }
+  const title = document.getElementById('hTitle').value.trim();
+  if(!title){ toast('ادخل عنوان الواجب','err'); return; }
+  const btn = document.getElementById('hSaveBtn');
+  btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
+  try {
+    const data = {
+      title, type:'homework',
+      description: document.getElementById('hDesc').value.trim(),
+      deadline: document.getElementById('hDeadline').value,
+      fileUrl: document.getElementById('hFileUrl').value||'',
+      order: parseInt(document.getElementById('hOrder').value)||1,
+      updatedAt: serverTimestamp()
+    };
+    if(window._editId?.h){ await updateDoc(doc(db,'content',grade,'homework',window._editId.h),data); delete window._editId.h; toast('تم التعديل ✓','ok'); }
+    else { data.createdAt=serverTimestamp(); await addDoc(collection(db,'content',grade,'homework'),data); toast('تم حفظ الواجب ✓','ok'); }
+    clearH(); loadList('homework','hList');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
+};
+
+// ── Upload helpers ──
+window.uploadFile = (file, path, onProg) => new Promise((res,rej)=>{
+  const storRef = ref(stor, path);
+  const task = uploadBytesResumable(storRef, file);
+  task.on('state_changed', s=>onProg&&onProg(s.bytesTransferred/s.totalBytes*100), rej,
+    async()=>res(await getDownloadURL(task.snapshot.ref)));
+});
+
+window.handleHwFile = async (file)=>{
+  if(!file) return;
+  const g = window._curGrade||'general';
+  const prog=document.getElementById('hProgress'),fill=document.getElementById('hFill');
+  const txt=document.getElementById('hTxt'),pct=document.getElementById('hPct');
+  prog.classList.add('show');
+  try{
+    const url=await window.uploadFile(file,`homework/${g}/${Date.now()}_${file.name}`,p=>{
+      fill.style.width=p+'%';pct.textContent=Math.round(p)+'%';
+      txt.textContent=p<100?'جاري الرفع...':'اكتمل ✓';
+    });
+    document.getElementById('hFileUrl').value=url;
+    document.getElementById('hFileName').textContent=file.name;
+    document.getElementById('hFileSize').textContent=(file.size/1024/1024).toFixed(2)+' MB';
+    document.getElementById('hPreview').classList.add('show');
+    toast('تم رفع الملف ✓','ok');
+  }catch(e){ toast('خطأ رفع: '+e.message,'err'); }
+  setTimeout(()=>prog.classList.remove('show'),2000);
+};
+
+window._examImgUrls=[];
+window.handleExamFiles = async (files)=>{
+  const g=window._curGrade||'general';
+  const prev=document.getElementById('eImgPreviews');
+  const prog=document.getElementById('eImgProgress'),fill=document.getElementById('eImgFill');
+  const txt=document.getElementById('eImgTxt'),pct=document.getElementById('eImgPct');
+  prog.classList.add('show');window._examImgUrls=[];prev.innerHTML='';
+  const arr=Array.from(files).slice(0,10);
+  for(let i=0;i<arr.length;i++){
+    const file=arr[i];
+    txt.textContent=`رفع ${i+1}/${arr.length}...`;
+    try{
+      const url=await window.uploadFile(file,`exams/${g}/${Date.now()}_${file.name}`,p=>{
+        fill.style.width=(((i/arr.length)+(p/100/arr.length))*100)+'%';
+      });
+      window._examImgUrls.push(url);
+      const div=document.createElement('div');
+      div.style.cssText='width:80px;height:80px;border-radius:8px;overflow:hidden;flex-shrink:0';
+      div.innerHTML=file.type.startsWith('image')
+        ?`<img src="${url}" style="width:100%;height:100%;object-fit:cover"/>`
+        :`<div style="width:100%;height:100%;background:rgba(74,127,212,.1);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--blue);font-weight:700;text-align:center">PDF</div>`;
+      prev.appendChild(div);
+    }catch(e){ toast('خطأ رفع '+file.name,'err'); }
+  }
+  txt.textContent='اكتمل ✓';pct.textContent='100%';
+  setTimeout(()=>prog.classList.remove('show'),2000);
+  toast('تم رفع '+arr.length+' ملف ✓','ok');
+};
+
+// ── Delete & Edit ──
+window.deleteItem = async (tab, id, title)=>{
+  if(!confirm('حذف "'+title+'"؟')) return;
+  const grade = window._curGrade;
+  try{
+    await deleteDoc(doc(db,'content',grade,tab,id));
+    await loadList(tab, tab==='videos'?'vList':tab==='exams'?'eList':'hList');
+    toast('تم الحذف','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+window.editItem = (tab, id)=>{
+  const items=window._cache?.[tab]||[];
+  const item=items.find(i=>i.id===id);
+  if(!item) return;
+  window._editId=window._editId||{};
+  const key=tab==='videos'?'v':tab==='exams'?'e':'h';
+  window._editId[key]=id;
+  if(tab==='videos'){
+    document.getElementById('vUrl').value=item.url||'';
+    document.getElementById('vTitle').value=item.title||'';
+    document.getElementById('vDesc').value=item.description||'';
+    document.getElementById('vDur').value=item.duration||'';
+    document.getElementById('vOrder').value=item.order||'';
+    previewYt(item.url||'');
+  } else if(tab==='exams'){
+    document.getElementById('eTitle').value=item.title||'';
+    document.getElementById('eDur').value=item.duration||'';
+    document.getElementById('eOrder').value=item.order||'';
+    document.getElementById('eMcq').value=item.mcqRaw||'';
+    document.getElementById('eEssay').value=item.essayText||'';
+    document.getElementById('eLink').value=item.externalUrl||'';
+    setEType(item.type||'mcq');
+  } else {
+    document.getElementById('hTitle').value=item.title||'';
+    document.getElementById('hDesc').value=item.description||'';
+    document.getElementById('hDeadline').value=item.deadline||'';
+    document.getElementById('hOrder').value=item.order||'';
+    document.getElementById('hFileUrl').value=item.fileUrl||'';
+    if(item.fileUrl){
+      document.getElementById('hFileName').textContent=item.fileUrl.split('%2F').pop().split('?')[0];
+      document.getElementById('hPreview').classList.add('show');
+    }
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+  toast('جاهز للتعديل ✏️','ok');
+};
+
+window._fbReady=true;
+</script>
+
+<!-- ══════════════════ APP JS ══════════════════ -->
+<script>
+const GRADES_LABEL={'primary-4':'الرابع الابتدائي','primary-5':'الخامس الابتدائي','primary-6':'السادس الابتدائي','prep-1':'الأول الإعدادي','prep-2':'الثاني الإعدادي','prep-3':'الثالث الإعدادي','sec-1':'الأول الثانوي','sec-2':'الثاني الثانوي','sec-3':'الثالث الثانوي'};
+let _supData = null;  // logged-in supervisor data
+let _myCode = '';
+window._curGrade = '';
+let _curTab = 'v';
+
+// ══ FLOW FUNCTIONS ══
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// Step 1: Enter name
+function goToCode(){
+  const name = document.getElementById('inpName').value.trim();
+  if(!name){ document.getElementById('nameErr').classList.add('show'); return; }
+  document.getElementById('nameErr').classList.remove('show');
+  document.getElementById('codeSubtitle').textContent = 'أهلاً '+name+'! أدخل كود الدعوة';
+  showScreen('screenCode');
+}
+function backToName(){ showScreen('screenName'); }
+
+// Step 2: Verify invite code
+async function verifyCode(){
+  const code = document.getElementById('inpCode').value.trim();
+  if(!code.trim()){ showCodeErr('ادخل الكود'); return; }
+  const name = document.getElementById('inpName').value.trim();
+  const btn = document.getElementById('verifyBtn');
+  btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
+
+  // Wait for Firebase
+  let tries=0;
+  while(!window._fbReady && tries<50){ await new Promise(r=>setTimeout(r,100)); tries++; }
+
+  const result = await window._verifyInviteCode(code);
+  if(!result.ok){ btn.innerHTML='<svg width="14" height="14"><use href="#i-key"/></svg>تحقق من الكود';btn.disabled=false; showCodeErr(result.msg); return; }
+
+  // Register new supervisor
+  const reg = await window._registerSupervisor(name, code);
+  btn.innerHTML='<svg width="14" height="14"><use href="#i-key"/></svg>تحقق من الكود';btn.disabled=false;
+  if(!reg.ok){ showCodeErr('خطأ في التسجيل: '+(reg.msg||'')); return; }
+
+  _myCode = reg.myCode;
+  document.getElementById('myCodeDisplay').textContent = reg.myCode;
+  // Save to localStorage
+  localStorage.setItem('pm_sup_code', reg.myCode);
+  localStorage.setItem('pm_sup_name', name);
+  showScreen('screenSuccess');
+}
+function showCodeErr(msg){ const el=document.getElementById('codeErr'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),4000); }
+
+// Step 3: Enter dashboard from success screen
+function enterDashboard(){
+  const name = document.getElementById('inpName').value.trim() || localStorage.getItem('pm_sup_name') || 'مشرف';
+  _supData = { name, myCode: _myCode, permissions:{ videos:true, exams:true, homework:true } };
+  openApp();
+}
+
+// ── Show my code popup ──
+function showMyCode(){
+  const code = localStorage.getItem('pm_sup_code') || _myCode || '——';
+  toast('كودك: '+code,'info');
+  // Copy it too
+  if(navigator.clipboard) navigator.clipboard.writeText(code).catch(()=>{});
+}
+
+// ── Copy code button (success screen) ──
+function copyMyCode(){
+  const code = document.getElementById('myCodeDisplay').textContent;
+  if(navigator.clipboard) navigator.clipboard.writeText(code).catch(()=>{});
+  toast('تم نسخ الكود ✓','ok');
+}
+
+// ── Open App ──
+function openApp(){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('app').style.display='block';
+  const name = _supData?.name || localStorage.getItem('pm_sup_name') || 'مشرف';
+  document.getElementById('tbName').textContent = name;
+  document.getElementById('wbName').textContent = name;
+  document.getElementById('wbAvatar').textContent = name.slice(0,2);
+  // Permissions display
+  const perms = _supData?.permissions||{videos:true,exams:true,homework:true};
+  const permLabels = {videos:'فيديوهات',exams:'امتحانات',homework:'واجبات'};
+  document.getElementById('wbPerms').innerHTML = Object.entries(permLabels)
+    .map(([k,l])=>`<span class="perm-tag ${perms[k]?'ok':'no'}">${perms[k]?'✓':'✗'} ${l}</span>`).join('');
+  // Load grade stats
+  loadAllGradeStats();
+}
+
+// ── Logout ──
+function doLogout(){
+  localStorage.removeItem('pm_sup_code');
+  localStorage.removeItem('pm_sup_name');
+  document.getElementById('app').style.display='none';
+  document.getElementById('inpName').value='';
+  document.getElementById('inpCode').value='';
+  showScreen('screenName');
+}
+
+// ── Grade Cards ──
+async function loadAllGradeStats(){
+  const grades = Object.keys(GRADES_LABEL);
+  for(const g of grades){
+    try{
+      const[vs,es,hs]=await Promise.all([
+        window._loadCount(g,'videos'), window._loadCount(g,'exams'), window._loadCount(g,'homework')
+      ]);
+      const el=document.getElementById('gs-'+g);
+      if(el) el.innerHTML=`<span style="color:var(--blue)">▶${vs}</span><span style="color:var(--gold)">✍${es}</span><span style="color:var(--purple)">📄${hs}</span>`;
+    }catch(e){}
+  }
+}
+
+async function updateGradeHeaderStats(g){
+  try{
+    const[vs,es,hs]=await Promise.all([
+      window._loadCount(g,'videos'), window._loadCount(g,'exams'), window._loadCount(g,'homework')
+    ]);
+    document.getElementById('ghs-v').textContent=vs;
+    document.getElementById('ghs-e').textContent=es;
+    document.getElementById('ghs-h').textContent=hs;
+    document.getElementById('ghSub').textContent=vs+' فيديو · '+es+' امتحان · '+hs+' واجب';
+    const cEl=document.getElementById('gs-'+g);
+    if(cEl) cEl.innerHTML=`<span style="color:var(--blue)">▶${vs}</span><span style="color:var(--gold)">✍${es}</span><span style="color:var(--purple)">📄${hs}</span>`;
+  }catch(e){}
+}
+
+function pickGrade(g, el){
+  document.querySelectorAll('.gc').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  window._curGrade = g;
+  document.getElementById('stageWrap').style.display='none';
+  document.getElementById('gradeHeader').classList.add('show');
+  document.getElementById('ghTitle').textContent = 'الصف ' + (GRADES_LABEL[g]||g);
+  document.getElementById('ghSub').textContent = '...';
+  document.getElementById('mainTabs').style.display='flex';
+  ['sv','se','sh'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('s'+_curTab).style.display='block';
+  const tabMap={v:'videos',e:'exams',h:'homework'};
+  const elMap={v:'vList',e:'eList',h:'hList'};
+  loadList(tabMap[_curTab], elMap[_curTab]);
+  updateGradeHeaderStats(g);
+}
+
+function backToGrades(){
+  document.getElementById('stageWrap').style.display='flex';
+  document.getElementById('gradeHeader').classList.remove('show');
+  document.getElementById('mainTabs').style.display='none';
+  ['sv','se','sh'].forEach(id=>document.getElementById(id).style.display='none');
+  window._curGrade='';
+}
+
+function switchTab(t){
+  _curTab=t;
+  ['v','e','h'].forEach(x=>{
+    document.getElementById('t'+x).classList.toggle('on',x===t);
+    document.getElementById('s'+x).style.display=x===t?'block':'none';
+  });
+  const grade=window._curGrade;
+  if(grade){
+    const tab=t==='v'?'videos':t==='e'?'exams':'homework';
+    loadList(tab, t==='v'?'vList':t==='e'?'eList':'hList');
+  }
+}
+
+// ── Render Items ──
+function renderItems(tab, items, elId){
+  const el=document.getElementById(elId);
+  if(!items.length){ el.innerHTML='<div class="empty"><p>لا يوجد محتوى بعد ⬆️</p></div>'; return; }
+  const typeLabel={mcq:'MCQ',essay:'مقالي',images:'صور',link:'Google Form',video:'يوتيوب',homework:'واجب'};
+  const tagCls=tab==='videos'?'v':tab==='exams'?'e':'h';
+  el.innerHTML=`<div class="items">${items.map((item,i)=>`
+    <div class="item">
+      <div class="item-num">${item.order||i+1}</div>
+      <div class="item-info">
+        <div class="item-title">${item.title||'—'}</div>
+        <div class="item-meta">
+          ${item.type?`<span class="tag ${tagCls}">${typeLabel[item.type]||item.type}</span>`:''}
+          ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
+          ${item.deadline?`<span>📅 ${item.deadline}</span>`:''}
+          ${item.url||item.externalUrl?`<a href="${item.url||item.externalUrl}" target="_blank" style="color:var(--blue);font-size:11px;text-decoration:none">🔗 رابط</a>`:''}
+          ${item.imageUrls?.length?`<span class="tag ok">📷 ${item.imageUrls.length} صورة</span>`:''}
+          ${item.fileUrl?`<a href="${item.fileUrl}" target="_blank" style="color:var(--purple);font-size:11px;text-decoration:none">📎 ملف</a>`:''}
+        </div>
+      </div>
+      <div class="item-acts">
+        <button class="ia" onclick="editItem('${tab}','${item.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
+        <button class="ia del" onclick="deleteItem('${tab}','${item.id}','${(item.title||'').replace(/'/g,"\\'")}')"><svg><use href="#i-trash"/></svg></button>
+        ${item.url?`<a class="ia" href="${item.url}" target="_blank"><svg><use href="#i-eye"/></svg></a>`:''}
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+// ── Form helpers ──
+function previewYt(url){
+  const m=(url||'').match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
+  const w=document.getElementById('ytWrap');
+  if(m){document.getElementById('ytFrame').src=`https://www.youtube.com/embed/${m[1]}`;w.style.display='block';}
+  else w.style.display='none';
+}
+window._eType='mcq';
+function setEType(t){
+  window._eType=t;
+  ['mcq','essay','images','link'].forEach(x=>{
+    document.getElementById('et-'+x).classList.toggle('sel',x===t);
+    const f=document.getElementById('ef-'+x);
+    if(f) f.classList.toggle('show',x===t);
+  });
+}
+function clearV(){ ['vUrl','vTitle','vDesc','vDur','vOrder'].forEach(id=>document.getElementById(id).value=''); document.getElementById('ytWrap').style.display='none'; if(window._editId) delete window._editId.v; }
+function clearE(){ ['eTitle','eDur','eOrder','eMcq','eEssay','eLink'].forEach(id=>document.getElementById(id).value=''); document.getElementById('eImgPreviews').innerHTML=''; window._examImgUrls=[]; setEType('mcq'); if(window._editId) delete window._editId.e; }
+function clearH(){ ['hTitle','hDesc','hDeadline','hOrder','hFileUrl'].forEach(id=>document.getElementById(id).value=''); document.getElementById('hPreview').classList.remove('show'); document.getElementById('hFile').value=''; if(window._editId) delete window._editId.h; }
+function clearHFile(){ document.getElementById('hFileUrl').value=''; document.getElementById('hPreview').classList.remove('show'); document.getElementById('hFile').value=''; }
+
+// ── Toast ──
+let _tt;
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.className='toast '+type;
+  document.getElementById('tMsg').textContent=msg;
+  document.getElementById('tIc').innerHTML=type==='err'?'<use href="#i-x"/>':'<use href="#i-check"/>';
+  t.classList.add('show');clearTimeout(_tt);
+  _tt=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ── Drag & drop ──
+document.querySelectorAll('.upload-zone').forEach(z=>{
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag')});
+  z.addEventListener('dragleave',()=>z.classList.remove('drag'));
+  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag')});
+});
+
+// ══ INIT: Check if already logged in ══
+(async function init(){
+  const savedCode = localStorage.getItem('pm_sup_code');
+  const savedName = localStorage.getItem('pm_sup_name');
+  if(savedCode && savedName){
+    // Try auto-login
+    let tries=0;
+    while(!window._fbReady && tries<50){ await new Promise(r=>setTimeout(r,100)); tries++; }
+    const data = await window._loginWithCode(savedCode);
+    if(data){
+      _supData = data;
+      _myCode = savedCode;
+      openApp();
+      return;
+    }
+    // Code no longer valid — clear and start fresh
+    localStorage.removeItem('pm_sup_code');
+    localStorage.removeItem('pm_sup_name');
+  }
+  showScreen('screenName');
+})();
+</script>
+</body>
+</html>
