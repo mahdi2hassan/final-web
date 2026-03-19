@@ -604,7 +604,6 @@ nav{position:sticky;top:0;z-index:50;height:58px;
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <script>
-window.addEventListener("load", function(){
 
 firebase.initializeApp({
   apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
@@ -612,7 +611,7 @@ firebase.initializeApp({
   projectId:"plusinmath-web",
   storageBucket:"plusinmath-web.firebasestorage.app",
   messagingSenderId:"444492731461",
-  appId:"1:444492731441:web:14529f08d9ccf047dabf2c"
+  appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
 });
 var auth = firebase.auth();
 var db   = firebase.firestore();
@@ -849,127 +848,4 @@ function submitMcq(){
   document.getElementById('mcqResult').style.display='block';
   document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">'+(pct>=60?'🎉':'💪')+'</div><div style="font-size:18px;font-weight:900;margin:8px 0">'+score+'/'+_mcq.questions.length+' صح</div><div style="font-size:14px;color:var(--muted)">'+pct+'%</div>';
   document.getElementById('mcqBtn').style.display='none';
-  if(pct>=50) markDone(_mcq.gradeKey,'exams',_mcq.examId);
-}
-function closeMcq(){ document.getElementById('mcqModal').classList.remove('open'); document.body.style.overflow=''; }
-
-// ── ESSAY ──
-function openEssay(examId,gradeKey,title,text){
-  document.getElementById('mcqTitle').textContent=title;
-  document.getElementById('mcqProg').textContent='امتحان مقالي';
-  document.getElementById('mcqResult').style.display='none';
-  document.getElementById('mcqBody').innerHTML='<div class="essay-text">'+text+'</div><textarea class="essay-area" placeholder="اكتب إجابتك هنا..."></textarea>';
-  document.getElementById('mcqBtn').textContent='تسليم ✓';
-  document.getElementById('mcqBtn').style.display='block';
-  document.getElementById('mcqBtn').onclick=function(){
-    markDone(gradeKey,'exams',examId);
-    document.getElementById('mcqResult').style.display='block';
-    document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin-top:8px">تم التسليم!</div>';
-    document.getElementById('mcqBtn').style.display='none';
-  };
-  document.getElementById('mcqModal').classList.add('open'); document.body.style.overflow='hidden';
-}
-
-// ── IMAGES ──
-var _imgData=null;
-function openImgs(examId,gradeKey,title,urls){
-  _imgData={examId:examId,gradeKey:gradeKey};
-  document.getElementById('imgTitle').textContent=title;
-  document.getElementById('imgBody').innerHTML=urls.map(function(u,i){
-    return '<div style="margin-bottom:10px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">صفحة '+(i+1)+'</div>'+
-      (u.toLowerCase().indexOf('.pdf')>=0?
-        '<a href="'+u+'" target="_blank" style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(74,127,212,0.07);border:1px solid var(--b1);border-radius:10px;color:var(--blue);text-decoration:none;font-weight:700">📄 فتح الصفحة '+(i+1)+'</a>':
-        '<img src="'+u+'" style="width:100%;border-radius:10px;display:block;cursor:pointer" onclick="window.open(\''+u+'\',\'_blank\')"/>')+
-    '</div>';
-  }).join('');
-  document.getElementById('imgDoneBtn').style.display='flex';
-  document.getElementById('imgModal').classList.add('open'); document.body.style.overflow='hidden';
-}
-function viewOneImg(src){ _imgData=null; document.getElementById('imgTitle').textContent='صورة'; document.getElementById('imgBody').innerHTML='<img src="'+src+'" style="width:100%;border-radius:10px;display:block"/>'; document.getElementById('imgDoneBtn').style.display='none'; document.getElementById('imgModal').classList.add('open'); document.body.style.overflow='hidden'; }
-function imgDone(){ if(_imgData) markDone(_imgData.gradeKey,'exams',_imgData.examId); closeImg(); }
-function closeImg(){ document.getElementById('imgModal').classList.remove('open'); document.body.style.overflow=''; }
-
-// ── PLAYER ──
-var _playerData=null;
-function closePlayer(){ document.getElementById('playerFrame').src=''; document.getElementById('playerModal').classList.remove('open'); document.body.style.overflow=''; }
-function playerDone(){ if(_playerData) markDone(_playerData.gradeKey,'videos',_playerData.id); closePlayer(); }
-
-// ── MARK DONE ──
-function markDone(gradeKey,type,itemId){
-  var gp=_progress[gradeKey]||{};
-  var list=(gp[type]||[]).slice();
-  if(list.indexOf(itemId)>=0){ showToast('تم التسجيل مسبقاً','ok'); return; }
-  list.push(itemId);
-  _progress[gradeKey]=Object.assign({},gp); _progress[gradeKey][type]=list;
-  db.collection('progress').doc(_user.uid).set(_progress,{merge:true})
-    .then(function(){
-      var gk=window._openGrade;
-      if(gk) openCourse(gk,document.getElementById('cvTitle').textContent,document.getElementById('cvSub').textContent);
-      showToast('تم التسجيل ✓','ok');
-    })
-    .catch(function(e){ showToast('خطأ: '+e.message,'err'); });
-}
-
-// ── SIGN OUT ──
-function doSignOut(){ auth.signOut().then(function(){ window.location.href='index.html'; }); }
-
-// ── HELPERS ──
-function getYtId(url){ var m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/); return m?m[1]:''; }
-function setProg(fId,vId,total,done){ var pct=total?Math.round(done/total*100):0; var f=document.getElementById(fId),v=document.getElementById(vId); if(f)f.style.width=pct+'%'; if(v)v.textContent=pct+'%'; }
-
-// ── GRADES ──
-var GRADES={primary:[{key:'primary-4',label:'الصف الرابع الابتدائي',sub:'كل محتوى الصف الرابع',img:'https://plusedu.vercel.app/store/1/ye 1.png',stage:'ابتدائي'},{key:'primary-5',label:'الصف الخامس الابتدائي',sub:'كل محتوى الصف الخامس',img:'https://plusedu.vercel.app/store/1/ye-2.jpg',stage:'ابتدائي'},{key:'primary-6',label:'الصف السادس الابتدائي',sub:'كل محتوى الصف السادس',img:'https://plusedu.vercel.app/store/1/ye-3.jpg',stage:'ابتدائي'}],prep:[{key:'prep-1',label:'الصف الأول الإعدادي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/yer 1.png',stage:'إعدادي'},{key:'prep-2',label:'الصف الثاني الإعدادي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/yer-2.jpg',stage:'إعدادي'},{key:'prep-3',label:'الصف الثالث الإعدادي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/yer-3.jpg',stage:'إعدادي'}],sec:[{key:'sec-1',label:'الصف الأول الثانوي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/year 1.png',stage:'ثانوي'},{key:'sec-2',label:'الصف الثاني الثانوي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/year-2.jpg',stage:'ثانوي'},{key:'sec-3',label:'الصف الثالث الثانوي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/year-3.jpg',stage:'ثانوي'}]};
-
-function buildGrades(){
-  var ud=_userData||{};
-  ['primary','prep','sec'].forEach(function(stage){
-    var grid=document.getElementById('grid-'+stage); if(!grid)return;
-    grid.innerHTML=GRADES[stage].map(function(g){
-      var isMine=ud.gradeKey===g.key;
-      return '<div id="gcard-'+g.key+'" class="grade-card" onclick="openCourse(\''+g.key+'\',\''+g.label+'\',\''+g.stage+'\')" style="'+(isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':'')+'">'+
-        '<img src="'+g.img+'" class="gc-img" onerror="this.style.display=\'none\'"/>'+
-        (isMine?'<div class="gc-badge mine">صفك ✓</div>':'')+
-        '<div class="gc-body"><div class="gc-title">'+g.label+'</div><div class="gc-sub">'+(isMine?'📚 محتواك الأساسي':g.sub)+'</div></div>'+
-        '<div class="gc-foot"><span>'+(isMine?'فيديوهات · امتحانات · واجبات':'اضغط للمشاهدة')+'</span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg></div>'+
-      '</div>';
-    }).join('');
-  });
-}
-
-function closeCourse(){
-  document.getElementById('courseView').classList.remove('open');
-  document.body.style.overflow='';
-  document.querySelectorAll('[id^="vp-"]').forEach(function(w){w.style.display='none';var f=w.querySelector('iframe');if(f)f.src='';});
-}
-function switchTab(name,btn){
-  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('on');});
-  document.querySelectorAll('.cv-tab').forEach(function(b){b.classList.remove('on');});
-  var tp=document.getElementById('tp-'+name); if(tp) tp.classList.add('on');
-  if(btn) btn.classList.add('on');
-}
-var tTimer;
-function showToast(msg,type){
-  type=type||'ok';
-  var t=document.getElementById('toast');
-  t.className='toast '+type;
-  document.getElementById('tMsg').textContent=msg;
-  t.classList.add('show'); clearTimeout(tTimer);
-  tTimer=setTimeout(function(){t.classList.remove('show');},3000);
-}
-
-['playerModal','mcqModal','imgModal'].forEach(function(id){
-  var el=document.getElementById(id);
-  if(el) el.addEventListener('click',function(e){
-    if(e.target===this){
-      if(id==='playerModal') closePlayer();
-      else if(id==='mcqModal') closeMcq();
-      else closeImg();
-    }
-  });
-});
-document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeCourse(); });
-
-});
-</script>
-</body>
-</html>
+  if(pct>=50) markDone(_mcq.gradeKey,'exams',_mcq.e
