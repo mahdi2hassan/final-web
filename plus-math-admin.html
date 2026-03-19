@@ -256,7 +256,61 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   display:inline-flex;align-items:center;justify-content:center;
   font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
 
-/* ═══ CARDS GRID ═══ */
+/* ═══ GRADE CARDS (Content) ═══ */
+.grade-stage-wrap{display:flex;flex-direction:column;gap:14px;margin-bottom:4px}
+.stage-section{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:14px}
+.stage-label{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.grade-cards-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.grade-card{
+  background:var(--s3);border:1.5px solid var(--b2);border-radius:12px;
+  padding:12px 10px;text-align:center;cursor:pointer;
+  transition:all .2s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;
+}
+.grade-card:hover{transform:translateY(-2px);border-color:var(--blue);box-shadow:0 6px 20px rgba(74,127,212,0.2)}
+.grade-card.selected{border-color:var(--blue);background:linear-gradient(135deg,rgba(74,127,212,0.15),rgba(26,50,112,0.2));box-shadow:0 4px 16px rgba(74,127,212,0.25)}
+.grade-card.selected::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--gold))}
+.gc-num{font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--text),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.gc-lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+.gc-stats{font-size:9px;color:var(--muted2);margin-top:5px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+.gc-stat{display:flex;align-items:center;gap:2px;white-space:nowrap}
+
+/* Content Grade Header */
+.content-grade-header{display:flex;align-items:center;gap:10px;padding:12px;background:var(--s2);border:1px solid var(--b2);border-radius:12px;margin-bottom:12px;flex-wrap:wrap}
+
+/* Content Mini Stats */
+.content-mini-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.cms-item{background:var(--s2);border:1px solid var(--b2);border-radius:10px;padding:10px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;transition:all .2s}
+.cms-item:hover{transform:translateY(-1px)}
+.cms-item svg{flex-shrink:0}
+.cms-item.bl svg{color:var(--blue)}.cms-item.go svg{color:var(--gold)}.cms-item.gr svg{color:var(--ok)}.cms-item.pu svg{color:var(--purple)}
+.cms-item span{font-size:18px;font-weight:900;line-height:1}
+.cms-item label{font-size:9px;color:var(--muted);font-weight:700}
+
+/* Tab count badge */
+.ctab-count{display:inline-block;background:rgba(74,127,212,0.2);color:var(--blue);font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-right:3px;min-width:16px;text-align:center}
+.ftab.on .ctab-count{background:rgba(255,255,255,0.2);color:#fff}
+
+/* Content item cards (card view) */
+.content-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.ci-card{
+  background:var(--s2);border:1px solid var(--b2);border-radius:12px;
+  overflow:hidden;transition:all .2s;position:relative;
+}
+.ci-card:hover{transform:translateY(-2px);box-shadow:var(--sh)}
+.ci-thumb{height:110px;background:rgba(74,127,212,0.08);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.ci-thumb img{width:100%;height:100%;object-fit:cover}
+.ci-thumb-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(74,127,212,0.15)}
+.ci-thumb-icon svg{width:18px;height:18px;color:var(--blue)}
+.ci-thumb .ci-order{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.6);color:var(--gold2);font-size:10px;font-weight:800;padding:2px 6px;border-radius:5px;font-family:monospace}
+.ci-body{padding:10px}
+.ci-title{font-size:13px;font-weight:700;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-meta{font-size:10px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.ci-actions{display:flex;gap:5px}
+
+/* View toggle */
+.view-toggle{display:flex;gap:3px;background:var(--s1);border-radius:7px;padding:2px;border:1px solid var(--b2)}
+.vt-btn{width:28px;height:26px;border-radius:5px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .2s}
+.vt-btn.on{background:var(--s3);color:var(--text)}
 .cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
 .card{background:var(--s2);backdrop-filter:blur(12px);border:1px solid var(--b2);
   border-radius:var(--r);padding:clamp(14px,3vw,18px);transition:all .2s}
@@ -281,6 +335,30 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 .tog-sl{position:absolute;inset:0;background:var(--b1);border-radius:22px;cursor:pointer;transition:background .2s}
 .tog-sl::before{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;right:3px;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,0.3)}
 .tog input:checked+.tog-sl{background:var(--ok)}
+
+/* ═══ YES/NO PERMISSION TOGGLE ═══ */
+.perm-row{display:flex;align-items:center;justify-content:space-between;padding:10px 8px;border-bottom:1px solid rgba(74,127,212,0.08);cursor:pointer;border-radius:8px;transition:background .15s;gap:12px}
+.perm-row:hover{background:rgba(74,127,212,0.05)}
+.yn-toggle{
+  position:relative;display:flex;align-items:center;
+  width:88px;height:32px;border-radius:16px;flex-shrink:0;
+  background:rgba(255,77,109,0.12);border:1.5px solid rgba(255,77,109,0.3);
+  overflow:hidden;transition:all .3s cubic-bezier(.22,1,.36,1);cursor:pointer;
+  user-select:none;
+}
+.yn-toggle.on{background:rgba(0,214,143,0.12);border-color:rgba(0,214,143,0.4)}
+.yn-yes,.yn-no{position:absolute;font-size:11px;font-weight:800;font-family:'Tajawal',sans-serif;transition:opacity .25s,transform .25s;z-index:1;pointer-events:none}
+.yn-yes{right:10px;color:var(--ok);opacity:0;transform:translateX(4px)}
+.yn-no{left:10px;color:var(--err);opacity:1;transform:translateX(0)}
+.yn-toggle.on .yn-yes{opacity:1;transform:translateX(0)}
+.yn-toggle.on .yn-no{opacity:0;transform:translateX(-4px)}
+.yn-knob{
+  position:absolute;right:2px;width:26px;height:26px;border-radius:13px;
+  background:linear-gradient(135deg,var(--err),#c0392b);
+  transition:transform .3s cubic-bezier(.22,1,.36,1),background .3s;
+  box-shadow:0 2px 8px rgba(0,0,0,0.3);z-index:2;
+}
+.yn-toggle.on .yn-knob{transform:translateX(-56px);background:linear-gradient(135deg,var(--ok),#00a067)}
 .tog input:checked+.tog-sl::before{transform:translateX(-18px)}
 
 /* ═══ MODAL ═══ */
@@ -561,44 +639,86 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="page" id="page-content">
         <div class="sh">
           <div class="sh-title"><svg><use href="#ic-book"/></svg>إدارة المحتوى</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn ghost sm" onclick="refreshContentStats()"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+            <button class="btn primary sm" id="addContentFab" style="display:none" onclick="openAddContent(_curContentType==='videos'?'video':_curContentType==='exams'?'exam':'homework')">
+              <svg><use href="#ic-plus"/></svg>إضافة
+            </button>
+          </div>
         </div>
 
-        <!-- Grade Selector + Search -->
-        <div class="card" style="margin-bottom:14px">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <label style="font-size:12px;font-weight:700;color:var(--muted);flex-shrink:0">اختار الصف:</label>
-            <select id="contentGrade" onchange="loadGradeContent()" style="padding:8px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;appearance:none;flex:1;min-width:180px">
-              <option value="">— اختار الصف —</option>
-              <optgroup label="ابتدائي">
-                <option value="primary-4">الصف الرابع الابتدائي</option>
-                <option value="primary-5">الصف الخامس الابتدائي</option>
-                <option value="primary-6">الصف السادس الابتدائي</option>
-              </optgroup>
-              <optgroup label="إعدادي">
-                <option value="prep-1">الصف الأول الإعدادي</option>
-                <option value="prep-2">الصف الثاني الإعدادي</option>
-                <option value="prep-3">الصف الثالث الإعدادي</option>
-              </optgroup>
-              <optgroup label="ثانوي">
-                <option value="sec-1">الصف الأول الثانوي</option>
-                <option value="sec-2">الصف الثاني الثانوي</option>
-                <option value="sec-3">الصف الثالث الثانوي</option>
-              </optgroup>
-            </select>
-            <!-- Search within content -->
-            <div style="display:flex;align-items:center;gap:6px;background:var(--inp);border:1px solid var(--b2);border-radius:9px;padding:6px 10px;flex:1;min-width:140px;max-width:220px" id="contentSearchWrap">
-              <svg width="13" height="13" style="color:var(--muted);flex-shrink:0"><use href="#ic-search"/></svg>
-              <input id="contentSearch" placeholder="بحث في المحتوى..." oninput="filterContent()" style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;width:100%"/>
+        <!-- Grade Quick-Select Cards -->
+        <div class="grade-stage-wrap" id="gradeStageWrap">
+          <div class="stage-section">
+            <div class="stage-label"><span>🏫</span>ابتدائي</div>
+            <div class="grade-cards-row">
+              <div class="grade-card" onclick="selectGradeCard('primary-4',this)"><div class="gc-num">٤</div><div class="gc-lbl">رابع</div><div class="gc-stats" id="gcs-primary-4">...</div></div>
+              <div class="grade-card" onclick="selectGradeCard('primary-5',this)"><div class="gc-num">٥</div><div class="gc-lbl">خامس</div><div class="gc-stats" id="gcs-primary-5">...</div></div>
+              <div class="grade-card" onclick="selectGradeCard('primary-6',this)"><div class="gc-num">٦</div><div class="gc-lbl">سادس</div><div class="gc-stats" id="gcs-primary-6">...</div></div>
+            </div>
+          </div>
+          <div class="stage-section">
+            <div class="stage-label"><span>🏛️</span>إعدادي</div>
+            <div class="grade-cards-row">
+              <div class="grade-card" onclick="selectGradeCard('prep-1',this)"><div class="gc-num">١</div><div class="gc-lbl">أول</div><div class="gc-stats" id="gcs-prep-1">...</div></div>
+              <div class="grade-card" onclick="selectGradeCard('prep-2',this)"><div class="gc-num">٢</div><div class="gc-lbl">تاني</div><div class="gc-stats" id="gcs-prep-2">...</div></div>
+              <div class="grade-card" onclick="selectGradeCard('prep-3',this)"><div class="gc-num">٣</div><div class="gc-lbl">تالت</div><div class="gc-stats" id="gcs-prep-3">...</div></div>
+            </div>
+          </div>
+          <div class="stage-section">
+            <div class="stage-label"><span>🎓</span>ثانوي</div>
+            <div class="grade-cards-row">
+              <div class="grade-card" onclick="selectGradeCard('sec-1',this)"><div class="gc-num">١</div><div class="gc-lbl">أول</div><div class="gc-stats" id="gcs-sec-1">...</div></div>
+              <div class="grade-card" onclick="selectGradeCard('sec-2',this)"><div class="gc-num">٢</div><div class="gc-lbl">تاني</div><div class="gc-stats" id="gcs-sec-2">...</div></div>
+              <div class="grade-card" onclick="selectGradeCard('sec-3',this)"><div class="gc-num">٣</div><div class="gc-lbl">تالت</div><div class="gc-stats" id="gcs-sec-3">...</div></div>
             </div>
           </div>
         </div>
 
-        <!-- Content Tabs -->
+        <!-- Content Area -->
         <div id="contentArea" style="display:none">
-          <div class="ftabs" style="margin-bottom:14px">
-            <div class="ftab on" onclick="setContentTab('videos')"><svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-play"/></svg>فيديوهات</div>
-            <div class="ftab" onclick="setContentTab('exams')"><svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-check"/></svg>امتحانات</div>
-            <div class="ftab" onclick="setContentTab('homework')"><svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-file"/></svg>واجبات</div>
+          <!-- Selected Grade Header -->
+          <div class="content-grade-header" id="contentGradeHeader">
+            <div style="display:flex;align-items:center;gap:10px;flex:1">
+              <button onclick="backToGrades()" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--b2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+              </button>
+              <div>
+                <div style="font-size:14px;font-weight:900" id="contentGradeTitle">—</div>
+                <div style="font-size:11px;color:var(--muted)" id="contentGradeSubtitle">—</div>
+              </div>
+            </div>
+            <!-- Search -->
+            <div style="display:flex;align-items:center;gap:6px;background:var(--inp);border:1px solid var(--b2);border-radius:9px;padding:6px 10px;min-width:140px;max-width:200px">
+              <svg width="12" height="12" style="color:var(--muted);flex-shrink:0"><use href="#ic-search"/></svg>
+              <input id="contentSearch" placeholder="بحث..." oninput="filterContent()" style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;width:100%"/>
+            </div>
+          </div>
+
+          <!-- Content Stats Mini Row -->
+          <div class="content-mini-stats" id="contentMiniStats">
+            <div class="cms-item bl"><svg width="13" height="13"><use href="#ic-play"/></svg><span id="cms-v">—</span><label>فيديو</label></div>
+            <div class="cms-item go"><svg width="13" height="13"><use href="#ic-check"/></svg><span id="cms-e">—</span><label>امتحان</label></div>
+            <div class="cms-item gr"><svg width="13" height="13"><use href="#ic-file"/></svg><span id="cms-h">—</span><label>واجب</label></div>
+            <div class="cms-item pu" style="cursor:pointer" onclick="setContentTab(_curContentType)" title="إضافة">
+              <svg width="13" height="13"><use href="#ic-plus"/></svg><span>إضافة</span><label>جديد</label>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="ftabs" style="margin-bottom:14px" id="contentTabBar">
+            <div class="ftab on" onclick="setContentTab('videos')">
+              <svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-play"/></svg>فيديوهات
+              <span class="ctab-count" id="ctc-videos"></span>
+            </div>
+            <div class="ftab" onclick="setContentTab('exams')">
+              <svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-check"/></svg>امتحانات
+              <span class="ctab-count" id="ctc-exams"></span>
+            </div>
+            <div class="ftab" onclick="setContentTab('homework')">
+              <svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-file"/></svg>واجبات
+              <span class="ctab-count" id="ctc-homework"></span>
+            </div>
           </div>
 
           <!-- Videos -->
@@ -629,7 +749,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
         </div>
 
-        <div id="contentPlaceholder" class="empty" style="padding:40px">
+        <div id="contentPlaceholder" class="empty" style="padding:40px;display:none">
           <svg><use href="#ic-book"/></svg>
           <h3 style="font-size:15px;font-weight:700;margin-bottom:6px;color:var(--text)">اختار صفاً لإدارة محتواه</h3>
           <p>هتقدر تضيف فيديوهات وامتحانات وواجبات لكل صف</p>
@@ -963,19 +1083,43 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
     <div class="ff"><label>كلمة المرور</label>
       <input type="password" id="adm-pass" placeholder="٨ أحرف على الأقل"/></div>
     <div class="ff"><label>الصلاحيات</label>
-      <div style="display:flex;flex-direction:column;gap:8px;padding:10px;background:rgba(8,13,28,0.4);border-radius:10px;border:1px solid var(--b2)">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
-          <input type="checkbox" id="adm-p-users" checked> عرض الطلاب
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
-          <input type="checkbox" id="adm-p-content" checked> إدارة المحتوى
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
-          <input type="checkbox" id="adm-p-codes"> إدارة الأكواد
-        </label>
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
-          <input type="checkbox" id="adm-p-broadcast"> الإرسال الجماعي
-        </label>
+      <div style="display:flex;flex-direction:column;gap:0;padding:6px;background:rgba(8,13,28,0.5);border-radius:12px;border:1px solid var(--b2)">
+        <div class="perm-row" onclick="togglePerm('adm-p-users')">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(74,127,212,0.12);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">عرض الطلاب</div><div style="font-size:10px;color:var(--muted)">يشوف بيانات الطلاب المسجلين</div></div>
+          </div>
+          <div class="yn-toggle on" id="adm-p-users" data-val="1"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-content')">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(0,214,143,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">إدارة المحتوى</div><div style="font-size:10px;color:var(--muted)">يضيف ويعدل فيديوهات وامتحانات</div></div>
+          </div>
+          <div class="yn-toggle on" id="adm-p-content" data-val="1"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-codes')">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(201,168,76,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">إدارة الأكواد</div><div style="font-size:10px;color:var(--muted)">يولد ويحذف أكواد الاشتراك</div></div>
+          </div>
+          <div class="yn-toggle" id="adm-p-codes" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-broadcast')" style="border-bottom:none">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(167,139,250,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">الإرسال الجماعي</div><div style="font-size:10px;color:var(--muted)">يبعت رسائل واتساب للطلاب</div></div>
+          </div>
+          <div class="yn-toggle" id="adm-p-broadcast" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
       </div>
     </div>
     <div class="mfooter">
@@ -1623,31 +1767,100 @@ function dlCsv(rows,name){
 
 // ── CONTENT MANAGEMENT ──
 let _curGrade = '', _curContentType = 'videos', _editContentId = null;
-
-window.loadGradeContent = async () => {
-  _curGrade = document.getElementById('contentGrade').value;
-  if(!_curGrade){
-    document.getElementById('contentArea').style.display='none';
-    document.getElementById('contentPlaceholder').style.display='block';
-    return;
-  }
-  document.getElementById('contentArea').style.display='block';
-  document.getElementById('contentPlaceholder').style.display='none';
-  await loadContentTab(_curContentType);
+let _contentView = 'table'; // 'table' or 'cards'
+let _gradeLabels = {
+  'primary-4':'الرابع الابتدائي','primary-5':'الخامس الابتدائي','primary-6':'السادس الابتدائي',
+  'prep-1':'الأول الإعدادي','prep-2':'الثاني الإعدادي','prep-3':'الثالث الإعدادي',
+  'sec-1':'الأول الثانوي','sec-2':'الثاني الثانوي','sec-3':'الثالث الثانوي'
 };
+
+// ─ Grade Card Selection ─
+window.selectGradeCard = async (gradeKey, el) => {
+  document.querySelectorAll('.grade-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  _curGrade = gradeKey;
+  // Update header
+  document.getElementById('contentGradeTitle').textContent = 'الصف ' + (_gradeLabels[gradeKey]||gradeKey);
+  document.getElementById('contentGradeSubtitle').textContent = 'إدارة الفيديوهات والامتحانات والواجبات';
+  document.getElementById('gradeStageWrap').style.display = 'none';
+  document.getElementById('contentArea').style.display = 'block';
+  document.getElementById('contentPlaceholder').style.display = 'none';
+  document.getElementById('addContentFab').style.display = 'inline-flex';
+  await loadContentTab(_curContentType);
+  await updateContentMiniStats();
+};
+
+window.backToGrades = () => {
+  document.getElementById('gradeStageWrap').style.display = 'flex';
+  document.getElementById('contentArea').style.display = 'none';
+  document.getElementById('addContentFab').style.display = 'none';
+  _curGrade = '';
+};
+
+// Load stats for all grade cards on page open
+window.refreshContentStats = async () => {
+  if(_curGrade){ await loadContentTab(_curContentType); await updateContentMiniStats(); return; }
+  const grades = ['primary-4','primary-5','primary-6','prep-1','prep-2','prep-3','sec-1','sec-2','sec-3'];
+  for(const g of grades){
+    try{
+      const [vs,es,hs] = await Promise.all([
+        db.collection('content').doc(g).collection('videos').get(),
+        db.collection('content').doc(g).collection('exams').get(),
+        db.collection('content').doc(g).collection('homework').get()
+      ]);
+      const el = document.getElementById('gcs-'+g);
+      if(el) el.innerHTML = `
+        <span class="gc-stat" style="color:var(--blue)">▶ ${vs.size}</span>
+        <span class="gc-stat" style="color:var(--gold)">✍ ${es.size}</span>
+        <span class="gc-stat" style="color:var(--ok)">📄 ${hs.size}</span>`;
+    }catch(e){ /* ignore */ }
+  }
+};
+
+async function updateContentMiniStats(){
+  if(!_curGrade) return;
+  try{
+    const [vs,es,hs] = await Promise.all([
+      db.collection('content').doc(_curGrade).collection('videos').get(),
+      db.collection('content').doc(_curGrade).collection('exams').get(),
+      db.collection('content').doc(_curGrade).collection('homework').get()
+    ]);
+    document.getElementById('cms-v').textContent = vs.size;
+    document.getElementById('cms-e').textContent = es.size;
+    document.getElementById('cms-h').textContent = hs.size;
+    // Update tab counts
+    const countEl = id => document.getElementById(id);
+    if(countEl('ctc-videos')) countEl('ctc-videos').textContent = vs.size||'';
+    if(countEl('ctc-exams'))  countEl('ctc-exams').textContent  = es.size||'';
+    if(countEl('ctc-homework')) countEl('ctc-homework').textContent = hs.size||'';
+    // Update grade card stats
+    const gcEl = document.getElementById('gcs-'+_curGrade);
+    if(gcEl) gcEl.innerHTML = `
+      <span class="gc-stat" style="color:var(--blue)">▶ ${vs.size}</span>
+      <span class="gc-stat" style="color:var(--gold)">✍ ${es.size}</span>
+      <span class="gc-stat" style="color:var(--ok)">📄 ${hs.size}</span>`;
+  }catch(e){}
+}
 
 window.setContentTab = async (tab) => {
   _curContentType = tab;
-  document.querySelectorAll('#page-content .ftab').forEach((t,i)=>
+  document.querySelectorAll('#contentTabBar .ftab').forEach((t,i)=>
     t.classList.toggle('on',['videos','exams','homework'][i]===tab));
   ['videos','exams','homework'].forEach(t=>{
     document.getElementById('ctab-'+t).style.display = t===tab?'block':'none';
   });
+  // Update FAB label
+  const fabLabels = {videos:'فيديو',exams:'امتحان',homework:'واجب'};
+  const fab = document.getElementById('addContentFab');
+  if(fab) fab.innerHTML = `<svg width="12" height="12"><use href="#ic-plus"/></svg>إضافة ${fabLabels[tab]||''}`;
   await loadContentTab(tab);
 };
 
 async function loadContentTab(tab){
   if(!_curGrade) return;
+  const elMap = {videos:'videosList', exams:'examsList', homework:'homeworkList'};
+  const el = document.getElementById(elMap[tab]);
+  if(el) el.innerHTML = `<div class="empty"><p style="color:var(--muted)">⏳ جاري التحميل...</p></div>`;
   try{
     const snap = await db.collection('content').doc(_curGrade).collection(tab).get();
     const items = snap.docs.map(d=>({id:d.id,...d.data()}))
@@ -1656,30 +1869,90 @@ async function loadContentTab(tab){
   }catch(e){ toast('خطأ تحميل المحتوى: '+e.message,'err'); }
 }
 
+function getYtThumb(url){
+  if(!url) return '';
+  const m = url.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+  return m ? `https://img.youtube.com/vi/${m[1]}/mqdefault.jpg` : '';
+}
+
 function renderContentList(tab, items){
-  _contentAllItems = items; // save for search
+  _contentAllItems = items;
   const elMap = {videos:'videosList', exams:'examsList', homework:'homeworkList'};
   const el = document.getElementById(elMap[tab]);
   if(!el) return;
   if(!items.length){
     const labels={videos:'فيديوهات',exams:'امتحانات',homework:'واجبات'};
-    el.innerHTML=`<div class="empty"><svg><use href="#ic-${tab==='videos'?'play':tab==='exams'?'check':'file'}"/></svg><p>لا يوجد ${labels[tab]} لهذا الصف بعد</p></div>`;
+    const icons={videos:'ic-play',exams:'ic-check',homework:'ic-file'};
+    const addTypes={videos:'video',exams:'exam',homework:'homework'};
+    el.innerHTML=`<div class="empty" style="padding:30px">
+      <svg><use href="#${icons[tab]}"/></svg>
+      <p>لا يوجد ${labels[tab]} لهذا الصف بعد</p>
+      <button class="btn primary sm" style="margin-top:12px" onclick="openAddContent('${addTypes[tab]}')">
+        <svg width="12" height="12"><use href="#ic-plus"/></svg>إضافة أول ${labels[tab].slice(0,-1)}
+      </button>
+    </div>`;
     return;
   }
-  const typeIcon={videos:'ic-play',exams:'ic-check',homework:'ic-file'};
-  const typeBadge={video:'فيديو',exam:'امتحان',homework:'واجب'};
-  el.innerHTML=`<div class="tw-scroll"><table><thead><tr><th>#</th><th>العنوان</th><th>التفاصيل</th><th>إجراء</th></tr></thead><tbody>${
+
+  if(_contentView === 'cards' && tab === 'videos'){
+    // Card view for videos (shows thumbnails)
+    el.innerHTML = `<div class="content-cards-grid">${
+      items.map((item,i)=>{
+        const thumb = getYtThumb(item.url);
+        return `<div class="ci-card">
+          <div class="ci-thumb">
+            ${thumb ? `<img src="${thumb}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+            <div class="ci-thumb-icon" style="display:none"><svg><use href="#ic-play"/></svg></div>` :
+            `<div class="ci-thumb-icon"><svg><use href="#ic-play"/></svg></div>`}
+            <span class="ci-order">#${item.order||i+1}</span>
+          </div>
+          <div class="ci-body">
+            <div class="ci-title" title="${item.title||''}">${item.title||'—'}</div>
+            <div class="ci-meta">
+              ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
+              ${item.description?`<span style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.description}</span>`:''}
+            </div>
+            <div class="ci-actions">
+              <button class="btn icon-btn" onclick="editContent('${tab}','${item.id}')" title="تعديل"><svg><use href="#ic-edit"/></svg></button>
+              <button class="btn icon-btn del" onclick="delContent('${tab}','${item.id}')" title="حذف"><svg><use href="#ic-trash"/></svg></button>
+              ${item.url?`<button class="btn icon-btn" onclick="window.open('${item.url}','_blank')" title="فتح"><svg><use href="#ic-link"/></svg></button>`:''}
+              <span style="flex:1"></span>
+              <span class="bd blue" style="font-size:9px;padding:2px 5px">${item.type||'video'}</span>
+            </div>
+          </div>
+        </div>`;
+      }).join('')
+    }</div>`;
+    return;
+  }
+
+  // Table view (default)
+  const typeBadgeColor = {video:'blue',exam:'gold',homework:'ok',mcq:'pu',essay:'blue',pdf:'gold',link:'pu'};
+  el.innerHTML=`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--b2)">
+      <span style="font-size:11px;color:var(--muted);font-weight:700">${items.length} عنصر</span>
+      ${tab==='videos'?`<div class="view-toggle">
+        <button class="vt-btn ${_contentView==='table'?'on':''}" onclick="_contentView='table';renderContentList('${tab}',_contentAllItems)" title="جدول">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+        <button class="vt-btn ${_contentView==='cards'?'on':''}" onclick="_contentView='cards';renderContentList('${tab}',_contentAllItems)" title="بطاقات">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+      </div>`:''}
+    </div>
+    <div class="tw-scroll"><table><thead><tr><th>#</th><th>العنوان</th><th>التفاصيل</th><th>النوع</th><th>إجراء</th></tr></thead><tbody>${
     items.map((item,i)=>`<tr>
-      <td style="font-size:13px;font-weight:800;color:var(--gold2)">${item.order||i+1}</td>
-      <td>
-        <div style="font-weight:700;font-size:13px">${item.title||'—'}</div>
-        <div style="font-size:11px;color:var(--muted)">${item.description||item.desc||''}</div>
+      <td><span style="font-size:13px;font-weight:900;color:var(--gold2);font-family:monospace">${item.order||i+1}</span></td>
+      <td style="max-width:200px">
+        <div style="font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.title||'—'}</div>
+        <div style="font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.description||item.desc||''}</div>
       </td>
       <td style="font-size:11px;color:var(--muted)">
-        ${item.url?`<a href="${item.url}" target="_blank" style="color:var(--blue);text-decoration:none">🔗 رابط</a>`:''}
-        ${item.duration||item.dur?`· ${item.duration||item.dur}`:''}
-        ${item.type?`· <span class="bd blue" style="font-size:10px">${item.type}</span>`:''}
+        ${item.url?`<a href="${item.url}" target="_blank" style="color:var(--blue);text-decoration:none;font-size:11px">🔗 رابط</a> `:''}
+        ${item.duration||item.dur?`<span style="color:var(--muted)">⏱ ${item.duration||item.dur}</span>`:''}
+        ${item.deadline?`<span style="color:var(--warn)">📅 ${item.deadline}</span>`:''}
       </td>
+      <td><span class="bd ${typeBadgeColor[item.type]||'blue'}" style="font-size:9px">${item.type||tab.slice(0,-1)}</span></td>
       <td><div style="display:flex;gap:4px">
         <button class="btn icon-btn" onclick="editContent('${tab}','${item.id}')" title="تعديل"><svg><use href="#ic-edit"/></svg></button>
         <button class="btn icon-btn del" onclick="delContent('${tab}','${item.id}')" title="حذف"><svg><use href="#ic-trash"/></svg></button>
@@ -1802,6 +2075,7 @@ window.saveContent = async () => {
     }
     closeModal('addContentModal');
     await loadContentTab(tab);
+    await updateContentMiniStats();
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
@@ -1810,6 +2084,7 @@ window.delContent = async (tab, id) => {
   try{
     await db.collection('content').doc(_curGrade).collection(tab).doc(id).delete();
     await loadContentTab(tab);
+    await updateContentMiniStats();
     toast('تم الحذف','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
@@ -1830,54 +2105,68 @@ window.dispatchEvent(new Event('fbReady'));
 // ═══ STATE ═══
 let PASS = 'plus2026';
 let _uf = 'all', _cf = 'all';
+let _loggedAdmin = null;
 
 // ═══ AUTH ═══
-function tryLogin(){
+async function tryLogin(){
   const u = document.getElementById('au').value.trim();
   const p = document.getElementById('ap').value;
+  if(!u || !p){ showLoginErr('ادخل اسم المستخدم وكلمة المرور'); return; }
 
-  if(!u || !p){
-    document.getElementById('lerr').style.display='block';
-    document.getElementById('lerr').textContent='ادخل اسم المستخدم وكلمة المرور';
-    setTimeout(()=>{ document.getElementById('lerr').style.display='none'; },3000);
-    return;
-  }
+  const btn = document.querySelector('.lbtn');
+  if(btn){ btn.textContent='جاري التحقق...'; btn.disabled=true; }
 
-  if(u !== 'admin'){
-    showLoginErr('اسم المستخدم غير صحيح');
-    return;
-  }
+  try{
+    // Wait for Firebase
+    if(!window._fbReady){
+      await new Promise((res,rej)=>{
+        const iv=setInterval(()=>{ if(window._fbReady){ clearInterval(iv); res(); } },200);
+        setTimeout(()=>{ clearInterval(iv); res(); },5000); // resolve anyway
+      });
+    }
 
-  // Check against stored Firebase pass first, fallback to default
-  const storedPass = window._ap || PASS;
-  if(p === storedPass || p === PASS){
-    openDashboard();
-    return;
-  }
+    // 1. Check super admin
+    const storedPass = window._ap || PASS;
+    if(u === 'admin' && (p === storedPass || p === PASS)){
+      _loggedAdmin = {name:'المدير', username:'admin', isSuperAdmin:true,
+        permissions:{users:true,content:true,codes:true,broadcast:true}};
+      if(btn){ btn.textContent='دخول'; btn.disabled=false; }
+      openDashboard(); return;
+    }
 
-  // If Firebase not loaded yet, wait and retry once
-  if(!window._fbReady){
-    const btn = document.querySelector('.lbtn');
-    if(btn){ btn.textContent='جاري التحقق...'; btn.disabled=true; }
-    const iv = setInterval(()=>{
-      if(window._fbReady){
-        clearInterval(iv);
-        if(btn){ btn.textContent='دخول'; btn.disabled=false; }
-        const sp = window._ap || PASS;
-        if(p === sp || p === PASS) openDashboard();
-        else showLoginErr('كلمة المرور خاطئة');
+    // 2. Check Firebase admins collection
+    if(window._fbReady){
+      const snap = await db.collection('admins').where('username','==',u).where('active','==',true).get();
+      if(!snap.empty){
+        const doc = snap.docs[0];
+        const data = doc.data();
+        if(data.password === btoa(p)){
+          _loggedAdmin = { id:doc.id, ...data, isSuperAdmin:false };
+          window._adminPerms = data.permissions || {};
+          if(btn){ btn.textContent='دخول'; btn.disabled=false; }
+          openDashboard();
+          setTimeout(()=>{
+            const av = document.querySelector('.tb-avatar');
+            if(av){ av.textContent=(data.name||'م').slice(0,2); av.title=data.name; }
+          },200);
+          return;
+        }
       }
-    },200);
-    setTimeout(()=>{ clearInterval(iv); if(btn){btn.textContent='دخول';btn.disabled=false;} showLoginErr('كلمة المرور خاطئة'); },5000);
-    return;
-  }
+    }
 
-  showLoginErr('كلمة المرور خاطئة');
+    showLoginErr('بيانات الدخول غلط ❌');
+  }catch(e){
+    // Firebase error — try default admin only
+    const sp = window._ap || PASS;
+    if(u==='admin' && (p===sp||p===PASS)){ _loggedAdmin={name:'المدير',username:'admin',isSuperAdmin:true}; openDashboard(); }
+    else showLoginErr('تعذر الاتصال — حاول تاني');
+  }
+  if(btn){ btn.textContent='دخول'; btn.disabled=false; }
 }
 
 function showLoginErr(msg){
   const el = document.getElementById('lerr');
-  el.textContent = msg||'بيانات الدخول خاطئة';
+  el.textContent = msg||'بيانات الدخول غلط';
   el.style.display='block';
   setTimeout(()=>{ el.style.display='none'; },3000);
 }
@@ -1956,6 +2245,7 @@ function goPage(p){
   if(p==='activity') renderActivity();
   if(p==='coupons') loadCoupons();
   if(p==='admins') loadAdmins();
+  if(p==='content'){ window.refreshContentStats?.(); }
   if(window.innerWidth<=768) closeSidebar();
 }
 
@@ -2372,10 +2662,10 @@ window.saveAdmin=async()=>{
   const pass=document.getElementById('adm-pass').value;
   if(!name||!user||pass.length<8){ toast('ادخل كل البيانات وكلمة مرور ٨ أحرف','err'); return; }
   const perms={
-    users:document.getElementById('adm-p-users').checked,
-    content:document.getElementById('adm-p-content').checked,
-    codes:document.getElementById('adm-p-codes').checked,
-    broadcast:document.getElementById('adm-p-broadcast').checked
+    users: document.getElementById('adm-p-users').dataset.val === '1',
+    content: document.getElementById('adm-p-content').dataset.val === '1',
+    codes: document.getElementById('adm-p-codes').dataset.val === '1',
+    broadcast: document.getElementById('adm-p-broadcast').dataset.val === '1'
   };
   try{
     await db.collection('admins').add({
@@ -2392,6 +2682,13 @@ window.saveAdmin=async()=>{
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
+function permBadge(label, granted){
+  return `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:8px;background:${granted?'rgba(0,214,143,0.06)':'rgba(255,77,109,0.06)'};border:1px solid ${granted?'rgba(0,214,143,0.18)':'rgba(255,77,109,0.18)'}">
+    <span style="font-size:13px">${granted?'✅':'❌'}</span>
+    <span style="font-size:11px;font-weight:700;color:${granted?'var(--ok)':'var(--err)'}">${label}</span>
+  </div>`;
+}
+
 async function loadAdmins(){
   const el=document.getElementById('adminsList');
   try{
@@ -2400,21 +2697,26 @@ async function loadAdmins(){
     const admins=snap.docs.map(d=>({id:d.id,...d.data()}));
     if(!admins.length){ el.innerHTML='<div class="empty"><p>لا يوجد مشرفون — أضف مشرفاً جديداً</p></div>'; return; }
     el.innerHTML=admins.map(a=>`
-      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--s2);border:1px solid var(--b2);border-radius:12px;margin-bottom:8px">
-        <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--navy),var(--blue));display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff;flex-shrink:0">${(a.name||'?').slice(0,2)}</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:800">${a.name}</div>
-          <div style="font-size:11px;color:var(--muted)">@${a.username}</div>
-          <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap">
-            ${a.permissions?.users?'<span style="padding:2px 7px;background:rgba(74,127,212,0.1);border-radius:5px;font-size:10px;color:var(--blue)">الطلاب</span>':''}
-            ${a.permissions?.content?'<span style="padding:2px 7px;background:rgba(0,214,143,0.1);border-radius:5px;font-size:10px;color:var(--ok)">المحتوى</span>':''}
-            ${a.permissions?.codes?'<span style="padding:2px 7px;background:rgba(201,168,76,0.1);border-radius:5px;font-size:10px;color:var(--gold)">الأكواد</span>':''}
-            ${a.permissions?.broadcast?'<span style="padding:2px 7px;background:rgba(167,139,250,0.1);border-radius:5px;font-size:10px;color:var(--purple)">الإرسال</span>':''}
+      <div style="background:var(--s2);border:1px solid var(--b2);border-radius:14px;margin-bottom:10px;overflow:hidden">
+        <div style="display:flex;align-items:center;gap:12px;padding:14px 16px">
+          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--blue));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0">${(a.name||'?').slice(0,2)}</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:800">${a.name}</div>
+            <div style="font-size:11px;color:var(--muted)">@${a.username}</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <span class="bd ${a.active?'ok':'pu'}" style="font-size:10px">${a.active?'فعال':'موقوف'}</span>
+            <button class="btn icon-btn del" onclick="deleteAdmin('${a.id}','${a.name}')" title="حذف"><svg><use href="#ic-trash"/></svg></button>
           </div>
         </div>
-        <div style="display:flex;gap:6px">
-          <span class="bd ${a.active?'ok':'pu'}" style="font-size:10px">${a.active?'فعال':'موقوف'}</span>
-          <button class="btn icon-btn del" onclick="deleteAdmin('${a.id}','${a.name}')" title="حذف"><svg><use href="#ic-trash"/></svg></button>
+        <div style="border-top:1px solid var(--b2);padding:10px 16px;background:rgba(6,10,22,0.3)">
+          <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">الصلاحيات</div>
+          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">
+            ${permBadge('👥 عرض الطلاب', a.permissions?.users)}
+            ${permBadge('📚 إدارة المحتوى', a.permissions?.content)}
+            ${permBadge('🔑 إدارة الأكواد', a.permissions?.codes)}
+            ${permBadge('📣 الإرسال الجماعي', a.permissions?.broadcast)}
+          </div>
         </div>
       </div>`).join('');
   }catch(e){ el.innerHTML='<div class="empty"><p>خطأ في التحميل</p></div>'; }
@@ -2423,6 +2725,32 @@ window.deleteAdmin=async(id,name)=>{
   if(!confirm('حذف المشرف '+name+'؟')) return;
   try{ await db.collection('admins').doc(id).delete(); loadAdmins(); logActivity('👤','حذف مشرف',name); toast('تم الحذف','ok'); }catch(e){ toast('خطأ','err'); }
 };
+
+// ─── YES/NO PERMISSION TOGGLE ───
+window.togglePerm = (id) => {
+  const el = document.getElementById(id);
+  if(!el) return;
+  const isOn = el.dataset.val === '1';
+  el.dataset.val = isOn ? '0' : '1';
+  el.classList.toggle('on', !isOn);
+};
+
+// Reset admin modal toggles when opened
+const _origOpenAdminModal = window.openModal;
+document.addEventListener('click', e => {
+  if(e.target.closest('[onclick*="adminModal"]') || e.target.closest('button')?.getAttribute('onclick')?.includes('adminModal')){
+    setTimeout(() => {
+      ['adm-p-users','adm-p-content'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el){ el.dataset.val='1'; el.classList.add('on'); }
+      });
+      ['adm-p-codes','adm-p-broadcast'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el){ el.dataset.val='0'; el.classList.remove('on'); }
+      });
+    }, 50);
+  }
+});
 
 // Init on load
 updateNotifBadge();
