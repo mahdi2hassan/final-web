@@ -1122,7 +1122,7 @@ window.loadAll = async ()=>{
 // ── USERS ──
 window.wloadUsers = async ()=>{
   try{
-    const s = await db.collection('users'.get());
+    const s = await db.collection('users').get();
     const now = new Date();
     const users = s.docs.map(d=>({id:d.id,...d.data()}));
 
@@ -1165,7 +1165,7 @@ window.wloadUsers = async ()=>{
 // ── CODES ──
 window.wloadCodes = async ()=>{
   try{
-    const s = await db.collection('codes'.get());
+    const s = await db.collection('codes').get();
     window._codes = s.docs.map(d=>({id:d.id,...d.data()}));
     renderCodes(); updateStats();
   }catch(e){ toast('خطأ أكواد: '+e.message,'err'); console.error(e); }
@@ -1174,18 +1174,18 @@ window.wloadCodes = async ()=>{
 // ── SETTINGS ──
 window.wloadSettings = async ()=>{
   try{
-    const a = await db.collection('settings'.get().doc('announcement'));
+    const a = await db.collection('settings').doc('announcement').get();
     if(a.exists){
       document.getElementById('ann-show').checked = !!a.data().show;
       document.getElementById('ann-text').value   = a.data().text||'';
     }
-    const s = await db.collection('settings'.get().doc('subscription'));
+    const s = await db.collection('settings').doc('subscription').get();
     if(s.exists){
       document.getElementById('sub-price').value = s.data().price||'';
       document.getElementById('sub-days').value  = s.data().days||'';
       document.getElementById('sub-msg').value   = s.data().welcomeMsg||'';
     }
-    const adm = await db.collection('settings'.get().doc('admin'));
+    const adm = await db.collection('settings').doc('admin').get();
     if(adm.exists) window._ap = adm.data().pass;
   }catch(e){ console.warn('settings:',e.message); }
 };
@@ -1288,7 +1288,7 @@ window.copyAllCodes = ()=>{
 window.delCode = async (id)=>{
   if(!confirm('مسح الكود؟')) return;
   try{
-    await db.collection('codes'.delete().doc(id));
+    await db.collection('codes').doc(id).delete();
     await wloadCodes();
     toast('تم المسح','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1300,7 +1300,7 @@ window.delUsedCodes = async ()=>{
   if(!used.length){ toast('لا يوجد أكواد مستخدمة','ok'); return; }
   if(!confirm('هتمسح '+used.length+' كود مستخدم. متأكد؟')) return;
   try{
-    await Promise.all(used.map(c=>db.collection('codes'.delete().doc(c.id))));
+    await Promise.all(used.map(c=>db.collection('codes').doc(c.id).delete()));
     await wloadCodes();
     toast('تم مسح '+used.length+' كود مستخدم ✓','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1345,7 +1345,7 @@ window.deleteUser = async (id, name)=>{
   if(!confirm('حذف "'+name+'" نهائياً؟')) return;
   if(!confirm('تأكيد الحذف النهائي — لا يمكن التراجع!')) return;
   try{
-    await db.collection('users'.delete().doc(id));
+    await db.collection('users').doc(id).delete();
     await wloadUsers();
     toast('تم الحذف النهائي','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1354,7 +1354,7 @@ window.deleteUser = async (id, name)=>{
 // ── RESET PASSWORD EMAIL ──
 window.resetUserPass = async (uid, userEmail, userName)=>{
   try{
-    const ud = await db.collection('users'.get().doc(uid));
+    const ud = await db.collection('users').doc(uid).get();
     const d = ud.data()||{};
     const emailToSend = d.email || userEmail;
     if(!emailToSend || !emailToSend.includes('@')){
@@ -1375,14 +1375,14 @@ window.resetUserPass = async (uid, userEmail, userName)=>{
 // ── VIEW USER ──
 window.viewUser = async (id)=>{
   try{
-    const ud = await db.collection('users'.get().doc(id));
+    const ud = await db.collection('users').doc(id).get();
     if(!ud.exists){ toast('لم يتم العثور على الطالب','err'); return; }
     const d = ud.data();
     const stageMap={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'};
     const statusLabel = d.blocked ? '⛔ محظور' : d.subscriptionActive ? '✅ مشترك' : '⏳ غير مشترك';
 
     // Load devices
-    const devSnap = await db.collection('users'.get().doc(id).collection('devices'));
+    const devSnap = await db.collection('users').doc(id).collection('devices').get();
     const devices = devSnap.docs.map(dd=>({id:dd.id,...dd.data()}));
     const maxDev = d.maxDevices||3;
 
@@ -1460,8 +1460,8 @@ function tr(label,val){
 window.resetDevices = async (userId) => {
   if(!confirm('هتمسح كل الأجهزة المسجلة — الطالب هيقدر يدخل من جهاز جديد. متأكد؟')) return;
   try{
-    const snap = await db.collection('users'.get().doc(userId).collection('devices'));
-    const deletes = snap.docs.map(d=>db.collection('users'.delete().doc(userId,'devices',d.id)));
+    const snap = await db.collection('users').doc(userId).collection('devices').get();
+    const deletes = snap.docs.map(d=>db.collection('users').doc(userId,'devices',d.id).delete());
     await Promise.all(deletes);
     toast('تم مسح الأجهزة ✓ — الطالب يقدر يدخل من جديد','ok');
     viewUser(userId); // refresh modal
@@ -1470,7 +1470,7 @@ window.resetDevices = async (userId) => {
 
 window.removeDevice = async (userId, deviceDocId) => {
   try{
-    await db.collection('users'.delete().doc(userId,'devices',deviceDocId));
+    await db.collection('users').doc(userId,'devices',deviceDocId).delete();
     toast('تم حذف الجهاز ✓','ok');
     viewUser(userId);
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1818,7 +1818,7 @@ window.delContent = async (tab, id) => {
 window._fbReady = true;
 
 (ref,data)=>ref.add(data) = addDoc;
-(ref)=>ref.get() = getDocs;
+// getDocs helper removed
 window._fbColl = collection;
 window._fbDoc = doc;
 (ref,data)=>ref.update(data) = updateDoc;
