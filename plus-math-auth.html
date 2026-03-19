@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plus  – تسجيل الدخول</title>
+<title>Plus Mathematics – تسجيل الدخول</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -198,7 +198,7 @@ input::placeholder{color:var(--muted);opacity:.5}
     <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" class="logo-img"
       onerror="this.style.opacity='.5'"/>
     <h1>Plus Mathematics</h1>
-    <p> بلس الثقة والتميز✨ </p>
+    <p>منصة مراجعة الرياضيات · 2026</p>
   </div>
 
   <div class="auth-body">
@@ -687,24 +687,24 @@ window.openWaCode=()=>{
 </script>
 
 <script>
-function showStep(id){
+window.showStep = function(id){
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
   document.getElementById(id)?.classList.add('active');
 }
-function switchTab(t){
+window.switchTab = function(t){
   document.querySelectorAll('.tab-btn').forEach((b,i)=>
     b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
   document.getElementById('tab-login').style.display   = t==='login'   ?'block':'none';
   document.getElementById('tab-register').style.display= t==='register'?'block':'none';
 }
-function showMsg(id,text,type){
+window.showMsg = function(id,text,type){
   const el=document.getElementById(id);
   if(!el) return;
   el.innerHTML=`<svg width="14" height="14"><use href="${type==='error'?'#i-x':'#i-check'}"/></svg>${text}`;
   el.className='msg show '+type;
 }
-function setLoad(btn,state){ btn.disabled=state; btn.classList.toggle('loading',state); }
-function closeBanner(){
+window.setLoad = function(btn,state){ btn.disabled=state; btn.classList.toggle('loading',state); }
+window.closeBanner = function(){
   document.getElementById('banner').classList.remove('show');
   document.body.style.paddingTop='14px';
 }

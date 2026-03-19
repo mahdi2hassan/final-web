@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plus – الصفوف</title>
+<title>Plus Mathematics – الكورسات</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -659,7 +659,7 @@ onAuthStateChanged(auth, async (user) => {
       const pr = await getDoc(doc(db,'progress',user.uid));
       _progress = pr.exists()?pr.data():{};
     }catch(e){ _progress={}; }
-    buildGrades();
+    window.buildGrades();
     // Auto-scroll to my grade
     setTimeout(()=>{
       if(_userData.gradeKey){
@@ -675,7 +675,7 @@ onAuthStateChanged(auth, async (user) => {
       document.getElementById('loadingScreen').style.display='none';
       document.getElementById('navbar').style.display='flex';
       document.getElementById('mainContent').style.display='block';
-      buildGrades();
+      window.buildGrades();
     }
   }
 });
@@ -685,7 +685,7 @@ window.openCourse = async (gradeKey, label, stage) => {
   document.getElementById('cvSub').textContent = stage;
   document.getElementById('courseView').classList.add('open');
   document.body.style.overflow='hidden';
-  switchTab('videos', document.querySelector('.cv-tab'));
+  window.switchTab('videos', document.querySelector('.cv-tab'));
   window._openGrade = gradeKey;
   const isMine = gradeKey===_userData?.gradeKey;
   const gp = _progress[gradeKey]||{};
@@ -889,7 +889,7 @@ window.openImgs=(examId,gradeKey,title,urls)=>{
   document.getElementById('imgModal').classList.add('open');document.body.style.overflow='hidden';
 };
 window.viewOneImg=(src)=>{_imgData=null;document.getElementById('imgTitle').textContent='صورة';document.getElementById('imgBody').innerHTML=`<img src="${src}" style="width:100%;border-radius:10px;display:block"/>`;document.getElementById('imgDoneBtn').style.display='none';document.getElementById('imgModal').classList.add('open');document.body.style.overflow='hidden';};
-window.imgDone=()=>{if(_imgData)markDone(_imgData.gradeKey,'exams',_imgData.examId);closeImg();};
+window.imgDone=()=>{if(_imgData)markDone(_imgData.gradeKey,'exams',_imgData.examId);window.closeImg();};
 window.closeImg=()=>{document.getElementById('imgModal').classList.remove('open');document.body.style.overflow='';};
 
 window.openPlayerModal=(ytId,title,id,gradeKey)=>{
@@ -899,20 +899,20 @@ window.openPlayerModal=(ytId,title,id,gradeKey)=>{
   document.getElementById('playerModal').classList.add('open');document.body.style.overflow='hidden';
 };
 window.closePlayer=()=>{document.getElementById('playerFrame').src='';document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';};
-window.playerDone=()=>{if(window._playerData)markDone(window._playerData.gradeKey,'videos',window._playerData.id);closePlayer();};
+window.playerDone=()=>{if(window._playerData)markDone(window._playerData.gradeKey,'videos',window._playerData.id);window.closePlayer();};
 
 window.markDone=async(gradeKey,type,itemId)=>{
   try{
     const gp=_progress[gradeKey]||{};
     const list=[...(gp[type]||[])];
-    if(list.includes(itemId)){showToast('تم التسجيل مسبقاً','ok');return;}
+    if(list.includes(itemId)){window.showToast('تم التسجيل مسبقاً','ok');return;}
     list.push(itemId);
     _progress[gradeKey]={...gp,[type]:list};
     await setDoc(doc(db,'progress',_user.uid),_progress,{merge:true});
     const gk=window._openGrade;
     if(gk) openCourse(gk,document.getElementById('cvTitle').textContent,document.getElementById('cvSub').textContent);
-    showToast('تم التسجيل ✓','ok');
-  }catch(e){showToast('خطأ: '+e.message,'err');}
+    window.showToast('تم التسجيل ✓','ok');
+  }catch(e){window.showToast('خطأ: '+e.message,'err');}
 };
 
 window.doSignOut=async()=>{await signOut(auth);window.location.href='index.html';};
@@ -941,7 +941,7 @@ const GRADES = {
   ]
 };
 
-function buildGrades(){
+window.buildGrades = function(){
   const ud=window._userData||{};
   ['primary','prep','sec'].forEach(stage=>{
     const grid=document.getElementById('grid-'+stage);
@@ -964,46 +964,46 @@ function buildGrades(){
       </div>`;
     }).join('');
   });
-}
+};
 
-function closeCourse(){
+window.closeCourse = function(){
   document.getElementById('courseView').classList.remove('open');
   document.body.style.overflow='';
   document.querySelectorAll('[id^="vp-"]').forEach(w=>{
     w.style.display='none';
     const f=w.querySelector('iframe'); if(f) f.src='';
   });
-}
+};
 
-function switchTab(name,btn){
+window.switchTab = function(name,btn){
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.cv-tab').forEach(b=>b.classList.remove('on'));
   document.getElementById('tp-'+name)?.classList.add('on');
   if(btn) btn.classList.add('on');
-}
+};
 
 let tTimer;
-function showToast(msg,type='ok'){
+window.showToast = function(msg,type='ok'){
   const t=document.getElementById('toast');
   t.className='toast '+type;
   document.getElementById('tMsg').textContent=msg;
   t.classList.add('show'); clearTimeout(tTimer);
   tTimer=setTimeout(()=>t.classList.remove('show'),3000);
-}
+};
 
 // Close modals on overlay click
 ['playerModal','mcqModal','imgModal'].forEach(id=>{
   const el=document.getElementById(id);
   if(el) el.addEventListener('click',function(e){
     if(e.target===this){
-      if(id==='playerModal') closePlayer();
-      else if(id==='mcqModal') closeMcq();
-      else closeImg();
+      if(id==='playerModal') window.closePlayer();
+      else if(id==='mcqModal') window.closeMcq();
+      else window.closeImg();
     }
   });
 });
 
-document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeCourse(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') window.closeCourse(); });
 </script>
 </body>
 </html>
