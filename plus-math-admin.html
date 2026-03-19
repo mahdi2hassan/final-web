@@ -563,11 +563,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <div class="sh-title"><svg><use href="#ic-book"/></svg>إدارة المحتوى</div>
         </div>
 
-        <!-- Grade Selector -->
+        <!-- Grade Selector + Search -->
         <div class="card" style="margin-bottom:14px">
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-            <label style="font-size:12px;font-weight:700;color:var(--muted)">اختار الصف:</label>
-            <select id="contentGrade" onchange="loadGradeContent()" style="padding:8px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;appearance:none">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <label style="font-size:12px;font-weight:700;color:var(--muted);flex-shrink:0">اختار الصف:</label>
+            <select id="contentGrade" onchange="loadGradeContent()" style="padding:8px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;appearance:none;flex:1;min-width:180px">
               <option value="">— اختار الصف —</option>
               <optgroup label="ابتدائي">
                 <option value="primary-4">الصف الرابع الابتدائي</option>
@@ -585,6 +585,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
                 <option value="sec-3">الصف الثالث الثانوي</option>
               </optgroup>
             </select>
+            <!-- Search within content -->
+            <div style="display:flex;align-items:center;gap:6px;background:var(--inp);border:1px solid var(--b2);border-radius:9px;padding:6px 10px;flex:1;min-width:140px;max-width:220px" id="contentSearchWrap">
+              <svg width="13" height="13" style="color:var(--muted);flex-shrink:0"><use href="#ic-search"/></svg>
+              <input id="contentSearch" placeholder="بحث في المحتوى..." oninput="filterContent()" style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;width:100%"/>
+            </div>
           </div>
         </div>
 
@@ -637,28 +642,94 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="bc-grid">
           <div class="card">
             <h4><svg><use href="#ic-send"/></svg>إعداد الرسالة</h4>
+
+            <!-- Target filter -->
             <div class="ff"><label>إرسال لـ</label>
               <select id="bc-target" onchange="updatePreview()">
                 <option value="all">كل الطلاب</option>
                 <option value="active">المشتركون النشطون فقط</option>
                 <option value="inactive">غير المشتركين</option>
+                <option value="grade">صف معين</option>
               </select>
             </div>
+
+            <!-- Grade filter (shown when grade selected) -->
+            <div class="ff" id="bc-grade-wrap" style="display:none"><label>اختار الصف</label>
+              <select id="bc-grade" onchange="updatePreview()">
+                <option value="">كل الصفوف</option>
+                <optgroup label="ابتدائي">
+                  <option value="primary-4">الصف الرابع الابتدائي</option>
+                  <option value="primary-5">الصف الخامس الابتدائي</option>
+                  <option value="primary-6">الصف السادس الابتدائي</option>
+                </optgroup>
+                <optgroup label="إعدادي">
+                  <option value="prep-1">الصف الأول الإعدادي</option>
+                  <option value="prep-2">الصف الثاني الإعدادي</option>
+                  <option value="prep-3">الصف الثالث الإعدادي</option>
+                </optgroup>
+                <optgroup label="ثانوي">
+                  <option value="sec-1">الصف الأول الثانوي</option>
+                  <option value="sec-2">الصف الثاني الثانوي</option>
+                  <option value="sec-3">الصف الثالث الثانوي</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <!-- Templates -->
+            <div class="ff"><label>قوالب جاهزة</label>
+              <div style="display:flex;gap:5px;flex-wrap:wrap">
+                <button onclick="setTemplate('remind')" style="padding:5px 10px;border:1px solid var(--b1);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">⏰ تذكير</button>
+                <button onclick="setTemplate('welcome')" style="padding:5px 10px;border:1px solid var(--b1);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">👋 ترحيب</button>
+                <button onclick="setTemplate('exam')" style="padding:5px 10px;border:1px solid var(--b1);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">📝 امتحان</button>
+                <button onclick="setTemplate('renew')" style="padding:5px 10px;border:1px solid var(--b1);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">🔄 تجديد</button>
+              </div>
+            </div>
+
+            <!-- Message -->
             <div class="ff"><label>نص الرسالة</label>
-              <textarea id="bc-msg" rows="5" oninput="updatePreview()">مرحباً {name} 👋
+              <textarea id="bc-msg" rows="6" oninput="updatePreview()">مرحباً {name} 👋
 رسالة من أستاذ مهدي — Plus Mathematics 🎓
 
 </textarea>
             </div>
+
             <div class="bc-info" id="bcInfo"><svg><use href="#ic-users"/></svg><span id="bcCount">—</span></div>
-            <div class="info-note"><strong>{name}</strong> = اسم الطالب · <strong>{code}</strong> = كود الطالب</div>
-            <button class="btn wa" style="width:100%;justify-content:center" onclick="startBC()">
-              <svg><use href="#ic-wa"/></svg>بدء الإرسال
-            </button>
+            <div class="info-note">
+              <strong>{name}</strong> = اسم الطالب &nbsp;·&nbsp;
+              <strong>{code}</strong> = كود الطالب &nbsp;·&nbsp;
+              <strong>{grade}</strong> = صف الطالب &nbsp;·&nbsp;
+              <strong>{phone}</strong> = رقم الهاتف
+            </div>
+
+            <div style="display:flex;gap:8px">
+              <button class="btn wa" style="flex:1;justify-content:center" onclick="startBC()">
+                <svg><use href="#ic-wa"/></svg>بدء الإرسال
+              </button>
+              <button class="btn ghost sm" onclick="copyBCMsg()" title="نسخ الرسالة">
+                <svg><use href="#ic-copy"/></svg>
+              </button>
+            </div>
           </div>
-          <div class="card">
-            <h4><svg><use href="#ic-bell"/></svg>معاينة</h4>
-            <div class="wa-preview" id="bcPreview"></div>
+
+          <!-- Preview + Progress -->
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="card">
+              <h4><svg><use href="#ic-bell"/></svg>معاينة الرسالة</h4>
+              <div class="wa-preview" id="bcPreview"></div>
+            </div>
+            <div class="card" id="bcProgressCard" style="display:none">
+              <h4>📊 تقدم الإرسال</h4>
+              <div style="margin-bottom:8px">
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+                  <span id="bcProgressTxt">0 / 0</span>
+                  <span id="bcProgressPct" style="color:var(--ok)">0%</span>
+                </div>
+                <div style="height:6px;background:rgba(74,127,212,0.1);border-radius:3px;overflow:hidden">
+                  <div id="bcProgressBar" style="height:100%;background:linear-gradient(90deg,var(--ok),var(--blue));border-radius:3px;width:0%;transition:width .3s"></div>
+                </div>
+              </div>
+              <div id="bcCurrentUser" style="font-size:12px;color:var(--muted)"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1434,34 +1505,98 @@ window.changePass = async ()=>{
 window.updatePreview = ()=>{
   const msg = document.getElementById('bc-msg').value;
   document.getElementById('bcPreview').textContent =
-    msg.replace('{name}','محمد أحمد').replace('{code}','S3A7X2');
+    msg.replace('{name}','محمد أحمد').replace('{code}','S3A7X2').replace('{grade}','الصف الثالث الثانوي').replace('{phone}','01012345678');
   const t = document.getElementById('bc-target').value;
+  const gradeFilter = document.getElementById('bc-grade')?.value||'';
+  // Show/hide grade selector
+  const gw = document.getElementById('bc-grade-wrap');
+  if(gw) gw.style.display = t==='grade' ? 'block' : 'none';
   const u = window._users||[];
-  const f = t==='all'?u:t==='active'?u.filter(x=>x.subscriptionActive):u.filter(x=>!x.subscriptionActive);
+  let f;
+  if(t==='all') f=u;
+  else if(t==='active') f=u.filter(x=>x.subscriptionActive&&!x.blocked);
+  else if(t==='inactive') f=u.filter(x=>!x.subscriptionActive&&!x.blocked);
+  else if(t==='grade') f=u.filter(x=>!gradeFilter||x.gradeKey===gradeFilter);
+  else f=u;
   document.getElementById('bcCount').textContent = 'سيتم الإرسال لـ '+f.length+' طالب';
 };
 
-let _bi=0,_bl=[],_bm='';
+// Message templates
+window.setTemplate = (tpl)=>{
+  const templates = {
+    remind: `مرحباً {name} 👋\nتذكير من أستاذ مهدي 📚\n\nمتنساش تذاكر — محتوى جديد في انتظارك على منصة Plus Mathematics 🎓\n\nصفك: {grade}`,
+    welcome: `أهلاً وسهلاً {name} 🎉\nمرحباً بك في Plus Mathematics!\n\nكودك: {code}\nصفك: {grade}\n\nابدأ مذاكرتك دلوقتي 💪`,
+    exam: `{name} 👋\nتنبيه هام من أستاذ مهدي 📝\n\nفيه امتحان جديد على المنصة خصوصي لـ {grade}\nادخل وحلّه دلوقتي على Plus Mathematics 🎓`,
+    renew: `{name} 👋\nاشتراكك في Plus Mathematics قرب ينتهي ⏰\n\nجدّد اشتراكك وامتع بكل المحتوى\nتواصل معانا على الواتساب لكود جديد 🔑`
+  };
+  document.getElementById('bc-msg').value = templates[tpl]||'';
+  updatePreview();
+};
+
+window.copyBCMsg = ()=>{
+  const msg = document.getElementById('bc-msg').value;
+  if(navigator.clipboard) navigator.clipboard.writeText(msg);
+  toast('تم نسخ الرسالة ✓','ok');
+};
+
+let _bi=0, _bl=[], _bm='';
 window.startBC = ()=>{
   const t = document.getElementById('bc-target').value;
+  const gradeFilter = document.getElementById('bc-grade')?.value||'';
   const u = window._users||[];
   _bm = document.getElementById('bc-msg').value;
-  _bl = t==='all'?u:t==='active'?u.filter(x=>x.subscriptionActive):u.filter(x=>!x.subscriptionActive);
-  if(!_bl.length){ toast('لا يوجد طلاب','err'); return; }
-  _bi=0; sendNext();
+  if(t==='all') _bl=u;
+  else if(t==='active') _bl=u.filter(x=>x.subscriptionActive&&!x.blocked);
+  else if(t==='inactive') _bl=u.filter(x=>!x.subscriptionActive&&!x.blocked);
+  else if(t==='grade') _bl=u.filter(x=>!gradeFilter||x.gradeKey===gradeFilter);
+  else _bl=u;
+  // Filter out users with no phone
+  _bl = _bl.filter(x=>x.phone&&x.phone.replace(/\D/g,'').length>=10);
+  if(!_bl.length){ toast('لا يوجد طلاب بأرقام هواتف','err'); return; }
+  _bi=0;
+  document.getElementById('bcProgressCard').style.display='block';
+  sendNext();
 };
+
 function sendNext(){
-  if(_bi>=_bl.length){ toast('تم الإرسال لكل الطلاب ✓','ok'); return; }
+  if(_bi>=_bl.length){
+    toast('تم الإرسال لكل الطلاب ✓','ok');
+    document.getElementById('bcCurrentUser').textContent = '✅ اكتمل الإرسال!';
+    return;
+  }
   const s=_bl[_bi];
-  const txt=_bm.replace(/{name}/g,s.name||'').replace(/{code}/g,s.subscriptionCode||'—');
+  const txt=_bm
+    .replace(/{name}/g, s.name||'')
+    .replace(/{code}/g, s.subscriptionCode||'—')
+    .replace(/{grade}/g, s.grade||'—')
+    .replace(/{phone}/g, s.phone||'—');
   const ph='20'+(s.phone||'').replace(/^0/,'').replace(/\D/g,'');
   window.open(`https://wa.me/${ph}?text=${encodeURIComponent(txt)}`,'_blank');
   _bi++;
-  toast(`واتساب لـ ${s.name} (${_bi}/${_bl.length})`,'info');
+  // Update progress
+  const pct = Math.round(_bi/_bl.length*100);
+  document.getElementById('bcProgressTxt').textContent = _bi+' / '+_bl.length;
+  document.getElementById('bcProgressPct').textContent = pct+'%';
+  document.getElementById('bcProgressBar').style.width = pct+'%';
+  document.getElementById('bcCurrentUser').textContent = '📤 جاري الإرسال لـ: '+s.name+' ('+s.phone+')';
+  toast('واتساب لـ '+s.name+' ('+_bi+'/'+_bl.length+')','info');
   if(_bi<_bl.length){
-    setTimeout(()=>{ if(confirm(`أرسلت لـ ${s.name}؟`)) sendNext(); },400);
+    setTimeout(()=>{ if(confirm('أرسلت الرسالة لـ '+s.name+'؟\nاضغط موافق للتالي')) sendNext(); else toast('توقف الإرسال','err'); },400);
   }
 }
+
+// ── CONTENT SEARCH/FILTER ──
+let _contentAllItems = [];
+window.filterContent = ()=>{
+  const q = (document.getElementById('contentSearch')?.value||'').trim().toLowerCase();
+  if(!q){ renderContentList(_curContentType, _contentAllItems); return; }
+  const filtered = _contentAllItems.filter(item=>
+    (item.title||'').toLowerCase().includes(q) ||
+    (item.description||'').toLowerCase().includes(q) ||
+    (item.url||'').toLowerCase().includes(q)
+  );
+  renderContentList(_curContentType, filtered);
+};
 
 // ── EXPORT CSV ──
 window.exportCSV = ()=>{
@@ -1513,9 +1648,8 @@ window.setContentTab = async (tab) => {
 
 async function loadContentTab(tab){
   if(!_curGrade) return;
-  // tab is always 'videos', 'exams', or 'homework'
   try{
-    const snap = await db.collection('content'.get().doc(_curGrade).collection(tab));
+    const snap = await db.collection('content').doc(_curGrade).collection(tab).get();
     const items = snap.docs.map(d=>({id:d.id,...d.data()}))
       .sort((a,b)=>(a.order||0)-(b.order||0));
     renderContentList(tab, items);
@@ -1523,6 +1657,7 @@ async function loadContentTab(tab){
 }
 
 function renderContentList(tab, items){
+  _contentAllItems = items; // save for search
   const elMap = {videos:'videosList', exams:'examsList', homework:'homeworkList'};
   const el = document.getElementById(elMap[tab]);
   if(!el) return;
@@ -1580,7 +1715,7 @@ window.toggleExamType = () => {
 
 window.editContent = async (tab, id) => {
   try{
-    const d = await db.collection('content'.get().doc(_curGrade,tab,id));
+    const d = await db.collection('content').doc(_curGrade).collection(tab).doc(id).get();
     if(!d.exists) return;
     const data = d.data();
     _editContentId = id;
@@ -1673,7 +1808,7 @@ window.saveContent = async () => {
 window.delContent = async (tab, id) => {
   if(!confirm('حذف هذا العنصر؟')) return;
   try{
-    await db.collection('content'.delete().doc(_curGrade,tab,id));
+    await db.collection('content').doc(_curGrade).collection(tab).doc(id).delete();
     await loadContentTab(tab);
     toast('تم الحذف','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
