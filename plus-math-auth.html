@@ -478,12 +478,15 @@ function doLogin(){
   auth.signInWithEmailAndPassword(email, pass)
     .catch(function(e){
       var msgs = {
-        'auth/invalid-credential':'بيانات الدخول غير صحيحة',
-        'auth/user-not-found':'الحساب مش موجود',
-        'auth/wrong-password':'كلمة المرور خاطئة',
-        'auth/too-many-requests':'محاولات كتير — انتظر'
+        'auth/invalid-credential':       'بيانات الدخول غير صحيحة',
+        'auth/invalid-login-credentials':'بيانات الدخول غير صحيحة — جرب "الدخول بـ Google"',
+        'auth/user-not-found':           'الحساب مش موجود',
+        'auth/wrong-password':           'كلمة المرور خاطئة',
+        'auth/too-many-requests':        'محاولات كتير — انتظر قليلاً',
+        'auth/user-disabled':            'الحساب موقوف',
+        'auth/network-request-failed':   'مشكلة في الاتصال'
       };
-      showMsg('login-msg', msgs[e.code]||e.message, 'error');
+      showMsg('login-msg', msgs[e.code]||'بيانات الدخول غير صحيحة', 'error');
       setLoad(btn,false);
     });
 }
