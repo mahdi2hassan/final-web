@@ -413,12 +413,18 @@ nav{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, collection, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, getDocs, collection, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app  = initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
 const auth = getAuth(app);
 const db   = getFirestore(app);
 window._db = db;
+window._getDocs = getDocs;
+window._collection = collection;
+window._doc = doc;
+window._getDoc = getDoc;
+window._updateDoc = updateDoc;
+window._increment = increment;
 let _user,_userData,_progress={},_playerData=null,_imgData=null;
 
 onAuthStateChanged(auth,async(user)=>{
@@ -800,13 +806,13 @@ async function loadBooksTab(){
   if(!window._db){ el.innerHTML='<div class="empty"><p>تعذر الاتصال بالإنترنت — حاول تاني</p></div>'; return; }
   try{
     const [bSnap, payDoc] = await Promise.all([
-      window._db.collection('books').get(),
-      window._db.collection('settings').doc('payment').get()
+      window._getDocs(window._collection(window._db,'books')),
+      window._getDoc(window._doc(window._db,'settings','payment'))
     ]);
     _books = bSnap.docs.map(d=>({id:d.id,...d.data()}))
       .filter(b=>b.available!==false)
       .sort((a,b)=>(a.order||0)-(b.order||0));
-    if(payDoc.exists) _paySettings = payDoc.data();
+    if(payDoc.exists()) _paySettings = payDoc.data();
     renderBooksTab();
   }catch(e){ el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`; }
 }
@@ -920,10 +926,14 @@ async function applyBookCoupon(){
   msgEl.textContent='...'; msgEl.style.display='block'; msgEl.style.color='var(--muted)';
   if(!window._db){ msgEl.textContent='مش متصل — حاول تاني'; msgEl.style.color='var(--err)'; return; }
   try{
-    const snap = await window._db.collection('coupons')
-      .where('code','==',code).where('active','==',true).get();
-    if(snap.empty){ msgEl.textContent='الكوبون غلط أو منتهي ❌'; msgEl.style.color='var(--err)'; return; }
-    const d = snap.docs[0].data();
+    // ESM Firestore - get all coupons and filter client-side
+    const snap = await window._getDocs(window._collection(window._db,'coupons'));
+    const couponDoc = snap.docs.find(d=>{
+      const data=d.data();
+      return data.code===code && data.active===true;
+    });
+    if(!couponDoc){ msgEl.textContent='الكوبون غلط أو منتهي ❌'; msgEl.style.color='var(--err)'; return; }
+    const d = couponDoc.data();
     if(d.expiresAt && new Date(d.expiresAt)<new Date()){ msgEl.textContent='الكوبون انتهت صلاحيته ❌'; msgEl.style.color='var(--err)'; return; }
     if(d.maxUses && (d.usedCount||0)>=d.maxUses){ msgEl.textContent='الكوبون استُنفد ❌'; msgEl.style.color='var(--err)'; return; }
     const orig = window._bookOrigPrice||0;
@@ -931,13 +941,12 @@ async function applyBookCoupon(){
       ? Math.max(0, orig - orig*(d.value/100))
       : Math.max(0, orig - d.value);
     window._bookFinalPrice = Math.round(discounted);
-    window._bookCouponId = snap.docs[0].id;
+    window._bookCouponId = couponDoc.id;
     const label = d.type==='percent'?d.value+'% خصم':d.value+' جنيه خصم';
     msgEl.textContent='✅ تم تطبيق كوبون '+label; msgEl.style.color='var(--ok)';
     document.getElementById('book-orig-pr').textContent = orig+' جنيه';
     document.getElementById('book-disc-pr').textContent = discounted===0?'مجاناً 🎉':Math.round(discounted)+' جنيه';
     document.getElementById('book-price-display').style.display='block';
-    // Update price in steps text
     const prEl = document.getElementById('bs-final-price');
     if(prEl) prEl.textContent = discounted===0?'مجاناً':Math.round(discounted);
   }catch(e){ msgEl.textContent='خطأ في التحقق'; msgEl.style.color='var(--err)'; }
@@ -951,10 +960,10 @@ function confirmBookOnWA(waNum){
   const msg = encodeURIComponent(
     `مرحباً، عايز أشتري كتاب "${b.title}"\nالسعر: ${finalPrice===0?'مجاناً':finalPrice+' جنيه'}${couponNote}\nاسمي: ${ud.name||''}\nالصف: ${ud.grade||''}`
   );
-  // Increment coupon if used
-  if(window._bookCouponId){
-    window._db.collection('coupons').doc(window._bookCouponId).update({
-      usedCount: firebase.firestore.FieldValue.increment(1)
+  // Increment coupon using ESM updateDoc
+  if(window._bookCouponId && window._updateDoc && window._doc && window._increment){
+    window._updateDoc(window._doc(window._db,'coupons',window._bookCouponId),{
+      usedCount: window._increment(1)
     }).catch(()=>{});
   }
   window.open(`https://wa.me/${waNum}?text=${msg}`,'_blank');
