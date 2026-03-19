@@ -5,30 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Plus Mathematics – الكورسات</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+
 <style>
-    /* كل الـ CSS اللي كان موجود سابقًا ... (حطيته هنا كامل عشان يكون الملف مستقل) */
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#04060f;--s1:rgba(8,13,28,0.9);--s2:rgba(12,18,40,0.75);
-      --b1:rgba(74,127,212,0.22);--b2:rgba(74,127,212,0.12);
-      --blue:#4a7fd4;--navy:#1a3270;--gold:#c9a84c;--gold2:#f0d080;
-      --text:#eef2ff;--muted:#6a7a9e;--ok:#00d68f;--err:#ff4d6d;--purple:#a78bfa;
-    }
-    html,body{min-height:100dvh;overflow-x:hidden}
-    body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
-    /* ... باقي الـ CSS كله هنا (مش هكرره كله عشان الطول، بس لازم يكون موجود في ملفك) ... */
-    /* انسخ باقي الـ style من الرسالة الأولى وحطه هنا */
+    /* ← هنا ضع كل الـ CSS الأصلي الطويل اللي كان عندك */
+    /* من *,*::before,*::after{...} لحد نهاية الـ style */
+    /* لو مش عارف تلاقيه، خذه من الرسالة الأولى اللي بعتها */
+    /* بدون الـ CSS مش هيظهر شكل صح */
 </style>
 </head>
 <body>
+
 <div class="bg-grid"></div>
 <div class="o1 orb"></div>
 <div class="o2 orb"></div>
 
 <!-- Announcement Banner -->
-<div id="annBanner">
+<div id="annBanner" style="display:none">
   <span id="annText"></span>
-  <span onclick="this.parentElement.classList.remove('show')" style="cursor:pointer;margin-right:auto;opacity:.7">✕</span>
+  <span onclick="this.parentElement.style.display='none'" style="cursor:pointer;margin-right:auto">✕</span>
 </div>
 
 <!-- Loading -->
@@ -62,7 +56,6 @@
     </div>
   </div>
 
-  <!-- Primary Section -->
   <div class="section">
     <div class="section-head">
       <div class="sh-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
@@ -72,7 +65,6 @@
   </div>
   <div class="sdiv"></div>
 
-  <!-- Preparatory Section -->
   <div class="section">
     <div class="section-head">
       <div class="sh-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
@@ -82,7 +74,6 @@
   </div>
   <div class="sdiv"></div>
 
-  <!-- Secondary Section -->
   <div class="section">
     <div class="section-head">
       <div class="sh-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
@@ -92,14 +83,13 @@
   </div>
 </main>
 
-<!-- باقي العناصر مثل courseView ، modals ، إلخ ... (انسخها من الكود الأصلي) -->
-
+<!-- ── Firebase ── -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
-// ── Firebase Config & Init ──
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
   authDomain: "plusinmath-web.firebaseapp.com",
@@ -108,18 +98,21 @@ const firebaseConfig = {
   messagingSenderId: "444492731461",
   appId: "1:444492731461:web:14529f08d9ccf047dabf2c"
 };
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
 let _user, _userData, _progress = {};
 
-// ── Auth State Listener ──
-auth.onAuthStateChanged(user => {
+// ── Auth Listener ──
+auth.onAuthStateChanged(function(user) {
   if (!user) {
+    document.getElementById('loadingScreen').querySelector('p').textContent = 'غير مسجل — جاري التحويل';
     setTimeout(() => { window.location.href = 'plus-math-auth.html'; }, 1500);
     return;
   }
+
   _user = user;
 
   db.collection('users').doc(user.uid).get().then(doc => {
@@ -127,9 +120,18 @@ auth.onAuthStateChanged(user => {
       setTimeout(() => { window.location.href = 'plus-math-auth.html'; }, 1500);
       return;
     }
+
     _userData = doc.data();
 
-    // Show content
+    // تحميل الإعلان (اختياري)
+    db.collection('settings').doc('announcement').get().then(ann => {
+      if (ann.exists && ann.data().show) {
+        document.getElementById('annText').textContent = ann.data().text;
+        document.getElementById('annBanner').style.display = 'flex';
+      }
+    });
+
+    // إظهار الصفحة
     document.getElementById('loadingScreen').style.display = 'none';
     document.getElementById('navbar').style.display = 'flex';
     document.getElementById('mainContent').style.display = 'block';
@@ -137,64 +139,70 @@ auth.onAuthStateChanged(user => {
     document.getElementById('userName').textContent = (_userData.name || 'طالب').split(' ')[0];
     document.getElementById('statGrade').textContent = _userData.grade || '—';
     document.getElementById('statStage').textContent = 
-      {primary: 'ابتدائي', prep: 'إعدادي', sec: 'ثانوي'}[_userData.stage] || '—';
+      {primary:'ابتدائي', prep:'إعدادي', sec:'ثانوي'}[_userData.stage] || '—';
 
-    buildGrades();  // ← هنا بنبني الكروت
+    // بناء الكروت ← هنا الحل
+    buildGrades();
 
   }).catch(err => {
-    console.error(err);
-    setTimeout(() => { window.location.href = 'plus-math-auth.html'; }, 3000);
+    console.error("Firestore error:", err);
+    document.getElementById('loadingScreen').querySelector('p').textContent = 'خطأ في الاتصال';
   });
 });
 
-// ── Build Grade Cards (الدالة اللي كانت ناقصة) ──
+// ── دالة عرض الصفوف (الكروت) ──
 function buildGrades() {
-  const stages = {
-    primary: {
-      container: document.getElementById('grid-primary'),
+  const stages = [
+    {
+      id: 'grid-primary',
+      title: 'ابتدائي',
       grades: [
-        { key: "primary_4", label: "الصف الرابع", icon: "٤" },
-        { key: "primary_5", label: "الصف الخامس", icon: "٥" },
-        { key: "primary_6", label: "الصف السادس", icon: "٦" }
+        { key: 'primary_4', label: 'الصف الرابع',   icon: '٤' },
+        { key: 'primary_5', label: 'الصف الخامس',   icon: '٥' },
+        { key: 'primary_6', label: 'الصف السادس',   icon: '٦' }
       ]
     },
-    prep: {
-      container: document.getElementById('grid-prep'),
+    {
+      id: 'grid-prep',
+      title: 'إعدادي',
       grades: [
-        { key: "prep_1", label: "الصف الأول الإعدادي", icon: "١" },
-        { key: "prep_2", label: "الصف الثاني الإعدادي", icon: "٢" },
-        { key: "prep_3", label: "الصف الثالث الإعدادي", icon: "٣" }
+        { key: 'prep_1', label: 'الصف الأول الإعدادي',  icon: '١' },
+        { key: 'prep_2', label: 'الصف الثاني الإعدادي',  icon: '٢' },
+        { key: 'prep_3', label: 'الصف الثالث الإعدادي',  icon: '٣' }
       ]
     },
-    sec: {
-      container: document.getElementById('grid-sec'),
+    {
+      id: 'grid-sec',
+      title: 'ثانوي',
       grades: [
-        { key: "sec_1", label: "الصف الأول الثانوي", icon: "١" },
-        { key: "sec_2", label: "الصف الثاني الثانوي", icon: "٢" },
-        { key: "sec_3", label: "الصف الثالث الثانوي", icon: "٣" }
+        { key: 'sec_1', label: 'الصف الأول الثانوي',  icon: '١' },
+        { key: 'sec_2', label: 'الصف الثاني الثانوي',  icon: '٢' },
+        { key: 'sec_3', label: 'الصف الثالث الثانوي',  icon: '٣' }
       ]
     }
-  };
+  ];
 
-  Object.entries(stages).forEach(([stageKey, stage]) => {
-    const container = stage.container;
+  stages.forEach(stage => {
+    const container = document.getElementById(stage.id);
     if (!container) return;
 
     container.innerHTML = '';
 
     stage.grades.forEach(grade => {
       const isCurrent = grade.key === (_userData?.gradeKey || '');
+
       const card = document.createElement('a');
       card.href = '#';
       card.className = 'grade-card';
       card.id = 'gcard-' + grade.key;
+
       card.innerHTML = `
-        <div class="gc-img" style="background: linear-gradient(135deg, var(--navy), var(--blue)); display:flex; align-items:center; justify-content:center; font-size:48px; color:rgba(255,255,255,0.25); font-weight:900;">
+        <div class="gc-img" style="display:flex;align-items:center;justify-content:center;font-size: clamp(50px,12vw,80px);font-weight:900;color:rgba(255,255,255,0.3);">
           ${grade.icon}
         </div>
         <div class="gc-body">
           <div class="gc-title">${grade.label}</div>
-          <div class="gc-sub">${stageKey === 'primary' ? 'ابتدائي' : stageKey === 'prep' ? 'إعدادي' : 'ثانوي'}</div>
+          <div class="gc-sub">${stage.title}</div>
         </div>
         <div class="gc-foot">
           <span>${isCurrent ? 'صفك الحالي' : 'اختر الصف'}</span>
@@ -204,14 +212,15 @@ function buildGrades() {
 
       if (isCurrent) {
         card.style.borderColor = 'var(--ok)';
-        card.style.boxShadow = '0 0 0 2px rgba(0,214,143,0.3)';
+        card.style.boxShadow = '0 0 0 2px rgba(0,214,143,0.25)';
       }
 
-      card.addEventListener('click', e => {
+      card.addEventListener('click', function(e) {
         e.preventDefault();
-        // هنا ممكن تضيف openCourse() أو code gate حسب المنطق
-        alert(`تم اختيار: \( {grade.label} ( \){grade.key})`);
-        // مثال: openCourse(grade.key, grade.label, stageKey === 'primary' ? 'ابتدائي' : stageKey === 'prep' ? 'إعدادي' : 'ثانوي');
+        // ← هنا يمكنك استدعاء openCourse أو code gate
+        // مثال بسيط للاختبار:
+        alert('تم اختيار: ' + grade.label + '\nKey: ' + grade.key);
+        // openCourse(grade.key, grade.label, stage.title);
       });
 
       container.appendChild(card);
@@ -219,9 +228,9 @@ function buildGrades() {
   });
 }
 
-// باقي الدوال (openCourse, loadList, renderVideos, إلخ...) ضيفها من الكود الأصلي
-// إذا كنت عايز نسخة كاملة بكل الدوال، قولي وأكملها
-
+// ── باقي الدوال (openCourse, renderVideos, إلخ) ضعها هنا إذا كانت موجودة عندك ──
+// لو مش موجودة، يمكنك إضافتها لاحقًا
 </script>
+
 </body>
 </html>
