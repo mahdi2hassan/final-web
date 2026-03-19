@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plus Mathematics – تسجيل الدخول</title>
+<title>Plus  – تسجيل الدخول</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -198,7 +198,7 @@ input::placeholder{color:var(--muted);opacity:.5}
     <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" class="logo-img"
       onerror="this.style.opacity='.5'"/>
     <h1>Plus Mathematics</h1>
-    <p>منصة مراجعة الرياضيات · 2026</p>
+    <p> بلس الثقة والتميز✨ </p>
   </div>
 
   <div class="auth-body">
@@ -296,8 +296,12 @@ input::placeholder{color:var(--muted);opacity:.5}
     <!-- ══ STEP: CODE ══ -->
     <div class="step" id="step-code">
       <div class="step-info">
-        <h3>🔑 أدخل كود الاشتراك</h3>
-        <p>ادخل الكود اللي وصلك من المدرس لتفعيل اشتراكك</p>
+        <h3 id="code-step-title">🔑 أدخل كود الاشتراك</h3>
+        <p id="code-step-desc">ادخل الكود اللي وصلك من المدرس لتفعيل اشتراكك</p>
+      </div>
+      <!-- Grade display (shown when renewing) -->
+      <div id="code-grade-info" style="display:none;padding:10px 14px;background:rgba(74,127,212,0.07);border:1px solid rgba(74,127,212,0.2);border-radius:10px;font-size:13px;color:var(--muted);margin-bottom:14px">
+        📚 الصف: <strong id="code-grade-name" style="color:var(--gold2)"></strong>
       </div>
       <div class="field">
         <label>كود الاشتراك</label>
@@ -323,7 +327,7 @@ input::placeholder{color:var(--muted);opacity:.5}
     <div class="step" id="step-grade">
       <div class="step-info">
         <h3>📚 اختار صفك الدراسي</h3>
-        <p>اختار صفك عشان يتفتحلك المحتوى المناسب ليك</p>
+        <p>اختار صفك — الكود هيكون مرتبط بيه ومينفعش يتستخدم في صف تاني</p>
       </div>
       <div class="field">
         <label>المرحلة</label>
@@ -341,8 +345,8 @@ input::placeholder{color:var(--muted);opacity:.5}
         </select>
       </div>
       <div class="msg" id="grade-msg"></div>
-      <button class="btn" id="grade-btn" onclick="saveGrade()">
-        <span class="btn-text"><svg><use href="#i-check"/></svg>تأكيد الصف وابدأ</span>
+      <button class="btn" id="grade-btn" onclick="saveGradeAndGoCode()">
+        <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>التالي — أدخل الكود</span>
         <div class="spin"></div>
       </button>
     </div>
@@ -392,30 +396,79 @@ const cfg = {
   messagingSenderId:"444492731461",
   appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
 };
-const app  = initializeApp(cfg);
+const app = initializeApp(cfg);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-// ── Handle Google redirect result ──
-getRedirectResult(auth).then(async result => {
-  if(result?.user) await handleGoogleUser(result.user);
-}).catch(e => { console.warn('redirect:', e.code); });
+const GRADE_LABELS = {
+  'primary-4':'الصف الرابع الابتدائي','primary-5':'الصف الخامس الابتدائي','primary-6':'الصف السادس الابتدائي',
+  'prep-1':'الصف الأول الإعدادي','prep-2':'الصف الثاني الإعدادي','prep-3':'الصف الثالث الإعدادي',
+  'sec-1':'الصف الأول الثانوي','sec-2':'الصف الثاني الثانوي','sec-3':'الصف الثالث الثانوي'
+};
+
+// ── Google redirect ──
+getRedirectResult(auth).then(async r => {
+  if(r?.user) await handleGoogleUser(r.user);
+}).catch(()=>{});
 
 // ── Auth state ──
 onAuthStateChanged(auth, async user => {
   loadBanner(); loadPrice();
   if(!user){ showStep('step-auth'); return; }
+
   const ud = await getDoc(doc(db,'users',user.uid));
-  if(ud.exists() && ud.data().subscriptionActive){
-    window.location.href = 'courses.html';
-  } else {
-    showStep('step-code');
+  if(!ud.exists()){ showStep('step-auth'); return; }
+
+  const data = ud.data();
+
+  // ── Check subscription status ──
+  if(!data.subscriptionActive){
+    // Has grade saved → go to code entry directly
+    if(data.gradeKey){
+      showCodeStep(data.gradeKey, data.grade);
+    } else {
+      showStep('step-grade'); // Pick grade first
+    }
+    return;
   }
+
+  // ── Check expiry (30 days) ──
+  if(data.expiresAt){
+    const expiry = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
+    if(new Date() > expiry){
+      // Expired → mark inactive and ask for new code
+      await updateDoc(doc(db,'users',user.uid), { subscriptionActive: false });
+      showExpiredStep(data.grade||'', data.gradeKey||'');
+      return;
+    }
+  }
+
+  // Active & not expired → go to courses
+  window.location.href = 'courses.html';
 });
+
+// ── Show expired step ──
+function showExpiredStep(gradeName, gradeKey){
+  window._savedGradeKey = gradeKey;
+  document.getElementById('code-grade-info').style.display = gradeKey ? 'block' : 'none';
+  document.getElementById('code-grade-name').textContent = gradeName;
+  document.getElementById('code-step-title').textContent = '⏰ انتهى اشتراكك';
+  document.getElementById('code-step-desc').textContent = 'اشتراكك انتهى بعد 30 يوم — ادخل كود جديد للتجديد';
+  showStep('step-code');
+}
+
+// ── Show code step with grade ──
+function showCodeStep(gradeKey, gradeName){
+  window._savedGradeKey = gradeKey;
+  document.getElementById('code-grade-info').style.display = 'block';
+  document.getElementById('code-grade-name').textContent = gradeName || GRADE_LABELS[gradeKey] || gradeKey;
+  document.getElementById('code-step-title').textContent = '🔑 أدخل كود الاشتراك';
+  document.getElementById('code-step-desc').textContent = 'ادخل الكود المخصص لصفك';
+  showStep('step-code');
+}
 
 // ── Helpers ──
 function phoneToEmail(p){ return '20'+p.replace(/\D/g,'').replace(/^0/,'')+'@plusinmath.edu'; }
-
 function resolveEmail(input){
   const v = input.trim();
   if(v.includes('@') && v.includes('.')) return v.toLowerCase();
@@ -433,8 +486,7 @@ window.doLogin = async () => {
   const btn = document.getElementById('login-btn');
   setLoad(btn, true);
   try {
-    const email = resolveEmail(id);
-    await signInWithEmailAndPassword(auth, email, pass);
+    await signInWithEmailAndPassword(auth, resolveEmail(id), pass);
   } catch(e) {
     const msgs = {
       'auth/invalid-credential':'بيانات الدخول غير صحيحة',
@@ -453,23 +505,21 @@ window.doRegister = async () => {
   const phone = document.getElementById('reg-phone').value.trim();
   const email = document.getElementById('reg-email').value.trim();
   const pass  = document.getElementById('reg-pass').value;
-  if(!name)  { showMsg('reg-msg','ادخل اسمك','error'); return; }
-  if(phone.length<10){ showMsg('reg-msg','رقم الهاتف غير صحيح','error'); return; }
+  if(!name)             { showMsg('reg-msg','ادخل اسمك','error'); return; }
+  if(phone.length<10)   { showMsg('reg-msg','رقم الهاتف غير صحيح','error'); return; }
   if(!email.includes('@')){ showMsg('reg-msg','ادخل إيميل صحيح','error'); return; }
-  if(pass.length<8){ showMsg('reg-msg','كلمة المرور لازم ٨ أحرف على الأقل','error'); return; }
+  if(pass.length<8)     { showMsg('reg-msg','كلمة المرور لازم ٨ أحرف على الأقل','error'); return; }
   const btn = document.getElementById('reg-btn');
   setLoad(btn, true);
   try {
-    const fakeEmail = phoneToEmail(phone);
-    const cred = await createUserWithEmailAndPassword(auth, fakeEmail, pass);
+    const cred = await createUserWithEmailAndPassword(auth, phoneToEmail(phone), pass);
     await setDoc(doc(db,'users',cred.user.uid), {
       name, phone, email: email.toLowerCase(),
       subscriptionActive: false,
       createdAt: serverTimestamp(), signInMethod: 'phone'
     });
-    showMsg('reg-msg','تم إنشاء حسابك ✓','success');
-    // Move to code step after short delay
-    setTimeout(()=>showStep('step-code'), 1200);
+    showMsg('reg-msg','تم إنشاء حسابك ✓ — اختار صفك','success');
+    setTimeout(()=>showStep('step-grade'), 1200);
   } catch(e) {
     const msgs = {
       'auth/email-already-in-use':'الرقم ده مسجل بالفعل — سجل دخول',
@@ -483,67 +533,79 @@ window.doRegister = async () => {
 // ── GOOGLE ──
 window.doGoogle = async (msgId) => {
   const provider = new GoogleAuthProvider();
-  provider.addScope('email');
-  provider.addScope('profile');
   try {
-    // Try popup first, fall back to redirect
     const result = await signInWithPopup(auth, provider);
     await handleGoogleUser(result.user);
   } catch(e) {
-    if(e.code === 'auth/popup-blocked' || e.code === 'auth/popup-closed-by-user'){
-      // Fall back to redirect
-      showMsg(msgId, 'جاري التحويل لـ Google...', 'success');
-      setTimeout(()=>signInWithRedirect(auth, provider), 800);
-    } else if(e.code === 'auth/unauthorized-domain'){
-      showMsg(msgId, 'أضف الدومين في Firebase Console → Authentication → Settings → Authorized domains', 'error');
+    if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'){
+      showMsg(msgId,'جاري التحويل...','success');
+      setTimeout(()=>signInWithRedirect(auth, provider),800);
     } else {
-      showMsg(msgId, e.message || 'خطأ في تسجيل الدخول بـ Google', 'error');
+      showMsg(msgId, e.message||'خطأ في Google','error');
     }
   }
 };
-
 async function handleGoogleUser(user){
   const ud = await getDoc(doc(db,'users',user.uid));
   if(!ud.exists()){
-    // New Google user → create record
-    await setDoc(doc(db,'users',user.uid), {
-      name: user.displayName || '',
-      email: user.email || '',
-      phone: '',
-      subscriptionActive: false,
-      createdAt: serverTimestamp(),
-      signInMethod: 'google'
+    await setDoc(doc(db,'users',user.uid),{
+      name:user.displayName||'', email:user.email||'', phone:'',
+      subscriptionActive:false, createdAt:serverTimestamp(), signInMethod:'google'
     });
   }
-  // Auth state listener will handle the redirect
 }
 
 // ── FORGOT PASSWORD ──
 window.forgotPass = async (e) => {
   e?.preventDefault();
   const id = document.getElementById('login-id').value.trim();
-  if(!id){ showMsg('login-msg','ادخل رقم الهاتف أو إيميلك الأول','error'); return; }
+  if(!id){ showMsg('login-msg','ادخل رقم الهاتف أو إيميلك','error'); return; }
   try {
-    // Try to get secondary email from Firestore if phone number
     let email = id;
     if(!id.includes('@')){
-      const fakeEmail = resolveEmail(id);
-      // Look up user's real email from Firestore
-      try {
-        const q = query(collection(db,'users'), where('phone','==',id.replace(/\D/g,'')));
+      try{
+        const q = query(collection(db,'users'),where('phone','==',id.replace(/\D/g,'')));
         const snap = await getDocs(q);
-        if(!snap.empty && snap.docs[0].data().email){
-          email = snap.docs[0].data().email;
-        } else {
-          email = fakeEmail; // fallback to fake email
-        }
-      } catch(err){ email = fakeEmail; }
+        email = (!snap.empty&&snap.docs[0].data().email) ? snap.docs[0].data().email : resolveEmail(id);
+      }catch(){ email = resolveEmail(id); }
     }
     await sendPasswordResetEmail(auth, email);
-    showMsg('login-msg','تم إرسال رابط إعادة تعيين كلمة المرور على الإيميل ✓','success');
-  } catch(e) {
-    showMsg('login-msg','الرقم أو الإيميل ده مش مسجل','error');
-  }
+    showMsg('login-msg','تم إرسال رابط إعادة التعيين ✓','success');
+  } catch(e){ showMsg('login-msg','الرقم أو الإيميل مش مسجل','error'); }
+};
+
+// ── GRADE SELECTION → then code ──
+window.updateGradeOptions = () => {
+  const stage = document.getElementById('grade-stage').value;
+  const sel   = document.getElementById('grade-level');
+  const opts  = {
+    primary:['الصف الرابع الابتدائي|primary-4','الصف الخامس الابتدائي|primary-5','الصف السادس الابتدائي|primary-6'],
+    prep:   ['الصف الأول الإعدادي|prep-1','الصف الثاني الإعدادي|prep-2','الصف الثالث الإعدادي|prep-3'],
+    sec:    ['الصف الأول الثانوي|sec-1','الصف الثاني الثانوي|sec-2','الصف الثالث الثانوي|sec-3']
+  };
+  sel.innerHTML = '<option value="">— اختار الصف —</option>';
+  (opts[stage]||[]).forEach(o=>{
+    const [lbl,val]=o.split('|');
+    sel.innerHTML+=`<option value="${val}">${lbl}</option>`;
+  });
+};
+
+window.saveGradeAndGoCode = async () => {
+  const stage    = document.getElementById('grade-stage').value;
+  const gradeKey = document.getElementById('grade-level').value;
+  if(!stage)    { showMsg('grade-msg','اختار المرحلة','error'); return; }
+  if(!gradeKey) { showMsg('grade-msg','اختار الصف','error'); return; }
+  const btn = document.getElementById('grade-btn');
+  setLoad(btn, true);
+  try {
+    // Save grade (not active yet)
+    await updateDoc(doc(db,'users',auth.currentUser.uid),{
+      stage, gradeKey, grade: GRADE_LABELS[gradeKey]||gradeKey
+    });
+    window._savedGradeKey = gradeKey;
+    showCodeStep(gradeKey, GRADE_LABELS[gradeKey]);
+  } catch(e){ showMsg('grade-msg','خطأ: '+e.message,'error'); }
+  setLoad(btn, false);
 };
 
 // ── SUBMIT CODE ──
@@ -553,104 +615,78 @@ window.submitCode = async () => {
   const btn = document.getElementById('code-btn');
   setLoad(btn, true);
   try {
-    const q = query(collection(db,'codes'), where('code','==',code), where('used','==',false));
-    const snap = await getDocs(q);
-    if(snap.empty){ showMsg('code-msg','الكود غلط أو مستخدم بالفعل ❌','error'); setLoad(btn,false); return; }
-    const cd = snap.docs[0];
     const user = auth.currentUser;
+    const ud   = await getDoc(doc(db,'users',user.uid));
+    const myGradeKey = ud.data()?.gradeKey || window._savedGradeKey || '';
+
+    // Find unused code
+    const snap = await getDocs(query(collection(db,'codes'),where('code','==',code),where('used','==',false)));
+    if(snap.empty){ showMsg('code-msg','الكود غلط أو مستخدم بالفعل ❌','error'); setLoad(btn,false); return; }
+
+    const cd       = snap.docs[0];
+    const codeData = cd.data();
+
+    // ── GRADE LOCK: code must match student's grade ──
+    if(myGradeKey && codeData.gradeKey && codeData.gradeKey !== myGradeKey){
+      showMsg('code-msg',`الكود ده مخصص لـ "${GRADE_LABELS[codeData.gradeKey]||codeData.gradeKey}" — مش صفك ❌`,'error');
+      setLoad(btn,false); return;
+    }
+
+    // ── 30-day expiry ──
+    const expiry = new Date(Date.now() + 30*24*60*60*1000);
+
     // Mark code used
-    await updateDoc(doc(db,'codes',cd.id), { used:true, usedBy:user.uid, usedAt:serverTimestamp() });
-    // Activate subscription but wait for grade selection
-    await updateDoc(doc(db,'users',user.uid), {
+    await updateDoc(doc(db,'codes',cd.id),{used:true, usedBy:user.uid, usedAt:serverTimestamp()});
+
+    // Activate with 30-day expiry
+    await updateDoc(doc(db,'users',user.uid),{
       subscriptionActive: true,
       subscriptionCode: code,
-      stage: cd.data().stage||'',
-      grade: cd.data().grade||'',
-      gradeKey: cd.data().gradeKey||'',
-      activatedAt: serverTimestamp()
+      activatedAt: serverTimestamp(),
+      expiresAt: expiry,
+      stage:    ud.data()?.stage    || codeData.stage    || '',
+      grade:    ud.data()?.grade    || codeData.grade    || '',
+      gradeKey: ud.data()?.gradeKey || codeData.gradeKey || myGradeKey,
     });
-    // If code already has grade → skip grade step
-    if(cd.data().gradeKey){
-      showStep('step-success');
-    } else {
-      showStep('step-grade');
-    }
-  } catch(e){ showMsg('code-msg','خطأ: '+e.message,'error'); }
-  setLoad(btn, false);
-};
 
-// ── GRADE OPTIONS ──
-window.updateGradeOptions = () => {
-  const stage = document.getElementById('grade-stage').value;
-  const sel = document.getElementById('grade-level');
-  const opts = {
-    primary: ['الصف الرابع الابتدائي|primary-4','الصف الخامس الابتدائي|primary-5','الصف السادس الابتدائي|primary-6'],
-    prep:    ['الصف الأول الإعدادي|prep-1','الصف الثاني الإعدادي|prep-2','الصف الثالث الإعدادي|prep-3'],
-    sec:     ['الصف الأول الثانوي|sec-1','الصف الثاني الثانوي|sec-2','الصف الثالث الثانوي|sec-3']
-  };
-  sel.innerHTML = '<option value="">— اختار الصف —</option>';
-  if(stage && opts[stage]){
-    opts[stage].forEach(o=>{
-      const [label,val] = o.split('|');
-      sel.innerHTML += `<option value="${val}">${label}</option>`;
-    });
-  }
-};
-
-// ── SAVE GRADE ──
-window.saveGrade = async () => {
-  const stage    = document.getElementById('grade-stage').value;
-  const gradeKey = document.getElementById('grade-level').value;
-  if(!stage){ showMsg('grade-msg','اختار المرحلة','error'); return; }
-  if(!gradeKey){ showMsg('grade-msg','اختار الصف','error'); return; }
-  const btn = document.getElementById('grade-btn');
-  setLoad(btn, true);
-  const gradeLabels = {
-    'primary-4':'الصف الرابع الابتدائي','primary-5':'الصف الخامس الابتدائي','primary-6':'الصف السادس الابتدائي',
-    'prep-1':'الصف الأول الإعدادي','prep-2':'الصف الثاني الإعدادي','prep-3':'الصف الثالث الإعدادي',
-    'sec-1':'الصف الأول الثانوي','sec-2':'الصف الثاني الثانوي','sec-3':'الصف الثالث الثانوي'
-  };
-  try{
-    await updateDoc(doc(db,'users',auth.currentUser.uid), {
-      stage, gradeKey, grade: gradeLabels[gradeKey]||gradeKey
-    });
     showStep('step-success');
-  }catch(e){ showMsg('grade-msg','خطأ: '+e.message,'error'); }
+  } catch(e){ showMsg('code-msg','خطأ: '+e.message,'error'); }
   setLoad(btn, false);
 };
 
 // ── BANNER & PRICE ──
 async function loadBanner(){
-  try {
-    const d = await getDoc(doc(db,'settings','announcement'));
-    if(d.exists() && d.data().show && d.data().text){
-      document.getElementById('banner-text').textContent = d.data().text;
+  try{
+    const d=await getDoc(doc(db,'settings','announcement'));
+    if(d.exists()&&d.data().show&&d.data().text){
+      document.getElementById('banner-text').textContent=d.data().text;
       document.getElementById('banner').classList.add('show');
-      document.body.style.paddingTop = '50px';
+      document.body.style.paddingTop='50px';
     }
-  } catch(e){}
+  }catch(e){}
 }
 async function loadPrice(){
-  try {
-    const d = await getDoc(doc(db,'settings','subscription'));
-    if(d.exists() && d.data().price)
-      document.getElementById('sub-price').textContent = d.data().price + ' جنيه';
-  } catch(e){}
+  try{
+    const d=await getDoc(doc(db,'settings','subscription'));
+    if(d.exists()&&d.data().price)
+      document.getElementById('sub-price').textContent=d.data().price+' جنيه';
+  }catch(e){}
 }
 
 // ── WhatsApp ──
-window.openWaRegister = () => {
-  const msg = encodeURIComponent('مرحباً أستاذ مهدي 👋\nعايز أشترك في Plus Mathematics\n\nاسمي: \nرقم هاتفي: \nالمرحلة والصف: \n\nأرجو كود الاشتراك وسعره 🎓');
-  window.open('https://wa.me/201007586279?text='+msg,'_blank');
+window.openWaRegister=()=>{
+  const m=encodeURIComponent('مرحباً أستاذ مهدي 👋\nعايز أشترك في Plus Mathematics\n\nاسمي: \nرقم هاتفي: \nالمرحلة والصف: \n\nأرجو كود الاشتراك وسعره 🎓');
+  window.open('https://wa.me/201007586279?text='+m,'_blank');
 };
-window.openWaCode = () => {
-  const msg = encodeURIComponent('مرحباً أستاذ مهدي 👋\nعايز كود اشتراك في Plus Mathematics\n\nرقم هاتفي: \nالمرحلة والصف: ');
-  window.open('https://wa.me/201007586279?text='+msg,'_blank');
+window.openWaCode=()=>{
+  const gk=window._savedGradeKey||'';
+  const grade=document.getElementById('code-grade-name')?.textContent||'';
+  const m=encodeURIComponent(`مرحباً أستاذ مهدي 👋\nعايز كود اشتراك في Plus Mathematics\n\nرقم هاتفي: \nالصف: ${grade||gk}`);
+  window.open('https://wa.me/201007586279?text='+m,'_blank');
 };
 </script>
 
 <script>
-// ── UI Helpers ──
 function showStep(id){
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
   document.getElementById(id)?.classList.add('active');
@@ -658,34 +694,29 @@ function showStep(id){
 function switchTab(t){
   document.querySelectorAll('.tab-btn').forEach((b,i)=>
     b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
-  document.getElementById('tab-login').style.display  = t==='login'  ?'block':'none';
-  document.getElementById('tab-register').style.display = t==='register'?'block':'none';
+  document.getElementById('tab-login').style.display   = t==='login'   ?'block':'none';
+  document.getElementById('tab-register').style.display= t==='register'?'block':'none';
 }
-function showMsg(id, text, type){
-  const el = document.getElementById(id);
+function showMsg(id,text,type){
+  const el=document.getElementById(id);
   if(!el) return;
-  const icon = type==='error' ? '#i-x' : '#i-check';
-  el.innerHTML = `<svg width="14" height="14"><use href="${icon}"/></svg>${text}`;
-  el.className = 'msg show ' + type;
+  el.innerHTML=`<svg width="14" height="14"><use href="${type==='error'?'#i-x':'#i-check'}"/></svg>${text}`;
+  el.className='msg show '+type;
 }
-function setLoad(btn, state){
-  btn.disabled = state;
-  btn.classList.toggle('loading', state);
-}
+function setLoad(btn,state){ btn.disabled=state; btn.classList.toggle('loading',state); }
 function closeBanner(){
   document.getElementById('banner').classList.remove('show');
-  document.body.style.paddingTop = '14px';
+  document.body.style.paddingTop='14px';
 }
-// Enter key support
-document.addEventListener('keydown', e => {
-  if(e.key !== 'Enter') return;
-  const active = document.querySelector('.step.active');
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  const active=document.querySelector('.step.active');
   if(!active) return;
-  if(active.id === 'step-auth'){
-    const isLogin = document.querySelector('.tab-btn.active')?.textContent.includes('دخول');
-    isLogin ? doLogin() : doRegister();
+  if(active.id==='step-auth'){
+    document.querySelector('.tab-btn.active')?.textContent.includes('دخول') ? doLogin() : doRegister();
   }
-  if(active.id === 'step-code') submitCode();
+  if(active.id==='step-code') submitCode();
+  if(active.id==='step-grade') saveGradeAndGoCode();
 });
 </script>
 </body>

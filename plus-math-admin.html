@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>Plus Mathematics — لوحة التحكم</title>
+<title>Plus  — لوحة التحكم</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -26,8 +26,8 @@
 
 html,body{height:100%;overflow:hidden}
 body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
-#shell{display:none;width:100%;height:100%;flex-direction:column}
-#shell.open{display:flex !important;flex-direction:column}
+#shell{display:none;width:100%;height:100%}
+#shell.open{display:flex;flex-direction:column;width:100%;height:100%}
 
 /* ═══ BG ═══ */
 .bg-grid{position:fixed;inset:0;z-index:0;
@@ -70,9 +70,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   box-shadow:0 5px 18px rgba(74,127,212,0.3);transition:all .15s;margin-top:4px}
 .lbtn:hover{transform:translateY(-1px);box-shadow:0 8px 26px rgba(74,127,212,0.4)}
 .lerr{font-size:12px;color:var(--err);margin-top:8px;display:none}
-
-/* ═══ SHELL ═══ */
-#shell{display:none;width:100%;height:100%;flex-direction:column}
 
 /* ═══ TOP BAR ═══ */
 .topbar{
@@ -368,6 +365,12 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   <symbol id="ic-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
   <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
   <symbol id="ic-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="ic-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></symbol>
+  <symbol id="ic-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></symbol>
+  <symbol id="ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></symbol>
+  <symbol id="ic-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="ic-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
 </svg>
 
 <div class="bg-grid"></div>
@@ -379,10 +382,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   <div class="lcard">
     <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus"
       onerror="this.src='https://plusinmath-web.firebasestorage.app/logo.png'"/>
-    <h2>لوحة تحكم المدرس</h2>
-    <p>Plus Mathematics · 2026</p>
+    <h2>العنايةبالموقع</h2>
+    <p>Plus  · 2026</p>
     <div class="lf"><label>اسم المستخدم</label>
-      <input type="text" id="au" placeholder="admin" autocomplete="username"/></div>
+      <input type="text" id="au" placeholder="plus" autocomplete="username"/></div>
     <div class="lf"><label>كلمة المرور</label>
       <input type="password" id="ap" placeholder="••••••••" autocomplete="current-password"
         onkeydown="if(event.key==='Enter')tryLogin()"/></div>
@@ -440,6 +443,9 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       </div>
       <div class="sb-item" onclick="goPage('codes')">
         <svg><use href="#ic-key"/></svg><span>الأكواد</span>
+      </div>
+      <div class="sb-item" onclick="goPage('content')">
+        <svg><use href="#ic-book"/></svg><span>المحتوى</span>
       </div>
       <div class="sb-item" onclick="goPage('broadcast')">
         <svg><use href="#ic-send"/></svg><span>إرسال جماعي</span>
@@ -500,7 +506,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </div>
         <div class="tw"><div class="tw-scroll">
           <table>
-            <thead><tr><th>الطالب</th><th>الهاتف</th><th>الإيميل</th><th>الكود</th><th>الحالة</th><th>التسجيل</th><th>إجراء</th></tr></thead>
+            <thead><tr><th>الطالب</th><th>الهاتف</th><th>الإيميل</th><th>الكود</th><th>الحالة</th><th>ينتهي</th><th>إجراء</th></tr></thead>
             <tbody id="usersTbl"><tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
           </table>
         </div></div>
@@ -523,6 +529,80 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <tbody id="codesTbl"><tr><td colspan="7"><div class="empty"><svg><use href="#ic-key"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
           </table>
         </div></div>
+      </div>
+
+      <!-- ══ CONTENT ══ -->
+      <div class="page" id="page-content">
+        <div class="sh">
+          <div class="sh-title"><svg><use href="#ic-book"/></svg>إدارة المحتوى</div>
+        </div>
+
+        <!-- Grade Selector -->
+        <div class="card" style="margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <label style="font-size:12px;font-weight:700;color:var(--muted)">اختار الصف:</label>
+            <select id="contentGrade" onchange="loadGradeContent()" style="padding:8px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;appearance:none">
+              <option value="">— اختار الصف —</option>
+              <optgroup label="ابتدائي">
+                <option value="primary-4">الصف الرابع الابتدائي</option>
+                <option value="primary-5">الصف الخامس الابتدائي</option>
+                <option value="primary-6">الصف السادس الابتدائي</option>
+              </optgroup>
+              <optgroup label="إعدادي">
+                <option value="prep-1">الصف الأول الإعدادي</option>
+                <option value="prep-2">الصف الثاني الإعدادي</option>
+                <option value="prep-3">الصف الثالث الإعدادي</option>
+              </optgroup>
+              <optgroup label="ثانوي">
+                <option value="sec-1">الصف الأول الثانوي</option>
+                <option value="sec-2">الصف الثاني الثانوي</option>
+                <option value="sec-3">الصف الثالث الثانوي</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <!-- Content Tabs -->
+        <div id="contentArea" style="display:none">
+          <div class="ftabs" style="margin-bottom:14px">
+            <div class="ftab on" onclick="setContentTab('videos')"><svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-play"/></svg>فيديوهات</div>
+            <div class="ftab" onclick="setContentTab('exams')"><svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-check"/></svg>امتحانات</div>
+            <div class="ftab" onclick="setContentTab('homework')"><svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-file"/></svg>واجبات</div>
+          </div>
+
+          <!-- Videos -->
+          <div id="ctab-videos">
+            <div class="sh">
+              <div class="sh-title"><svg><use href="#ic-play"/></svg>فيديوهات الشرح</div>
+              <button class="btn primary sm" onclick="openAddContent('video')"><svg><use href="#ic-plus"/></svg>إضافة فيديو</button>
+            </div>
+            <div id="videosList" class="tw"><div class="empty"><svg><use href="#ic-play"/></svg><p>اختار صف أولاً</p></div></div>
+          </div>
+
+          <!-- Exams -->
+          <div id="ctab-exams" style="display:none">
+            <div class="sh">
+              <div class="sh-title"><svg><use href="#ic-check"/></svg>الامتحانات</div>
+              <button class="btn gold sm" onclick="openAddContent('exam')"><svg><use href="#ic-plus"/></svg>إضافة امتحان</button>
+            </div>
+            <div id="examsList" class="tw"><div class="empty"><svg><use href="#ic-check"/></svg><p>اختار صف أولاً</p></div></div>
+          </div>
+
+          <!-- Homework -->
+          <div id="ctab-homework" style="display:none">
+            <div class="sh">
+              <div class="sh-title"><svg><use href="#ic-file"/></svg>الواجبات</div>
+              <button class="btn ok sm" onclick="openAddContent('homework')"><svg><use href="#ic-plus"/></svg>إضافة واجب</button>
+            </div>
+            <div id="homeworkList" class="tw"><div class="empty"><svg><use href="#ic-file"/></svg><p>اختار صف أولاً</p></div></div>
+          </div>
+        </div>
+
+        <div id="contentPlaceholder" class="empty" style="padding:40px">
+          <svg><use href="#ic-book"/></svg>
+          <h3 style="font-size:15px;font-weight:700;margin-bottom:6px;color:var(--text)">اختار صفاً لإدارة محتواه</h3>
+          <p>هتقدر تضيف فيديوهات وامتحانات وواجبات لكل صف</p>
+        </div>
       </div>
 
       <!-- ══ BROADCAST ══ -->
@@ -645,6 +725,60 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   </div>
 </div>
 
+<!-- Add Content Modal -->
+<div class="mbg" id="addContentModal">
+  <div class="modal" style="max-width:500px">
+    <h3 id="addContentTitle"><svg><use href="#ic-plus"/></svg>إضافة محتوى</h3>
+
+    <!-- VIDEO fields -->
+    <div id="fields-video">
+      <div class="ff"><label>عنوان الفيديو</label><input type="text" id="v-title" placeholder="مثال: الدرس الأول — المعادلات"/></div>
+      <div class="ff"><label>رابط اليوتيوب</label><input type="url" id="v-url" placeholder="https://youtube.com/watch?v=..."/></div>
+      <div class="ff"><label>وصف مختصر (اختياري)</label><input type="text" id="v-desc" placeholder="موضوع الفيديو"/></div>
+      <div class="ff"><label>المدة</label><input type="text" id="v-dur" placeholder="مثال: 45 دقيقة"/></div>
+      <div class="ff"><label>الترتيب</label><input type="number" id="v-order" placeholder="1" min="1"/></div>
+    </div>
+
+    <!-- EXAM fields -->
+    <div id="fields-exam" style="display:none">
+      <div class="ff"><label>عنوان الامتحان</label><input type="text" id="e-title" placeholder="مثال: امتحان الفصل الأول"/></div>
+      <div class="ff"><label>نوع الامتحان</label>
+        <select id="e-type" onchange="toggleExamType()">
+          <option value="mcq">اختيار من متعدد (MCQ)</option>
+          <option value="essay">مقالي</option>
+          <option value="pdf">ملف PDF</option>
+          <option value="link">لينك خارجي (Google Form)</option>
+        </select>
+      </div>
+      <div id="e-link-field" class="ff" style="display:none"><label>الرابط</label><input type="url" id="e-url" placeholder="https://..."/></div>
+      <div id="e-mcq-field" style="display:none">
+        <div class="ff"><label>الأسئلة (سؤال في كل سطر — الإجابة الصح ضع * قبلها)</label>
+          <textarea id="e-mcq" rows="6" placeholder="السؤال الأول؟&#10;* الإجابة الصح&#10;إجابة خاطئة&#10;إجابة خاطئة&#10;---&#10;السؤال الثاني؟&#10;* الإجابة الصح"></textarea>
+        </div>
+      </div>
+      <div id="e-essay-field" style="display:none">
+        <div class="ff"><label>نص الامتحان المقالي</label><textarea id="e-essay" rows="5" placeholder="اكتب أسئلة الامتحان هنا..."></textarea></div>
+      </div>
+      <div class="ff"><label>المدة (دقيقة)</label><input type="number" id="e-dur" placeholder="60"/></div>
+      <div class="ff"><label>الترتيب</label><input type="number" id="e-order" placeholder="1" min="1"/></div>
+    </div>
+
+    <!-- HOMEWORK fields -->
+    <div id="fields-homework" style="display:none">
+      <div class="ff"><label>عنوان الواجب</label><input type="text" id="h-title" placeholder="مثال: واجب الأسبوع الأول"/></div>
+      <div class="ff"><label>التعليمات</label><textarea id="h-desc" rows="3" placeholder="حل التمارين من 1 إلى 10..."></textarea></div>
+      <div class="ff"><label>موعد التسليم</label><input type="date" id="h-deadline"/></div>
+      <div class="ff"><label>رابط ملف/صورة (اختياري)</label><input type="url" id="h-url" placeholder="https://..."/></div>
+      <div class="ff"><label>الترتيب</label><input type="number" id="h-order" placeholder="1" min="1"/></div>
+    </div>
+
+    <div class="mfooter">
+      <button class="btn ghost" onclick="closeModal('addContentModal')">إلغاء</button>
+      <button class="btn primary" id="saveContentBtn" onclick="saveContent()"><svg><use href="#ic-check"/></svg>حفظ</button>
+    </div>
+  </div>
+</div>
+
 <!-- Student Details Modal -->
 <div class="mbg" id="studentModal">
   <div class="modal" style="max-width:480px">
@@ -687,7 +821,24 @@ window.loadAll = async ()=>{
 window.wloadUsers = async ()=>{
   try{
     const s = await getDocs(collection(db,'users'));
-    window._users = s.docs.map(d=>({id:d.id,...d.data()}));
+    const now = new Date();
+    const users = s.docs.map(d=>({id:d.id,...d.data()}));
+
+    // ── Auto-expire subscriptions past 30 days ──
+    const expiredBatch = users.filter(u=>{
+      if(!u.subscriptionActive) return false;
+      if(!u.expiresAt) return false;
+      const exp = u.expiresAt.toDate ? u.expiresAt.toDate() : new Date(u.expiresAt);
+      return now > exp;
+    });
+
+    for(const u of expiredBatch){
+      await updateDoc(doc(db,'users',u.id),{subscriptionActive:false});
+      u.subscriptionActive = false; // update local copy
+    }
+    if(expiredBatch.length>0) toast(`تم إلغاء ${expiredBatch.length} اشتراك منتهي ⏰`,'ok');
+
+    window._users = users;
     renderUsers(); updateStats();
   }catch(e){ toast('خطأ: '+e.message,'err'); console.error(e); }
 };
@@ -953,6 +1104,199 @@ function dlCsv(rows,name){
   toast('تم التصدير ✓','ok');
 }
 
+// ── CONTENT MANAGEMENT ──
+let _curGrade = '', _curContentType = 'videos', _editContentId = null;
+
+window.loadGradeContent = async () => {
+  _curGrade = document.getElementById('contentGrade').value;
+  if(!_curGrade){
+    document.getElementById('contentArea').style.display='none';
+    document.getElementById('contentPlaceholder').style.display='block';
+    return;
+  }
+  document.getElementById('contentArea').style.display='block';
+  document.getElementById('contentPlaceholder').style.display='none';
+  await loadContentTab(_curContentType);
+};
+
+window.setContentTab = async (tab) => {
+  _curContentType = tab;
+  document.querySelectorAll('#page-content .ftab').forEach((t,i)=>
+    t.classList.toggle('on',['videos','exams','homework'][i]===tab));
+  ['videos','exams','homework'].forEach(t=>{
+    document.getElementById('ctab-'+t).style.display = t===tab?'block':'none';
+  });
+  await loadContentTab(tab);
+};
+
+async function loadContentTab(tab){
+  if(!_curGrade) return;
+  // tab is always 'videos', 'exams', or 'homework'
+  try{
+    const snap = await getDocs(collection(db, 'content', _curGrade, tab));
+    const items = snap.docs.map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>(a.order||0)-(b.order||0));
+    renderContentList(tab, items);
+  }catch(e){ toast('خطأ تحميل المحتوى: '+e.message,'err'); }
+}
+
+function renderContentList(tab, items){
+  const elMap = {videos:'videosList', exams:'examsList', homework:'homeworkList'};
+  const el = document.getElementById(elMap[tab]);
+  if(!el) return;
+  if(!items.length){
+    const labels={videos:'فيديوهات',exams:'امتحانات',homework:'واجبات'};
+    el.innerHTML=`<div class="empty"><svg><use href="#ic-${tab==='videos'?'play':tab==='exams'?'check':'file'}"/></svg><p>لا يوجد ${labels[tab]} لهذا الصف بعد</p></div>`;
+    return;
+  }
+  const typeIcon={videos:'ic-play',exams:'ic-check',homework:'ic-file'};
+  const typeBadge={video:'فيديو',exam:'امتحان',homework:'واجب'};
+  el.innerHTML=`<div class="tw-scroll"><table><thead><tr><th>#</th><th>العنوان</th><th>التفاصيل</th><th>إجراء</th></tr></thead><tbody>${
+    items.map((item,i)=>`<tr>
+      <td style="font-size:13px;font-weight:800;color:var(--gold2)">${item.order||i+1}</td>
+      <td>
+        <div style="font-weight:700;font-size:13px">${item.title||'—'}</div>
+        <div style="font-size:11px;color:var(--muted)">${item.description||item.desc||''}</div>
+      </td>
+      <td style="font-size:11px;color:var(--muted)">
+        ${item.url?`<a href="${item.url}" target="_blank" style="color:var(--blue);text-decoration:none">🔗 رابط</a>`:''}
+        ${item.duration||item.dur?`· ${item.duration||item.dur}`:''}
+        ${item.type?`· <span class="bd blue" style="font-size:10px">${item.type}</span>`:''}
+      </td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn icon-btn" onclick="editContent('${tab}','${item.id}')" title="تعديل"><svg><use href="#ic-edit"/></svg></button>
+        <button class="btn icon-btn del" onclick="delContent('${tab}','${item.id}')" title="حذف"><svg><use href="#ic-trash"/></svg></button>
+        ${item.url?`<button class="btn icon-btn" onclick="window.open('${item.url}','_blank')" title="فتح"><svg><use href="#ic-link"/></svg></button>`:''}
+      </div></td>
+    </tr>`).join('')
+  }</tbody></table></div>`;
+}
+
+window.openAddContent = (type) => {
+  _editContentId = null;
+  // type is 'video', 'exam', or 'homework' — map to tab name
+  const tabMap = {video:'videos', exam:'exams', homework:'homework'};
+  _curContentType = tabMap[type] || type;
+  document.getElementById('addContentTitle').innerHTML = `<svg width="15" height="15"><use href="#ic-plus"/></svg>${type==='video'?'إضافة فيديو':type==='exam'?'إضافة امتحان':'إضافة واجب'}`;
+  ['video','exam','homework'].forEach(t=>{
+    document.getElementById('fields-'+t).style.display = t===type?'block':'none';
+  });
+  // Clear fields
+  document.querySelectorAll('#addContentModal input,#addContentModal textarea,#addContentModal select').forEach(el=>{
+    if(el.type!=='submit') el.value='';
+  });
+  if(type==='exam') toggleExamType();
+  document.getElementById('addContentModal').classList.add('on');
+};
+
+window.toggleExamType = () => {
+  const t = document.getElementById('e-type').value;
+  document.getElementById('e-link-field').style.display = (t==='pdf'||t==='link')?'block':'none';
+  document.getElementById('e-mcq-field').style.display  = t==='mcq'?'block':'none';
+  document.getElementById('e-essay-field').style.display = t==='essay'?'block':'none';
+};
+
+window.editContent = async (tab, id) => {
+  try{
+    const d = await getDoc(doc(db,'content',_curGrade,tab,id));
+    if(!d.exists()) return;
+    const data = d.data();
+    _editContentId = id;
+    // tab = 'videos','exams','homework' → type = 'video','exam','homework'
+    const type = tab==='videos'?'video':tab==='exams'?'exam':'homework';
+    window.openAddContent(type);
+    _editContentId = id;
+    // Fill fields
+    if(type==='video'){
+      document.getElementById('v-title').value = data.title||'';
+      document.getElementById('v-url').value   = data.url||'';
+      document.getElementById('v-desc').value  = data.description||'';
+      document.getElementById('v-dur').value   = data.duration||'';
+      document.getElementById('v-order').value = data.order||'';
+    } else if(type==='exam'){
+      document.getElementById('e-title').value = data.title||'';
+      document.getElementById('e-type').value  = data.type||'mcq';
+      document.getElementById('e-url').value   = data.url||'';
+      document.getElementById('e-dur').value   = data.duration||'';
+      document.getElementById('e-order').value = data.order||'';
+      document.getElementById('e-essay').value = data.essayText||'';
+      toggleExamType();
+    } else {
+      document.getElementById('h-title').value    = data.title||'';
+      document.getElementById('h-desc').value     = data.description||'';
+      document.getElementById('h-deadline').value = data.deadline||'';
+      document.getElementById('h-url').value      = data.url||'';
+      document.getElementById('h-order').value    = data.order||'';
+    }
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.saveContent = async () => {
+  if(!_curGrade){ toast('اختار صف أولاً','err'); return; }
+  const tab = _curContentType; // 'videos', 'exams', or 'homework'
+  const type = tab==='videos'?'video':tab==='exams'?'exam':'homework';
+  let data = {};
+
+  if(type==='video'){
+    const title = document.getElementById('v-title').value.trim();
+    if(!title){ toast('ادخل عنوان الفيديو','err'); return; }
+    data = {
+      title, type:'video',
+      url: document.getElementById('v-url').value.trim(),
+      description: document.getElementById('v-desc').value.trim(),
+      duration: document.getElementById('v-dur').value.trim(),
+      order: parseInt(document.getElementById('v-order').value)||1,
+      updatedAt: serverTimestamp()
+    };
+  } else if(type==='exam'){
+    const title = document.getElementById('e-title').value.trim();
+    if(!title){ toast('ادخل عنوان الامتحان','err'); return; }
+    const etype = document.getElementById('e-type').value;
+    data = {
+      title, type: etype,
+      url: document.getElementById('e-url').value.trim(),
+      duration: document.getElementById('e-dur').value.trim(),
+      order: parseInt(document.getElementById('e-order').value)||1,
+      essayText: document.getElementById('e-essay').value.trim(),
+      mcqRaw: document.getElementById('e-mcq').value.trim(),
+      updatedAt: serverTimestamp()
+    };
+  } else {
+    const title = document.getElementById('h-title').value.trim();
+    if(!title){ toast('ادخل عنوان الواجب','err'); return; }
+    data = {
+      title, type:'homework',
+      description: document.getElementById('h-desc').value.trim(),
+      deadline: document.getElementById('h-deadline').value,
+      url: document.getElementById('h-url').value.trim(),
+      order: parseInt(document.getElementById('h-order').value)||1,
+      updatedAt: serverTimestamp()
+    };
+  }
+
+  try{
+    if(_editContentId){
+      await updateDoc(doc(db,'content',_curGrade,tab,_editContentId), data);
+      toast('تم التعديل ✓','ok');
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db,'content',_curGrade,tab), data);
+      toast('تم الإضافة ✓','ok');
+    }
+    closeModal('addContentModal');
+    await loadContentTab(tab);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.delContent = async (tab, id) => {
+  if(!confirm('حذف هذا العنصر؟')) return;
+  try{
+    await deleteDoc(doc(db,'content',_curGrade,tab,id));
+    await loadContentTab(tab);
+    toast('تم الحذف','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
 // Signal ready
 window._fbReady = true;
 window.dispatchEvent(new Event('fbReady'));
@@ -1038,12 +1382,12 @@ function closeSidebar(){
 }
 
 // ═══ NAV ═══
-const pageLabels={overview:'نظرة عامة',users:'الطلاب',codes:'الأكواد',broadcast:'إرسال جماعي',settings:'الإعدادات'};
+const pageLabels={overview:'نظرة عامة',users:'الطلاب',codes:'الأكواد',content:'إدارة المحتوى',broadcast:'إرسال جماعي',settings:'الإعدادات'};
 function goPage(p){
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('on'));
   document.getElementById('page-'+p).classList.add('on');
   document.querySelectorAll('.sb-item').forEach((el,i)=>{
-    el.classList.toggle('on',['overview','users','codes','broadcast','settings'][i]===p);
+    el.classList.toggle('on',['overview','users','codes','content','broadcast','settings'][i]===p);
   });
   document.getElementById('tbTitle').textContent=pageLabels[p]||p;
   if(p==='broadcast') window.updatePreview?.();

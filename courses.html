@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plus Mathematics – الكورسات</title>
+<title>Plus – الصفوف</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -261,6 +261,95 @@ nav{position:sticky;top:0;z-index:50;height:58px;
 .toast.ok{color:var(--ok);border-color:rgba(0,214,143,0.3)}
 .toast.err{color:var(--err);border-color:rgba(255,77,109,0.3)}
 .toast svg{width:13px;height:13px}
+
+/* ── CODE GATE ── */
+#codeGate{position:fixed;inset:0;z-index:500;background:rgba(4,6,15,0.96);
+  backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:16px}
+#codeGate.open{display:flex}
+.cg-card{background:rgba(12,18,40,0.9);border:1px solid var(--b1);border-radius:22px;
+  padding:clamp(24px,5vw,36px);width:100%;max-width:400px;text-align:center;
+  animation:fadeUp .4s ease both;position:relative}
+.cg-card::before{content:'';position:absolute;inset:-1px;border-radius:23px;z-index:-1;
+  background:linear-gradient(135deg,rgba(74,127,212,0.4),rgba(201,168,76,0.35));
+  background-size:200% 200%;animation:bAnim 5s linear infinite}
+@keyframes bAnim{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.cg-icon{width:64px;height:64px;border-radius:18px;
+  background:linear-gradient(135deg,rgba(74,127,212,0.15),rgba(201,168,76,0.1));
+  border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.cg-icon svg{width:30px;height:30px;color:var(--gold)}
+.cg-card h2{font-size:17px;font-weight:900;margin-bottom:6px}
+.cg-card p{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:20px}
+.cg-grade-badge{display:inline-flex;padding:5px 14px;border-radius:20px;
+  background:rgba(74,127,212,0.1);border:1px solid rgba(74,127,212,0.25);
+  font-size:12px;font-weight:700;color:var(--blue);margin-bottom:16px}
+.cg-input{width:100%;padding:14px 16px;background:rgba(6,10,22,0.8);
+  border:2px solid var(--b1);border-radius:12px;color:var(--text);
+  font-family:'Tajawal',sans-serif;font-size:22px;font-weight:800;
+  text-align:center;letter-spacing:6px;outline:none;transition:border-color .2s;
+  margin-bottom:8px;caret-color:var(--gold)}
+.cg-input:focus{border-color:var(--gold)}
+.cg-input::placeholder{font-size:13px;letter-spacing:2px;font-weight:400;opacity:.4;color:var(--muted)}
+.cg-err{font-size:12px;color:var(--err);margin-bottom:10px;min-height:18px}
+.cg-btn{width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;
+  background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;
+  box-shadow:0 5px 20px rgba(74,127,212,0.3);transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:7px}
+.cg-btn:hover{transform:translateY(-1px)}
+.cg-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.cg-btn svg{width:16px;height:16px}
+.cg-btn .spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.cg-btn.loading .cg-text{display:none}
+.cg-btn.loading .spin{display:block}
+.cg-wa{display:flex;align-items:center;justify-content:center;gap:7px;
+  margin-top:10px;padding:10px;border-radius:10px;background:rgba(37,211,102,0.08);
+  border:1px solid rgba(37,211,102,0.2);color:#25D366;font-size:12px;
+  font-weight:600;text-decoration:none;transition:all .2s}
+.cg-wa:hover{background:rgba(37,211,102,0.14)}
+.cg-back{margin-top:10px;background:transparent;border:none;color:var(--muted);
+  font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;transition:color .2s}
+.cg-back:hover{color:var(--text)}
+.cg-timer{margin-top:12px;padding:8px 14px;border-radius:10px;
+  background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);
+  font-size:12px;color:var(--gold);font-weight:600}
+.cg-expired{background:rgba(255,77,109,0.08);border-color:rgba(255,77,109,0.2);color:var(--err)}
+/* ── CODE MODAL ── */
+.code-overlay{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:16px}
+.code-overlay.open{display:flex}
+.code-box{background:rgba(8,13,28,0.98);border:1px solid var(--b1);border-radius:20px;
+  padding:clamp(20px,5vw,30px);width:100%;max-width:360px;text-align:center;
+  animation:fadeUp .35s ease both;position:relative}
+.code-box img{width:52px;height:52px;object-fit:contain;margin-bottom:12px;
+  filter:drop-shadow(0 4px 12px rgba(74,127,212,0.5))}
+.code-box h2{font-size:16px;font-weight:900;margin-bottom:6px;
+  background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.code-box .sub{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:18px}
+.code-inp{width:100%;padding:13px;background:rgba(6,10,22,0.8);
+  border:2px solid var(--b1);border-radius:11px;color:var(--text);
+  font-family:'Tajawal',sans-serif;font-size:20px;font-weight:800;
+  text-align:center;letter-spacing:6px;outline:none;transition:border-color .2s;margin-bottom:8px}
+.code-inp:focus{border-color:var(--blue)}
+.code-inp::placeholder{font-size:13px;letter-spacing:1px;font-weight:400;color:var(--muted);opacity:.5}
+.code-err{font-size:12px;font-weight:600;min-height:16px;margin-bottom:10px;color:var(--err)}
+.code-ok-msg{font-size:12px;font-weight:600;min-height:16px;margin-bottom:10px;color:var(--ok)}
+.code-submit{width:100%;padding:12px;border:none;border-radius:11px;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;
+  background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;
+  box-shadow:0 5px 16px rgba(74,127,212,0.3);transition:all .15s;
+  display:flex;align-items:center;justify-content:center;gap:7px}
+.code-submit:hover{transform:translateY(-1px)}
+.code-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.code-wa{width:100%;padding:10px;border:none;border-radius:11px;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;
+  background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;
+  display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px}
+.exp-note{background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.25);
+  border-radius:10px;padding:10px 12px;font-size:12px;color:var(--warn);margin-bottom:14px;line-height:1.7}
+.days-left{font-size:26px;font-weight:900;color:var(--gold2);display:block;margin-bottom:3px}
+.sspin{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
 </style>
 </head>
 <body>
@@ -446,11 +535,74 @@ nav{position:sticky;top:0;z-index:50;height:58px;
   <span id="tMsg"></span>
 </div>
 
+<!-- Code Gate Overlay -->
+<div id="codeGate">
+  <div class="cg-card">
+    <div class="cg-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+    </div>
+    <h2>ادخل كود الصف</h2>
+    <div class="cg-grade-badge" id="cgGradeName">اسم الصف</div>
+    <p>هذا الصف يحتاج كود اشتراك خاص<br/>مدة الكود <strong style="color:var(--gold2)">30 يوماً</strong> من تاريخ التفعيل</p>
+    <input type="text" class="cg-input" id="cgInput" placeholder="XXXXXX" maxlength="10"
+      autocomplete="off" spellcheck="false" oninput="this.value=this.value.toUpperCase()"
+      onkeydown="if(event.key==='Enter')submitGradeCode()"/>
+    <div class="cg-err" id="cgErr"></div>
+    <button class="cg-btn" id="cgBtn" onclick="submitGradeCode()">
+      <span class="cg-text">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        تفعيل الصف
+      </span>
+      <div class="spin"></div>
+    </button>
+    <a href="https://wa.me/201007586279" target="_blank" class="cg-wa">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      اطلب كود من المدرس
+    </a>
+    <button class="cg-back" onclick="closeCodeGate()">← رجوع</button>
+  </div>
+</div>
+
+<!-- Code Verification Modal -->
+<div class="code-overlay" id="codeModal">
+  <div class="code-box">
+    <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.opacity='.5'"/>
+    <h2 id="codeModalTitle">أدخل كود الاشتراك</h2>
+    <div class="sub" id="codeModalSub">لفتح محتوى هذا الصف، أدخل الكود الذي حصلت عليه من المدرس</div>
+    <div class="exp-note" id="expireNote" style="display:none">
+      <span class="days-left" id="daysLeft"></span>
+      <span id="expireText"></span>
+    </div>
+    <div id="codeFormArea">
+      <input class="code-inp" id="codeInp" placeholder="XXXXXX" maxlength="10"
+        autocomplete="off" spellcheck="false" oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter')submitGradeCode()"/>
+      <div class="code-err" id="codeErr"></div>
+      <button class="code-submit" id="codeSubmitBtn" onclick="submitGradeCode()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+        تفعيل الكود
+      </button>
+    </div>
+    <div id="expiredArea" style="display:none">
+      <div style="font-size:40px;margin-bottom:10px">⏰</div>
+      <div style="font-size:15px;font-weight:800;margin-bottom:8px">انتهى كود الاشتراك</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:16px">
+        انتهت مدة الـ 30 يوم لكود هذا الصف<br/>تواصل مع المدرس للحصول على كود جديد
+      </div>
+      <button class="code-wa" onclick="requestNewCode()">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        طلب كود جديد عبر واتساب
+      </button>
+    </div>
+    <button onclick="closeCodeModal()" style="margin-top:10px;background:transparent;border:none;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;width:100%;padding:6px">إغلاق</button>
+  </div>
+</div>
+
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, collection, setDoc, serverTimestamp }
+import { getFirestore, doc, getDoc, getDocs, collection, setDoc, updateDoc, serverTimestamp, query, where }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const cfg = {
@@ -477,7 +629,19 @@ onAuthStateChanged(auth, async (user) => {
     if(!ud.exists()||!ud.data().subscriptionActive){
       window.location.href='plus-math-auth.html'; return;
     }
-    _userData = ud.data();
+
+    const data = ud.data();
+
+    // ── Check 30-day expiry ──
+    if(data.expiresAt){
+      const expiry = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
+      if(new Date() > expiry){
+        try{ await updateDoc(doc(db,'users',user.uid),{subscriptionActive:false}); }catch(e){}
+        window.location.href='plus-math-auth.html'; return;
+      }
+    }
+
+    _userData = data;
     document.getElementById('loadingScreen').style.display='none';
     document.getElementById('navbar').style.display='flex';
     document.getElementById('mainContent').style.display='block';
@@ -515,7 +679,6 @@ onAuthStateChanged(auth, async (user) => {
     }
   }
 });
-
 // ── OPEN COURSE ──
 window.openCourse = async (gradeKey, label, stage) => {
   document.getElementById('cvTitle').textContent = label;
@@ -549,18 +712,14 @@ async function loadList(grade,tab){
   }catch(e){return [];}
 }
 
-// ── RENDER VIDEOS ──
 function renderVideos(videos,done,gradeKey,isMine){
   const el=document.getElementById('videoList');
-  if(!videos.length){
-    el.innerHTML='<div class="empty"><p>لا يوجد فيديوهات بعد</p></div>'; return;
-  }
+  if(!videos.length){ el.innerHTML='<div class="empty"><p>لا يوجد فيديوهات بعد</p></div>'; return; }
   el.innerHTML=videos.map((v,i)=>{
     const isDone=done.includes(v.id);
     const isLocked=isMine&&i>0&&!done.includes(videos[i-1].id)&&!isDone;
     const ytId=getYtId(v.url||'');
     const thumb=ytId?`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`:'';
-    const encTitle=encodeURIComponent(v.title||'');
     return `<div class="video-item">
       <div id="vp-${v.id}" class="video-player" style="display:none">
         <iframe id="vf-${v.id}" src="" allowfullscreen allow="autoplay"></iframe>
@@ -570,14 +729,14 @@ function renderVideos(videos,done,gradeKey,isMine){
         </div>
       </div>
       <div class="video-row" style="${isLocked?'cursor:not-allowed;opacity:.55':''}"
-        ${!isLocked&&ytId?`onclick="openVid('${v.id}','${ytId}')"`:''}
+        ${!isLocked&&ytId?`onclick="openVid('${v.id}','${ytId}','${gradeKey}')"`:''}
         ${!isLocked&&!ytId&&v.url?`onclick="window.open('${v.url}','_blank')"`:''}
       >
         <div class="vthumb">
           ${thumb?`<img src="${thumb}" onerror="this.style.display='none'"/>`:''}
-          ${isLocked?`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="opacity:.7"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`:
-            isDone?`<svg viewBox="0 0 24 24" fill="none" stroke="#00d68f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>`:
-            `<svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)"><polygon points="5,3 19,12 5,21"/></svg>`}
+          ${isLocked?'<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="opacity:.7;width:20px;height:20px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>':
+            isDone?'<svg viewBox="0 0 24 24" fill="none" stroke="#00d68f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px"><polyline points="20,6 9,17 4,12"/></svg>':
+            '<svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)" style="width:20px;height:20px"><polygon points="5,3 19,12 5,21"/></svg>'}
         </div>
         <div class="vinfo">
           <div class="vtitle">${v.order?v.order+'. ':''}${v.title||'درس'}</div>
@@ -594,30 +753,23 @@ function renderVideos(videos,done,gradeKey,isMine){
   }).join('');
 }
 
-// ── RENDER EXAMS ──
 function renderExams(exams,done,gradeKey,isMine){
   const el=document.getElementById('examList');
-  if(!exams.length){
-    el.innerHTML='<div class="empty"><p>لا يوجد امتحانات بعد</p></div>'; return;
-  }
+  if(!exams.length){ el.innerHTML='<div class="empty"><p>لا يوجد امتحانات بعد</p></div>'; return; }
   const tLabel={mcq:'اختيار متعدد',essay:'مقالي',images:'صور امتحان',link:'Google Form',pdf:'PDF'};
   const tColor={mcq:'var(--gold)',essay:'var(--blue)',images:'var(--purple)',link:'var(--ok)',pdf:'var(--err)'};
   el.innerHTML=exams.map((e,i)=>{
     const isDone=done.includes(e.id);
     const isLocked=isMine&&i>0&&!done.includes(exams[i-1].id)&&!isDone;
-    const tl=tLabel[e.type]||'امتحان';
-    const tc=tColor[e.type]||'var(--gold)';
+    const tl=tLabel[e.type]||'امتحان'; const tc=tColor[e.type]||'var(--gold)';
     let click='';
     if(!isLocked){
-      if(e.type==='mcq'&&e.mcqRaw)
-        click=`onclick="openMcq('${e.id}','${gradeKey}',${JSON.stringify(e.title||'')},${JSON.stringify(e.mcqRaw||'')})"`;
-      else if(e.type==='essay'&&e.essayText)
-        click=`onclick="openEssay('${e.id}','${gradeKey}',${JSON.stringify(e.title||'')},${JSON.stringify(e.essayText||'')})"`;
+      if(e.type==='mcq'&&e.mcqRaw) click=`onclick="openMcq('${e.id}','${gradeKey}',${JSON.stringify(e.title||'')},${JSON.stringify(e.mcqRaw||'')})"`;
+      else if(e.type==='essay'&&e.essayText) click=`onclick="openEssay('${e.id}','${gradeKey}',${JSON.stringify(e.title||'')},${JSON.stringify(e.essayText||'')})"`;
       else if((e.type==='images'||e.type==='pdf')&&(e.imageUrls?.length||e.fileUrl||e.externalUrl)){
         const urls=e.imageUrls?.length?e.imageUrls:(e.fileUrl?[e.fileUrl]:[e.externalUrl]);
         click=`onclick="openImgs('${e.id}','${gradeKey}',${JSON.stringify(e.title||'')},${JSON.stringify(urls)})"`;
-      } else if(e.externalUrl||e.url)
-        click=`onclick="window.open('${e.externalUrl||e.url}','_blank')"`;
+      } else if(e.externalUrl||e.url) click=`onclick="window.open('${e.externalUrl||e.url}','_blank')"`;
     }
     return `<div class="exam-item" style="${isLocked?'opacity:.55;cursor:not-allowed':''}" ${click}>
       <div class="exam-ico" style="background:${tc}18;color:${tc}">
@@ -632,68 +784,55 @@ function renderExams(exams,done,gradeKey,isMine){
   }).join('');
 }
 
-// ── RENDER HOMEWORK ──
 function renderHw(hw,done,gradeKey,isMine){
   const el=document.getElementById('hwList');
-  if(!hw.length){
-    el.innerHTML='<div class="empty"><p>لا يوجد واجبات بعد</p></div>'; return;
-  }
+  if(!hw.length){ el.innerHTML='<div class="empty"><p>لا يوجد واجبات بعد</p></div>'; return; }
   el.innerHTML=hw.map((h,i)=>{
     const isDone=done.includes(h.id);
     return `<div class="hw-item">
-      <div class="hw-ico">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
-      </div>
+      <div class="hw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
       <div class="hw-info">
         <div class="hw-title">${h.order?h.order+'. ':''}${h.title||'واجب'}</div>
         <div class="hw-meta">${h.description||''}${h.deadline?' · 📅 '+h.deadline:''}</div>
         <div class="hw-links">
           ${h.fileUrl?`<a href="${h.fileUrl}" target="_blank" class="hw-link file">📎 فتح الملف</a>`:''}
           ${h.pdfUrl?`<a href="${h.pdfUrl}" target="_blank" class="hw-link pdf">📄 PDF</a>`:''}
-          ${h.imageUrl?`<button class="hw-link file" onclick="viewOneImg('${h.imageUrl}')">🖼 عرض صورة</button>`:''}
+          ${h.imageUrl?`<button class="hw-link file" onclick="viewOneImg('${h.imageUrl}')">🖼 عرض</button>`:''}
           ${h.url&&!h.fileUrl&&!h.pdfUrl?`<a href="${h.url}" target="_blank" class="hw-link file">🔗 رابط</a>`:''}
         </div>
       </div>
-      ${isMine&&!isDone?`<button onclick="markDone('${gradeKey}','homework','${h.id}')"
-        style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">سلّمت ✓</button>`
-        :isDone?'<span style="color:var(--ok);font-size:14px;flex-shrink:0">✅</span>':''}
+      ${isMine&&!isDone?`<button onclick="markDone('${gradeKey}','homework','${h.id}')" style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">سلّمت ✓</button>`:isDone?'<span style="color:var(--ok);font-size:14px;flex-shrink:0">✅</span>':''}
     </div>`;
   }).join('');
 }
 
-// ── VIDEO PLAYER ──
-window.openVid = (id, ytId) => {
-  document.querySelectorAll('[id^="vp-"]').forEach(w=>{
-    w.style.display='none';
-    const f=w.querySelector('iframe'); if(f) f.src='';
-  });
-  const wrap=document.getElementById('vp-'+id);
-  const frame=document.getElementById('vf-'+id);
-  if(wrap&&frame){ wrap.style.display='block'; frame.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`; }
+window.openVid = (id, ytId, gradeKey) => {
+  document.querySelectorAll('[id^="vp-"]').forEach(w=>{w.style.display='none';const f=w.querySelector('iframe');if(f)f.src='';});
+  const wrap=document.getElementById('vp-'+id), frame=document.getElementById('vf-'+id);
+  if(wrap&&frame){wrap.style.display='block';frame.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;}
 };
-window.closeVid = (id) => {
-  const w=document.getElementById('vp-'+id), f=document.getElementById('vf-'+id);
-  if(w) w.style.display='none'; if(f) f.src='';
-};
-window.markVDone = (gradeKey,id) => { markDone(gradeKey,'videos',id); closeVid(id); };
+window.closeVid=(id)=>{const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);if(w)w.style.display='none';if(f)f.src='';};
+window.markVDone=(gradeKey,id)=>{markDone(gradeKey,'videos',id);closeVid(id);};
 
-// ── MCQ ──
 let _mcq={questions:[],answers:{},gradeKey:'',examId:''};
-window.openMcq = (examId,gradeKey,title,raw) => {
+window.openMcq=(examId,gradeKey,title,raw)=>{
   _mcq={questions:parseMcq(raw),answers:{},gradeKey,examId};
   document.getElementById('mcqTitle').textContent=title;
   document.getElementById('mcqResult').style.display='none';
   document.getElementById('mcqBtn').style.display='block';
+  document.getElementById('mcqBtn').onclick=submitMcq;
+  document.getElementById('mcqBtn').textContent='تسليم الإجابات';
   renderMcq();
   document.getElementById('mcqModal').classList.add('open');
   document.body.style.overflow='hidden';
 };
 function parseMcq(raw){
-  return raw.split(/\n?---\n?/).filter(Boolean).map(block=>{
-    const lines=block.split('\n').filter(l=>l.trim());
-    const q=lines[0];
-    const opts=lines.slice(1).map(l=>({text:l.replace(/^\*\s*/,''),correct:l.startsWith('*')}));
-    return {q,opts};
+  return raw.split(/
+?---
+?/).filter(Boolean).map(block=>{
+    const lines=block.split('
+').filter(l=>l.trim());
+    return {q:lines[0],opts:lines.slice(1).map(l=>({text:l.replace(/^\*\s*/,''),correct:l.startsWith('*')}))};
   });
 }
 function renderMcq(){
@@ -705,131 +844,82 @@ function renderMcq(){
       ${q.opts.map((o,oi)=>`<div class="mcq-opt" id="opt-${qi}-${oi}" onclick="pickOpt(${qi},${oi})">${o.text}</div>`).join('')}
     </div>`).join('');
 }
-window.pickOpt = (qi,oi) => {
+window.pickOpt=(qi,oi)=>{
   _mcq.answers[qi]=oi;
   document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach(el=>el.classList.remove('sel'));
   document.getElementById(`opt-${qi}-${oi}`)?.classList.add('sel');
 };
-window.submitMcq = () => {
+function submitMcq(){
   let score=0;
   _mcq.questions.forEach((q,qi)=>{
     const ai=_mcq.answers[qi];
     q.opts.forEach((o,oi)=>{
-      const el=document.getElementById(`opt-${qi}-${oi}`);
-      if(!el) return;
+      const el=document.getElementById(`opt-${qi}-${oi}`);if(!el)return;
       el.onclick=null;
       if(o.correct){el.classList.add('correct');el.classList.remove('sel');}
       else if(oi===ai){el.classList.add('wrong');el.classList.remove('sel');}
     });
-    if(ai!==undefined&&q.opts[ai]?.correct) score++;
+    if(ai!==undefined&&q.opts[ai]?.correct)score++;
   });
   const pct=Math.round(score/_mcq.questions.length*100);
   document.getElementById('mcqResult').style.display='block';
-  document.getElementById('mcqResult').innerHTML=`
-    <div style="font-size:36px">${pct>=60?'🎉':'💪'}</div>
-    <div style="font-size:18px;font-weight:900;margin:8px 0">${score}/${_mcq.questions.length} صح</div>
-    <div style="font-size:14px;color:var(--muted)">${pct}% — ${pct>=80?'ممتاز':pct>=60?'جيد':'حاول تاني 💪'}</div>`;
+  document.getElementById('mcqResult').innerHTML=`<div style="font-size:36px">${pct>=60?'🎉':'💪'}</div><div style="font-size:18px;font-weight:900;margin:8px 0">${score}/${_mcq.questions.length} صح</div><div style="font-size:14px;color:var(--muted)">${pct}%</div>`;
   document.getElementById('mcqBtn').style.display='none';
-  if(pct>=50) markDone(_mcq.gradeKey,'exams',_mcq.examId);
-};
-window.closeMcq = () => { document.getElementById('mcqModal').classList.remove('open'); document.body.style.overflow=''; };
+  if(pct>=50)markDone(_mcq.gradeKey,'exams',_mcq.examId);
+}
+window.closeMcq=()=>{document.getElementById('mcqModal').classList.remove('open');document.body.style.overflow='';};
 
-// ── ESSAY ──
-window.openEssay = (examId,gradeKey,title,text) => {
+window.openEssay=(examId,gradeKey,title,text)=>{
   document.getElementById('mcqTitle').textContent=title;
   document.getElementById('mcqProg').textContent='امتحان مقالي';
   document.getElementById('mcqResult').style.display='none';
-  document.getElementById('mcqBody').innerHTML=`
-    <div class="essay-text">${text}</div>
-    <textarea class="essay-area" id="essayAns" placeholder="اكتب إجابتك هنا..."></textarea>`;
-  document.getElementById('mcqBtn').textContent='تسليم الإجابة ✓';
+  document.getElementById('mcqBody').innerHTML=`<div class="essay-text">${text}</div><textarea class="essay-area" placeholder="اكتب إجابتك هنا..."></textarea>`;
+  document.getElementById('mcqBtn').textContent='تسليم ✓';
   document.getElementById('mcqBtn').style.display='block';
-  document.getElementById('mcqBtn').onclick=()=>{
-    markDone(gradeKey,'exams',examId);
-    document.getElementById('mcqResult').style.display='block';
-    document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin-top:8px">تم التسليم!</div>';
-    document.getElementById('mcqBtn').style.display='none';
-  };
-  document.getElementById('mcqModal').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.getElementById('mcqBtn').onclick=()=>{markDone(gradeKey,'exams',examId);document.getElementById('mcqResult').style.display='block';document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin-top:8px">تم التسليم!</div>';document.getElementById('mcqBtn').style.display='none';};
+  document.getElementById('mcqModal').classList.add('open');document.body.style.overflow='hidden';
 };
 
-// ── IMAGE EXAM ──
-window.openImgs = (examId,gradeKey,title,urls) => {
+let _imgData=null;
+window.openImgs=(examId,gradeKey,title,urls)=>{
   _imgData={examId,gradeKey};
   document.getElementById('imgTitle').textContent=title;
-  document.getElementById('imgBody').innerHTML=urls.map((u,i)=>`
-    <div style="margin-bottom:10px">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">صفحة ${i+1}</div>
-      ${u.toLowerCase().endsWith('.pdf')||u.includes('application/pdf')
-        ?`<a href="${u}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(74,127,212,0.07);border:1px solid var(--b1);border-radius:10px;color:var(--blue);text-decoration:none;font-weight:700">📄 فتح الصفحة ${i+1}</a>`
-        :`<img src="${u}" style="width:100%;border-radius:10px;display:block" onclick="window.open('${u}','_blank')" style="cursor:pointer"/>`}
-    </div>`).join('');
+  document.getElementById('imgBody').innerHTML=urls.map((u,i)=>`<div style="margin-bottom:10px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">صفحة ${i+1}</div>${u.toLowerCase().includes('.pdf')?`<a href="${u}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(74,127,212,0.07);border:1px solid var(--b1);border-radius:10px;color:var(--blue);text-decoration:none;font-weight:700">📄 فتح الصفحة ${i+1}</a>`:`<img src="${u}" style="width:100%;border-radius:10px;display:block;cursor:pointer" onclick="window.open('${u}','_blank')"/>`}</div>`).join('');
   document.getElementById('imgDoneBtn').style.display='flex';
-  document.getElementById('imgModal').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.getElementById('imgModal').classList.add('open');document.body.style.overflow='hidden';
 };
-window.viewOneImg = (src) => {
-  _imgData=null;
-  document.getElementById('imgTitle').textContent='صورة';
-  document.getElementById('imgBody').innerHTML=`<img src="${src}" style="width:100%;border-radius:10px;display:block"/>`;
-  document.getElementById('imgDoneBtn').style.display='none';
-  document.getElementById('imgModal').classList.add('open');
-  document.body.style.overflow='hidden';
-};
-window.imgDone = () => {
-  if(_imgData) markDone(_imgData.gradeKey,'exams',_imgData.examId);
-  closeImg();
-};
-window.closeImg = () => { document.getElementById('imgModal').classList.remove('open'); document.body.style.overflow=''; };
+window.viewOneImg=(src)=>{_imgData=null;document.getElementById('imgTitle').textContent='صورة';document.getElementById('imgBody').innerHTML=`<img src="${src}" style="width:100%;border-radius:10px;display:block"/>`;document.getElementById('imgDoneBtn').style.display='none';document.getElementById('imgModal').classList.add('open');document.body.style.overflow='hidden';};
+window.imgDone=()=>{if(_imgData)markDone(_imgData.gradeKey,'exams',_imgData.examId);closeImg();};
+window.closeImg=()=>{document.getElementById('imgModal').classList.remove('open');document.body.style.overflow='';};
 
-// ── PLAYER MODAL (fallback) ──
-window.openPlayerModal = (ytId,title,id,gradeKey) => {
-  _playerData={id,gradeKey};
+window.openPlayerModal=(ytId,title,id,gradeKey)=>{
+  window._playerData={id,gradeKey};
   document.getElementById('playerTitle').textContent=title;
   document.getElementById('playerFrame').src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
-  document.getElementById('playerModal').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.getElementById('playerModal').classList.add('open');document.body.style.overflow='hidden';
 };
-window.closePlayer = () => {
-  document.getElementById('playerFrame').src='';
-  document.getElementById('playerModal').classList.remove('open');
-  document.body.style.overflow='';
-};
-window.playerDone = () => {
-  if(_playerData) markDone(_playerData.gradeKey,'videos',_playerData.id);
-  closePlayer();
-};
+window.closePlayer=()=>{document.getElementById('playerFrame').src='';document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';};
+window.playerDone=()=>{if(window._playerData)markDone(window._playerData.gradeKey,'videos',window._playerData.id);closePlayer();};
 
-// ── MARK DONE ──
-window.markDone = async (gradeKey,type,itemId) => {
+window.markDone=async(gradeKey,type,itemId)=>{
   try{
     const gp=_progress[gradeKey]||{};
     const list=[...(gp[type]||[])];
-    if(list.includes(itemId)){ showToast('تم التسجيل مسبقاً','ok'); return; }
+    if(list.includes(itemId)){showToast('تم التسجيل مسبقاً','ok');return;}
     list.push(itemId);
     _progress[gradeKey]={...gp,[type]:list};
     await setDoc(doc(db,'progress',_user.uid),_progress,{merge:true});
     const gk=window._openGrade;
     if(gk) openCourse(gk,document.getElementById('cvTitle').textContent,document.getElementById('cvSub').textContent);
     showToast('تم التسجيل ✓','ok');
-  }catch(e){ showToast('خطأ: '+e.message,'err'); }
+  }catch(e){showToast('خطأ: '+e.message,'err');}
 };
 
-// ── SIGN OUT ──
-window.doSignOut = async () => { await signOut(auth); window.location.href='index.html'; };
+window.doSignOut=async()=>{await signOut(auth);window.location.href='index.html';};
 
-// ── HELPERS ──
-function getYtId(url){
-  const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
-  return m?m[1]:'';
-}
-function setProg(fillId,valId,total,done){
-  const pct=total?Math.round(done/total*100):0;
-  const f=document.getElementById(fillId), v=document.getElementById(valId);
-  if(f) f.style.width=pct+'%'; if(v) v.textContent=pct+'%';
-}
-</script>
+function getYtId(url){const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);return m?m[1]:'';}
+function setProg(fillId,valId,total,done){const pct=total?Math.round(done/total*100):0;const f=document.getElementById(fillId),v=document.getElementById(valId);if(f)f.style.width=pct+'%';if(v)v.textContent=pct+'%';}
+
 
 <script>
 // ── GRADE DATA ──
