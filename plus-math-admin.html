@@ -1819,11 +1819,8 @@ window._fbReady = true;
 
 (ref,data)=>ref.add(data) = addDoc;
 // getDocs helper removed
-window._fbColl = collection;
-window._fbDoc = doc;
 (ref,data)=>ref.update(data) = updateDoc;
 (ref)=>ref.delete() = deleteDoc;
-window._fbST = serverTimestamp;
 window.dispatchEvent(new Event('fbReady'));
 
 
@@ -2321,10 +2318,10 @@ window.saveCoupon=async()=>{
   if(!code||!val){ toast('ادخل كود وقيمة الخصم','err'); return; }
   try{
     if(window._fbReady){
-      await window._fbAddDoc(window._fbColl(window._db,'coupons'),{
+      await db.collection('coupons').add({
         code, type, value:val, maxUses:max, expiresAt:exp||null,
         note, usedCount:0, active:true,
-        createdAt:window._fbST()
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
       });
     }
     closeModal('couponModal');
@@ -2338,7 +2335,7 @@ async function loadCoupons(){
   const el=document.getElementById('couponsTbl');
   try{
     if(!window._fbReady){ el.innerHTML='<tr><td colspan="7"><div class="empty"><p>جاري التحميل...</p></div></td></tr>'; return; }
-    const snap=await window._fbGetDocs(window._fbColl(window._db,'coupons'));
+    const snap=await db.collection('coupons').get();
     const coupons=snap.docs.map(d=>({id:d.id,...d.data()}));
     if(!coupons.length){ el.innerHTML='<tr><td colspan="7"><div class="empty"><p>لا يوجد كوبونات</p></div></td></tr>'; return; }
     el.innerHTML=coupons.map(c=>`<tr>
@@ -2358,11 +2355,11 @@ async function loadCoupons(){
   }catch(e){ el.innerHTML='<tr><td colspan="7"><div class="empty"><p>خطأ في التحميل</p></div></td></tr>'; }
 }
 window.toggleCoupon=async(id,state)=>{
-  try{ await window._fbUpdateDoc(window._fbDoc(window._db,'coupons',id),{active:state}); loadCoupons(); toast((state?'تم تفعيل':'تم إيقاف')+' الكوبون','ok'); }catch(e){ toast('خطأ','err'); }
+  try{ await db.collection('coupons').doc(id).update({active:state}); loadCoupons(); toast((state?'تم تفعيل':'تم إيقاف')+' الكوبون','ok'); }catch(e){ toast('خطأ','err'); }
 };
 window.deleteCoupon=async(id)=>{
   if(!confirm('حذف الكوبون؟')) return;
-  try{ await window._fbDelDoc(window._fbDoc(window._db,'coupons',id)); loadCoupons(); logActivity('🗑','حذف كوبون',id); toast('تم الحذف','ok'); }catch(e){ toast('خطأ','err'); }
+  try{ await db.collection('coupons').doc(id).delete(); loadCoupons(); logActivity('🗑','حذف كوبون',id); toast('تم الحذف','ok'); }catch(e){ toast('خطأ','err'); }
 };
 
 // ══════════════════════════════════════════
@@ -2380,9 +2377,9 @@ window.saveAdmin=async()=>{
     broadcast:document.getElementById('adm-p-broadcast').checked
   };
   try{
-    await window._fbAddDoc(window._fbColl(window._db,'admins'),{
+    await db.collection('admins').add({
       name, username:user, password:btoa(pass), permissions:perms,
-      createdAt:window._fbST(), active:true
+      createdAt:firebase.firestore.FieldValue.serverTimestamp(), active:true
     });
     closeModal('adminModal');
     loadAdmins();
@@ -2398,7 +2395,7 @@ async function loadAdmins(){
   const el=document.getElementById('adminsList');
   try{
     if(!window._fbReady){ el.innerHTML='<div class="empty"><p>جاري التحميل...</p></div>'; return; }
-    const snap=await window._fbGetDocs(window._fbColl(window._db,'admins'));
+    const snap=await db.collection('admins').get();
     const admins=snap.docs.map(d=>({id:d.id,...d.data()}));
     if(!admins.length){ el.innerHTML='<div class="empty"><p>لا يوجد مشرفون — أضف مشرفاً جديداً</p></div>'; return; }
     el.innerHTML=admins.map(a=>`
@@ -2423,7 +2420,7 @@ async function loadAdmins(){
 }
 window.deleteAdmin=async(id,name)=>{
   if(!confirm('حذف المشرف '+name+'؟')) return;
-  try{ await window._fbDelDoc(window._fbDoc(window._db,'admins',id)); loadAdmins(); logActivity('👤','حذف مشرف',name); toast('تم الحذف','ok'); }catch(e){ toast('خطأ','err'); }
+  try{ await db.collection('admins').doc(id).delete(); loadAdmins(); logActivity('👤','حذف مشرف',name); toast('تم الحذف','ok'); }catch(e){ toast('خطأ','err'); }
 };
 
 // Init on load
