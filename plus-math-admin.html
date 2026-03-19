@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>Plus Mathematics — لوحة التحكم</title>
+<title>Plus  — العناية بالموقع</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -382,10 +382,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   <div class="lcard">
     <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus"
       onerror="this.src='https://plusinmath-web.firebasestorage.app/logo.png'"/>
-    <h2>لوحة تحكم المدرس</h2>
+    <h2>العناية بالموقع</h2>
     <p>Plus Mathematics · 2026</p>
     <div class="lf"><label>اسم المستخدم</label>
-      <input type="text" id="au" placeholder="admin" autocomplete="username"/></div>
+      <input type="text" id="au" placeholder="plus" autocomplete="username"/></div>
     <div class="lf"><label>كلمة المرور</label>
       <input type="password" id="ap" placeholder="••••••••" autocomplete="current-password"
         onkeydown="if(event.key==='Enter')tryLogin()"/></div>
@@ -408,7 +408,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
     <a href="index.html" class="tb-logo">
       <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus"
         onerror="this.style.display='none'"/>
-      <div class="tb-logo-txt"><h3>Plus Math</h3><p>لوحة التحكم</p></div>
+      <div class="tb-logo-txt"><h3>Plus Math</h3><p>العناية بالموقع</p></div>
     </a>
     <div class="tb-title" id="tbTitle">نظرة عامة</div>
     <div class="tb-actions">
@@ -430,7 +430,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="sb-head">
         <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus"
           onerror="this.style.display='none'"/>
-        <div class="sb-head-txt"><h4>Plus Math</h4><p>لوحة التحكم</p></div>
+        <div class="sb-head-txt"><h4>Plus </h4><p>العناية بالموقع</p></div>
       </div>
 
       <div class="sb-sec">القائمة</div>
@@ -1025,10 +1025,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 <div class="toast" id="toast"><svg id="ti"><use href="#ic-check"/></svg><span id="tm"></span></div>
 
 <!-- Firebase -->
-<script type="module">
-import { getFirestore, collection, getDocs, getDoc, doc,
-         setDoc, addDoc, updateDoc, deleteDoc, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<!-- Firebase Compat SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
 
 const cfg = {
   apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
@@ -1038,9 +1039,9 @@ const cfg = {
   messagingSenderId:"444492731461",
   appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
 };
-const app = initializeApp(cfg);
-const db  = getFirestore(app);
-window._db = db;
+firebase.initializeApp(cfg);
+const db  = firebase.firestore();
+
 
 // ── LOAD ALL ──
 window.loadAll = async ()=>{
@@ -1050,7 +1051,7 @@ window.loadAll = async ()=>{
 // ── USERS ──
 window.wloadUsers = async ()=>{
   try{
-    const s = await getDocs(collection(db,'users'));
+    const s = await db.collection('users'.get());
     const now = new Date();
     const users = s.docs.map(d=>({id:d.id,...d.data()}));
 
@@ -1077,7 +1078,7 @@ window.wloadUsers = async ()=>{
     });
 
     for(const u of expiredBatch){
-      await updateDoc(doc(db,'users',u.id),{
+      await db.collection('users').doc(u.id).update({
         subscriptionActive: false, subscriptionCode: '', expiresAt: null, activatedAt: null
       });
       u.subscriptionActive = false;
@@ -1093,7 +1094,7 @@ window.wloadUsers = async ()=>{
 // ── CODES ──
 window.wloadCodes = async ()=>{
   try{
-    const s = await getDocs(collection(db,'codes'));
+    const s = await db.collection('codes'.get());
     window._codes = s.docs.map(d=>({id:d.id,...d.data()}));
     renderCodes(); updateStats();
   }catch(e){ toast('خطأ أكواد: '+e.message,'err'); console.error(e); }
@@ -1102,29 +1103,29 @@ window.wloadCodes = async ()=>{
 // ── SETTINGS ──
 window.wloadSettings = async ()=>{
   try{
-    const a = await getDoc(doc(db,'settings','announcement'));
-    if(a.exists()){
+    const a = await db.collection('settings'.get().doc('announcement'));
+    if(a.exists){
       document.getElementById('ann-show').checked = !!a.data().show;
       document.getElementById('ann-text').value   = a.data().text||'';
     }
-    const s = await getDoc(doc(db,'settings','subscription'));
-    if(s.exists()){
+    const s = await db.collection('settings'.get().doc('subscription'));
+    if(s.exists){
       document.getElementById('sub-price').value = s.data().price||'';
       document.getElementById('sub-days').value  = s.data().days||'';
       document.getElementById('sub-msg').value   = s.data().welcomeMsg||'';
     }
-    const adm = await getDoc(doc(db,'settings','admin'));
-    if(adm.exists()) window._ap = adm.data().pass;
+    const adm = await db.collection('settings'.get().doc('admin'));
+    if(adm.exists) window._ap = adm.data().pass;
   }catch(e){ console.warn('settings:',e.message); }
 };
 
 // ── SAVE ANN ──
 window.saveAnn = async ()=>{
   try{
-    await setDoc(doc(db,'settings','announcement'),{
+    await db.collection('settings').doc('announcement').set({
       show: document.getElementById('ann-show').checked,
       text: document.getElementById('ann-text').value.trim(),
-      updatedAt: serverTimestamp()
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     toast('تم حفظ الإعلان ✓','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1133,11 +1134,11 @@ window.saveAnn = async ()=>{
 // ── SAVE SUB ──
 window.saveSub = async ()=>{
   try{
-    await setDoc(doc(db,'settings','subscription'),{
+    await db.collection('settings').doc('subscription').set({
       price: document.getElementById('sub-price').value,
       days:  document.getElementById('sub-days').value,
       welcomeMsg: document.getElementById('sub-msg').value,
-      updatedAt: serverTimestamp()
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     toast('تم حفظ الإعدادات ✓','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1184,9 +1185,9 @@ window.genCodes = async ()=>{
   try{
     for(let i=0;i<n;i++){
       const code = mk();
-      await addDoc(collection(db,'codes'),{
+      await db.collection('codes').add({
         code, stage, gradeKey, grade:gradeLabel, price, used:false,
-        createdAt:serverTimestamp()
+        createdAt:firebase.firestore.FieldValue.serverTimestamp()
       });
       list.push({code, stage:stageLabel, grade:gradeLabel});
     }
@@ -1216,7 +1217,7 @@ window.copyAllCodes = ()=>{
 window.delCode = async (id)=>{
   if(!confirm('مسح الكود؟')) return;
   try{
-    await deleteDoc(doc(db,'codes',id));
+    await db.collection('codes'.delete().doc(id));
     await wloadCodes();
     toast('تم المسح','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1228,7 +1229,7 @@ window.delUsedCodes = async ()=>{
   if(!used.length){ toast('لا يوجد أكواد مستخدمة','ok'); return; }
   if(!confirm('هتمسح '+used.length+' كود مستخدم. متأكد؟')) return;
   try{
-    await Promise.all(used.map(c=>deleteDoc(doc(db,'codes',c.id))));
+    await Promise.all(used.map(c=>db.collection('codes'.delete().doc(c.id))));
     await wloadCodes();
     toast('تم مسح '+used.length+' كود مستخدم ✓','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1238,7 +1239,7 @@ window.delUsedCodes = async ()=>{
 window.reuseCode = async (id)=>{
   if(!confirm('إعادة تفعيل الكود ده؟ — هيبقى متاح تاني')) return;
   try{
-    await updateDoc(doc(db,'codes',id),{used:false, usedBy:null, usedAt:null});
+    await db.collection('codes').doc(id).update({used:false, usedBy:null, usedAt:null});
     await wloadCodes();
     toast('تم إعادة تفعيل الكود ✓','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1248,7 +1249,7 @@ window.reuseCode = async (id)=>{
 window.revokeUser = async (id)=>{
   if(!confirm('إلغاء الاشتراك؟')) return;
   try{
-    await updateDoc(doc(db,'users',id),{subscriptionActive:false,revokedAt:serverTimestamp()});
+    await db.collection('users').doc(id).update({subscriptionActive:false,revokedAt:firebase.firestore.FieldValue.serverTimestamp()});
     await wloadUsers();
     toast('تم إلغاء الاشتراك','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1261,8 +1262,8 @@ window.blockUser = async (id, block)=>{
   try{
     const upd = { blocked: block };
     if(block) upd.subscriptionActive = false;
-    if(block) upd.blockedAt = serverTimestamp();
-    await updateDoc(doc(db,'users',id), upd);
+    if(block) upd.blockedAt = firebase.firestore.FieldValue.serverTimestamp();
+       await db.collection('users').doc(id).update(upd);
     await wloadUsers();
     toast(block ? 'تم حظر الطالب ⛔' : 'تم إلغاء الحظر ✓','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1273,7 +1274,7 @@ window.deleteUser = async (id, name)=>{
   if(!confirm('حذف "'+name+'" نهائياً؟')) return;
   if(!confirm('تأكيد الحذف النهائي — لا يمكن التراجع!')) return;
   try{
-    await deleteDoc(doc(db,'users',id));
+    await db.collection('users'.delete().doc(id));
     await wloadUsers();
     toast('تم الحذف النهائي','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1282,7 +1283,7 @@ window.deleteUser = async (id, name)=>{
 // ── RESET PASSWORD EMAIL ──
 window.resetUserPass = async (uid, userEmail, userName)=>{
   try{
-    const ud = await getDoc(doc(db,'users',uid));
+    const ud = await db.collection('users'.get().doc(uid));
     const d = ud.data()||{};
     const emailToSend = d.email || userEmail;
     if(!emailToSend || !emailToSend.includes('@')){
@@ -1303,14 +1304,14 @@ window.resetUserPass = async (uid, userEmail, userName)=>{
 // ── VIEW USER ──
 window.viewUser = async (id)=>{
   try{
-    const ud = await getDoc(doc(db,'users',id));
-    if(!ud.exists()){ toast('لم يتم العثور على الطالب','err'); return; }
+    const ud = await db.collection('users'.get().doc(id));
+    if(!ud.exists){ toast('لم يتم العثور على الطالب','err'); return; }
     const d = ud.data();
     const stageMap={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'};
     const statusLabel = d.blocked ? '⛔ محظور' : d.subscriptionActive ? '✅ مشترك' : '⏳ غير مشترك';
 
     // Load devices
-    const devSnap = await getDocs(collection(db,'users',id,'devices'));
+    const devSnap = await db.collection('users'.get().doc(id).collection('devices'));
     const devices = devSnap.docs.map(dd=>({id:dd.id,...dd.data()}));
     const maxDev = d.maxDevices||3;
 
@@ -1388,8 +1389,8 @@ function tr(label,val){
 window.resetDevices = async (userId) => {
   if(!confirm('هتمسح كل الأجهزة المسجلة — الطالب هيقدر يدخل من جهاز جديد. متأكد؟')) return;
   try{
-    const snap = await getDocs(collection(db,'users',userId,'devices'));
-    const deletes = snap.docs.map(d=>deleteDoc(doc(db,'users',userId,'devices',d.id)));
+    const snap = await db.collection('users'.get().doc(userId).collection('devices'));
+    const deletes = snap.docs.map(d=>db.collection('users'.delete().doc(userId,'devices',d.id)));
     await Promise.all(deletes);
     toast('تم مسح الأجهزة ✓ — الطالب يقدر يدخل من جديد','ok');
     viewUser(userId); // refresh modal
@@ -1398,7 +1399,7 @@ window.resetDevices = async (userId) => {
 
 window.removeDevice = async (userId, deviceDocId) => {
   try{
-    await deleteDoc(doc(db,'users',userId,'devices',deviceDocId));
+    await db.collection('users'.delete().doc(userId,'devices',deviceDocId));
     toast('تم حذف الجهاز ✓','ok');
     viewUser(userId);
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1407,7 +1408,7 @@ window.removeDevice = async (userId, deviceDocId) => {
 window.setMaxDevices = async (userId) => {
   const val = parseInt(document.getElementById('maxDevSel').value);
   try{
-    await updateDoc(doc(db,'users',userId),{maxDevices:val});
+    await db.collection('users').doc(userId).update({maxDevices:val});
     toast('تم تحديد الحد: '+val+' أجهزة ✓','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
@@ -1422,7 +1423,7 @@ window.changePass = async ()=>{
   if(nw.length<6){ toast('كلمة المرور قصيرة جداً','err'); return; }
   if(nw!==cf){ toast('كلمتا المرور مش متطابقتين','err'); return; }
   try{
-    await setDoc(doc(db,'settings','admin'),{pass:nw,updatedAt:serverTimestamp()});
+    await db.collection('settings').doc('admin').set({pass:nw,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
     window._adminPass = nw; window._ap = nw;
     ['old-p','new-p','cf-p'].forEach(id=>document.getElementById(id).value='');
     toast('تم تغيير كلمة المرور ✓','ok');
@@ -1514,7 +1515,7 @@ async function loadContentTab(tab){
   if(!_curGrade) return;
   // tab is always 'videos', 'exams', or 'homework'
   try{
-    const snap = await getDocs(collection(db, 'content', _curGrade, tab));
+    const snap = await db.collection('content'.get().doc(_curGrade).collection(tab));
     const items = snap.docs.map(d=>({id:d.id,...d.data()}))
       .sort((a,b)=>(a.order||0)-(b.order||0));
     renderContentList(tab, items);
@@ -1579,8 +1580,8 @@ window.toggleExamType = () => {
 
 window.editContent = async (tab, id) => {
   try{
-    const d = await getDoc(doc(db,'content',_curGrade,tab,id));
-    if(!d.exists()) return;
+    const d = await db.collection('content'.get().doc(_curGrade,tab,id));
+    if(!d.exists) return;
     const data = d.data();
     _editContentId = id;
     // tab = 'videos','exams','homework' → type = 'video','exam','homework'
@@ -1627,7 +1628,7 @@ window.saveContent = async () => {
       description: document.getElementById('v-desc').value.trim(),
       duration: document.getElementById('v-dur').value.trim(),
       order: parseInt(document.getElementById('v-order').value)||1,
-      updatedAt: serverTimestamp()
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
   } else if(type==='exam'){
     const title = document.getElementById('e-title').value.trim();
@@ -1640,7 +1641,7 @@ window.saveContent = async () => {
       order: parseInt(document.getElementById('e-order').value)||1,
       essayText: document.getElementById('e-essay').value.trim(),
       mcqRaw: document.getElementById('e-mcq').value.trim(),
-      updatedAt: serverTimestamp()
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
   } else {
     const title = document.getElementById('h-title').value.trim();
@@ -1651,17 +1652,17 @@ window.saveContent = async () => {
       deadline: document.getElementById('h-deadline').value,
       url: document.getElementById('h-url').value.trim(),
       order: parseInt(document.getElementById('h-order').value)||1,
-      updatedAt: serverTimestamp()
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
   }
 
   try{
     if(_editContentId){
-      await updateDoc(doc(db,'content',_curGrade,tab,_editContentId), data);
+         await db.collection('content').doc(_curGrade).collection(tab).doc(_editContentId).update(data);
       toast('تم التعديل ✓','ok');
     } else {
-      data.createdAt = serverTimestamp();
-      await addDoc(collection(db,'content',_curGrade,tab), data);
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+         await db.collection('content').doc(_curGrade).collection(tab).add(data);
       toast('تم الإضافة ✓','ok');
     }
     closeModal('addContentModal');
@@ -1672,7 +1673,7 @@ window.saveContent = async () => {
 window.delContent = async (tab, id) => {
   if(!confirm('حذف هذا العنصر؟')) return;
   try{
-    await deleteDoc(doc(db,'content',_curGrade,tab,id));
+    await db.collection('content'.delete().doc(_curGrade,tab,id));
     await loadContentTab(tab);
     toast('تم الحذف','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1680,15 +1681,16 @@ window.delContent = async (tab, id) => {
 
 // Signal ready
 window._fbReady = true;
-window._db = db;
-window._fbAddDoc = addDoc;
-window._fbGetDocs = getDocs;
+
+(ref,data)=>ref.add(data) = addDoc;
+(ref)=>ref.get() = getDocs;
 window._fbColl = collection;
 window._fbDoc = doc;
-window._fbUpdateDoc = updateDoc;
-window._fbDelDoc = deleteDoc;
+(ref,data)=>ref.update(data) = updateDoc;
+(ref)=>ref.delete() = deleteDoc;
 window._fbST = serverTimestamp;
 window.dispatchEvent(new Event('fbReady'));
+
 
 </script>
 
