@@ -594,6 +594,9 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <div class="sh-title"><svg><use href="#ic-users"/></svg>الطلاب المسجلون</div>
           <div class="sh-acts">
             <button class="btn wa sm" onclick="goPage('broadcast')"><svg><use href="#ic-wa"/></svg>إرسال جماعي</button>
+            <button class="btn sm" onclick="sendReminderEmails()" style="background:rgba(74,127,212,0.1);border:1px solid rgba(74,127,212,0.3);color:var(--blue)">
+              <svg><use href="#ic-mail"/></svg>تذكير المنتهيين
+            </button>
             <button class="btn sm" onclick="exportExpired()" style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);color:var(--warn)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               تصدير المنتهيين
@@ -1126,6 +1129,33 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
     </div><!-- content -->
   </div><!-- body-wrap -->
 </div><!-- shell -->
+
+<!-- Email Modal -->
+<div class="mbg" id="emailModal">
+  <div class="modal" style="max-width:480px">
+    <h3><svg><use href="#ic-mail"/></svg>إرسال إيميل للطالب</h3>
+    <div style="padding:10px 12px;background:rgba(74,127,212,0.06);border:1px solid var(--b2);border-radius:10px;margin-bottom:12px;font-size:12px;color:var(--muted)">
+      📤 الإيميل هيتفتح في Gmail بيتاعك جاهز للإرسال من <strong style="color:var(--blue)">plusinmath@gmail.com</strong>
+    </div>
+    <div class="ff"><label>إرسال إلى</label>
+      <input type="email" id="em-to" readonly style="opacity:.7"/></div>
+    <div class="ff"><label>الموضوع</label>
+      <input type="text" id="em-subject" placeholder="موضوع الإيميل"/></div>
+    <div class="ff"><label>نص الرسالة</label>
+      <textarea id="em-body" rows="6"></textarea></div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <button onclick="setEmailTemplate('reminder')" style="padding:5px 10px;border:1px solid var(--b1);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">⏰ تذكير انتهاء</button>
+      <button onclick="setEmailTemplate('welcome')" style="padding:5px 10px;border:1px solid var(--b1);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">👋 ترحيب</button>
+      <button onclick="setEmailTemplate('renew')" style="padding:5px 10px;border:1px solid var(--b1);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">🔄 تجديد</button>
+    </div>
+    <div class="mfooter">
+      <button class="btn ghost" onclick="closeModal('emailModal')">إلغاء</button>
+      <button class="btn primary" onclick="openGmail()">
+        <svg><use href="#ic-mail"/></svg>فتح Gmail وإرسال
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- Coupon Modal -->
 <div class="mbg" id="couponModal">
@@ -3209,6 +3239,7 @@ window.openStudentDetail = async (id)=>{
     document.getElementById('sd-name-title').textContent = d.name||'طالب';
     document.getElementById('sd-actions').innerHTML = `
       <button class="btn wa sm" onclick="waUser('${d.phone||''}','${(d.name||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-wa"/></svg>واتساب</button>
+      ${d.email?`<button class="btn sm" style="background:rgba(74,127,212,0.1);border:1px solid rgba(74,127,212,0.3);color:var(--blue)" onclick="sendEmailToStudent('${(d.email||'').replace(/'/g,"\\'")}','${(d.name||'').replace(/'/g,"\\'")}','${d.subscriptionActive?'active':'expired'}')"><svg><use href="#ic-mail"/></svg>إيميل</button>`:''}
       ${d.subscriptionActive?`<button class="btn sm" style="background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--err)" onclick="revokeUser('${id}')"><svg><use href="#ic-x"/></svg>إلغاء اشتراك</button>`:''}
       ${d.blocked
         ?`<button class="btn ok sm" onclick="blockUser('${id}',false)"><svg><use href="#ic-shield"/></svg>رفع حظر</button>`
@@ -3377,6 +3408,67 @@ window.previewContent = (type, url, title)=>{
     body.innerHTML=`<div style="text-align:center;padding:20px;color:var(--muted)">لا توجد معاينة لهذا النوع</div>`;
   }
   modal.classList.add('on');
+};
+
+// ══════════════════════════════════════
+// ── EMAIL (Gmail opener) ──
+// ══════════════════════════════════════
+let _emailTarget = { email:'', name:'' };
+
+window.sendEmailToStudent = (email, name, status) => {
+  _emailTarget = {email, name};
+  document.getElementById('em-to').value = email;
+  // Auto-select template based on status
+  if(status==='expired') setEmailTemplate('renew');
+  else setEmailTemplate('welcome');
+  openModal('emailModal');
+};
+
+window.setEmailTemplate = (tpl) => {
+  const name = _emailTarget.name || 'الطالب';
+  const templates = {
+    reminder: {
+      subject: `تذكير: اشتراكك في Plus Mathematics على وشك ينتهي`,
+      body: `مرحباً ${name} 👋\n\nنود تذكيرك بأن اشتراكك في منصة Plus Mathematics سينتهي قريباً.\n\nيمكنك تجديد اشتراكك الآن للاستمرار في الوصول لجميع الدروس والامتحانات.\n\nللتجديد أو الاستفسار، تواصل مع المدرس على:\n📱 واتساب: 01007586279\n\nمع تحياتنا،\nأ. مهدي حسن\nPlus Mathematics`
+    },
+    welcome: {
+      subject: `أهلاً بك في منصة Plus Mathematics 🎓`,
+      body: `أهلاً ${name} 👋\n\nنرحب بك في منصة Plus Mathematics!\n\nيمكنك الآن الوصول لجميع الفيديوهات والامتحانات والواجبات على:\n🌐 plusedu.vercel.app\n\nللمساعدة أو الاستفسار:\n📱 واتساب: 01007586279\n\nبالتوفيق 🌟\nأ. مهدي حسن`
+    },
+    renew: {
+      subject: `تجديد اشتراكك في Plus Mathematics`,
+      body: `مرحباً ${name} 👋\n\nلقد انتهى اشتراكك في منصة Plus Mathematics.\n\nلتجديد اشتراكك والاستمرار في مذاكرتك، تواصل معنا:\n📱 واتساب: 01007586279\n\nنتمنى لك التوفيق،\nأ. مهدي حسن\nPlus Mathematics`
+    }
+  };
+  const t = templates[tpl]||templates.welcome;
+  document.getElementById('em-subject').value = t.subject;
+  document.getElementById('em-body').value = t.body;
+};
+
+window.openGmail = () => {
+  const to      = document.getElementById('em-to').value;
+  const subject = document.getElementById('em-subject').value;
+  const body    = document.getElementById('em-body').value;
+  if(!to){ toast('لا يوجد إيميل للطالب','err'); return; }
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(gmailUrl, '_blank');
+  closeModal('emailModal');
+  logActivity('📧','إرسال إيميل',to);
+  toast('تم فتح Gmail ✓','ok');
+};
+
+// ── Send reminder to all expired students ──
+window.sendReminderEmails = () => {
+  const expired = (window._users||[]).filter(u=>!u.subscriptionActive && !u.blocked && u.email && !u.email.includes('@plusinmath'));
+  if(!expired.length){ toast('لا يوجد طلاب منتهي بإيميل متاح','err'); return; }
+  // Build bulk Gmail with BCC
+  const emails = expired.map(u=>u.email).join(',');
+  const subject = 'تجديد اشتراكك في Plus Mathematics';
+  const body = `مرحباً 👋\n\nلقد انتهى اشتراكك في منصة Plus Mathematics.\n\nللتجديد والاستمرار في المذاكرة، تواصل معنا:\n📱 واتساب: 01007586279\n🌐 plusedu.vercel.app\n\nأ. مهدي حسن`;
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&bcc=${encodeURIComponent(emails)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(gmailUrl,'_blank');
+  logActivity('📧','تذكير جماعي للمنتهيين',`${expired.length} طالب`);
+  toast(`تم فتح Gmail لـ ${expired.length} طالب ✓`,'ok');
 };
 
 let tTimer;
