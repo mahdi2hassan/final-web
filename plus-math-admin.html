@@ -713,163 +713,17 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="page" id="page-content">
         <div class="sh">
           <div class="sh-title"><svg><use href="#ic-book"/></svg>إدارة المحتوى</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="btn ghost sm" onclick="refreshContentStats()"><svg><use href="#ic-refresh"/></svg>تحديث</button>
-            <button class="btn primary sm" id="addContentFab" style="display:none" onclick="openAddContent(_curContentType==='videos'?'video':_curContentType==='exams'?'exam':'homework')">
-              <svg><use href="#ic-plus"/></svg>إضافة
-            </button>
-          </div>
         </div>
-
-        <!-- Grade Quick-Select Cards -->
-        <div class="grade-stage-wrap" id="gradeStageWrap">
-          <div class="stage-section">
-            <div class="stage-label"><span>🏫</span>ابتدائي</div>
-            <div class="grade-cards-row">
-              <div class="grade-card" onclick="selectGradeCard('primary-4',this)"><div class="gc-num">٤</div><div class="gc-lbl">رابع</div><div class="gc-stats" id="gcs-primary-4">...</div></div>
-              <div class="grade-card" onclick="selectGradeCard('primary-5',this)"><div class="gc-num">٥</div><div class="gc-lbl">خامس</div><div class="gc-stats" id="gcs-primary-5">...</div></div>
-              <div class="grade-card" onclick="selectGradeCard('primary-6',this)"><div class="gc-num">٦</div><div class="gc-lbl">سادس</div><div class="gc-stats" id="gcs-primary-6">...</div></div>
-            </div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;gap:16px">
+          <div style="width:72px;height:72px;border-radius:20px;background:rgba(74,127,212,0.1);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:32px">📚</div>
+          <h3 style="font-size:18px;font-weight:900">صفحة إدارة المحتوى</h3>
+          <p style="font-size:13px;color:var(--muted);line-height:1.7;max-width:300px">جاري تحويلك لصفحة إدارة المحتوى...</p>
+          <div style="width:40px;height:4px;background:rgba(74,127,212,0.2);border-radius:2px;overflow:hidden">
+            <div id="cmLoadBar" style="height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:2px;animation:cmSlide 1s ease forwards"></div>
           </div>
-          <div class="stage-section">
-            <div class="stage-label"><span>🏛️</span>إعدادي</div>
-            <div class="grade-cards-row">
-              <div class="grade-card" onclick="selectGradeCard('prep-1',this)"><div class="gc-num">١</div><div class="gc-lbl">أول</div><div class="gc-stats" id="gcs-prep-1">...</div></div>
-              <div class="grade-card" onclick="selectGradeCard('prep-2',this)"><div class="gc-num">٢</div><div class="gc-lbl">تاني</div><div class="gc-stats" id="gcs-prep-2">...</div></div>
-              <div class="grade-card" onclick="selectGradeCard('prep-3',this)"><div class="gc-num">٣</div><div class="gc-lbl">تالت</div><div class="gc-stats" id="gcs-prep-3">...</div></div>
-            </div>
-          </div>
-          <div class="stage-section">
-            <div class="stage-label"><span>🎓</span>ثانوي</div>
-            <div class="grade-cards-row">
-              <div class="grade-card" onclick="selectGradeCard('sec-1',this)"><div class="gc-num">١</div><div class="gc-lbl">أول</div><div class="gc-stats" id="gcs-sec-1">...</div></div>
-              <div class="grade-card" onclick="selectGradeCard('sec-2',this)"><div class="gc-num">٢</div><div class="gc-lbl">تاني</div><div class="gc-stats" id="gcs-sec-2">...</div></div>
-              <div class="grade-card" onclick="selectGradeCard('sec-3',this)"><div class="gc-num">٣</div><div class="gc-lbl">تالت</div><div class="gc-stats" id="gcs-sec-3">...</div></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Content Area -->
-        <div id="contentArea" style="display:none">
-          <!-- Selected Grade Header -->
-          <div class="content-grade-header" id="contentGradeHeader">
-            <div style="display:flex;align-items:center;gap:10px;flex:1">
-              <button onclick="backToGrades()" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--b2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted)">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
-              </button>
-              <div>
-                <div style="font-size:14px;font-weight:900" id="contentGradeTitle">—</div>
-                <div style="font-size:11px;color:var(--muted)" id="contentGradeSubtitle">—</div>
-              </div>
-            </div>
-            <!-- Search -->
-            <div style="display:flex;align-items:center;gap:6px;background:var(--inp);border:1px solid var(--b2);border-radius:9px;padding:6px 10px;min-width:140px;max-width:200px">
-              <svg width="12" height="12" style="color:var(--muted);flex-shrink:0"><use href="#ic-search"/></svg>
-              <input id="contentSearch" placeholder="بحث..." oninput="filterContent()" style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;width:100%"/>
-            </div>
-          </div>
-
-          <!-- Content Stats Mini Row -->
-          <div class="content-mini-stats" id="contentMiniStats">
-            <div class="cms-item bl"><svg width="13" height="13"><use href="#ic-play"/></svg><span id="cms-v">—</span><label>فيديو</label></div>
-            <div class="cms-item go"><svg width="13" height="13"><use href="#ic-check"/></svg><span id="cms-e">—</span><label>امتحان</label></div>
-            <div class="cms-item gr"><svg width="13" height="13"><use href="#ic-file"/></svg><span id="cms-h">—</span><label>واجب</label></div>
-            <div class="cms-item pu" style="cursor:pointer" onclick="setContentTab(_curContentType)" title="إضافة">
-              <svg width="13" height="13"><use href="#ic-plus"/></svg><span>إضافة</span><label>جديد</label>
-            </div>
-          </div>
-
-          <!-- Tabs -->
-          <div class="ftabs" style="margin-bottom:14px" id="contentTabBar">
-            <div class="ftab on" onclick="setContentTab('videos')">
-              <svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-play"/></svg>فيديوهات
-              <span class="ctab-count" id="ctc-videos"></span>
-            </div>
-            <div class="ftab" onclick="setContentTab('exams')">
-              <svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-check"/></svg>امتحانات
-              <span class="ctab-count" id="ctc-exams"></span>
-            </div>
-            <div class="ftab" onclick="setContentTab('homework')">
-              <svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-file"/></svg>واجبات
-              <span class="ctab-count" id="ctc-homework"></span>
-            </div>
-            <div class="ftab" onclick="setContentTab('books')" style="color:var(--gold)">
-              📚 الكتب
-            </div>
-          </div>
-
-          <!-- Videos -->
-          <div id="ctab-videos">
-            <div class="sh">
-              <div class="sh-title"><svg><use href="#ic-play"/></svg>فيديوهات الشرح</div>
-              <button class="btn primary sm" onclick="openAddContent('video')"><svg><use href="#ic-plus"/></svg>إضافة فيديو</button>
-            </div>
-            <div id="videosList" class="tw"><div class="empty"><svg><use href="#ic-play"/></svg><p>اختار صف أولاً</p></div></div>
-          </div>
-
-          <!-- Exams -->
-          <div id="ctab-exams" style="display:none">
-            <div class="sh">
-              <div class="sh-title"><svg><use href="#ic-check"/></svg>الامتحانات</div>
-              <button class="btn gold sm" onclick="openAddContent('exam')"><svg><use href="#ic-plus"/></svg>إضافة امتحان</button>
-            </div>
-            <div id="examsList" class="tw"><div class="empty"><svg><use href="#ic-check"/></svg><p>اختار صف أولاً</p></div></div>
-          </div>
-
-          <!-- Homework -->
-          <div id="ctab-homework" style="display:none">
-            <div class="sh">
-              <div class="sh-title"><svg><use href="#ic-file"/></svg>الواجبات</div>
-              <button class="btn ok sm" onclick="openAddContent('homework')"><svg><use href="#ic-plus"/></svg>إضافة واجب</button>
-            </div>
-            <div id="homeworkList" class="tw"><div class="empty"><svg><use href="#ic-file"/></svg><p>اختار صف أولاً</p></div></div>
-          </div>
-
-          <!-- Books -->
-          <div id="ctab-books" style="display:none">
-            <div class="sh">
-              <div class="sh-title">📚 الكتب</div>
-              <button class="btn gold sm" onclick="loadBooks()"><svg><use href="#ic-refresh"/></svg>تحديث</button>
-            </div>
-            <!-- Add Book Form -->
-            <div class="card" style="margin-bottom:14px">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--b2)">
-                <h4 style="margin:0;padding:0;border:none">📚 إضافة / تعديل كتاب</h4>
-                <div style="display:flex;gap:6px">
-                  <button class="btn ghost sm" onclick="clearBook()">مسح</button>
-                  <button class="btn gold sm" id="bSaveBtn" onclick="saveBook()"><svg><use href="#ic-check"/></svg>حفظ</button>
-                </div>
-              </div>
-              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
-                <div class="ff" style="margin:0;grid-column:1/-1"><label>عنوان الكتاب</label><input type="text" id="bTitle" placeholder="مثال: كتاب الرياضيات — الصف الثالث الثانوي"/></div>
-                <div class="ff" style="margin:0;grid-column:1/-1"><label>وصف الكتاب</label><textarea id="bDesc" rows="2" placeholder="محتويات الكتاب، عدد الصفحات..."></textarea></div>
-                <div class="ff" style="margin:0"><label>السعر (جنيه)</label><input type="number" id="bPrice" placeholder="150" min="0"/></div>
-                <div class="ff" style="margin:0"><label>الصف (اختياري)</label>
-                  <select id="bGrade">
-                    <option value="">كل الصفوف</option>
-                    <optgroup label="ابتدائي"><option value="primary-4">رابع</option><option value="primary-5">خامس</option><option value="primary-6">سادس</option></optgroup>
-                    <optgroup label="إعدادي"><option value="prep-1">أول</option><option value="prep-2">ثاني</option><option value="prep-3">ثالث</option></optgroup>
-                    <optgroup label="ثانوي"><option value="sec-1">أول</option><option value="sec-2">ثاني</option><option value="sec-3">ثالث</option></optgroup>
-                  </select>
-                </div>
-                <div class="ff" style="margin:0"><label>عدد الصفحات</label><input type="number" id="bPages" placeholder="120"/></div>
-                <div class="ff" style="margin:0"><label>الترتيب</label><input type="number" id="bOrder" placeholder="1" min="1"/></div>
-                <div class="ff" style="margin:0;grid-column:1/-1"><label>رابط صورة الغلاف</label>
-                  <input type="url" id="bCover" placeholder="https://..." oninput="previewCover(this.value)"/>
-                  <div id="bCoverPreview" style="display:none;margin-top:6px"><img id="bCoverImg" style="width:60px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--b2)"/></div>
-                </div>
-                <div class="ff" style="margin:0;grid-column:1/-1"><label>ملاحظات للطالب</label><textarea id="bNote" rows="2" placeholder="مثال: متاح للتوصيل..."></textarea></div>
-              </div>
-            </div>
-            <!-- Books List -->
-            <div class="tw"><div id="bList"><div class="empty"><p>اضغط "تحديث" لتحميل الكتب</p></div></div></div>
-          </div>
-        </div>
-
-        <div id="contentPlaceholder" class="empty" style="padding:40px;display:none">
-          <svg><use href="#ic-book"/></svg>
-          <h3 style="font-size:15px;font-weight:700;margin-bottom:6px;color:var(--text)">اختار صفاً لإدارة محتواه</h3>
-          <p>هتقدر تضيف فيديوهات وامتحانات وواجبات لكل صف</p>
+          <a href="content-manager.html" target="_blank" class="btn primary" style="margin-top:8px">
+            <svg><use href="#ic-book"/></svg>فتح إدارة المحتوى
+          </a>
         </div>
       </div>
 
@@ -2651,7 +2505,7 @@ function goPage(p){
   if(p==='activity') renderActivity();
   if(p==='coupons') loadCoupons();
   if(p==='admins') loadAdmins();
-  if(p==='content'){ window.refreshContentStats?.(); }
+  if(p==='content'){ window.open('content-manager.html','_blank'); }
   if(window.innerWidth<=768) closeSidebar();
 }
 
@@ -3814,6 +3668,7 @@ ${expired.map(u=>`<tr><td>${u.name||'—'}</td><td style="direction:ltr">${u.pho
 // ══════════════════════════════════════
 const _styleEl = document.createElement('style');
 _styleEl.textContent = `
+@keyframes cmSlide{from{width:0}to{width:100%}}
 @keyframes fadeOut{from{opacity:1}to{opacity:0}}
 @keyframes pulse-notif{0%,100%{background:rgba(74,127,212,0.1)}50%{background:rgba(74,127,212,0.25)}}
 .pulse-notif{animation:pulse-notif 1s ease 3}
