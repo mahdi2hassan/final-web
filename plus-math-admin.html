@@ -2898,7 +2898,7 @@ window.exportPDF = ()=>{
     <p>تاريخ التصدير: ${now.toLocaleString('ar-EG')}</p>
     <table><thead><tr><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>الكود</th><th>الحالة</th><th>تاريخ الانتهاء</th></tr></thead>
     <tbody>${rows}</tbody></table>
-    <script>window.print();setTimeout(()=>window.close(),1000);</scr`+`ipt></body></html>`;
+    \x3cscript\x3ewindow.print();setTimeout(()=>window.close(),1000);\x3c/script\x3e</body></html>`;
   const w=window.open('','_blank');
   w.document.write(html); w.document.close();
 };
@@ -3541,8 +3541,8 @@ function showWelcome(){
   const admin = window._loggedAdmin||{};
   const now = new Date();
   const h = now.getHours();
-  const greeting = h<12?'صباح الخير':'h<18?مساء النور':'مساء الخير';
-  const greetText = h<12?'صباح الخير':'مساء النور';
+  const greetText = h<12?'صباح الخير':h<18?'مساء النور':'مساء الخير';
+  // removed
 
   // Set avatar & name
   const name = admin.name||'مهدي';
@@ -3825,4 +3825,12 @@ function toast(msg,type='ok'){
   const t=document.getElementById('toast');
   const ic=document.getElementById('ti');
   t.className='toast '+type;
-  document.getElementById('tm
+  document.getElementById('tMsg').textContent=msg;
+  ic.innerHTML=type==='ok'?'<use href="#ic-check"/>':(type==='err'?'<use href="#ic-x"/>':'<use href="#ic-bell"/>');
+  t.classList.add('show');
+  clearTimeout(tTimer);
+  tTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+</script>
+</body>
+</html>
