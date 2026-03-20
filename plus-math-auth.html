@@ -29,7 +29,46 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);
 .orb1{width:400px;height:400px;background:rgba(26,50,112,0.5);top:-100px;left:-120px}
 .orb2{width:300px;height:300px;background:rgba(130,90,15,0.35);bottom:-80px;right:-60px}
 
-/* BANNER */
+/* ══ PROGRESS STEPS ══ */
+.steps-progress{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:20px;padding:0 16px}
+.sp-step{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;position:relative}
+.sp-step:not(:last-child)::after{content:'';position:absolute;top:14px;right:-50%;width:100%;height:2px;
+  background:var(--border2);z-index:0;transition:background .4s}
+.sp-step.done:not(:last-child)::after{background:var(--success)}
+.sp-dot{width:28px;height:28px;border-radius:50%;background:rgba(8,13,28,0.8);
+  border:2px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:var(--muted);z-index:1;position:relative;transition:all .3s}
+.sp-step.active .sp-dot{border-color:var(--blue);color:var(--blue);background:rgba(74,127,212,0.1);
+  box-shadow:0 0 0 4px rgba(74,127,212,0.12)}
+.sp-step.done .sp-dot{border-color:var(--success);background:rgba(0,214,143,0.1);color:var(--success)}
+.sp-lbl{font-size:9px;color:var(--muted);font-weight:600;white-space:nowrap}
+.sp-step.active .sp-lbl{color:var(--blue)}
+.sp-step.done .sp-lbl{color:var(--success)}
+
+/* ══ REMEMBER ME ══ */
+.remember-row{display:flex;align-items:center;gap:8px;margin:8px 0 4px;cursor:pointer}
+.remember-row input[type=checkbox]{width:15px;height:15px;accent-color:var(--blue);cursor:pointer}
+.remember-row span{font-size:12px;color:var(--muted)}
+
+/* ══ SMART ERROR ══ */
+.msg.tip{background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);
+  border-radius:8px;padding:8px 10px;color:var(--gold2);font-size:12px;line-height:1.6}
+.msg.tip svg{color:var(--gold2)}
+
+/* ══ ONBOARDING ══ */
+#step-onboard{display:none}
+#step-onboard.active{display:block}
+.ob-steps{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+.ob-step{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;
+  background:rgba(74,127,212,0.05);border:1px solid var(--border);border-radius:12px;
+  animation:fadeUp .4s ease both}
+.ob-step:nth-child(2){animation-delay:.1s}
+.ob-step:nth-child(3){animation-delay:.2s}
+.ob-step:nth-child(4){animation-delay:.3s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ob-ico{font-size:22px;flex-shrink:0;margin-top:2px}
+.ob-info h4{font-size:13px;font-weight:800;margin-bottom:2px}
+.ob-info p{font-size:11px;color:var(--muted);line-height:1.5}
 #banner{position:fixed;top:0;left:0;right:0;z-index:200;
   padding:11px 16px;display:none;align-items:center;justify-content:center;gap:10px;
   font-size:13px;font-weight:600;color:#fff;text-align:center;
@@ -203,6 +242,26 @@ input::placeholder{color:var(--muted);opacity:.5}
 
   <div class="auth-body">
 
+    <!-- Progress Steps -->
+    <div class="steps-progress" id="stepsProgress">
+      <div class="sp-step active" id="sp-auth">
+        <div class="sp-dot">١</div>
+        <div class="sp-lbl">الدخول</div>
+      </div>
+      <div class="sp-step" id="sp-grade">
+        <div class="sp-dot">٢</div>
+        <div class="sp-lbl">الصف</div>
+      </div>
+      <div class="sp-step" id="sp-code">
+        <div class="sp-dot">٣</div>
+        <div class="sp-lbl">الكود</div>
+      </div>
+      <div class="sp-step" id="sp-done">
+        <div class="sp-dot">✓</div>
+        <div class="sp-lbl">تم!</div>
+      </div>
+    </div>
+
     <!-- ══ STEP: AUTH ══ -->
     <div class="step active" id="step-auth">
       <div class="tabs">
@@ -214,14 +273,20 @@ input::placeholder{color:var(--muted);opacity:.5}
       <div id="tab-login">
         <div class="field">
           <label>رقم الهاتف أو الإيميل</label>
-          <input type="text" id="login-id" placeholder="01xxxxxxxxx أو example@gmail.com"/>
+          <input type="text" id="login-id" placeholder="01xxxxxxxxx أو example@gmail.com"
+            oninput="clearLoginMsg()" autocomplete="username"/>
         </div>
         <div class="field">
           <label>كلمة المرور</label>
-          <input type="password" id="login-pass" placeholder="••••••••"/>
+          <input type="password" id="login-pass" placeholder="••••••••"
+            oninput="clearLoginMsg()" autocomplete="current-password"/>
         </div>
-        <div class="forgot">
-          <a href="#" onclick="forgotPass(event)">نسيت كلمة المرور؟</a>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <label class="remember-row">
+            <input type="checkbox" id="rememberMe" checked/>
+            <span>تذكرني</span>
+          </label>
+          <a href="#" onclick="forgotPass(event)" style="font-size:12px;color:var(--muted)">نسيت كلمة المرور؟</a>
         </div>
         <div class="msg" id="login-msg"></div>
         <button class="btn" id="login-btn" onclick="doLogin()">
@@ -372,6 +437,48 @@ input::placeholder{color:var(--muted);opacity:.5}
       </button>
     </div>
 
+    <!-- ══ STEP: ONBOARDING ══ -->
+    <div class="step" id="step-onboard">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="font-size:32px;margin-bottom:8px">🎓</div>
+        <h3 style="font-size:17px;font-weight:900;margin-bottom:4px">أهلاً بك في Plus!</h3>
+        <p style="font-size:12px;color:var(--muted)">دليل سريع للبدء في 30 ثانية</p>
+      </div>
+      <div class="ob-steps">
+        <div class="ob-step">
+          <div class="ob-ico">📚</div>
+          <div class="ob-info">
+            <h4>اختار صفك</h4>
+            <p>بعد الدخول هتلاقي صفك الدراسي جاهز — اضغط عليه للبدء</p>
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-ico">▶️</div>
+          <div class="ob-info">
+            <h4>فيديوهات الشرح</h4>
+            <p>شاهد الدروس بالترتيب وبعد كل درس اضغط "انهيت الدرس" لفتح اللي بعده</p>
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-ico">✍️</div>
+          <div class="ob-info">
+            <h4>الامتحانات والواجبات</h4>
+            <p>بعد الشرح حل الامتحانات وسلّم الواجبات للأستاذ على واتساب</p>
+          </div>
+        </div>
+        <div class="ob-step">
+          <div class="ob-ico">📊</div>
+          <div class="ob-info">
+            <h4>تابع تقدمك</h4>
+            <p>من تاب "تقدمك" تشوف نسبة إنجازك في الفيديوهات والامتحانات</p>
+          </div>
+        </div>
+      </div>
+      <button class="btn" onclick="window.location.href='courses.html'">
+        <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>يلا نبدأ 🚀</span>
+      </button>
+    </div>
+
     <!-- ══ STEP: SUCCESS ══ -->
     <div class="step" id="step-success">
       <div style="text-align:center;padding:20px 0">
@@ -380,7 +487,7 @@ input::placeholder{color:var(--muted);opacity:.5}
         </div>
         <h3 style="font-size:18px;font-weight:900;margin-bottom:8px">تم تفعيل اشتراكك! 🎉</h3>
         <p style="font-size:13px;color:var(--muted);margin-bottom:20px">مرحباً بك في Plus Mathematics</p>
-        <button class="btn" onclick="window.location.href='courses.html'">
+        <button class="btn" onclick="goToOnboard()">
           <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>ابدأ المذاكرة</span>
         </button>
       </div>
@@ -424,7 +531,80 @@ const GRADE_LABELS = {
 function showStep(id){
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  // Update progress steps
+  const stepMap = {
+    'step-auth':   ['active','','',''],
+    'step-grade':  ['done','active','',''],
+    'step-code':   ['done','done','active',''],
+    'step-success':['done','done','done','active'],
+    'step-onboard':['done','done','done','done']
+  };
+  const states = stepMap[id]||['active','','',''];
+  ['sp-auth','sp-grade','sp-code','sp-done'].forEach((sp,i)=>{
+    const el=document.getElementById(sp);
+    if(!el) return;
+    el.className='sp-step '+(states[i]||'');
+  });
+  // Hide progress on success/onboard
+  const prog = document.getElementById('stepsProgress');
+  if(prog) prog.style.display = (id==='step-onboard') ? 'none' : 'flex';
 }
+
+// Remember me — save/load login ID
+function saveRememberMe(id){
+  if(document.getElementById('rememberMe')?.checked){
+    localStorage.setItem('pm_remember_id', id);
+  } else {
+    localStorage.removeItem('pm_remember_id');
+  }
+}
+// Auto-fill on load
+(function loadRemembered(){
+  const saved = localStorage.getItem('pm_remember_id');
+  if(saved){
+    const el = document.getElementById('login-id');
+    if(el){ el.value = saved; document.getElementById('rememberMe').checked = true; }
+  }
+})();
+
+function clearLoginMsg(){ document.getElementById('login-msg').className='msg'; }
+
+// Smart error messages
+function smartLoginError(code, id){
+  const tips = {
+    'auth/user-not-found':    { msg:'الحساب غير موجود', tip:'تأكد من رقم الهاتف أو سجل حساب جديد من فوق' },
+    'auth/wrong-password':    { msg:'كلمة المرور غلط', tip:'جرب "نسيت كلمة المرور" لإعادة التعيين' },
+    'auth/too-many-requests': { msg:'محاولات كتير جداً', tip:'انتظر دقيقة وحاول تاني أو ريست كلمة المرور' },
+    'auth/invalid-email':     { msg:'الإيميل أو الرقم مش صح', tip:'تأكد من الكتابة أو استخدم Google' },
+    'auth/user-disabled':     { msg:'الحساب موقوف', tip:'تواصل مع الأستاذ على واتساب: 01007586279' },
+    'auth/network-request-failed': { msg:'مشكلة في الإنترنت', tip:'تأكد من اتصالك وحاول تاني' }
+  };
+  const t = tips[code] || { msg:'بيانات الدخول غلط', tip:'تأكد من الرقم وكلمة المرور' };
+  const el = document.getElementById(id);
+  el.innerHTML = `<svg width="14" height="14"><use href="#i-x"/></svg>${t.msg}`;
+  el.className = 'msg show error';
+  // Show tip after 1s
+  setTimeout(()=>{
+    const tip = document.createElement('div');
+    tip.className='msg tip show';
+    tip.innerHTML=`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> ${t.tip}`;
+    if(el.nextSibling?.classList?.contains('tip')) return;
+    el.insertAdjacentElement('afterend', tip);
+    setTimeout(()=>tip.remove(), 5000);
+  }, 800);
+}
+
+// Onboard: show only for new users (first activation)
+function goToOnboard(){
+  const isNew = !localStorage.getItem('pm_onboarded');
+  if(isNew){
+    localStorage.setItem('pm_onboarded','1');
+    showStep('step-onboard');
+  } else {
+    window.location.href='courses.html';
+  }
+}
+
 function switchTab(t){
   document.querySelectorAll('.tab-btn').forEach((b,i)=>
     b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
@@ -528,18 +708,10 @@ function doLogin(){
   var btn = document.getElementById('login-btn');
   setLoad(btn,true);
   var email = id.includes('@') ? id.toLowerCase() : phoneToEmail(id);
+  saveRememberMe(id);
   auth.signInWithEmailAndPassword(email, pass)
     .catch(function(e){
-      var msgs = {
-        'auth/invalid-credential':       'بيانات الدخول غير صحيحة',
-        'auth/invalid-login-credentials':'بيانات الدخول غير صحيحة — جرب "الدخول بـ Google"',
-        'auth/user-not-found':           'الحساب مش موجود',
-        'auth/wrong-password':           'كلمة المرور خاطئة',
-        'auth/too-many-requests':        'محاولات كتير — انتظر قليلاً',
-        'auth/user-disabled':            'الحساب موقوف',
-        'auth/network-request-failed':   'مشكلة في الاتصال'
-      };
-      showMsg('login-msg', msgs[e.code]||'بيانات الدخول غير صحيحة', 'error');
+      smartLoginError(e.code, 'login-msg');
       setLoad(btn,false);
     });
 }

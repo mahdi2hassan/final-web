@@ -22,7 +22,41 @@
   --r:14px;--r2:10px;--r3:8px;
   --sh:0 4px 24px rgba(0,0,0,0.4);
   --sh2:0 8px 40px rgba(0,0,0,0.5);
+  /* Theme accent — changeable */
+  --accent:#4a7fd4;--accent2:#1a3270;--accent-glow:rgba(74,127,212,0.25);
 }
+/* Theme variants */
+body.theme-purple{--accent:#8b5cf6;--accent2:#4c1d95;--accent-glow:rgba(139,92,246,0.25);--blue:#8b5cf6;--navy:#4c1d95;--b1:rgba(139,92,246,0.22);--b2:rgba(139,92,246,0.12)}
+body.theme-green{--accent:#10b981;--accent2:#064e3b;--accent-glow:rgba(16,185,129,0.25);--blue:#10b981;--navy:#064e3b;--b1:rgba(16,185,129,0.22);--b2:rgba(16,185,129,0.12)}
+body.theme-rose{--accent:#f43f5e;--accent2:#881337;--accent-glow:rgba(244,63,94,0.25);--blue:#f43f5e;--navy:#881337;--b1:rgba(244,63,94,0.22);--b2:rgba(244,63,94,0.12)}
+
+/* Welcome screen */
+#welcomeScreen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.wc-card{background:var(--s1);border:1px solid var(--b1);border-radius:24px;padding:32px 28px;max-width:420px;width:100%;text-align:center;box-shadow:var(--sh2)}
+.wc-avatar{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;color:#fff;margin:0 auto 16px}
+.wc-name{font-size:22px;font-weight:900;margin-bottom:4px}
+.wc-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.wc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.wc-stat{background:rgba(74,127,212,0.08);border:1px solid var(--b2);border-radius:12px;padding:12px 8px}
+.wc-stat-v{font-size:22px;font-weight:900;color:var(--gold2)}
+.wc-stat-l{font-size:10px;color:var(--muted);margin-top:2px;font-weight:600}
+.wc-notifs{text-align:right;margin-bottom:20px;max-height:140px;overflow-y:auto}
+.wc-notif{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--b2);font-size:12px}
+.wc-notif:last-child{border:none}
+.wc-enter-btn{width:100%;padding:13px;border:none;border-radius:13px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;box-shadow:0 6px 20px var(--accent-glow);transition:all .2s}
+.wc-enter-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px var(--accent-glow)}
+
+/* Shortcut hint */
+.shortcut-hint{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(8,13,28,.85);border:1px solid var(--b2);border-radius:20px;padding:5px 14px;font-size:11px;color:var(--muted);pointer-events:none;z-index:100;backdrop-filter:blur(8px);display:none}
+#shell.open .shortcut-hint{display:block}
+
+/* Theme picker in settings */
+.theme-swatches{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.theme-swatch{width:36px;height:36px;border-radius:10px;cursor:pointer;border:2px solid transparent;transition:all .2s;position:relative}
+.theme-swatch.active{border-color:#fff;transform:scale(1.1)}
+.theme-swatch::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;opacity:0}
+.theme-swatch.active::after{opacity:1}
 
 html,body{height:100%;overflow:hidden}
 body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
@@ -473,6 +507,27 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 </div>
 
 <!-- ════ SHELL ════ -->
+<!-- Welcome Screen -->
+<div id="welcomeScreen" style="display:none">
+  <div class="wc-card">
+    <div class="wc-avatar" id="wc-av">م</div>
+    <div class="wc-name" id="wc-name">مرحباً!</div>
+    <div class="wc-sub" id="wc-time"></div>
+    <div class="wc-stats">
+      <div class="wc-stat"><div class="wc-stat-v" id="wc-total">—</div><div class="wc-stat-l">طالب مسجل</div></div>
+      <div class="wc-stat"><div class="wc-stat-v" id="wc-active">—</div><div class="wc-stat-l">اشتراك نشط</div></div>
+      <div class="wc-stat"><div class="wc-stat-v" id="wc-codes">—</div><div class="wc-stat-l">كود متاح</div></div>
+    </div>
+    <div class="wc-notifs" id="wc-notifs"></div>
+    <button class="wc-enter-btn" onclick="closeWelcome()">
+      ادخل على الداشبورد ←
+    </button>
+  </div>
+</div>
+
+<!-- Shortcut Hint -->
+<div class="shortcut-hint">G+U طلاب · G+C محتوى · G+K أكواد · G+S إعدادات · Ctrl+F بحث</div>
+
 <div id="shell">
 
   <!-- Sidebar overlay -->
@@ -497,6 +552,9 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       </div>
       <button class="tb-btn" onclick="loadAll()" title="تحديث"><svg><use href="#ic-refresh"/></svg></button>
       <button class="tb-btn" onclick="exportCSV()" title="تصدير"><svg><use href="#ic-dl"/></svg></button>
+      <button class="tb-btn" onclick="printReport()" title="طباعة تقرير" style="color:var(--gold)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      </button>
       <div class="tb-avatar" onclick="tryLogout()" title="خروج">م</div>
     </div>
   </div>
@@ -919,6 +977,17 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="cgrid">
 
           <div class="card">
+            <h4>🎨 لون الثيم</h4>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px">اختار لون الداشبورد</p>
+            <div class="theme-swatches">
+              <div class="theme-swatch active" data-theme="default" onclick="applyTheme('default',this)" style="background:linear-gradient(135deg,#4a7fd4,#1a3270)" title="أزرق (افتراضي)"></div>
+              <div class="theme-swatch" data-theme="purple" onclick="applyTheme('purple',this)" style="background:linear-gradient(135deg,#8b5cf6,#4c1d95)" title="بنفسجي"></div>
+              <div class="theme-swatch" data-theme="green" onclick="applyTheme('green',this)" style="background:linear-gradient(135deg,#10b981,#064e3b)" title="أخضر"></div>
+              <div class="theme-swatch" data-theme="rose" onclick="applyTheme('rose',this)" style="background:linear-gradient(135deg,#f43f5e,#881337)" title="أحمر"></div>
+            </div>
+          </div>
+
+          <div class="card">
             <h4><svg><use href="#ic-bell"/></svg>شريط الإعلانات</h4>
             <div class="toggle-row">
               <label>إظهار الشريط على الموقع</label>
@@ -1135,7 +1204,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   <div class="modal" style="max-width:480px">
     <h3><svg><use href="#ic-mail"/></svg>إرسال إيميل للطالب</h3>
     <div style="padding:10px 12px;background:rgba(74,127,212,0.06);border:1px solid var(--b2);border-radius:10px;margin-bottom:12px;font-size:12px;color:var(--muted)">
-      📤 الإيميل هيتفتح في Gmail بيتاعك جاهز للإرسال من <strong style="color:var(--blue)">plusinmath@gmail.com</strong>
+      📤 الإيميل هيتفتح في Gmail بيتاعك جاهز للإرسال من <strong style="color:var(--blue)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f3839f86809a9d9e92879bb3949e929a9fdd909c9e">[email&#160;protected]</a></strong>
     </div>
     <div class="ff"><label>إرسال إلى</label>
       <input type="email" id="em-to" readonly style="opacity:.7"/></div>
@@ -1287,6 +1356,13 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       </select>
     </div>
 
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div class="ff" style="margin:0"><label>تاريخ انتهاء مخصص <span style="color:var(--muted);font-size:10px">(اختياري)</span></label>
+        <input type="date" id="gc-expiry" style="direction:ltr"/></div>
+      <div class="ff" style="margin:0"><label>رقم واتساب للإرسال <span style="color:var(--muted);font-size:10px">(اختياري)</span></label>
+        <input type="text" id="gc-wa" placeholder="01XXXXXXXXX"/></div>
+    </div>
+
     <div id="genResult" style="display:none;margin-top:12px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
         <div style="font-size:12px;color:var(--muted);font-weight:700">الأكواد المولّدة</div>
@@ -1372,7 +1448,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
 <!-- Firebase -->
 <!-- Firebase Compat SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
@@ -1552,14 +1628,19 @@ window.genCodes = async ()=>{
   const ch = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   const mk = ()=>Array.from({length:6},()=>ch[Math.floor(Math.random()*ch.length)]).join('');
   const list = [];
+  // Custom expiry date
+  const expiryInput = document.getElementById('gc-expiry')?.value;
+  const customExpiry = expiryInput ? new Date(expiryInput) : null;
 
   try{
     for(let i=0;i<n;i++){
       const code = mk();
-      await db.collection('codes').add({
+      const codeData = {
         code, stage, gradeKey, grade:gradeLabel, price, used:false,
         createdAt:firebase.firestore.FieldValue.serverTimestamp()
-      });
+      };
+      if(customExpiry) codeData.customExpiry = customExpiry;
+      await db.collection('codes').add(codeData);
       list.push({code, stage:stageLabel, grade:gradeLabel});
     }
 
@@ -1569,6 +1650,7 @@ window.genCodes = async ()=>{
         <span style="font-family:monospace;font-size:16px;font-weight:900;letter-spacing:3px;color:var(--gold2);flex:1">${item.code}</span>
         <span style="font-size:11px;color:var(--muted)">${item.grade}</span>
         <button onclick="cpTxt('${item.code}')" style="padding:4px 9px;border:1px solid var(--blue);border-radius:6px;background:transparent;color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">نسخ</button>
+        <button onclick="sendCodeWA('${item.code}','${item.grade}')" style="padding:4px 9px;border:1px solid rgba(37,211,102,0.4);border-radius:6px;background:rgba(37,211,102,0.06);color:#25D366;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px" title="إرسال على واتساب">📱</button>
       </div>`).join('');
 
     await wloadCodes();
@@ -2456,13 +2538,7 @@ function showLoginErr(msg){
   setTimeout(()=>{ el.style.display='none'; },3000);
 }
 
-function openDashboard(){
-  document.getElementById('loginWrap').style.display = 'none';
-  const sh = document.getElementById('shell');
-  sh.classList.add('open');
-  applyPermissions();
-  waitLoad();
-}
+// openDashboard → see enhanced version below
 
 // ── APPLY PERMISSIONS based on logged admin ──
 function applyPermissions(){
@@ -2508,20 +2584,7 @@ function applyPermissions(){
   }
 }
 
-function waitLoad(){
-  let tries = 0;
-  const iv = setInterval(()=>{
-    tries++;
-    if(window.loadAll){
-      clearInterval(iv);
-      window.loadAll();
-    } else if(tries > 60){
-      clearInterval(iv);
-      // Show dashboard even without Firebase
-      updateStats();
-    }
-  }, 100);
-}
+// waitLoad → see enhanced version below
 
 function tryLogout(){
   document.getElementById('shell').classList.remove('open');
@@ -2692,7 +2755,7 @@ function updateStats(){
 // ═══ FILTERS ═══
 function setUF(f){_uf=f;document.querySelectorAll('#page-users .ftab').forEach((t,i)=>t.classList.toggle('on',['all','active','inactive','blocked'][i]===f));renderUsers()}
 function setCF(f){_cf=f;document.querySelectorAll('#page-codes .ftab').forEach((t,i)=>t.classList.toggle('on',['all','unused','used'][i]===f));renderCodes()}
-function doSearch(){renderUsers();renderCodes()}
+// doSearch → see enhanced version below
 
 // ═══ HELPERS ═══
 function waUser(phone,name){
@@ -3471,16 +3534,295 @@ window.sendReminderEmails = () => {
   toast(`تم فتح Gmail لـ ${expired.length} طالب ✓`,'ok');
 };
 
+// ══════════════════════════════════════
+// ── WELCOME SCREEN ──
+// ══════════════════════════════════════
+function showWelcome(){
+  const admin = window._loggedAdmin||{};
+  const now = new Date();
+  const h = now.getHours();
+  const greeting = h<12?'صباح الخير':'h<18?مساء النور':'مساء الخير';
+  const greetText = h<12?'صباح الخير':'مساء النور';
+
+  // Set avatar & name
+  const name = admin.name||'مهدي';
+  document.getElementById('wc-av').textContent = name.slice(0,2);
+  document.getElementById('wc-name').textContent = greetText+' '+name+' 👋';
+  document.getElementById('wc-time').textContent = now.toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long'});
+
+  // Stats from cached data
+  const users = window._users||[];
+  const codes  = window._codes||[];
+  document.getElementById('wc-total').textContent  = users.length;
+  document.getElementById('wc-active').textContent = users.filter(u=>u.subscriptionActive).length;
+  document.getElementById('wc-codes').textContent  = codes.filter(c=>!c.used).length;
+
+  // Recent notifications
+  const notifs = JSON.parse(localStorage.getItem('pm_notifs')||'[]').slice(0,4);
+  const nEl = document.getElementById('wc-notifs');
+  if(notifs.length){
+    nEl.innerHTML = notifs.map(n=>`<div class="wc-notif"><span>${n.ico||'📌'}</span><div><div style="font-weight:700;font-size:12px">${n.title}</div><div style="color:var(--muted);font-size:11px">${n.body||''}</div></div></div>`).join('');
+  } else {
+    nEl.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">كل حاجة تمام ✓</div>';
+  }
+
+  document.getElementById('welcomeScreen').style.display='flex';
+}
+
+function closeWelcome(){
+  const ws = document.getElementById('welcomeScreen');
+  ws.style.animation='fadeOut .3s ease forwards';
+  ws.addEventListener('animationend',()=>ws.style.display='none',{once:true});
+}
+
+// Patch openDashboard to show welcome
+const _origOpenDashboard = openDashboard;
+function openDashboard(){
+  document.getElementById('loginWrap').style.display='none';
+  const sh=document.getElementById('shell');
+  sh.classList.add('open');
+  applyPermissions();
+  // Load theme
+  const savedTheme = localStorage.getItem('pm_theme')||'default';
+  applyTheme(savedTheme, null);
+  waitLoad();
+  // Show welcome after data loads
+  setTimeout(()=>showWelcome(), 1200);
+}
+
+// ══════════════════════════════════════
+// ── REAL-TIME LISTENERS ──
+// ══════════════════════════════════════
+let _unsubUsers=null, _unsubCodes=null;
+
+function startRealtimeListeners(){
+  if(!window._fbReady) return;
+  // Stop existing listeners
+  if(_unsubUsers) _unsubUsers();
+  if(_unsubCodes) _unsubCodes();
+
+  // Real-time users
+  _unsubUsers = db.collection('users').onSnapshot(snap=>{
+    if(!window._users) return; // Skip first load (handled by loadAll)
+    const newUsers = snap.docs.map(d=>({id:d.id,...d.data()}));
+    const prevCount = (window._users||[]).length;
+    // Detect new user
+    if(newUsers.length > prevCount){
+      const newest = newUsers.find(u=>!window._users.find(x=>x.id===u.id));
+      if(newest){
+        toast(`🎓 طالب جديد: ${newest.name||newest.phone||'—'}!`,'ok');
+        window.addNotif?.('🎓','طالب جديد سجّل!',`${newest.name||'—'} — ${newest.grade||'—'}`,'info');
+        // Flash the users sidebar item
+        document.querySelector('.sb-item[onclick*="users"]')?.classList.add('pulse-notif');
+        setTimeout(()=>document.querySelector('.sb-item[onclick*="users"]')?.classList.remove('pulse-notif'),3000);
+      }
+    }
+    window._users = newUsers;
+    renderUsers(); updateStats();
+  }, err=>console.warn('users listener:', err.message));
+
+  // Real-time codes
+  _unsubCodes = db.collection('codes').onSnapshot(snap=>{
+    if(!window._codes) return;
+    window._codes = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderCodes(); updateStats();
+  }, err=>console.warn('codes listener:', err.message));
+}
+
+// Start listeners after firebase ready
+const _origWaitLoad = waitLoad;
+function waitLoad(){
+  let tries=0;
+  const iv=setInterval(()=>{
+    tries++;
+    if(window.loadAll){
+      clearInterval(iv);
+      window.loadAll().then(()=>{
+        // Start real-time listeners after initial load
+        setTimeout(startRealtimeListeners, 500);
+      });
+    } else if(tries>60){
+      clearInterval(iv);
+      updateStats();
+    }
+  },100);
+}
+
+// ══════════════════════════════════════
+// ── THEME COLORS ──
+// ══════════════════════════════════════
+function applyTheme(theme, clickedEl){
+  document.body.className = document.body.className.replace(/theme-\S+/g,'').trim();
+  if(theme !== 'default') document.body.classList.add('theme-'+theme);
+  localStorage.setItem('pm_theme', theme);
+  // Update swatches
+  document.querySelectorAll('.theme-swatch').forEach(s=>{
+    s.classList.toggle('active', s.dataset.theme===theme);
+  });
+}
+
+// ══════════════════════════════════════
+// ── KEYBOARD SHORTCUTS ──
+// ══════════════════════════════════════
+let _gPressed = false, _gTimer = null;
+document.addEventListener('keydown', e=>{
+  // Skip if typing in input
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT') return;
+  // Skip if login screen visible
+  if(document.getElementById('loginWrap')?.style.display!=='none') return;
+
+  // G+key shortcuts
+  if(e.key==='g'||e.key==='G'){
+    _gPressed=true;
+    clearTimeout(_gTimer);
+    _gTimer=setTimeout(()=>_gPressed=false, 1500);
+    return;
+  }
+  if(_gPressed){
+    _gPressed=false;
+    clearTimeout(_gTimer);
+    const map={'u':'users','c':'content','k':'codes','s':'settings','b':'broadcast','a':'analytics','n':'notifications'};
+    const page=map[e.key.toLowerCase()];
+    if(page){ goPage(page); e.preventDefault(); }
+    return;
+  }
+  // Ctrl+F → focus search
+  if((e.ctrlKey||e.metaKey)&&e.key==='f'){
+    e.preventDefault();
+    const srch=document.getElementById('searchInp');
+    if(srch){ srch.focus(); srch.select(); }
+  }
+  // Escape → close any open modal
+  if(e.key==='Escape'){
+    document.querySelectorAll('.mbg.on,.modal-bg.open').forEach(m=>{
+      m.classList.remove('on','open');
+    });
+  }
+});
+
+// ══════════════════════════════════════
+// ── SEND CODE VIA WHATSAPP ──
+// ══════════════════════════════════════
+window.sendCodeWA = (code, grade) => {
+  const waInp = document.getElementById('gc-wa')?.value.trim();
+  const price  = document.getElementById('gp')?.value||'';
+  let phone = waInp || '';
+  if(!phone){
+    phone = prompt('ادخل رقم الطالب (مثال: 01XXXXXXXXX):');
+    if(!phone) return;
+  }
+  const wa = '20'+phone.replace(/^0/,'').replace(/\D/g,'');
+  const msg = encodeURIComponent(
+    `مرحباً 👋\nكود اشتراكك في Plus Mathematics:\n\n🔑 ${code}\n\n📚 الصف: ${grade}${price?' · 💰 '+price+' جنيه':''}\n\n🌐 plusedu.vercel.app\n\nبالتوفيق 🎓`
+  );
+  window.open(`https://wa.me/${wa}?text=${msg}`,'_blank');
+  logActivity('📱','إرسال كود على واتساب',code+' → '+phone);
+  toast('تم الإرسال على واتساب ✓','ok');
+};
+
+// ══════════════════════════════════════
+// ── PRINT / EXPORT REPORT ──
+// ══════════════════════════════════════
+window.printReport = () => {
+  const users  = window._users||[];
+  const active = users.filter(u=>u.subscriptionActive && !u.blocked);
+  const expired= users.filter(u=>!u.subscriptionActive && !u.blocked);
+  const blocked= users.filter(u=>u.blocked);
+  const codes  = window._codes||[];
+  const now    = new Date().toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'});
+
+  // Expiring soon (next 7 days)
+  const expiring = active.filter(u=>{
+    if(!u.expiresAt) return false;
+    const exp = u.expiresAt.toDate?u.expiresAt.toDate():new Date(u.expiresAt);
+    const days = Math.ceil((exp-new Date())/86400000);
+    return days<=7 && days>=0;
+  });
+
+  const html = `<!DOCTYPE html><html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"/><title>تقرير Plus — ${now}</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',sans-serif;background:#fff;color:#111;padding:24px;font-size:13px}
+.header{text-align:center;border-bottom:3px solid #1a3270;padding-bottom:16px;margin-bottom:20px}
+.header h1{font-size:22px;font-weight:900;color:#1a3270}
+.header p{color:#6b7280;font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{background:#f8f9fc;border:1px solid #e5e9f2;border-radius:10px;padding:14px;text-align:center}
+.stat-v{font-size:26px;font-weight:900;color:#1a3270}
+.stat-l{font-size:11px;color:#6b7280;margin-top:3px}
+h2{font-size:14px;font-weight:800;color:#1a3270;margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid #e5e9f2}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px}
+th{background:#1a3270;color:#fff;padding:8px;text-align:right;font-weight:700}
+td{padding:7px 8px;border-bottom:1px solid #f3f4f6}
+tr:nth-child(even) td{background:#f8f9fc}
+.badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+.badge-ok{background:#d1fae5;color:#065f46}
+.badge-exp{background:#fee2e2;color:#991b1b}
+.badge-warn{background:#fef3c7;color:#92400e}
+@media print{body{padding:16px}button{display:none}}
+</style></head>
+<body>
+<div class="header">
+  <h1>📊 تقرير Plus Mathematics</h1>
+  <p>تاريخ التقرير: ${now} — الأستاذ مهدي حسن</p>
+</div>
+<div class="stats">
+  <div class="stat"><div class="stat-v">${users.length}</div><div class="stat-l">إجمالي الطلاب</div></div>
+  <div class="stat"><div class="stat-v" style="color:#00d68f">${active.length}</div><div class="stat-l">اشتراك نشط</div></div>
+  <div class="stat"><div class="stat-v" style="color:#ff4d6d">${expired.length}</div><div class="stat-l">منتهي/غير مشترك</div></div>
+  <div class="stat"><div class="stat-v" style="color:#f5a623">${codes.filter(c=>!c.used).length}</div><div class="stat-l">أكواد متاحة</div></div>
+</div>
+
+${expiring.length?`<h2>⚠️ اشتراكات تنتهي خلال 7 أيام (${expiring.length})</h2>
+<table><thead><tr><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>ينتهي</th></tr></thead><tbody>
+${expiring.map(u=>{
+  const exp=u.expiresAt.toDate?u.expiresAt.toDate():new Date(u.expiresAt);
+  const days=Math.ceil((exp-new Date())/86400000);
+  return `<tr><td>${u.name||'—'}</td><td style="direction:ltr">${u.phone||'—'}</td><td>${u.grade||'—'}</td><td><span class="badge badge-warn">${days} يوم</span></td></tr>`;
+}).join('')}
+</tbody></table>`:''}
+
+<h2>✅ الطلاب النشطون (${active.length})</h2>
+<table><thead><tr><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>الكود</th><th>ينتهي</th></tr></thead><tbody>
+${active.map(u=>{
+  const exp=u.expiresAt?.toDate?u.expiresAt.toDate():u.expiresAt?new Date(u.expiresAt):null;
+  return `<tr><td>${u.name||'—'}</td><td style="direction:ltr">${u.phone||'—'}</td><td>${u.grade||'—'}</td><td style="font-family:monospace;letter-spacing:1px">${u.subscriptionCode||'—'}</td><td>${exp?exp.toLocaleDateString('ar-EG'):'—'}</td></tr>`;
+}).join('')}
+</tbody></table>
+
+${expired.length?`<h2>❌ غير مشتركين (${expired.length})</h2>
+<table><thead><tr><th>الاسم</th><th>الهاتف</th><th>الصف</th></tr></thead><tbody>
+${expired.map(u=>`<tr><td>${u.name||'—'}</td><td style="direction:ltr">${u.phone||'—'}</td><td>${u.grade||'—'}</td></tr>`).join('')}
+</tbody></table>`:''}
+
+<div style="text-align:center;margin-top:20px;font-size:11px;color:#9ca3af;border-top:1px solid #e5e9f2;padding-top:12px">
+  تم إنشاء التقرير بواسطة Plus Mathematics Dashboard
+</div>
+</body></html>`;
+
+  const win = window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+  setTimeout(()=>win.print(), 500);
+  logActivity('📊','طباعة تقرير',`${users.length} طالب`);
+};
+
+// ══════════════════════════════════════
+// ── CSS fadeOut keyframe (dynamic) ──
+// ══════════════════════════════════════
+const _styleEl = document.createElement('style');
+_styleEl.textContent = `
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+@keyframes pulse-notif{0%,100%{background:rgba(74,127,212,0.1)}50%{background:rgba(74,127,212,0.25)}}
+.pulse-notif{animation:pulse-notif 1s ease 3}
+`;
+document.head.appendChild(_styleEl);
+
 let tTimer;
 function toast(msg,type='ok'){
   const t=document.getElementById('toast');
   const ic=document.getElementById('ti');
   t.className='toast '+type;
-  document.getElementById('tm').textContent=msg;
-  ic.innerHTML=type==='err'?'<use href="#ic-x"/>':'<use href="#ic-check"/>';
-  t.classList.add('show');clearTimeout(tTimer);
-  tTimer=setTimeout(()=>t.classList.remove('show'),3200);
-}
-</script>
-</body>
-</html>
+  document.getElementById('tm

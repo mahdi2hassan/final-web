@@ -1126,5 +1126,368 @@ document.querySelectorAll('.upload-zone').forEach(z=>{
   z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag')});
 });
 </script>
+
+<script>
+// ══════════════════════════════════════════════════════
+// ── ENHANCED CONTENT MANAGER FEATURES ──
+// ══════════════════════════════════════════════════════
+
+// ── 1. AUTOSAVE DRAFT ──
+const DRAFT_KEY = 'cm_draft';
+function autosaveDraft(){
+  const grade = document.getElementById('gSel')?.value||'';
+  const tab = window._curTab||'v';
+  const fields = {
+    v: ['vUrl','vTitle','vDesc','vDur','vOrder'],
+    e: ['eTitle','eDur','eOrder','eMcq','eEssay','eLink'],
+    h: ['hTitle','hDesc','hDeadline','hOrder']
+  };
+  const data = {grade, tab, ts: Date.now()};
+  (fields[tab]||[]).forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) data[id]=el.value;
+  });
+  // Only save if there's actual content
+  const hasContent = (fields[tab]||[]).some(id=>data[id]&&data[id].trim());
+  if(hasContent) localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
+}
+
+function loadDraft(){
+  try{
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if(!raw) return;
+    const d = JSON.parse(raw);
+    // Only restore if within 24h
+    if(Date.now()-d.ts > 86400000){ localStorage.removeItem(DRAFT_KEY); return; }
+    // Show restore prompt
+    const banner = document.createElement('div');
+    banner.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(8,13,28,.97);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:999;box-shadow:0 8px 32px rgba(0,0,0,.5);font-family:Tajawal,sans-serif;font-size:13px;color:#eef2ff;white-space:nowrap';
+    banner.innerHTML = [
+    '<span style="color:#f0d080;font-weight:700">📝 عندك مسودة محفوظة</span>',
+    '<button onclick="restoreDraft()" style="padding:5px 12px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:7px;color:#f0d080;cursor:pointer;font-family:Tajawal,sans-serif;font-size:12px;font-weight:700">استعادة</button>',
+    '<button onclick="localStorage.removeItem(DRAFT_KEY);this.parentElement.remove()" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#6a7a9e;cursor:pointer;font-size:12px">تجاهل</button>'
+  ].join('');
+    document.body.appendChild(banner);
+    setTimeout(()=>banner.remove(), 8000);
+  }catch(e){}
+}
+
+function restoreDraft(){
+  try{
+    const d = JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}');
+    // Switch to correct tab
+    if(d.tab && window.switchTab) window.switchTab(d.tab);
+    if(d.grade){
+      const gs=document.getElementById('gSel');
+      if(gs) gs.value=d.grade;
+    }
+    const fields=['vUrl','vTitle','vDesc','vDur','vOrder','eTitle','eDur','eOrder','eMcq','eEssay','eLink','hTitle','hDesc','hDeadline','hOrder'];
+    fields.forEach(id=>{ if(d[id]!==undefined){const el=document.getElementById(id);if(el)el.value=d[id];} });
+    toast('تم استعادة المسودة ✓','ok');
+    document.querySelector('[style*="مسودة"]')?.remove();
+    localStorage.removeItem(DRAFT_KEY);
+  }catch(e){}
+}
+
+// Auto-save every 10 seconds
+setInterval(autosaveDraft, 10000);
+// Clear draft on successful save
+['saveVideo','saveExam','saveHomework'].forEach(fn=>{
+  const orig = window[fn];
+  if(!orig) return;
+  window[fn] = async function(){
+    const r = await orig.apply(this, arguments);
+    localStorage.removeItem(DRAFT_KEY);
+    return r;
+  };
+});
+
+// ── 2. DUPLICATE ITEM ──
+window.duplicateItem = async (tab, id) => {
+  const grade = document.getElementById('gSel')?.value;
+  if(!grade){ toast('اختار صف','err'); return; }
+  try{
+    const { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').catch(()=>({}));
+    // Use window._db if available
+    const db = window._db;
+    if(!db){ toast('Firebase مش جاهز','err'); return; }
+    const snap = await window._getDoc(window._doc(db,'content',grade,tab,id));
+    if(!snap.exists()){ toast('العنصر مش موجود','err'); return; }
+    const data = {...snap.data()};
+    data.title = (data.title||'') + ' (نسخة)';
+    data.order = (data.order||1) + 1;
+    data.createdAt = new Date();
+    data.updatedAt = new Date();
+    delete data.id;
+    await window._addDoc(window._collection(db,'content',grade,tab), data);
+    toast('تم التكرار ✓','ok');
+    // Reload the list
+    const tabMap={videos:'vList',exams:'eList',homework:'hList'};
+    if(window.loadList) window.loadList(tab, tabMap[tab]||tab+'List');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── 3. DRAG & DROP REORDER ──
+let _dragId=null, _dragTab=null, _dragItems=[];
+function enableDragDrop(tab, items, elId){
+  _dragItems = items; _dragTab = tab;
+  const container = document.getElementById(elId)?.querySelector('.items');
+  if(!container) return;
+  container.querySelectorAll('.item').forEach((row,i)=>{
+    row.draggable=true;
+    row.style.cursor='grab';
+    row.dataset.idx=i;
+    row.addEventListener('dragstart',e=>{
+      _dragId=i;
+      row.style.opacity='.4';
+      e.dataTransfer.effectAllowed='move';
+    });
+    row.addEventListener('dragend',()=>{ row.style.opacity='1'; });
+    row.addEventListener('dragover',e=>{
+      e.preventDefault();
+      const target=e.currentTarget;
+      const over=parseInt(target.dataset.idx);
+      container.querySelectorAll('.item').forEach(r=>r.style.borderTop='');
+      if(over!==_dragId) target.style.borderTop='2px solid var(--blue)';
+    });
+    row.addEventListener('drop',e=>{
+      e.preventDefault();
+      const over=parseInt(e.currentTarget.dataset.idx);
+      container.querySelectorAll('.item').forEach(r=>r.style.borderTop='');
+      if(over===_dragId) return;
+      const arr=[..._dragItems];
+      const moved=arr.splice(_dragId,1)[0];
+      arr.splice(over,0,moved);
+      // Update order in Firestore
+      saveNewOrder(tab, arr);
+      _dragItems=arr;
+      renderItemsWithDrag(tab, arr, elId);
+    });
+  });
+}
+
+async function saveNewOrder(tab, items){
+  const grade = document.getElementById('gSel')?.value;
+  if(!grade||!window._db) return;
+  try{
+    await Promise.all(items.map((item,i)=>
+      window._updateDoc(window._doc(window._db,'content',grade,tab,item.id),{order:i+1})
+    ));
+    toast('تم ترتيب العناصر ✓','ok');
+  }catch(e){ toast('خطأ في الحفظ','err'); }
+}
+
+function renderItemsWithDrag(tab, items, elId){
+  // Re-render with drag enabled
+  renderItemsEnhanced(tab, items, elId);
+  enableDragDrop(tab, items, elId);
+}
+
+// ── 4. PREVIEW BEFORE SAVE ──
+window.previewVideo = () => {
+  const url = document.getElementById('vUrl')?.value.trim();
+  if(!url){ toast('ادخل رابط الفيديو','err'); return; }
+  const m = url.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+  if(!m){ window.open(url,'_blank'); return; }
+  const ytId = m[1];
+  const modal = document.createElement('div');
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML=`<div style="width:100%;max-width:560px"><div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden"><iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none" allowfullscreen allow="autoplay"></iframe></div><button onclick="this.closest('[style*=fixed]').remove()" style="margin-top:12px;padding:9px 20px;border:none;border-radius:9px;background:rgba(255,77,109,.2);border:1px solid rgba(255,77,109,.3);color:#ff4d6d;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;font-weight:700;width:100%">✕ إغلاق</button></div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click',e=>{ if(e.target===modal) modal.remove(); });
+};
+
+// ── 5. BULK DELETE ──
+let _bulkMode = false;
+let _bulkSelected = new Set();
+
+window.toggleBulkMode = (tab, elId) => {
+  _bulkMode = !_bulkMode;
+  _bulkSelected.clear();
+  const items = window._cache?.[tab]||[];
+  renderItemsEnhanced(tab, items, elId);
+  toast(_bulkMode?'وضع الحذف الجماعي — اختار العناصر':'تم إلغاء وضع الحذف','ok');
+};
+
+window.bulkDelete = async (tab, elId) => {
+  if(!_bulkSelected.size){ toast('اختار عناصر أولاً','err'); return; }
+  const grade = document.getElementById('gSel')?.value;
+  if(!grade||!window._db) return;
+  if(!confirm(`حذف ${_bulkSelected.size} عنصر؟`)) return;
+  try{
+    await Promise.all([..._bulkSelected].map(id=>
+      window._deleteDoc(window._doc(window._db,'content',grade,tab,id))
+    ));
+    toast(`تم حذف ${_bulkSelected.size} عناصر ✓`,'ok');
+    _bulkMode=false; _bulkSelected.clear();
+    window.loadList(tab, elId);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── 6. KEYBOARD SHORTCUTS ──
+document.addEventListener('keydown', e=>{
+  // Ctrl+S → Save current tab
+  if((e.ctrlKey||e.metaKey) && e.key==='s'){
+    e.preventDefault();
+    const tab = window._curTab||'v';
+    if(tab==='v' && window.saveVideo) window.saveVideo();
+    else if(tab==='e' && window.saveExam) window.saveExam();
+    else if(tab==='h' && window.saveHomework) window.saveHomework();
+    else if(tab==='b' && window.saveBook) window.saveBook();
+    return;
+  }
+  // Escape → Clear form
+  if(e.key==='Escape'){
+    const tab=window._curTab||'v';
+    if(tab==='v' && window.clearV) window.clearV();
+    else if(tab==='e' && window.clearE) window.clearE();
+    else if(tab==='h' && window.clearH) window.clearH();
+    toast('تم مسح الفورم','ok');
+  }
+});
+
+// Show shortcuts hint
+const shortcutsHint = document.createElement('div');
+shortcutsHint.style.cssText='position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(8,13,28,.8);border:1px solid rgba(74,127,212,.2);border-radius:8px;padding:6px 14px;font-size:11px;color:#6a7a9e;font-family:Tajawal,sans-serif;z-index:10;pointer-events:none';
+shortcutsHint.textContent='Ctrl+S حفظ · Esc مسح';
+document.body.appendChild(shortcutsHint);
+
+// ── 7. COPY VIDEO URL ──
+window.copyItemUrl = (url) => {
+  if(!url){ toast('لا يوجد رابط','err'); return; }
+  if(navigator.clipboard) navigator.clipboard.writeText(url);
+  else{ const t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t); }
+  toast('تم نسخ الرابط ✓','ok');
+};
+
+// ── 8. ENHANCED RENDER WITH DUPLICATE + DRAG + BULK + LAST MODIFIED + COPY ──
+function renderItemsEnhanced(tab, items, elId){
+  const el=document.getElementById(elId);
+  if(!items.length){
+    el.innerHTML='<div class="empty"><p>لا يوجد محتوى بعد — ابدأ بالإضافة ⬆️</p></div>'; return;
+  }
+  const typeLabel={mcq:'MCQ',essay:'مقالي',images:'صور',link:'Google Form',video:'يوتيوب',homework:'واجب'};
+  const tagCls=tab==='videos'?'v':tab==='exams'?'e':'h';
+  const tabMap={videos:'vList',exams:'eList',homework:'hList'};
+
+  // Bulk delete bar
+  const bulkBar = _bulkMode ? `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,77,109,.08);border-bottom:1px solid rgba(255,77,109,.2);font-size:12px;color:#ff8099">
+    <span>تم تحديد <strong id="bulkCount">0</strong> عنصر</span>
+    <button onclick="bulkDelete('${tab}','${elId}')" style="padding:4px 12px;border:1px solid rgba(255,77,109,.3);border-radius:6px;background:rgba(255,77,109,.1);color:#ff4d6d;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">حذف المحدد</button>
+    <button onclick="toggleBulkMode('${tab}','${elId}')" style="padding:4px 10px;border:1px solid rgba(255,255,255,.1);border-radius:6px;background:transparent;color:#6a7a9e;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px">إلغاء</button>
+  </div>` : '';
+
+  el.innerHTML = bulkBar + `<div class="items" id="drag-${tab}">${items.map((item,i)=>{
+    const url = item.url||item.externalUrl||'';
+    const relTime = item.updatedAt?.toDate ? timeAgo(item.updatedAt.toDate()) : '';
+    return `<div class="item" data-idx="${i}" style="${_bulkMode?'cursor:default':'cursor:grab'}">
+      ${_bulkMode?`<input type="checkbox" onchange="toggleBulkItem('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--blue);flex-shrink:0;margin-left:4px"/>`:`<div class="item-num" style="cursor:grab;color:var(--muted)" title="اسحب لإعادة الترتيب">⠿ ${item.order||i+1}</div>`}
+      <div class="item-info">
+        <div class="item-title">${item.title||'—'}</div>
+        <div class="item-meta">
+          ${item.type?`<span class="tag ${tagCls}">${typeLabel[item.type]||item.type}</span>`:''}
+          ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
+          ${item.deadline?`<span>📅 ${item.deadline}</span>`:''}
+          ${url?`<a href="${url}" target="_blank" style="color:var(--blue);font-size:11px;text-decoration:none">🔗 رابط</a>`:''}
+          ${item.imageUrls?.length?`<span class="tag ok">📷 ${item.imageUrls.length} صورة</span>`:''}
+          ${item.fileUrl?`<a href="${item.fileUrl}" target="_blank" style="color:var(--purple);font-size:11px;text-decoration:none">📎 ملف</a>`:''}
+          ${relTime?`<span style="color:var(--muted);font-size:10px">🕐 ${relTime}</span>`:''}
+        </div>
+      </div>
+      <div class="item-acts">
+        <button class="ia" onclick="editItem('${tab}','${item.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
+        <button class="ia" onclick="duplicateItem('${tab}','${item.id}')" title="تكرار" style="color:var(--blue)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        </button>
+        ${url?`<button class="ia" onclick="copyItemUrl('${url}')" title="نسخ الرابط"><svg><use href="#i-copy"/></svg></button>`:''}
+        ${url?`<a class="ia" href="${url}" target="_blank" title="فتح"><svg><use href="#i-eye"/></svg></a>`:''}
+        <button class="ia del" onclick="deleteItem('${tab}','${item.id}','${(item.title||'').replace(/'/g,"\'")}')"><svg><use href="#i-trash"/></svg></button>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+
+  if(!_bulkMode) enableDragDrop(tab, items, elId);
+}
+
+window.toggleBulkItem = (id, checked) => {
+  if(checked) _bulkSelected.add(id); else _bulkSelected.delete(id);
+  const cnt = document.getElementById('bulkCount');
+  if(cnt) cnt.textContent = _bulkSelected.size;
+};
+
+// ── 9. IMPORT FROM CSV ──
+window.importFromCSV = (tab) => {
+  const input = document.createElement('input');
+  input.type='file'; input.accept='.csv,.txt';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const grade = document.getElementById('gSel')?.value;
+    if(!grade){ toast('اختار صف أولاً','err'); return; }
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+    if(lines.length<2){ toast('الملف فارغ أو خطأ في التنسيق','err'); return; }
+    // Skip header row, format: title,url,description,duration,order
+    const items = lines.slice(1).map((line,i)=>{
+      const cols = line.split(',');
+      return { title:cols[0]||'', url:cols[1]||'', description:cols[2]||'', duration:cols[3]||'', order:parseInt(cols[4])||i+1, type:'video', updatedAt:new Date(), createdAt:new Date() };
+    }).filter(item=>item.title);
+    if(!items.length){ toast('لا يوجد بيانات صالحة','err'); return; }
+    if(!confirm(`استيراد ${items.length} عنصر للصف "${grade}"؟`)) return;
+    try{
+      let count=0;
+      for(const item of items){
+        await window._addDoc(window._collection(window._db,'content',grade,tab),item);
+        count++;
+      }
+      toast(`تم استيراد ${count} عنصر ✓`,'ok');
+      const tabMap={videos:'vList',exams:'eList',homework:'hList'};
+      window.loadList(tab, tabMap[tab]||tab+'List');
+    }catch(e){ toast('خطأ في الاستيراد: '+e.message,'err'); }
+  };
+  input.click();
+};
+
+// ── TIME AGO HELPER ──
+function timeAgo(date){
+  const diff = Date.now()-date;
+  const m=Math.floor(diff/60000), h=Math.floor(diff/3600000), d=Math.floor(diff/86400000);
+  if(m<1) return 'الآن';
+  if(m<60) return `من ${m} دقيقة`;
+  if(h<24) return `من ${h} ساعة`;
+  return `من ${d} يوم`;
+}
+
+// ── OVERRIDE renderItems with enhanced version ──
+const _origRenderItems = window.renderItems;
+window.renderItems = function(tab, items, elId){
+  // Store for drag/bulk use
+  if(window._cache) window._cache[tab]=items;
+  renderItemsEnhanced(tab, items, elId);
+  enableDragDrop(tab, items, elId);
+};
+
+// ── ADD BULK + IMPORT BUTTONS TO TABS ──
+document.addEventListener('DOMContentLoaded', ()=>{
+  // Add preview button to video URL field
+  const vSave = document.getElementById('vSaveBtn');
+  if(vSave){
+    const prev = document.createElement('button');
+    prev.className='btn sm ghost'; prev.style.cssText='font-size:11px;margin-right:6px';
+    prev.innerHTML='👁 معاينة'; prev.onclick = window.previewVideo;
+    vSave.parentElement.insertBefore(prev, vSave);
+  }
+});
+
+// Load draft on startup
+setTimeout(loadDraft, 1500);
+
+// ── WINDOW references for module functions (needed for duplicate/bulk) ──
+// These are set in the module script but we need them here too
+document.addEventListener('fbready', ()=>{
+  // Firebase ready — set up any remaining references
+  console.log('CM enhanced features ready');
+});
+</script>
 </body>
 </html>

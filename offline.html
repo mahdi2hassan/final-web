@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>لا يوجد اتصال — Plus Mathematics</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#04060f;--blue:#4a7fd4;--navy:#1a3270;--gold:#c9a84c;--gold2:#f0d080;--text:#eef2ff;--muted:#6a7a9e;--warn:#f5a623}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;
+  display:flex;align-items:center;justify-content:center;padding:24px}
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(74,127,212,0.04)1px,transparent 1px),linear-gradient(90deg,rgba(74,127,212,0.04)1px,transparent 1px);background-size:44px 44px}
+.orb{position:fixed;border-radius:50%;filter:blur(120px)}
+.o1{width:500px;height:500px;background:rgba(26,50,112,0.3);top:-200px;right:-150px}
+.o2{width:350px;height:350px;background:rgba(110,75,10,0.25);bottom:-100px;left:-80px}
+.card{position:relative;z-index:1;text-align:center;max-width:400px;width:100%}
+.icon-wrap{width:90px;height:90px;border-radius:50%;background:rgba(245,166,35,0.1);border:2px solid rgba(245,166,35,0.3);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
+  animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,166,35,0.15)}50%{box-shadow:0 0 0 16px rgba(245,166,35,0)}}
+.icon-wrap svg{width:40px;height:40px;color:var(--warn)}
+h1{font-size:22px;font-weight:900;margin-bottom:8px}
+p{font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:24px}
+.tips{background:rgba(74,127,212,0.05);border:1px solid rgba(74,127,212,0.15);border-radius:14px;
+  padding:14px 16px;text-align:right;margin-bottom:20px}
+.tips h3{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:8px;text-align:center}
+.tip{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);padding:4px 0}
+.tip span{font-size:16px}
+.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{padding:11px 22px;border-radius:12px;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;
+  text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:all .2s;border:none;cursor:pointer}
+.btn-warn{background:linear-gradient(135deg,var(--warn),#a06010);color:#fff;box-shadow:0 6px 20px rgba(245,166,35,0.3)}
+.btn-warn:hover{transform:translateY(-2px)}
+.btn-ghost{background:transparent;border:1px solid rgba(74,127,212,0.3);color:var(--muted)}
+.btn-ghost:hover{border-color:var(--blue);color:var(--text)}
+#statusDot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--warn);margin-left:6px;animation:blink 1.2s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+#statusLine{font-size:12px;color:var(--muted);margin-top:16px}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="o1 orb"></div>
+<div class="o2 orb"></div>
+<div class="card">
+  <div class="icon-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <line x1="1" y1="1" x2="23" y2="23"/>
+      <path d="M16.72 11.06A10.94 10.94 0 0119 12.55"/>
+      <path d="M5 12.55a10.94 10.94 0 015.17-2.39"/>
+      <path d="M10.71 5.05A16 16 0 0122.56 9"/>
+      <path d="M1.42 9a15.91 15.91 0 014.7-2.88"/>
+      <path d="M8.53 16.11a6 6 0 016.95 0"/>
+      <line x1="12" y1="20" x2="12.01" y2="20"/>
+    </svg>
+  </div>
+  <h1>لا يوجد اتصال بالإنترنت <span id="statusDot"></span></h1>
+  <p>تأكد من اتصالك بالإنترنت وحاول تاني.<br/>Plus Mathematics بتحتاج اتصال لتشغيل الدروس والامتحانات.</p>
+  <div class="tips">
+    <h3>جرب الحلول دي</h3>
+    <div class="tip"><span>📶</span>تأكد إن الـ WiFi أو البيانات شغالة</div>
+    <div class="tip"><span>✈️</span>تأكد إن Airplane Mode مش مفعّل</div>
+    <div class="tip"><span>🔄</span>حاول تجدد الصفحة بعد ما الإنترنت يرجع</div>
+    <div class="tip"><span>📱</span>جرب تفتح صفحة تانية وتتأكد الاتصال شغّال</div>
+  </div>
+  <div class="btns">
+    <button class="btn btn-warn" onclick="retryConnection()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+      إعادة المحاولة
+    </button>
+    <a href="https://wa.me/+201007586279" target="_blank" class="btn btn-ghost">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      تواصل معنا
+    </a>
+  </div>
+  <div id="statusLine">جاري مراقبة الاتصال...</div>
+</div>
+<script>
+function retryConnection(){
+  if(navigator.onLine){ window.history.back(); }
+  else{ document.getElementById('statusLine').textContent='لا يزال لا يوجد اتصال — انتظر قليلاً'; }
+}
+window.addEventListener('online',()=>{
+  document.getElementById('statusLine').textContent='✅ عاد الاتصال! جاري التحويل...';
+  setTimeout(()=>window.history.back(),1500);
+});
+window.addEventListener('offline',()=>{
+  document.getElementById('statusLine').textContent='لا يوجد اتصال بعد...';
+});
+</script>
+</body>
+</html>
