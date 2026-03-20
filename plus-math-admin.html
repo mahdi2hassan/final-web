@@ -490,9 +490,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
     </a>
     <div class="tb-title" id="tbTitle">نظرة عامة</div>
     <div class="tb-actions">
-      <div class="tb-search">
+      <div class="tb-search" style="position:relative">
         <svg><use href="#ic-search"/></svg>
-        <input id="searchInp" placeholder="بحث..." oninput="doSearch()"/>
+        <input id="searchInp" placeholder="بحث في الطلاب والأكواد..." oninput="doSearch()"/>
+        <div id="searchResults" style="display:none;position:absolute;top:calc(100% + 6px);right:0;left:0;background:rgba(8,13,28,0.98);border:1px solid var(--b1);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:200;max-height:300px;overflow-y:auto;min-width:260px"></div>
       </div>
       <button class="tb-btn" onclick="loadAll()" title="تحديث"><svg><use href="#ic-refresh"/></svg></button>
       <button class="tb-btn" onclick="exportCSV()" title="تصدير"><svg><use href="#ic-dl"/></svg></button>
@@ -593,6 +594,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <div class="sh-title"><svg><use href="#ic-users"/></svg>الطلاب المسجلون</div>
           <div class="sh-acts">
             <button class="btn wa sm" onclick="goPage('broadcast')"><svg><use href="#ic-wa"/></svg>إرسال جماعي</button>
+            <button class="btn sm" onclick="exportExpired()" style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);color:var(--warn)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              تصدير المنتهيين
+            </button>
             <button class="btn gold sm" onclick="exportCSV()"><svg><use href="#ic-dl"/></svg>CSV</button>
           </div>
         </div>
@@ -604,7 +609,15 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </div>
         <div class="tw"><div class="tw-scroll">
           <table>
-            <thead><tr><th>الطالب</th><th>الهاتف</th><th>الإيميل</th><th>الكود</th><th>الحالة</th><th>ينتهي</th><th>إجراء</th></tr></thead>
+            <thead><tr>
+              <th onclick="sortUsers('name')" style="cursor:pointer;user-select:none">الطالب <span id="sort-name"></span></th>
+              <th>الهاتف</th>
+              <th>الإيميل</th>
+              <th>الكود</th>
+              <th onclick="sortUsers('status')" style="cursor:pointer;user-select:none">الحالة <span id="sort-status"></span></th>
+              <th onclick="sortUsers('date')" style="cursor:pointer;user-select:none">ينتهي <span id="sort-date"></span></th>
+              <th>إجراء</th>
+            </tr></thead>
             <tbody id="usersTbl"><tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
           </table>
         </div></div>
@@ -719,6 +732,9 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
               <svg width="12" height="12" style="display:inline;margin-left:4px"><use href="#ic-file"/></svg>واجبات
               <span class="ctab-count" id="ctc-homework"></span>
             </div>
+            <div class="ftab" onclick="setContentTab('books')" style="color:var(--gold)">
+              📚 الكتب
+            </div>
           </div>
 
           <!-- Videos -->
@@ -746,6 +762,46 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
               <button class="btn ok sm" onclick="openAddContent('homework')"><svg><use href="#ic-plus"/></svg>إضافة واجب</button>
             </div>
             <div id="homeworkList" class="tw"><div class="empty"><svg><use href="#ic-file"/></svg><p>اختار صف أولاً</p></div></div>
+          </div>
+
+          <!-- Books -->
+          <div id="ctab-books" style="display:none">
+            <div class="sh">
+              <div class="sh-title">📚 الكتب</div>
+              <button class="btn gold sm" onclick="loadBooks()"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+            </div>
+            <!-- Add Book Form -->
+            <div class="card" style="margin-bottom:14px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--b2)">
+                <h4 style="margin:0;padding:0;border:none">📚 إضافة / تعديل كتاب</h4>
+                <div style="display:flex;gap:6px">
+                  <button class="btn ghost sm" onclick="clearBook()">مسح</button>
+                  <button class="btn gold sm" id="bSaveBtn" onclick="saveBook()"><svg><use href="#ic-check"/></svg>حفظ</button>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">
+                <div class="ff" style="margin:0;grid-column:1/-1"><label>عنوان الكتاب</label><input type="text" id="bTitle" placeholder="مثال: كتاب الرياضيات — الصف الثالث الثانوي"/></div>
+                <div class="ff" style="margin:0;grid-column:1/-1"><label>وصف الكتاب</label><textarea id="bDesc" rows="2" placeholder="محتويات الكتاب، عدد الصفحات..."></textarea></div>
+                <div class="ff" style="margin:0"><label>السعر (جنيه)</label><input type="number" id="bPrice" placeholder="150" min="0"/></div>
+                <div class="ff" style="margin:0"><label>الصف (اختياري)</label>
+                  <select id="bGrade">
+                    <option value="">كل الصفوف</option>
+                    <optgroup label="ابتدائي"><option value="primary-4">رابع</option><option value="primary-5">خامس</option><option value="primary-6">سادس</option></optgroup>
+                    <optgroup label="إعدادي"><option value="prep-1">أول</option><option value="prep-2">ثاني</option><option value="prep-3">ثالث</option></optgroup>
+                    <optgroup label="ثانوي"><option value="sec-1">أول</option><option value="sec-2">ثاني</option><option value="sec-3">ثالث</option></optgroup>
+                  </select>
+                </div>
+                <div class="ff" style="margin:0"><label>عدد الصفحات</label><input type="number" id="bPages" placeholder="120"/></div>
+                <div class="ff" style="margin:0"><label>الترتيب</label><input type="number" id="bOrder" placeholder="1" min="1"/></div>
+                <div class="ff" style="margin:0;grid-column:1/-1"><label>رابط صورة الغلاف</label>
+                  <input type="url" id="bCover" placeholder="https://..." oninput="previewCover(this.value)"/>
+                  <div id="bCoverPreview" style="display:none;margin-top:6px"><img id="bCoverImg" style="width:60px;height:80px;object-fit:cover;border-radius:6px;border:1px solid var(--b2)"/></div>
+                </div>
+                <div class="ff" style="margin:0;grid-column:1/-1"><label>ملاحظات للطالب</label><textarea id="bNote" rows="2" placeholder="مثال: متاح للتوصيل..."></textarea></div>
+              </div>
+            </div>
+            <!-- Books List -->
+            <div class="tw"><div id="bList"><div class="empty"><p>اضغط "تحديث" لتحميل الكتب</p></div></div></div>
           </div>
         </div>
 
@@ -926,6 +982,23 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             </button>
           </div>
 
+        </div>
+      </div>
+
+      <!-- ══ STUDENT DETAIL ══ -->
+      <div class="page" id="page-student">
+        <div class="sh">
+          <div class="sh-title">
+            <button onclick="goPage('users')" class="btn ghost sm" style="margin-left:8px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+              رجوع
+            </button>
+            <svg><use href="#ic-users"/></svg><span id="sd-name-title">تفاصيل الطالب</span>
+          </div>
+          <div style="display:flex;gap:7px" id="sd-actions"></div>
+        </div>
+        <div id="sd-content" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+          <div class="empty"><svg><use href="#ic-users"/></svg><p>اختار طالب لعرض تفاصيله</p></div>
         </div>
       </div>
 
@@ -1142,6 +1215,17 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
     <div class="mfooter">
       <button class="btn ghost" onclick="closeModal('adminModal')">إغلاق</button>
       <button class="btn ok" onclick="saveAdmin()"><svg><use href="#ic-check"/></svg>إضافة المشرف</button>
+    </div>
+  </div>
+</div>
+
+<!-- Content Preview Modal -->
+<div class="mbg" id="contentPreviewModal">
+  <div class="modal" style="max-width:560px">
+    <h3 id="cpTitle"><svg><use href="#ic-play"/></svg>معاينة</h3>
+    <div id="cpBody" style="min-height:120px"></div>
+    <div class="mfooter">
+      <button class="btn ghost" onclick="closeModal('contentPreviewModal');document.getElementById('cpBody').innerHTML=''">إغلاق</button>
     </div>
   </div>
 </div>
@@ -1886,15 +1970,21 @@ async function updateContentMiniStats(){
 
 window.setContentTab = async (tab) => {
   _curContentType = tab;
+  const allTabs = ['videos','exams','homework','books'];
   document.querySelectorAll('#contentTabBar .ftab').forEach((t,i)=>
-    t.classList.toggle('on',['videos','exams','homework'][i]===tab));
-  ['videos','exams','homework'].forEach(t=>{
-    document.getElementById('ctab-'+t).style.display = t===tab?'block':'none';
+    t.classList.toggle('on', allTabs[i]===tab));
+  allTabs.forEach(t=>{
+    const el = document.getElementById('ctab-'+t);
+    if(el) el.style.display = t===tab?'block':'none';
   });
-  // Update FAB label
+  // Update FAB
   const fabLabels = {videos:'فيديو',exams:'امتحان',homework:'واجب'};
   const fab = document.getElementById('addContentFab');
-  if(fab) fab.innerHTML = `<svg width="12" height="12"><use href="#ic-plus"/></svg>إضافة ${fabLabels[tab]||''}`;
+  if(fab){
+    if(tab==='books'){ fab.style.display='none'; }
+    else { fab.style.display=''; fab.innerHTML=`<svg width="12" height="12"><use href="#ic-plus"/></svg>إضافة ${fabLabels[tab]||''}`; }
+  }
+  if(tab==='books'){ await loadBooks(); return; }
   await loadContentTab(tab);
 };
 
@@ -2133,6 +2223,129 @@ window.delContent = async (tab, id) => {
 
 // Signal ready
 window._fbReady = true;
+
+// ══ BOOKS MANAGEMENT ══
+window.previewCover = (url) => {
+  const wrap = document.getElementById('bCoverPreview');
+  const img  = document.getElementById('bCoverImg');
+  if(url){ img.src=url; wrap.style.display='block'; }
+  else wrap.style.display='none';
+};
+
+window.saveBook = async () => {
+  const title = document.getElementById('bTitle').value.trim();
+  const price = document.getElementById('bPrice').value;
+  if(!title || !price){ toast('ادخل العنوان والسعر','err'); return; }
+  const btn = document.getElementById('bSaveBtn');
+  btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
+  try{
+    const data = {
+      title,
+      description: document.getElementById('bDesc').value.trim(),
+      price: parseFloat(price)||0,
+      gradeKey: document.getElementById('bGrade').value,
+      pages: parseInt(document.getElementById('bPages').value)||0,
+      order: parseInt(document.getElementById('bOrder').value)||1,
+      coverUrl: document.getElementById('bCover').value.trim(),
+      note: document.getElementById('bNote').value.trim(),
+      available: true,
+      updatedAt: serverTimestamp()
+    };
+    if(window._editId?.b){
+      await updateDoc(doc(db,'books',window._editId.b), data);
+      delete window._editId.b;
+      toast('تم تعديل الكتاب ✓','ok');
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db,'books'), data);
+      toast('تم إضافة الكتاب ✓','ok');
+    }
+    window.clearBook(); window.loadBooks();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+  btn.innerHTML='<svg width="13" height="13"><use href="#ic-check"/></svg>حفظ'; btn.disabled=false;
+};
+
+window.loadBooks = async () => {
+  const el = document.getElementById('bList');
+  el.innerHTML='<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
+  try{
+    const snap = await getDocs(collection(db,'books'));
+    const books = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+    const cnt = document.getElementById('cnt-b');
+    if(cnt) cnt.textContent = books.length ? '('+books.length+')':'';
+    if(!books.length){ el.innerHTML='<div class="empty"><p>لا يوجد كتب — ابدأ بالإضافة ⬆️</p></div>'; return; }
+    const GL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};
+    el.innerHTML=`<div class="items">${books.map((b,i)=>`
+      <div class="item" style="align-items:flex-start;gap:12px">
+        ${b.coverUrl?`<img src="${b.coverUrl}" style="width:48px;height:64px;object-fit:cover;border-radius:6px;flex-shrink:0;border:1px solid var(--b2)"/>`:`<div style="width:48px;height:64px;border-radius:6px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📚</div>`}
+        <div class="item-info" style="flex:1">
+          <div class="item-title">${b.title}</div>
+          <div class="item-meta">
+            <span style="color:var(--gold);font-weight:800">${b.price} جنيه</span>
+            ${b.gradeKey?`<span class="tag e">${GL[b.gradeKey]||b.gradeKey}</span>`:'<span class="tag v">كل الصفوف</span>'}
+            ${b.pages?`<span>📄 ${b.pages} صفحة</span>`:''}
+            <span class="tag ${b.available?'ok':'h'}">${b.available?'متاح':'غير متاح'}</span>
+          </div>
+          ${b.description?`<div style="font-size:11px;color:var(--muted);margin-top:3px">${b.description}</div>`:''}
+        </div>
+        <div class="item-acts">
+          <button class="ia" onclick="editBook('${b.id}')" title="تعديل"><svg><use href="#ic-edit"/></svg></button>
+          <button class="ia" onclick="toggleBookAvail('${b.id}',${!b.available})" style="color:${b.available?'var(--warn)':'var(--ok)'}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px">${b.available?'<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>':'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'}</svg>
+          </button>
+          <button class="ia del" onclick="deleteBook('${b.id}','${(b.title||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-trash"/></svg></button>
+        </div>
+      </div>`).join('')}</div>`;
+  }catch(e){ el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`; }
+};
+
+window.editBook = async (id) => {
+  try{
+    const d = await getDoc(doc(db,'books',id));
+    if(!d.exists()) return;
+    const b = d.data();
+    window._editId = window._editId||{};
+    window._editId.b = id;
+    document.getElementById('bTitle').value = b.title||'';
+    document.getElementById('bDesc').value  = b.description||'';
+    document.getElementById('bPrice').value = b.price||'';
+    document.getElementById('bGrade').value = b.gradeKey||'';
+    document.getElementById('bPages').value = b.pages||'';
+    document.getElementById('bOrder').value = b.order||'';
+    document.getElementById('bCover').value = b.coverUrl||'';
+    document.getElementById('bNote').value  = b.note||'';
+    window.previewCover(b.coverUrl||'');
+    window.scrollTo({top:0,behavior:'smooth'});
+    toast('جاهز للتعديل ✏️','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.toggleBookAvail = async (id, state) => {
+  try{
+    await updateDoc(doc(db,'books',id),{available:state});
+    window.loadBooks();
+    toast(state?'الكتاب متاح الآن ✓':'تم إخفاء الكتاب','ok');
+  }catch(e){ toast('خطأ','err'); }
+};
+
+window.deleteBook = async (id, title) => {
+  if(!confirm('حذف "'+title+'"؟')) return;
+  try{
+    await deleteDoc(doc(db,'books',id));
+    window.loadBooks();
+    toast('تم الحذف','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.clearBook = () => {
+  ['bTitle','bDesc','bPrice','bPages','bOrder','bCover','bNote'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  document.getElementById('bGrade').value='';
+  document.getElementById('bCoverPreview').style.display='none';
+  if(window._editId) delete window._editId.b;
+};
+
 
 (ref,data)=>ref.add(data) = addDoc;
 // getDocs helper removed
@@ -2853,6 +3066,318 @@ document.addEventListener('click', e => {
 
 // Init on load
 updateNotifBadge();
+
+// ══════════════════════════════════════
+// ── UNIFIED SEARCH ──
+// ══════════════════════════════════════
+function doSearch(){
+  const q = document.getElementById('searchInp').value.trim().toLowerCase();
+  renderUsers(); renderCodes();
+  const res = document.getElementById('searchResults');
+  if(!q || q.length < 2){ res.style.display='none'; return; }
+
+  const users = (window._users||[]).filter(u=>
+    (u.name||'').toLowerCase().includes(q)||
+    (u.phone||'').includes(q)||
+    (u.email||'').toLowerCase().includes(q)
+  ).slice(0,5);
+
+  const codes = (window._codes||[]).filter(c=>
+    (c.code||'').toLowerCase().includes(q)||
+    (c.grade||'').includes(q)
+  ).slice(0,3);
+
+  if(!users.length && !codes.length){ res.style.display='none'; return; }
+
+  let html = '';
+  if(users.length){
+    html += `<div style="padding:6px 10px;font-size:10px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--b2)">👤 طلاب</div>`;
+    html += users.map(u=>`
+      <div onclick="openStudentDetail('${u.id}');document.getElementById('searchInp').value='';document.getElementById('searchResults').style.display='none'"
+        style="padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:background .15s"
+        onmouseover="this.style.background='rgba(74,127,212,0.08)'" onmouseout="this.style.background='transparent'">
+        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">${(u.name||'?').slice(0,2)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700">${u.name||'—'}</div>
+          <div style="font-size:11px;color:var(--muted)">${u.phone||''} · ${u.grade||''}</div>
+        </div>
+        <span class="bd ${u.subscriptionActive?'ok':'pu'}" style="font-size:9px">${u.subscriptionActive?'نشط':'معلق'}</span>
+      </div>`).join('');
+  }
+  if(codes.length){
+    html += `<div style="padding:6px 10px;font-size:10px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--b2);border-top:1px solid var(--b2)">🔑 أكواد</div>`;
+    html += codes.map(c=>`
+      <div onclick="goPage('codes');document.getElementById('searchInp').value='${c.code}';renderCodes();document.getElementById('searchResults').style.display='none'"
+        style="padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:background .15s"
+        onmouseover="this.style.background='rgba(74,127,212,0.08)'" onmouseout="this.style.background='transparent'">
+        <span style="font-family:monospace;font-size:13px;font-weight:900;color:var(--gold2);letter-spacing:2px">${c.code}</span>
+        <span style="font-size:11px;color:var(--muted)">${c.grade||''}</span>
+        <span class="bd ${c.used?'pu':'blue'}" style="font-size:9px;margin-right:auto">${c.used?'مستخدم':'متاح'}</span>
+      </div>`).join('');
+  }
+  res.innerHTML = html;
+  res.style.display = 'block';
+}
+// Close search results on outside click
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.tb-search')) document.getElementById('searchResults').style.display='none';
+});
+
+// ══════════════════════════════════════
+// ── SORT USERS ──
+// ══════════════════════════════════════
+let _sortField = '', _sortDir = 1;
+function sortUsers(field){
+  if(_sortField === field) _sortDir *= -1;
+  else { _sortField = field; _sortDir = 1; }
+  // Update sort indicators
+  ['name','status','date'].forEach(f=>{
+    const el = document.getElementById('sort-'+f);
+    if(el) el.textContent = f===field ? (_sortDir===1?' ↑':' ↓') : '';
+  });
+  // Sort
+  const u = window._users||[];
+  u.sort((a,b)=>{
+    let va, vb;
+    if(field==='name'){ va=a.name||''; vb=b.name||''; return va.localeCompare(vb,'ar')*_sortDir; }
+    if(field==='status'){ va=a.subscriptionActive?1:0; vb=b.subscriptionActive?1:0; return (va-vb)*_sortDir; }
+    if(field==='date'){
+      va = a.expiresAt?.toDate?.()||new Date(0);
+      vb = b.expiresAt?.toDate?.()||new Date(0);
+      return (va-vb)*_sortDir;
+    }
+    return 0;
+  });
+  window._users = u;
+  renderUsers();
+}
+
+// ══════════════════════════════════════
+// ── EXPORT EXPIRED ──
+// ══════════════════════════════════════
+window.exportExpired = ()=>{
+  const expired = (window._users||[]).filter(u=>!u.subscriptionActive && !u.blocked);
+  if(!expired.length){ toast('لا يوجد طلاب منتهي اشتراكهم','ok'); return; }
+  const rows = [
+    ['الاسم','الهاتف','الصف','المرحلة','تاريخ التسجيل'],
+    ...expired.map(u=>[
+      u.name||'',
+      u.phone||'',
+      u.grade||'',
+      {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[u.stage]||'',
+      u.createdAt?.toDate?.().toLocaleDateString('ar-EG')||''
+    ])
+  ];
+  const csv='\uFEFF'+rows.map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='expired-students.csv'; a.click();
+  toast(`تم تصدير ${expired.length} طالب منتهي ✓`,'ok');
+};
+
+// ══════════════════════════════════════
+// ── STUDENT DETAIL PAGE ──
+// ══════════════════════════════════════
+window.openStudentDetail = async (id)=>{
+  goPage('student');
+  const content = document.getElementById('sd-content');
+  content.innerHTML = '<div class="empty"><div style="width:28px;height:28px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:40px auto"></div></div>';
+
+  try{
+    const [ud, devSnap] = await Promise.all([
+      db.collection('users').doc(id).get(),
+      db.collection('users').doc(id).collection('devices').get()
+    ]);
+    if(!ud.exists){ content.innerHTML='<div class="empty"><p>الطالب مش موجود</p></div>'; return; }
+    const d = ud.data();
+    const devices = devSnap.docs.map(dd=>({id:dd.id,...dd.data()}));
+    const stageMap={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'};
+    const maxDev = d.maxDevices||3;
+    const now = new Date();
+
+    // Expiry info
+    let expiryInfo = '—';
+    let expiryColor = 'var(--muted)';
+    if(d.expiresAt){
+      const exp = d.expiresAt.toDate?d.expiresAt.toDate():new Date(d.expiresAt);
+      const days = Math.ceil((exp-now)/86400000);
+      if(days>0){ expiryInfo=`${days} يوم متبقي`; expiryColor=days<=5?'var(--warn)':'var(--ok)'; }
+      else { expiryInfo='انتهى'; expiryColor='var(--err)'; }
+    }
+
+    // Update page header
+    document.getElementById('sd-name-title').textContent = d.name||'طالب';
+    document.getElementById('sd-actions').innerHTML = `
+      <button class="btn wa sm" onclick="waUser('${d.phone||''}','${(d.name||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-wa"/></svg>واتساب</button>
+      ${d.subscriptionActive?`<button class="btn sm" style="background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--err)" onclick="revokeUser('${id}')"><svg><use href="#ic-x"/></svg>إلغاء اشتراك</button>`:''}
+      ${d.blocked
+        ?`<button class="btn ok sm" onclick="blockUser('${id}',false)"><svg><use href="#ic-shield"/></svg>رفع حظر</button>`
+        :`<button class="btn sm" style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);color:var(--warn)" onclick="blockUser('${id}',true)"><svg><use href="#ic-shield-off"/></svg>حظر</button>`}
+      <button class="btn err sm" onclick="deleteUser('${id}','${(d.name||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-trash"/></svg>حذف</button>`;
+
+    content.innerHTML = `
+      <!-- Profile card -->
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+          <div style="width:54px;height:54px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;flex-shrink:0">${(d.name||'?').slice(0,2)}</div>
+          <div>
+            <div style="font-size:16px;font-weight:900">${d.name||'—'}</div>
+            <div style="font-size:12px;color:var(--muted)">${d.blocked?'⛔ محظور':d.subscriptionActive?'✅ مشترك نشط':'⏳ غير مشترك'}</div>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          ${tr('الهاتف','<span style="direction:ltr;display:inline-block">'+(d.phone||'—')+'</span>')}
+          ${tr('الإيميل','<span style="color:var(--blue);font-size:11px">'+(d.email||'—')+'</span>')}
+          ${tr('طريقة التسجيل',d.signInMethod==='google'?'🔵 Google':'📱 هاتف')}
+          ${tr('تاريخ التسجيل',d.createdAt?.toDate?.().toLocaleString('ar-EG')||'—')}
+        </table>
+      </div>
+
+      <!-- Subscription card -->
+      <div class="card">
+        <h4><svg><use href="#ic-key"/></svg>بيانات الاشتراك</h4>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          ${tr('الصف','<strong style="color:var(--gold2)">'+(d.grade||'—')+'</strong>')}
+          ${tr('المرحلة',stageMap[d.stage]||d.stage||'—')}
+          ${tr('الكود','<span style="font-family:monospace;color:var(--gold2);letter-spacing:2px">'+(d.subscriptionCode||'—')+'</span>')}
+          ${tr('تاريخ التفعيل',d.activatedAt?.toDate?.().toLocaleString('ar-EG')||'—')}
+          ${tr('تاريخ الانتهاء',`<span style="color:${expiryColor};font-weight:700">${expiryInfo}</span>`)}
+        </table>
+
+        <!-- Change grade -->
+        <div style="margin-top:14px;padding:12px;background:rgba(74,127,212,0.05);border:1px solid var(--b2);border-radius:10px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:8px">تغيير الصف</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="sd-grade-stage" onchange="updateSdGradeOptions()" style="flex:1;padding:7px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;appearance:none">
+              <option value="">المرحلة</option>
+              <option value="primary" ${d.stage==='primary'?'selected':''}>ابتدائي</option>
+              <option value="prep" ${d.stage==='prep'?'selected':''}>إعدادي</option>
+              <option value="sec" ${d.stage==='sec'?'selected':''}>ثانوي</option>
+            </select>
+            <select id="sd-grade-level" style="flex:1;padding:7px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;appearance:none">
+              <option value="">الصف</option>
+            </select>
+            <button onclick="changeStudentGrade('${id}')" class="btn primary sm">حفظ</button>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div style="margin-top:10px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">ملاحظات</div>
+          <textarea id="sd-notes" rows="2" style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical" placeholder="أكتب ملاحظة على الطالب...">${d.notes||''}</textarea>
+          <button onclick="saveStudentNote('${id}')" class="btn ghost sm" style="margin-top:6px;font-size:11px"><svg><use href="#ic-check"/></svg>حفظ الملاحظة</button>
+        </div>
+      </div>
+
+      <!-- Devices card -->
+      <div class="card">
+        <h4>📱 الأجهزة <span style="color:${devices.length>=maxDev?'var(--err)':'var(--ok)'};font-size:11px">${devices.length}/${maxDev}</span></h4>
+        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
+          <select id="sd-maxdev" style="padding:5px 8px;background:var(--inp);border:1px solid var(--b2);border-radius:7px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px">
+            ${[1,2,3,5].map(n=>`<option value="${n}" ${maxDev===n?'selected':''}>${n} أجهزة</option>`).join('')}
+          </select>
+          <button onclick="setMaxDevices('${id}',document.getElementById('sd-maxdev').value)" class="btn ghost sm" style="font-size:11px">تحديث</button>
+          <button onclick="resetDevices('${id}')" style="padding:5px 10px;border:1px solid var(--err);border-radius:7px;background:rgba(255,77,109,0.08);color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">🔄 Reset الكل</button>
+        </div>
+        ${devices.length===0?'<div style="color:var(--muted);font-size:12px;text-align:center;padding:12px">لا يوجد أجهزة</div>':
+          devices.map((dv,i)=>`
+          <div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(74,127,212,0.04);border:1px solid var(--b2);border-radius:8px;margin-bottom:6px;font-size:11px">
+            <span style="font-size:16px">📱</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700">جهاز ${i+1}</div>
+              <div style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(dv.userAgent||'—').slice(0,55)}</div>
+              <div style="color:var(--muted);margin-top:2px">آخر دخول: ${dv.lastSeen?new Date(dv.lastSeen).toLocaleString('ar-EG'):'—'}</div>
+            </div>
+            <button onclick="removeDevice('${id}','${dv.id}')" style="padding:3px 8px;border:1px solid var(--err);border-radius:5px;background:transparent;color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px">حذف</button>
+          </div>`).join('')}
+      </div>`;
+
+    // Pre-fill grade options
+    updateSdGradeOptions(d.stage, d.gradeKey);
+  }catch(e){ content.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`; }
+};
+
+// Add pageLabels entry for student
+pageLabels['student'] = 'تفاصيل الطالب';
+
+function updateSdGradeOptions(stage, currentGradeKey){
+  const s = stage || document.getElementById('sd-grade-stage')?.value;
+  const sel = document.getElementById('sd-grade-level');
+  if(!sel) return;
+  const opts = {
+    primary:['primary-4|الرابع الابتدائي','primary-5|الخامس الابتدائي','primary-6|السادس الابتدائي'],
+    prep:   ['prep-1|الأول الإعدادي','prep-2|الثاني الإعدادي','prep-3|الثالث الإعدادي'],
+    sec:    ['sec-1|الأول الثانوي','sec-2|الثاني الثانوي','sec-3|الثالث الثانوي']
+  };
+  sel.innerHTML = '<option value="">اختار الصف</option>';
+  (opts[s]||[]).forEach(o=>{
+    const[key,label]=o.split('|');
+    sel.innerHTML+=`<option value="${key}" ${key===currentGradeKey?'selected':''}>${label}</option>`;
+  });
+}
+
+window.changeStudentGrade = async (id)=>{
+  const stage = document.getElementById('sd-grade-stage')?.value;
+  const gradeKey = document.getElementById('sd-grade-level')?.value;
+  if(!stage||!gradeKey){ toast('اختار المرحلة والصف','err'); return; }
+  const GL={'primary-4':'الرابع الابتدائي','primary-5':'الخامس الابتدائي','primary-6':'السادس الابتدائي','prep-1':'الأول الإعدادي','prep-2':'الثاني الإعدادي','prep-3':'الثالث الإعدادي','sec-1':'الأول الثانوي','sec-2':'الثاني الثانوي','sec-3':'الثالث الثانوي'};
+  try{
+    await db.collection('users').doc(id).update({stage, gradeKey, grade:GL[gradeKey]||gradeKey});
+    toast('تم تغيير الصف ✓','ok');
+    logActivity('✏️','تغيير صف طالب',GL[gradeKey]);
+    openStudentDetail(id);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.saveStudentNote = async (id)=>{
+  const note = document.getElementById('sd-notes')?.value||'';
+  try{
+    await db.collection('users').doc(id).update({notes:note, notesUpdatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    toast('تم حفظ الملاحظة ✓','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// Override setMaxDevices to support both contexts
+const _origSetMaxDevices = window.setMaxDevices;
+window.setMaxDevices = async (userId, valOverride)=>{
+  const val = parseInt(valOverride||document.getElementById('maxDevSel')?.value||3);
+  try{
+    await db.collection('users').doc(userId).update({maxDevices:val});
+    toast('تم تحديد الحد: '+val+' أجهزة ✓','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// Override viewUser to go to detail page instead of modal
+window.viewUser = (id)=>{ openStudentDetail(id); };
+
+// ══════════════════════════════════════
+// ── CONTENT PREVIEW ──
+// ══════════════════════════════════════
+window.previewContent = (type, url, title)=>{
+  const modal = document.getElementById('contentPreviewModal');
+  const body  = document.getElementById('cpBody');
+  const ttl   = document.getElementById('cpTitle');
+  if(!modal||!body) return;
+  ttl.textContent = title||'معاينة';
+  if(type==='video'){
+    const m = (url||'').match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+    if(m){
+      body.innerHTML=`<div style="border-radius:10px;overflow:hidden;background:#000;aspect-ratio:16/9">
+        <iframe src="https://www.youtube.com/embed/${m[1]}?autoplay=1" style="width:100%;height:100%;border:none" allowfullscreen allow="autoplay"></iframe>
+      </div>`;
+    } else {
+      body.innerHTML=`<div style="text-align:center;padding:20px;color:var(--muted)"><a href="${url}" target="_blank" class="btn primary">🔗 فتح الرابط</a></div>`;
+    }
+  } else if(type==='link'){
+    body.innerHTML=`<div style="text-align:center;padding:20px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">سيتم الفتح في تبويب جديد</div>
+      <a href="${url}" target="_blank" class="btn primary">🔗 فتح الرابط</a>
+    </div>`;
+  } else {
+    body.innerHTML=`<div style="text-align:center;padding:20px;color:var(--muted)">لا توجد معاينة لهذا النوع</div>`;
+  }
+  modal.classList.add('on');
+};
 
 let tTimer;
 function toast(msg,type='ok'){
