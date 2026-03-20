@@ -1463,6 +1463,7 @@ const cfg = {
 };
 firebase.initializeApp(cfg);
 const db  = firebase.firestore();
+window.db = db;
 
 
 // ── LOAD ALL ──
@@ -2940,9 +2941,8 @@ window.clearNotifs=()=>{ saveNotifs([]); renderNotifs(); updateNotifBadge(); };
 
 
 // Call on data load
-window.loadAll = async ()=>{
-  await Promise.all([window.wloadUsers?.(), window.wloadCodes?.(), window.wloadSettings?.()]);
-};
+// loadAll → defined in module script above
+// window.wloadUsers, wloadCodes, wloadSettings handle loading
 
 // ══════════════════════════════════════════
 // ── ACTIVITY LOG ──
@@ -3576,7 +3576,7 @@ function closeWelcome(){
 }
 
 // Patch openDashboard to show welcome
-const _origOpenDashboard = openDashboard;
+const _origOpenDashboard = null; // placeholder
 function openDashboard(){
   document.getElementById('loginWrap').style.display='none';
   const sh=document.getElementById('shell');
@@ -3587,7 +3587,7 @@ function openDashboard(){
   applyTheme(savedTheme, null);
   waitLoad();
   // Show welcome after data loads
-  setTimeout(()=>showWelcome(), 1200);
+  setTimeout(()=>showWelcome(), 1500);
 }
 
 // ══════════════════════════════════════
@@ -3596,23 +3596,19 @@ function openDashboard(){
 let _unsubUsers=null, _unsubCodes=null;
 
 function startRealtimeListeners(){
-  if(!window._fbReady) return;
-  // Stop existing listeners
+  if(!window._fbReady || !window.db) return;
   if(_unsubUsers) _unsubUsers();
   if(_unsubCodes) _unsubCodes();
 
-  // Real-time users
   _unsubUsers = db.collection('users').onSnapshot(snap=>{
-    if(!window._users) return; // Skip first load (handled by loadAll)
+    if(!window._users) return;
     const newUsers = snap.docs.map(d=>({id:d.id,...d.data()}));
     const prevCount = (window._users||[]).length;
-    // Detect new user
     if(newUsers.length > prevCount){
       const newest = newUsers.find(u=>!window._users.find(x=>x.id===u.id));
       if(newest){
-        toast(`🎓 طالب جديد: ${newest.name||newest.phone||'—'}!`,'ok');
-        window.addNotif?.('🎓','طالب جديد سجّل!',`${newest.name||'—'} — ${newest.grade||'—'}`,'info');
-        // Flash the users sidebar item
+        toast('🎓 طالب جديد: '+(newest.name||newest.phone||'—')+'!','ok');
+        window.addNotif?.('🎓','طالب جديد سجّل!',newest.name+'—'+newest.grade,'info');
         document.querySelector('.sb-item[onclick*="users"]')?.classList.add('pulse-notif');
         setTimeout(()=>document.querySelector('.sb-item[onclick*="users"]')?.classList.remove('pulse-notif'),3000);
       }
@@ -3621,7 +3617,6 @@ function startRealtimeListeners(){
     renderUsers(); updateStats();
   }, err=>console.warn('users listener:', err.message));
 
-  // Real-time codes
   _unsubCodes = db.collection('codes').onSnapshot(snap=>{
     if(!window._codes) return;
     window._codes = snap.docs.map(d=>({id:d.id,...d.data()}));
@@ -3630,18 +3625,23 @@ function startRealtimeListeners(){
 }
 
 // Start listeners after firebase ready
-const _origWaitLoad = waitLoad;
+const _origWaitLoad = null; // placeholder
 function waitLoad(){
   let tries=0;
   const iv=setInterval(()=>{
     tries++;
-    if(window.loadAll){
+    // Check both firebase ready AND loadAll available
+    if(window._fbReady && window.wloadUsers){
       clearInterval(iv);
-      window.loadAll().then(()=>{
-        // Start real-time listeners after initial load
+      // Use wloadUsers/wloadCodes directly — more reliable than loadAll
+      Promise.all([
+        window.wloadUsers?.(),
+        window.wloadCodes?.(),
+        window.wloadSettings?.()
+      ]).then(()=>{
         setTimeout(startRealtimeListeners, 500);
-      });
-    } else if(tries>60){
+      }).catch(e=>console.error('loadAll error:',e));
+    } else if(tries>80){
       clearInterval(iv);
       updateStats();
     }
