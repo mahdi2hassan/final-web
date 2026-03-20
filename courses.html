@@ -4,6 +4,12 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Plus Mathematics – الكورسات</title>
+<meta name="theme-color" content="#04060f"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Plus Math"/>
+<link rel="apple-touch-icon" href="https://plusedu.vercel.app/store/1/fonts/221.png"/>
+<link rel="manifest" href="manifest.json"/>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -259,6 +265,60 @@ nav{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.ok{color:var(--ok);border-color:rgba(0,214,143,0.3)}
 .toast.err{color:var(--err);border-color:rgba(255,77,109,0.3)}
+
+/* ══ COUNTDOWN ══ */
+.countdown-wrap{display:flex;align-items:center;gap:5px;padding:5px 10px;
+  border-radius:20px;font-size:11px;font-weight:700;
+  background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.2);color:var(--err)}
+.countdown-wrap.ok{background:rgba(0,214,143,0.06);border-color:rgba(0,214,143,0.2);color:var(--ok)}
+.countdown-wrap.warn{background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.2);color:#f5a623}
+#countdownVal{font-size:12px;font-weight:900}
+
+/* ══ NOTIFICATION POPUP ══ */
+.notif-popup{position:fixed;top:72px;left:50%;transform:translateX(-50%);
+  z-index:500;max-width:340px;width:calc(100% - 32px);
+  background:rgba(8,13,28,0.98);border:1px solid var(--b1);border-radius:14px;
+  padding:14px 16px;box-shadow:0 12px 40px rgba(0,0,0,0.5);
+  animation:slideDown .35s cubic-bezier(.22,1,.36,1);display:none}
+.notif-popup.show{display:block}
+@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.notif-popup-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.notif-popup-head h4{font-size:13px;font-weight:800}
+.notif-popup-close{width:24px;height:24px;border-radius:6px;border:none;background:transparent;
+  cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.notif-item-pop{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--b2)}
+.notif-item-pop:last-child{border-bottom:none;padding-bottom:0}
+.notif-ico-pop{font-size:18px;flex-shrink:0}
+.notif-txt-pop{font-size:12px;line-height:1.5;color:var(--muted)}
+.notif-txt-pop strong{color:var(--text);display:block;font-size:13px}
+
+/* ══ NOTE BANNER ══ */
+.note-banner{margin:10px 16px;padding:10px 14px;border-radius:10px;
+  background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);
+  display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.6;
+  color:var(--text);animation:fadeUp .4s ease}
+.note-banner-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+
+/* ══ SEARCH IN COURSE ══ */
+.cv-search{display:flex;align-items:center;gap:6px;padding:7px 12px;
+  background:rgba(8,13,28,0.6);border:1px solid var(--b2);border-radius:20px;
+  margin:0 16px 12px;transition:border-color .2s}
+.cv-search:focus-within{border-color:var(--blue)}
+.cv-search svg{width:13px;height:13px;color:var(--muted);flex-shrink:0}
+.cv-search input{background:transparent;border:none;outline:none;color:var(--text);
+  font-family:'Tajawal',sans-serif;font-size:13px;width:100%;min-width:0}
+
+/* ══ EXAM NIGHT MODE ══ */
+.night-mode-banner{margin:12px 16px;padding:14px 16px;border-radius:12px;
+  background:linear-gradient(135deg,rgba(26,50,112,0.5),rgba(74,127,212,0.15));
+  border:1px solid rgba(74,127,212,0.3);display:none}
+.night-mode-banner.show{display:block;animation:fadeUp .4s ease}
+.nm-head{font-size:13px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.nm-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.nm-list li{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px;padding:6px 10px;
+  background:rgba(74,127,212,0.05);border-radius:8px;border:1px solid var(--b2)}
+.nm-list li .nm-done{color:var(--ok)}
+.nm-list li .nm-not{color:var(--muted);opacity:.5}
 </style>
 </head>
 <body>
@@ -283,8 +343,30 @@ nav{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center
     <h2>Plus Math</h2>
   </a>
   <div class="nav-mid">أهلاً، <strong id="userName">طالب</strong> 👋</div>
-  <button class="nav-btn" onclick="doSignOut()">خروج</button>
+  <div style="display:flex;align-items:center;gap:8px">
+    <!-- Countdown -->
+    <div id="countdownWrap" class="countdown-wrap" style="display:none">
+      ⏰ <span id="countdownVal">—</span>
+    </div>
+    <!-- Notification bell -->
+    <button id="notifBell" onclick="toggleNotifPopup()" style="position:relative;width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center" title="الإشعارات">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span id="notifDot" style="display:none;position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--err);border:2px solid var(--bg)"></span>
+    </button>
+    <button class="nav-btn" onclick="doSignOut()">خروج</button>
+  </div>
 </nav>
+
+<!-- Notification Popup -->
+<div class="notif-popup" id="notifPopup">
+  <div class="notif-popup-head">
+    <h4>🔔 الإشعارات</h4>
+    <button class="notif-popup-close" onclick="toggleNotifPopup()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="notifList"><div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">لا يوجد إشعارات</div></div>
+</div>
 
 <main id="mainContent" style="display:none">
   <div class="hero-bar">
@@ -342,6 +424,24 @@ nav{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center
     <button class="cv-tab" onclick="switchTab('progress',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>تقدمك
     </button>
+  </div>
+
+  <!-- Note banner from teacher -->
+  <div id="teacherNote" class="note-banner" style="display:none">
+    <div class="note-banner-ico">📌</div>
+    <div id="teacherNoteText"></div>
+  </div>
+
+  <!-- Search bar -->
+  <div class="cv-search" id="cvSearch" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="cvSearchInp" placeholder="ابحث في الفيديوهات والامتحانات..." oninput="searchContent()"/>
+  </div>
+
+  <!-- Night before exam banner -->
+  <div class="night-mode-banner" id="nightBanner">
+    <div class="nm-head">🌙 وضع ليلة الامتحان — مراجعة سريعة</div>
+    <ul class="nm-list" id="nightList"></ul>
   </div>
   <div class="cv-body">
     <div class="tab-pane on" id="tp-videos"><div class="video-list" id="videoList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
@@ -455,6 +555,10 @@ onAuthStateChanged(auth,async(user)=>{
     document.getElementById('statGrade').textContent=_userData.grade||'—';
     document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
     window._userData = _userData;
+    // Countdown
+    if(_userData.expiresAt) startCountdown(_userData.expiresAt);
+    // Teacher note
+    if(_userData.notes) showTeacherNote(_userData.notes);
     // Set video watermark with student info
     setTimeout(()=>{ if(window.setWatermark) window.setWatermark(_userData.name||'طالب', _userData.phone||''); }, 500);
     try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
@@ -487,10 +591,16 @@ window.openCourse=async(gradeKey,label,stage)=>{
   const dV=gp.videos||[],dE=gp.exams||[],dH=gp.homework||[];
   ['videoList','examList','hwList'].forEach(id=>document.getElementById(id).innerHTML='<div class="empty"><p>جاري التحميل...</p></div>');
   const[vids,exams,hw]=await Promise.all([loadList(gradeKey,'videos'),loadList(gradeKey,'exams'),loadList(gradeKey,'homework')]);
+  // Store for search
+  _allVideos = vids; _allExams = exams;
   renderVideos(vids,dV,gradeKey,isMine);
   renderExams(exams,dE,gradeKey,isMine);
   renderHw(hw,dH,gradeKey,isMine);
   setTimeout(()=>{setProg('pv','pvt',vids.length,dV.length);setProg('pe','pet',exams.length,dE.length);setProg('ph','pht',hw.length,dH.length);},400);
+  // Notifications
+  if(isMine && window._db) checkAndShowNotifications(gradeKey, _progress);
+  // Night mode
+  if(isMine) buildNightMode(vids, dV);
 };
 
 async function loadList(grade,tab){
@@ -753,39 +863,162 @@ function switchTab(name,btn){
   document.getElementById('tp-'+name)?.classList.add('on');
   if(btn)btn.classList.add('on');
   if(name==='books') loadBooksTab();
+  // Show/hide search bar (only for videos/exams)
+  const srch = document.getElementById('cvSearch');
+  if(srch) srch.style.display = (name==='videos'||name==='exams') ? 'flex' : 'none';
+  if(name!=='videos'&&name!=='exams') document.getElementById('cvSearchInp').value='';
 }
 
 // ══════════════════════════════════════
-// ── SCREENSHOT PROTECTION ──
+// ── SCREENSHOT PROTECTION (enhanced) ──
 // ══════════════════════════════════════
-// Disable right-click on course view
 document.getElementById('courseView').addEventListener('contextmenu',e=>e.preventDefault());
-
-// Disable screenshot shortcuts & print
 document.addEventListener('keydown',e=>{
-  // PrintScreen
   if(e.key==='PrintScreen'||e.keyCode===44){
     e.preventDefault();
-    // Blank the screen for 1 second
     const cover=document.createElement('div');
     cover.style.cssText='position:fixed;inset:0;background:#000;z-index:9999';
     document.body.appendChild(cover);
-    setTimeout(()=>cover.remove(),1200);
+    setTimeout(()=>cover.remove(),1500);
+    showToast('التصوير غير مسموح 🚫','err');
     return false;
   }
-  // Ctrl+P (print), Ctrl+S (save), Ctrl+Shift+I (devtools), F12
-  if((e.ctrlKey||e.metaKey) && (e.key==='p'||e.key==='s'||e.key==='u')){e.preventDefault();return false;}
+  if((e.ctrlKey||e.metaKey)&&(e.key==='p'||e.key==='s'||e.key==='u')){e.preventDefault();return false;}
   if((e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||(e.key==='F12')){e.preventDefault();return false;}
   if(e.key==='Escape') closeCourse();
 });
-
-// Disable text selection on content
 document.getElementById('courseView').addEventListener('selectstart',e=>e.preventDefault());
-
-// Add watermark to video player with student info
+// Visibility change - blur video when tab switches
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){
+    document.querySelectorAll('[id^="vf-"]').forEach(f=>{ if(f.src) f.style.filter='blur(20px)'; });
+  } else {
+    document.querySelectorAll('[id^="vf-"]').forEach(f=>f.style.filter='');
+  }
+});
 function setWatermark(name,phone){
-  const wrap = document.querySelector('.player-iframe-wrap');
-  if(wrap) wrap.setAttribute('data-wm', name+' · '+phone);
+  const wrap=document.querySelector('.player-iframe-wrap');
+  if(wrap) wrap.setAttribute('data-wm',name+' · '+phone);
+}
+
+// ══════════════════════════════════════
+// ── COUNTDOWN ──
+// ══════════════════════════════════════
+function startCountdown(expiresAt){
+  const wrap = document.getElementById('countdownWrap');
+  const val  = document.getElementById('countdownVal');
+  if(!wrap||!val||!expiresAt) return;
+  const exp = expiresAt.toDate ? expiresAt.toDate() : new Date(expiresAt);
+  function tick(){
+    const diff = exp - new Date();
+    if(diff <= 0){ val.textContent='انتهى'; wrap.className='countdown-wrap'; wrap.style.display='flex'; return; }
+    const days = Math.floor(diff/86400000);
+    if(days > 30){ wrap.style.display='none'; return; }
+    wrap.style.display='flex';
+    if(days <= 3) wrap.className='countdown-wrap';
+    else if(days <= 7) wrap.className='countdown-wrap warn';
+    else wrap.className='countdown-wrap ok';
+    val.textContent = days > 0 ? `${days} يوم` : `${Math.floor((diff%86400000)/3600000)} ساعة`;
+  }
+  tick();
+  setInterval(tick, 60000);
+}
+
+// ══════════════════════════════════════
+// ── NOTIFICATIONS POPUP ──
+// ══════════════════════════════════════
+let _notifOpen = false;
+function toggleNotifPopup(){
+  _notifOpen = !_notifOpen;
+  document.getElementById('notifPopup').classList.toggle('show', _notifOpen);
+  if(_notifOpen) document.getElementById('notifDot').style.display='none';
+}
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#notifBell')&&!e.target.closest('#notifPopup')){
+    _notifOpen=false;
+    document.getElementById('notifPopup').classList.remove('show');
+  }
+});
+
+async function checkAndShowNotifications(gradeKey, progress){
+  const notifs = [];
+  try{
+    // Check for new exams not done
+    const exams = await window._getDocs(window._collection(window._db,'content',gradeKey,'exams'));
+    const doneExams = progress[gradeKey]?.exams||[];
+    const newExams = exams.docs.filter(d=>!doneExams.includes(d.id));
+    if(newExams.length>0) notifs.push({ico:'📝', title:`عندك ${newExams.length} امتحان جديد!`, txt:'في تاب الامتحانات'});
+    // Check for new homework not done
+    const hw = await window._getDocs(window._collection(window._db,'content',gradeKey,'homework'));
+    const doneHw = progress[gradeKey]?.homework||[];
+    const pendHw = hw.docs.filter(d=>!doneHw.includes(d.id));
+    if(pendHw.length>0) notifs.push({ico:'📋', title:`${pendHw.length} واجب لم يُسلم بعد`, txt:'في تاب الواجبات'});
+  }catch(e){}
+  const list = document.getElementById('notifList');
+  if(!notifs.length){ list.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">كل حاجة تمام ✓</div>'; return; }
+  list.innerHTML = notifs.map(n=>`
+    <div class="notif-item-pop">
+      <div class="notif-ico-pop">${n.ico}</div>
+      <div class="notif-txt-pop"><strong>${n.title}</strong>${n.txt}</div>
+    </div>`).join('');
+  document.getElementById('notifDot').style.display='block';
+  // Auto-show popup once
+  const seen = sessionStorage.getItem('notif_seen_'+gradeKey);
+  if(!seen && notifs.length){
+    setTimeout(()=>{ _notifOpen=true; document.getElementById('notifPopup').classList.add('show'); sessionStorage.setItem('notif_seen_'+gradeKey,'1'); },1200);
+  }
+}
+
+// ══════════════════════════════════════
+// ── TEACHER NOTE ──
+// ══════════════════════════════════════
+function showTeacherNote(notes){
+  if(!notes||!notes.trim()) return;
+  const banner = document.getElementById('teacherNote');
+  document.getElementById('teacherNoteText').textContent = notes;
+  banner.style.display='flex';
+}
+
+// ══════════════════════════════════════
+// ── CONTENT SEARCH ──
+// ══════════════════════════════════════
+let _allVideos=[], _allExams=[];
+function searchContent(){
+  const q=(document.getElementById('cvSearchInp')?.value||'').trim().toLowerCase();
+  const activeTab = document.querySelector('.cv-tab.on')?.textContent?.includes('الشرح') ? 'videos' : 'exams';
+  if(!q){
+    if(activeTab==='videos') renderVideos(_allVideos, window._progress?.[window._openGrade]?.videos||[], window._openGrade, window._openGrade===window._userData?.gradeKey);
+    else renderExams(_allExams, window._progress?.[window._openGrade]?.exams||[], window._openGrade, window._openGrade===window._userData?.gradeKey);
+    return;
+  }
+  if(activeTab==='videos'){
+    const filtered = _allVideos.filter(v=>(v.title||'').toLowerCase().includes(q)||(v.description||'').toLowerCase().includes(q));
+    renderVideos(filtered, window._progress?.[window._openGrade]?.videos||[], window._openGrade, window._openGrade===window._userData?.gradeKey);
+  } else {
+    const filtered = _allExams.filter(e=>(e.title||'').toLowerCase().includes(q));
+    renderExams(filtered, window._progress?.[window._openGrade]?.exams||[], window._openGrade, window._openGrade===window._userData?.gradeKey);
+  }
+}
+
+// ══════════════════════════════════════
+// ── NIGHT MODE (مراجعة ليلة الامتحان) ──
+// ══════════════════════════════════════
+function buildNightMode(videos, done){
+  const banner = document.getElementById('nightBanner');
+  const list   = document.getElementById('nightList');
+  if(!videos||!videos.length){ banner.classList.remove('show'); return; }
+  // Show if it's after 9pm
+  const hour = new Date().getHours();
+  if(hour < 21 && hour > 4){ banner.classList.remove('show'); return; }
+  banner.classList.add('show');
+  list.innerHTML = videos.slice(0,8).map(v=>{
+    const isDone = done.includes(v.id);
+    return `<li>
+      <span class="${isDone?'nm-done':'nm-not'}">${isDone?'✅':'○'}</span>
+      <span style="flex:1;${isDone?'opacity:.6':''}">${v.title||'—'}</span>
+      ${!isDone?`<span style="font-size:10px;color:var(--err);font-weight:700">لم تراجعه</span>`:`<span style="font-size:10px;color:var(--ok);font-weight:700">تمت المراجعة</span>`}
+    </li>`;
+  }).join('');
 }
 
 // ══════════════════════════════════════
