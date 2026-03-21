@@ -312,6 +312,12 @@ input::placeholder{color:var(--muted);opacity:.5}
           <svg><use href="#i-wa"/></svg>
           طلب حساب عبر واتساب
         </button>
+
+        <div class="divider">ولي أمر؟</div>
+
+        <a href="parent.html" style="width:100%;padding:12px;border:1px solid rgba(167,139,250,0.3);border-radius:12px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;background:rgba(167,139,250,0.06);color:var(--purple);display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,0.12)'" onmouseout="this.style.background='rgba(167,139,250,0.06)'">
+          👨‍👧 حساب ولي الأمر
+        </a>
       </div>
 
       <!-- Register Tab -->
@@ -533,11 +539,27 @@ input::placeholder{color:var(--muted);opacity:.5}
 
     <!-- ══ STEP: PROFILE ══ -->
     <div class="step" id="step-profile">
+      <!-- Avatar + name with edit -->
       <div style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(74,127,212,0.06);border:1px solid var(--border2);border-radius:13px;margin-bottom:14px">
         <div id="prof-avatar" style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--primary),#0d1a40);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;flex-shrink:0">ط</div>
-        <div>
-          <div id="prof-name" style="font-size:16px;font-weight:900;margin-bottom:2px">—</div>
-          <div id="prof-grade" style="font-size:12px;color:var(--muted)">—</div>
+        <div style="flex:1;min-width:0">
+          <!-- Name display mode -->
+          <div id="prof-name-wrap" style="display:flex;align-items:center;gap:7px">
+            <div id="prof-name" style="font-size:16px;font-weight:900">—</div>
+            <button onclick="toggleNameEdit(true)" style="padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px;font-weight:700">تعديل</button>
+          </div>
+          <!-- Name edit mode -->
+          <div id="prof-name-edit" style="display:none;gap:6px">
+            <input id="prof-name-inp" type="text" placeholder="اسمك الكامل"
+              style="flex:1;padding:7px 10px;background:var(--input);border:1.5px solid var(--border2);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;width:100%;margin-bottom:5px"/>
+            <div style="display:flex;gap:5px">
+              <button onclick="saveName()" class="btn" style="flex:1;padding:7px;font-size:12px">
+                <span class="btn-text"><svg><use href="#i-check"/></svg>حفظ</span><div class="spin"></div>
+              </button>
+              <button onclick="toggleNameEdit(false)" style="padding:7px 12px;border:1px solid var(--border2);border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px">إلغاء</button>
+            </div>
+          </div>
+          <div id="prof-grade" style="font-size:12px;color:var(--muted);margin-top:2px">—</div>
         </div>
       </div>
       <!-- Sub info -->
@@ -555,6 +577,7 @@ input::placeholder{color:var(--muted);opacity:.5}
           <div id="prof-bar" style="height:100%;border-radius:3px;background:linear-gradient(90deg,var(--success),#006040);transition:width 1s;width:0%"></div>
         </div>
       </div>
+      <div class="msg" id="prof-msg"></div>
       <button class="btn" onclick="window.location.href='courses.html'" style="margin-bottom:8px">
         <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>ادخل على كورساتك</span>
       </button>
@@ -756,6 +779,36 @@ function showProfileStep(data){
     setTimeout(function(){ document.getElementById('prof-bar').style.width=Math.round(days/total*100)+'%'; },300);
   }
   showStep('step-profile');
+}
+
+function toggleNameEdit(show){
+  document.getElementById('prof-name-wrap').style.display = show ? 'none' : 'flex';
+  document.getElementById('prof-name-edit').style.display = show ? 'flex' : 'none';
+  document.getElementById('prof-name-edit').style.flexDirection = 'column';
+  if(show){
+    var inp = document.getElementById('prof-name-inp');
+    inp.value = document.getElementById('prof-name').textContent;
+    inp.focus();
+  }
+}
+
+function saveName(){
+  var newName = document.getElementById('prof-name-inp').value.trim();
+  if(!newName){ showMsg('prof-msg','ادخل اسمك','error'); return; }
+  var user = auth.currentUser;
+  if(!user) return;
+  var btn = document.querySelector('#step-profile .btn');
+  setLoad(btn, true);
+  db.collection('users').doc(user.uid).update({ name: newName })
+    .then(function(){
+      document.getElementById('prof-name').textContent = newName;
+      document.getElementById('prof-avatar').textContent = newName.slice(0,2);
+      toggleNameEdit(false);
+      showMsg('prof-msg','تم تغيير الاسم ✓','success');
+      setTimeout(function(){ document.getElementById('prof-msg').className='msg'; }, 3000);
+    })
+    .catch(function(e){ showMsg('prof-msg','خطأ: '+e.message,'error'); })
+    .finally(function(){ setLoad(btn, false); });
 }
 
 function doSignOut(){
