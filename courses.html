@@ -1006,7 +1006,11 @@ let _notifOpen = false;
 function toggleNotifPopup(){
   _notifOpen = !_notifOpen;
   document.getElementById('notifPopup').classList.toggle('show', _notifOpen);
-  if(_notifOpen) document.getElementById('notifDot').style.display='none';
+  if(_notifOpen){
+    // عند فتح الـ popup — reload الإشعارات من Firestore دايماً
+    if(_user) loadFirestoreNotifications(_user.uid);
+    if(_userData?.gradeKey) checkAndShowNotifications(_userData.gradeKey, _progress);
+  }
 }
 document.addEventListener('click', e=>{
   if(!e.target.closest('#notifBell')&&!e.target.closest('#notifPopup')){
@@ -1029,20 +1033,31 @@ async function loadFirestoreNotifications(uid){
       .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
 
     if(unread.length > 0){
-      document.getElementById('notifDot').style.display = 'block';
-      // أضيف الإشعارات للـ list
+      // دايماً اعرض الإشعارات في الـ list
       renderNotifsList(unread, []);
-      // أظهر popup مرة واحدة
-      const seenKey = 'fsnotif_seen_'+uid;
-      if(!sessionStorage.getItem(seenKey)){
+      document.getElementById('notifDot').style.display = 'block';
+
+      // اعرض الـ popup لو في إشعارات جديدة — بصرف النظر عن sessionStorage
+      const lastSeen = sessionStorage.getItem('last_notif_count_'+uid);
+      const currentCount = String(unread.length);
+      if(lastSeen !== currentCount){
+        // في إشعارات جديدة أو غيّرت — أظهر الـ popup
+        sessionStorage.setItem('last_notif_count_'+uid, currentCount);
         setTimeout(()=>{
           _notifOpen=true;
           document.getElementById('notifPopup').classList.add('show');
-          sessionStorage.setItem(seenKey,'1');
         },1500);
       }
+    } else {
+      // مفيش إشعارات — عرّف الـ list صح
+      const list = document.getElementById('notifList');
+      list.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">كل حاجة تمام ✓</div>';
+      document.getElementById('notifDot').style.display = 'none';
     }
-  }catch(e){ console.warn('loadFirestoreNotifications:', e.message); }
+  }catch(e){
+    console.warn('loadFirestoreNotifications error:', e.message);
+    // حتى لو فشل — مش نكسر الصفحة
+  }
 }
 
 // يتشغل لما الطالب يفتح صفه — يضيف إشعارات المحتوى
@@ -1077,14 +1092,6 @@ async function checkAndShowNotifications(gradeKey, progress){
 
   if(allNotifs.length > 0){
     document.getElementById('notifDot').style.display='block';
-    const seen = sessionStorage.getItem('notif_seen_'+gradeKey);
-    if(!seen){
-      setTimeout(()=>{
-        _notifOpen=true;
-        document.getElementById('notifPopup').classList.add('show');
-        sessionStorage.setItem('notif_seen_'+gradeKey,'1');
-      },1200);
-    }
   }
 }
 
