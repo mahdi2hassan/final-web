@@ -598,6 +598,8 @@ onAuthStateChanged(auth,async(user)=>{
     if(_userData.expiresAt) startCountdown(_userData.expiresAt);
     // Teacher note
     if(_userData.notes) showTeacherNote(_userData.notes);
+    // ── رد على الشكاوى ──
+    loadTicketReply(user.uid);
     // Set video watermark with student info
     setTimeout(()=>{ if(window.setWatermark) window.setWatermark(_userData.name||'طالب', _userData.phone||''); }, 500);
     try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
@@ -1000,6 +1002,43 @@ function showTeacherNote(notes){
   const banner = document.getElementById('teacherNote');
   document.getElementById('teacherNoteText').textContent = notes;
   banner.style.display='flex';
+}
+
+// ── TICKET REPLY BANNER ──
+// ══════════════════════════════════════
+async function loadTicketReply(uid){
+  try{
+    // جيب التذاكر المغلقة اللي عندها رد ومش اتقرأت
+    const snap = await getDocs(collection(db,'tickets'));
+    const replied = snap.docs
+      .map(d=>({id:d.id,...d.data()}))
+      .filter(t=>
+        t.userId === uid &&
+        t.adminReply &&
+        t.status === 'closed' &&
+        !t.replyRead
+      )
+      .sort((a,b)=>(b.repliedAt?.seconds||0)-(a.repliedAt?.seconds||0));
+
+    if(replied.length > 0){
+      const latest = replied[0];
+      document.getElementById('ticketReplySubject').textContent = latest.subject||'';
+      document.getElementById('ticketReplyText').textContent = latest.adminReply;
+      document.getElementById('ticketReplyBanner').style.display='flex';
+      // خزّن الـ id عشان نعلمه مقروء لما يضغط ×
+      window._latestTicketReplyId = latest.id;
+    }
+  }catch(e){ console.warn('loadTicketReply:', e.message); }
+}
+
+async function dismissTicketReply(){
+  document.getElementById('ticketReplyBanner').style.display='none';
+  // علّم الرد كـ "تم القراءة" في Firestore
+  if(window._latestTicketReplyId){
+    try{
+      await updateDoc(doc(db,'tickets',window._latestTicketReplyId),{replyRead:true});
+    }catch(e){}
+  }
 }
 
 // ══════════════════════════════════════
