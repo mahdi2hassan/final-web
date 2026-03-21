@@ -275,17 +275,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;display:flex;ali
 #countdownVal{font-size:12px;font-weight:900}
 
 /* ══ NOTIFICATION POPUP ══ */
-.notif-popup{position:fixed;top:72px;left:50%;transform:translateX(-50%);
-  z-index:500;max-width:340px;width:calc(100% - 32px);
-  background:rgba(8,13,28,0.98);border:1px solid var(--b1);border-radius:14px;
-  padding:14px 16px;box-shadow:0 12px 40px rgba(0,0,0,0.5);
-  animation:slideDown .35s cubic-bezier(.22,1,.36,1);display:none}
-.notif-popup.show{display:block}
-@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-.notif-popup-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.notif-popup-head h4{font-size:13px;font-weight:800}
-.notif-popup-close{width:24px;height:24px;border-radius:6px;border:none;background:transparent;
-  cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center}
+to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+
+
 .notif-item-pop{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--b2)}
 .notif-item-pop:last-child{border-bottom:none;padding-bottom:0}
 .notif-ico-pop{font-size:18px;flex-shrink:0}
@@ -293,11 +286,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;display:flex;ali
 .notif-txt-pop strong{color:var(--text);display:block;font-size:13px}
 
 /* ══ NOTE BANNER ══ */
-.note-banner{margin:10px 16px;padding:10px 14px;border-radius:10px;
-  background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);
-  display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.6;
-  color:var(--text);animation:fadeUp .4s ease}
-.note-banner-ico{font-size:16px;flex-shrink:0;margin-top:1px}
+.note-banner{margin:10px 16px;padding:13px 16px;border-radius:13px;
+  background:rgba(201,168,76,0.1);border:1.5px solid rgba(201,168,76,0.35);
+  display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7;
+  color:var(--text);animation:fadeUp .4s ease;box-shadow:0 4px 16px rgba(201,168,76,0.08)}
+.note-banner-ico{font-size:20px;flex-shrink:0;margin-top:2px}
+.note-banner-lbl{font-size:10px;font-weight:800;color:var(--gold2);letter-spacing:.5px;margin-bottom:3px}
 
 /* ══ SEARCH IN COURSE ══ */
 .cv-search{display:flex;align-items:center;gap:6px;padding:7px 12px;
@@ -352,11 +346,6 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;display:flex;ali
     <a href="plus-math-auth.html" style="width:34px;height:34px;border-radius:10px;border:1px solid var(--b2);background:rgba(74,127,212,0.06);display:flex;align-items:center;justify-content:center;color:var(--muted);text-decoration:none;transition:all .2s" title="بروفايلي" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--b2)'">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
     </a>
-    <!-- Notification bell -->
-    <button id="notifBell" onclick="toggleNotifPopup()" style="position:relative;width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center" title="الإشعارات">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-      <span id="notifDot" style="display:none;position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--err);border:2px solid var(--bg)"></span>
-    </button>
     <!-- Ticket button -->
     <button onclick="openTicketModal()" style="width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .2s" title="إرسال شكوى" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--b2)'">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
@@ -365,16 +354,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;display:flex;ali
   </div>
 </nav>
 
-<!-- Notification Popup -->
-<div class="notif-popup" id="notifPopup">
-  <div class="notif-popup-head">
-    <h4>🔔 الإشعارات</h4>
-    <button class="notif-popup-close" onclick="toggleNotifPopup()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-  <div id="notifList"><div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">لا يوجد إشعارات</div></div>
-</div>
+<!-- notif popup removed -->
 
 <main id="mainContent" style="display:none;padding-top:58px">
   <div class="hero-bar">
@@ -437,7 +417,24 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;display:flex;ali
   <!-- Note banner from teacher -->
   <div id="teacherNote" class="note-banner" style="display:none">
     <div class="note-banner-ico">📌</div>
-    <div id="teacherNoteText"></div>
+    <div style="flex:1">
+      <div class="note-banner-lbl">ملاحظة من الأستاذ</div>
+      <div id="teacherNoteText"></div>
+    </div>
+    <button onclick="document.getElementById('teacherNote').style.display='none'"
+      style="background:transparent;border:none;color:rgba(201,168,76,0.5);cursor:pointer;font-size:16px;flex-shrink:0;padding:0;line-height:1">×</button>
+  </div>
+
+  <!-- Ticket reply banner -->
+  <div id="ticketReplyBanner" class="note-banner" style="display:none;background:rgba(74,127,212,0.08);border-color:rgba(74,127,212,0.3)">
+    <div class="note-banner-ico">📬</div>
+    <div style="flex:1">
+      <div class="note-banner-lbl" style="color:var(--blue)">رد على شكواك</div>
+      <div id="ticketReplySubject" style="font-size:11px;color:var(--muted);margin-bottom:3px"></div>
+      <div id="ticketReplyText"></div>
+    </div>
+    <button onclick="dismissTicketReply()"
+      style="background:transparent;border:none;color:rgba(74,127,212,0.4);cursor:pointer;font-size:16px;flex-shrink:0;padding:0;line-height:1">×</button>
   </div>
 
   <!-- Search bar -->
@@ -603,8 +600,6 @@ onAuthStateChanged(auth,async(user)=>{
     if(_userData.notes) showTeacherNote(_userData.notes);
     // Set video watermark with student info
     setTimeout(()=>{ if(window.setWatermark) window.setWatermark(_userData.name||'طالب', _userData.phone||''); }, 500);
-    // ── تحميل الإشعارات من Firestore فور تسجيل الدخول ──
-    loadFirestoreNotifications(user.uid);
     try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
     try{const pr=await getDoc(doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={};}
     buildGrades();
@@ -641,8 +636,6 @@ window.openCourse=async(gradeKey,label,stage)=>{
   renderExams(exams,dE,gradeKey,isMine);
   renderHw(hw,dH,gradeKey,isMine);
   setTimeout(()=>{setProg('pv','pvt',vids.length,dV.length);setProg('pe','pet',exams.length,dE.length);setProg('ph','pht',hw.length,dH.length);},400);
-  // Notifications
-  if(isMine && window._db) checkAndShowNotifications(gradeKey, _progress);
   // Night mode
   if(isMine) buildNightMode(vids, dV);
 };
@@ -997,138 +990,6 @@ function startCountdown(expiresAt){
   }
   tick();
   setInterval(tick, 60000);
-}
-
-// ══════════════════════════════════════
-// ── NOTIFICATIONS POPUP ──
-// ══════════════════════════════════════
-let _notifOpen = false;
-function toggleNotifPopup(){
-  _notifOpen = !_notifOpen;
-  document.getElementById('notifPopup').classList.toggle('show', _notifOpen);
-  if(_notifOpen){
-    // عند فتح الـ popup — reload الإشعارات من Firestore دايماً
-    if(_user) loadFirestoreNotifications(_user.uid);
-    if(_userData?.gradeKey) checkAndShowNotifications(_userData.gradeKey, _progress);
-  }
-}
-document.addEventListener('click', e=>{
-  if(!e.target.closest('#notifBell')&&!e.target.closest('#notifPopup')){
-    _notifOpen=false;
-    document.getElementById('notifPopup').classList.remove('show');
-  }
-});
-
-// ══════════════════════════════════════
-// ── NOTIFICATIONS ──
-// ══════════════════════════════════════
-
-// يتشغل فور تسجيل الدخول — يجيب إشعارات الأدمن من Firestore
-async function loadFirestoreNotifications(uid){
-  try{
-    const snap = await getDocs(collection(db,'notifications',uid,'items'));
-    const unread = snap.docs
-      .map(d=>({id:d.id,...d.data()}))
-      .filter(n=>!n.read)
-      .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-
-    if(unread.length > 0){
-      // دايماً اعرض الإشعارات في الـ list
-      renderNotifsList(unread, []);
-      document.getElementById('notifDot').style.display = 'block';
-
-      // اعرض الـ popup لو في إشعارات جديدة — بصرف النظر عن sessionStorage
-      const lastSeen = sessionStorage.getItem('last_notif_count_'+uid);
-      const currentCount = String(unread.length);
-      if(lastSeen !== currentCount){
-        // في إشعارات جديدة أو غيّرت — أظهر الـ popup
-        sessionStorage.setItem('last_notif_count_'+uid, currentCount);
-        setTimeout(()=>{
-          _notifOpen=true;
-          document.getElementById('notifPopup').classList.add('show');
-        },1500);
-      }
-    } else {
-      // مفيش إشعارات — عرّف الـ list صح
-      const list = document.getElementById('notifList');
-      list.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">كل حاجة تمام ✓</div>';
-      document.getElementById('notifDot').style.display = 'none';
-    }
-  }catch(e){
-    console.warn('loadFirestoreNotifications error:', e.message);
-    // حتى لو فشل — مش نكسر الصفحة
-  }
-}
-
-// يتشغل لما الطالب يفتح صفه — يضيف إشعارات المحتوى
-async function checkAndShowNotifications(gradeKey, progress){
-  const contentNotifs = [];
-  try{
-    const exams = await getDocs(collection(db,'content',gradeKey,'exams'));
-    const doneExams = progress[gradeKey]?.exams||[];
-    const newExams = exams.docs.filter(d=>!doneExams.includes(d.id));
-    if(newExams.length>0) contentNotifs.push({ico:'📝', title:`عندك ${newExams.length} امتحان جديد!`, txt:'في تاب الامتحانات'});
-    const hw = await getDocs(collection(db,'content',gradeKey,'homework'));
-    const doneHw = progress[gradeKey]?.homework||[];
-    const pendHw = hw.docs.filter(d=>!doneHw.includes(d.id));
-    if(pendHw.length>0) contentNotifs.push({ico:'📋', title:`${pendHw.length} واجب لم يُسلم بعد`, txt:'في تاب الواجبات'});
-  }catch(e){}
-
-  // اجيب إشعارات الأدمن الموجودة
-  let adminNotifs = [];
-  if(_user){
-    try{
-      const snap = await getDocs(collection(db,'notifications',_user.uid,'items'));
-      adminNotifs = snap.docs
-        .map(d=>({id:d.id,...d.data()}))
-        .filter(n=>!n.read)
-        .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0))
-        .slice(0,5);
-    }catch(e){}
-  }
-
-  const allNotifs = [...adminNotifs.map(n=>({...n, isSystem:true})), ...contentNotifs];
-  renderNotifsList(adminNotifs, contentNotifs);
-
-  if(allNotifs.length > 0){
-    document.getElementById('notifDot').style.display='block';
-  }
-}
-
-function renderNotifsList(adminNotifs, contentNotifs){
-  const list = document.getElementById('notifList');
-  const allEmpty = adminNotifs.length===0 && contentNotifs.length===0;
-  if(allEmpty){
-    list.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">كل حاجة تمام ✓</div>';
-    return;
-  }
-  const adminHTML = adminNotifs.map(n=>`
-    <div class="notif-item-pop" style="background:rgba(74,127,212,0.06);border-radius:8px;margin-bottom:5px;border:1px solid var(--b2);padding:8px">
-      <div class="notif-ico-pop">${n.icon||'📬'}</div>
-      <div class="notif-txt-pop">
-        <strong>${n.title||'رسالة جديدة'}</strong>
-        ${n.body?`<br/><span style="font-size:11px;color:var(--muted)">${n.body}</span>`:''}
-        <br/><button onclick="markNotifRead('${n.id}')" style="font-size:10px;background:transparent;border:none;color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;padding:2px 0;margin-top:2px">✓ تم القراءة</button>
-      </div>
-    </div>`).join('');
-
-  const contentHTML = contentNotifs.map(n=>`
-    <div class="notif-item-pop">
-      <div class="notif-ico-pop">${n.ico}</div>
-      <div class="notif-txt-pop"><strong>${n.title}</strong><br/><span style="font-size:11px">${n.txt}</span></div>
-    </div>`).join('');
-
-  list.innerHTML = adminHTML + contentHTML;
-}
-
-async function markNotifRead(notifId){
-  if(!notifId||!_user) return;
-  try{
-    await updateDoc(doc(db,'notifications',_user.uid,'items',notifId),{read:true});
-    // أعد تحميل
-    loadFirestoreNotifications(_user.uid);
-    if(_userData?.gradeKey) checkAndShowNotifications(_userData.gradeKey, _progress);
-  }catch(e){ console.warn('markNotifRead:', e); }
 }
 
 // ══════════════════════════════════════
