@@ -1553,7 +1553,85 @@ window.reuseCode = async (id)=>{
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
-// ── REVOKE USER ──
+// ── SAVE SUB CODE ──
+window.saveSubCode = async (id)=>{
+  const code = document.getElementById('edit-code-'+id)?.value.trim().toUpperCase();
+  if(!code){ toast('ادخل الكود','err'); return; }
+  try{
+    await db.collection('users').doc(id).update({ subscriptionCode: code });
+    toast('تم حفظ الكود ✓','ok');
+    logActivity('🔑','تعديل كود اشتراك', code);
+    wloadUsers();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── SAVE SUB EXPIRY ──
+window.saveSubExpiry = async (id)=>{
+  const val = document.getElementById('edit-expiry-'+id)?.value;
+  if(!val){ toast('اختار تاريخ','err'); return; }
+  const newExp = new Date(val);
+  newExp.setHours(23,59,59,0);
+  try{
+    await db.collection('users').doc(id).update({
+      expiresAt: newExp,
+      subscriptionActive: true
+    });
+    toast('تم حفظ التاريخ ✓','ok');
+    logActivity('📅','تعديل تاريخ انتهاء اشتراك', new Date(val).toLocaleDateString('ar-EG'));
+    wloadUsers();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── EXTEND SUBSCRIPTION ──
+window.extendSub = async (id, days)=>{
+  try{
+    const ud = await db.collection('users').doc(id).get();
+    if(!ud.exists){ toast('طالب مش موجود','err'); return; }
+    const d = ud.data();
+    // Start from current expiry or now
+    let base = new Date();
+    if(d.expiresAt){
+      const exp = d.expiresAt.toDate?d.expiresAt.toDate():new Date(d.expiresAt);
+      if(exp > base) base = exp; // extend from current expiry if still active
+    }
+    const newExp = new Date(base.getTime() + days*86400000);
+    await db.collection('users').doc(id).update({
+      expiresAt: newExp,
+      subscriptionActive: true
+    });
+    toast(`تم إضافة ${days} يوم ✓ — ينتهي ${newExp.toLocaleDateString('ar-EG')}`,'ok');
+    logActivity('🎁','مكافأة أيام', (d.name||id)+' +'+days+' يوم');
+    wloadUsers();
+    // Update the date input live
+    const inp = document.getElementById('edit-expiry-'+id);
+    if(inp) inp.value = newExp.toISOString().split('T')[0];
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.extendSubCustom = (id)=>{
+  const days = parseInt(document.getElementById('custom-days-'+id)?.value)||0;
+  if(!days||days<1){ toast('ادخل عدد أيام صحيح','err'); return; }
+  extendSub(id, days);
+};
+
+// ── ACTIVATE SUBSCRIPTION ──
+window.activateSub = async (id)=>{
+  try{
+    const now = new Date();
+    const exp = new Date(now.getTime() + 29*86400000);
+    await db.collection('users').doc(id).update({
+      subscriptionActive: true,
+      activatedAt: now,
+      expiresAt: exp
+    });
+    toast('تم تفعيل الاشتراك ✓ (29 يوم)','ok');
+    logActivity('✅','تفعيل اشتراك يدوي', id);
+    closeModal('studentModal');
+    wloadUsers();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── REVOKE USER (existing) ──
 window.revokeUser = async (id)=>{
   if(!confirm('إلغاء الاشتراك؟')) return;
   try{
@@ -1652,6 +1730,59 @@ window.viewUser = async (id)=>{
         ${tr('تاريخ التفعيل', d.activatedAt?.toDate?.().toLocaleString('ar-EG')||'—')}
         ${d.blocked?tr('تاريخ الحظر',d.blockedAt?.toDate?.().toLocaleString('ar-EG')||'—'):''}
       </table>
+
+      <!-- ── SUBSCRIPTION EDIT ── -->
+      <div style="margin-bottom:14px;background:rgba(201,168,76,0.04);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:14px">
+        <div style="font-size:13px;font-weight:800;margin-bottom:12px;color:var(--gold2)">🔑 تعديل الاشتراك</div>
+
+        <!-- Current status -->
+        <div style="display:flex;justify-content:space-between;font-size:12px;padding:6px 0;border-bottom:1px solid var(--b2);margin-bottom:10px">
+          <span style="color:var(--muted)">الحالة الحالية</span>
+          <span style="font-weight:700;color:${d.subscriptionActive?'var(--ok)':'var(--err)'}">${d.subscriptionActive?'✅ نشط':'⛔ غير نشط'}</span>
+        </div>
+
+        <!-- Code edit -->
+        <div style="margin-bottom:10px">
+          <label style="font-size:11px;color:var(--muted);font-weight:700;display:block;margin-bottom:5px">كود الاشتراك</label>
+          <div style="display:flex;gap:6px">
+            <input id="edit-code-${id}" value="${d.subscriptionCode||''}" placeholder="XXXXXX"
+              style="flex:1;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b2);border-radius:9px;color:var(--text);font-family:monospace;font-size:14px;letter-spacing:2px;outline:none"/>
+            <button onclick="saveSubCode('${id}')" style="padding:8px 14px;border:1px solid var(--gold);border-radius:9px;background:rgba(201,168,76,0.1);color:var(--gold2);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;white-space:nowrap">حفظ الكود</button>
+          </div>
+        </div>
+
+        <!-- Expiry date edit -->
+        <div style="margin-bottom:10px">
+          <label style="font-size:11px;color:var(--muted);font-weight:700;display:block;margin-bottom:5px">تاريخ انتهاء الاشتراك</label>
+          <div style="display:flex;gap:6px">
+            <input id="edit-expiry-${id}" type="date" value="${d.expiresAt?.toDate?.().toISOString().split('T')[0]||''}"
+              style="flex:1;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b2);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;direction:ltr"/>
+            <button onclick="saveSubExpiry('${id}')" style="padding:8px 14px;border:1px solid var(--blue);border-radius:9px;background:rgba(74,127,212,0.1);color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;white-space:nowrap">حفظ التاريخ</button>
+          </div>
+        </div>
+
+        <!-- Quick extend buttons -->
+        <div>
+          <label style="font-size:11px;color:var(--muted);font-weight:700;display:block;margin-bottom:7px">مكافأة — إضافة أيام سريعة</label>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button onclick="extendSub('${id}',3)"  style="padding:6px 14px;border:1px solid rgba(0,214,143,0.3);border-radius:8px;background:rgba(0,214,143,0.06);color:var(--ok);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700">+3 أيام</button>
+            <button onclick="extendSub('${id}',7)"  style="padding:6px 14px;border:1px solid rgba(0,214,143,0.3);border-radius:8px;background:rgba(0,214,143,0.06);color:var(--ok);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700">+7 أيام</button>
+            <button onclick="extendSub('${id}',14)" style="padding:6px 14px;border:1px solid rgba(0,214,143,0.3);border-radius:8px;background:rgba(0,214,143,0.06);color:var(--ok);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700">+14 يوم</button>
+            <button onclick="extendSub('${id}',29)" style="padding:6px 14px;border:1px solid rgba(0,214,143,0.3);border-radius:8px;background:rgba(0,214,143,0.06);color:var(--ok);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700">+29 يوم</button>
+            <div style="display:flex;gap:4px;align-items:center">
+              <input id="custom-days-${id}" type="number" min="1" max="365" placeholder="أيام" style="width:64px;padding:6px 8px;background:var(--inp);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;text-align:center"/>
+              <button onclick="extendSubCustom('${id}')" style="padding:6px 12px;border:1px solid rgba(0,214,143,0.3);border-radius:8px;background:rgba(0,214,143,0.06);color:var(--ok);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700">+مخصص</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toggle active -->
+        <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--b2);display:flex;gap:7px;flex-wrap:wrap">
+          ${!d.subscriptionActive
+            ? `<button onclick="activateSub('${id}')" style="padding:7px 16px;border:1px solid rgba(0,214,143,0.4);border-radius:9px;background:rgba(0,214,143,0.08);color:var(--ok);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700">✅ تفعيل الاشتراك</button>`
+            : `<button onclick="revokeUser('${id}');closeModal('studentModal')" style="padding:7px 16px;border:1px solid rgba(245,166,35,0.4);border-radius:9px;background:rgba(245,166,35,0.08);color:var(--warn);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700">⏸ إيقاف الاشتراك</button>`}
+        </div>
+      </div>
 
       <!-- ── DEVICES ── -->
       <div style="margin-bottom:12px">
@@ -3192,8 +3323,50 @@ window.openStudentDetail = async (id)=>{
           ${tr('تاريخ الانتهاء',`<span style="color:${expiryColor};font-weight:700">${expiryInfo}</span>`)}
         </table>
 
+        <!-- ── SUBSCRIPTION MANAGEMENT ── -->
+        <div style="margin-top:14px;padding:12px;background:rgba(0,214,143,0.04);border:1px solid rgba(0,214,143,0.2);border-radius:10px">
+          <div style="font-size:12px;font-weight:800;color:var(--ok);margin-bottom:10px">🎁 تعديل صلاحية الاشتراك</div>
+
+          <!-- Extend days -->
+          <div style="margin-bottom:10px">
+            <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px">إضافة أيام مكافأة</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              ${[7,14,30].map(days=>`
+                <button onclick="extendSub('${id}',${days})" style="padding:6px 12px;border:1px solid rgba(0,214,143,0.3);border-radius:8px;background:rgba(0,214,143,0.06);color:var(--ok);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;transition:all .2s" onmouseover="this.style.background='rgba(0,214,143,0.15)'" onmouseout="this.style.background='rgba(0,214,143,0.06)'">+${days} يوم</button>
+              `).join('')}
+              <div style="display:flex;gap:5px;flex:1;min-width:120px">
+                <input type="number" id="sd-custom-days" placeholder="عدد مخصص" min="1" max="365"
+                  style="flex:1;padding:6px 8px;background:var(--inp);border:1px solid var(--b2);border-radius:7px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;min-width:80px"/>
+                <button onclick="extendSub('${id}',parseInt(document.getElementById('sd-custom-days').value)||0)" style="padding:6px 10px;border:1px solid var(--blue);border-radius:7px;background:rgba(74,127,212,0.1);color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">إضافة</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Set exact expiry date -->
+          <div style="margin-bottom:10px">
+            <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px">تحديد تاريخ انتهاء محدد</div>
+            <div style="display:flex;gap:6px">
+              <input type="date" id="sd-expiry-date"
+                value="${d.expiresAt?.toDate?.().toISOString().split('T')[0]||''}"
+                style="flex:1;padding:6px 8px;background:var(--inp);border:1px solid var(--b2);border-radius:7px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;direction:ltr"/>
+              <button onclick="setExpiryDate('${id}')" style="padding:6px 12px;border:1px solid var(--gold);border-radius:7px;background:rgba(201,168,76,0.08);color:var(--gold2);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">حفظ</button>
+            </div>
+          </div>
+
+          <!-- Change code -->
+          <div>
+            <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px">تغيير كود الاشتراك</div>
+            <div style="display:flex;gap:6px">
+              <input type="text" id="sd-new-code" placeholder="كود جديد أو اتركه فارغاً لتوليد تلقائي"
+                style="flex:1;padding:6px 8px;background:var(--inp);border:1px solid var(--b2);border-radius:7px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;text-transform:uppercase"
+                oninput="this.value=this.value.toUpperCase()" maxlength="10"/>
+              <button onclick="changeSubCode('${id}')" style="padding:6px 12px;border:1px solid var(--purple);border-radius:7px;background:rgba(167,139,250,0.08);color:var(--purple);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;white-space:nowrap">تغيير</button>
+            </div>
+          </div>
+        </div>
+
         <!-- Change grade -->
-        <div style="margin-top:14px;padding:12px;background:rgba(74,127,212,0.05);border:1px solid var(--b2);border-radius:10px">
+        <div style="margin-top:10px;padding:12px;background:rgba(74,127,212,0.05);border:1px solid var(--b2);border-radius:10px">
           <div style="font-size:12px;font-weight:700;margin-bottom:8px">تغيير الصف</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <select id="sd-grade-stage" onchange="updateSdGradeOptions()" style="flex:1;padding:7px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;appearance:none">
@@ -3263,6 +3436,74 @@ function updateSdGradeOptions(stage, currentGradeKey){
     sel.innerHTML+=`<option value="${key}" ${key===currentGradeKey?'selected':''}>${label}</option>`;
   });
 }
+
+// ── EXTEND SUBSCRIPTION ──
+window.extendSub = async (id, days) => {
+  if(!days || days<1){ toast('ادخل عدد أيام صحيح','err'); return; }
+  try{
+    const ud = await db.collection('users').doc(id).get();
+    if(!ud.exists){ toast('الطالب مش موجود','err'); return; }
+    const d = ud.data();
+    // Get current expiry or now
+    let baseDate;
+    if(d.expiresAt){
+      baseDate = d.expiresAt.toDate?d.expiresAt.toDate():new Date(d.expiresAt);
+      // If already expired, extend from now
+      if(baseDate < new Date()) baseDate = new Date();
+    } else {
+      baseDate = new Date();
+    }
+    const newExpiry = new Date(baseDate.getTime() + days*86400000);
+    await db.collection('users').doc(id).update({
+      expiresAt: newExpiry,
+      subscriptionActive: true
+    });
+    toast(`✅ تم إضافة ${days} يوم — ينتهي ${newExpiry.toLocaleDateString('ar-EG')}`,'ok');
+    logActivity('🎁','تمديد اشتراك',`${d.name||id} +${days} يوم`);
+    openStudentDetail(id);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── SET EXACT EXPIRY DATE ──
+window.setExpiryDate = async (id) => {
+  const val = document.getElementById('sd-expiry-date')?.value;
+  if(!val){ toast('اختار تاريخ','err'); return; }
+  const newExpiry = new Date(val);
+  newExpiry.setHours(23,59,59,0);
+  if(isNaN(newExpiry)){ toast('تاريخ غير صحيح','err'); return; }
+  try{
+    const ud = await db.collection('users').doc(id).get();
+    const name = ud.exists ? ud.data().name||id : id;
+    await db.collection('users').doc(id).update({
+      expiresAt: newExpiry,
+      subscriptionActive: true
+    });
+    toast(`✅ تم تحديد تاريخ الانتهاء: ${newExpiry.toLocaleDateString('ar-EG')}`,'ok');
+    logActivity('📅','تعديل تاريخ انتهاء',`${name} → ${newExpiry.toLocaleDateString('ar-EG')}`);
+    openStudentDetail(id);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── CHANGE SUBSCRIPTION CODE ──
+window.changeSubCode = async (id) => {
+  const inp = document.getElementById('sd-new-code');
+  const ch = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let newCode = inp?.value.trim().toUpperCase();
+  // Auto-generate if empty
+  if(!newCode){
+    newCode = Array.from({length:6},()=>ch[Math.floor(Math.random()*ch.length)]).join('');
+  }
+  if(newCode.length<4){ toast('الكود قصير جداً','err'); return; }
+  try{
+    const ud = await db.collection('users').doc(id).get();
+    const name = ud.exists ? ud.data().name||id : id;
+    await db.collection('users').doc(id).update({ subscriptionCode: newCode });
+    toast(`✅ تم تغيير الكود إلى: ${newCode}`,'ok');
+    logActivity('🔑','تغيير كود اشتراك',`${name} → ${newCode}`);
+    if(inp) inp.value='';
+    openStudentDetail(id);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
 
 window.changeStudentGrade = async (id)=>{
   const stage = document.getElementById('sd-grade-stage')?.value;
