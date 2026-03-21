@@ -1087,7 +1087,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
             المشرفون
           </div>
-          <button class="btn primary sm" onclick="openModal('adminModal')">
+          <button class="btn primary sm" onclick="resetAdminModal();openModal('adminModal')">
             <svg><use href="#ic-plus"/></svg>مشرف جديد
           </button>
         </div>
@@ -1167,14 +1167,35 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
 <!-- Admin Modal -->
 <div class="mbg" id="adminModal">
-  <div class="modal" style="max-width:420px">
-    <h3>إضافة مشرف جديد</h3>
-    <div class="ff"><label>اسم المشرف</label>
-      <input type="text" id="adm-name" placeholder="مثال: أحمد محمد"/></div>
-    <div class="ff"><label>اسم المستخدم</label>
-      <input type="text" id="adm-user" placeholder="مثال: ahmed_admin"/></div>
-    <div class="ff"><label>كلمة المرور</label>
-      <input type="password" id="adm-pass" placeholder="٨ أحرف على الأقل"/></div>
+  <div class="modal" style="max-width:460px">
+    <h3 id="adminModalTitle"><svg><use href="#ic-plus"/></svg>إضافة مشرف جديد</h3>
+    <input type="hidden" id="adm-edit-id" value=""/>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="ff" style="margin:0"><label>الاسم</label>
+        <input type="text" id="adm-name" placeholder="أحمد محمد"/></div>
+      <div class="ff" style="margin:0"><label>اسم المستخدم</label>
+        <input type="text" id="adm-user" placeholder="ahmed_admin"/></div>
+    </div>
+    <div class="ff" style="margin-top:10px">
+      <label>كلمة المرور <span id="adm-pass-hint" style="color:var(--muted);font-weight:400;font-size:10px">(اتركه فارغاً لعدم التغيير عند التعديل)</span></label>
+      <div style="display:flex;gap:6px">
+        <input type="password" id="adm-pass" placeholder="٨ أحرف على الأقل" style="flex:1"/>
+        <button onclick="genAdminPass()" style="padding:0 11px;border:1px solid var(--b1);border-radius:9px;background:rgba(74,127,212,0.06);color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;white-space:nowrap">توليد</button>
+      </div>
+    </div>
+
+    <!-- Status toggle (edit mode) -->
+    <div id="adm-status-row" style="display:none;margin-bottom:10px">
+      <div class="perm-row" onclick="togglePerm('adm-p-active')" style="border:1px solid var(--b2);border-radius:10px;padding:10px 12px;margin-bottom:0">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div style="width:30px;height:30px;border-radius:8px;background:rgba(0,214,143,0.1);display:flex;align-items:center;justify-content:center;font-size:14px">✅</div>
+          <div><div style="font-size:13px;font-weight:700">الحساب مفعّل</div><div style="font-size:10px;color:var(--muted)">إيقافه يمنعه من الدخول</div></div>
+        </div>
+        <div class="yn-toggle on" id="adm-p-active" data-val="1"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+      </div>
+    </div>
+
     <div class="ff"><label>الصلاحيات</label>
       <div style="display:flex;flex-direction:column;gap:0;padding:6px;background:rgba(8,13,28,0.5);border-radius:12px;border:1px solid var(--b2)">
         <div class="perm-row" onclick="togglePerm('adm-p-users')">
@@ -1182,7 +1203,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <div style="width:30px;height:30px;border-radius:8px;background:rgba(74,127,212,0.12);display:flex;align-items:center;justify-content:center">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
             </div>
-            <div><div style="font-size:13px;font-weight:700">عرض الطلاب</div><div style="font-size:10px;color:var(--muted)">يشوف بيانات الطلاب المسجلين</div></div>
+            <div><div style="font-size:13px;font-weight:700">عرض الطلاب</div><div style="font-size:10px;color:var(--muted)">يشوف بيانات الطلاب وتفاصيلهم</div></div>
           </div>
           <div class="yn-toggle on" id="adm-p-users" data-val="1"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
         </div>
@@ -1198,13 +1219,13 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="perm-row" onclick="togglePerm('adm-p-codes')">
           <div style="display:flex;align-items:center;gap:9px">
             <div style="width:30px;height:30px;border-radius:8px;background:rgba(201,168,76,0.1);display:flex;align-items:center;justify-content:center">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             </div>
             <div><div style="font-size:13px;font-weight:700">إدارة الأكواد</div><div style="font-size:10px;color:var(--muted)">يولد ويحذف أكواد الاشتراك</div></div>
           </div>
           <div class="yn-toggle" id="adm-p-codes" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
         </div>
-        <div class="perm-row" onclick="togglePerm('adm-p-broadcast')" style="border-bottom:none">
+        <div class="perm-row" onclick="togglePerm('adm-p-broadcast')">
           <div style="display:flex;align-items:center;gap:9px">
             <div style="width:30px;height:30px;border-radius:8px;background:rgba(167,139,250,0.1);display:flex;align-items:center;justify-content:center">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
@@ -1213,11 +1234,30 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
           <div class="yn-toggle" id="adm-p-broadcast" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
         </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-parents')">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(124,58,237,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">أولياء الأمور</div><div style="font-size:10px;color:var(--muted)">يشوف ويدير حسابات أولياء الأمور</div></div>
+          </div>
+          <div class="yn-toggle" id="adm-p-parents" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-coupons')" style="border-bottom:none">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(245,166,35,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">الكوبونات</div><div style="font-size:10px;color:var(--muted)">يضيف ويعدل كوبونات الخصم</div></div>
+          </div>
+          <div class="yn-toggle" id="adm-p-coupons" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
       </div>
     </div>
+    <div id="adm-gen-pass-show" style="display:none;padding:8px 12px;background:rgba(74,127,212,0.06);border:1px solid var(--b2);border-radius:8px;font-size:12px;color:var(--muted);margin-bottom:10px;direction:ltr;letter-spacing:1px"></div>
     <div class="mfooter">
-      <button class="btn ghost" onclick="closeModal('adminModal')">إغلاق</button>
-      <button class="btn ok" onclick="saveAdmin()"><svg><use href="#ic-check"/></svg>إضافة المشرف</button>
+      <button class="btn ghost" onclick="closeAdminModal()">إلغاء</button>
+      <button class="btn ok" id="adminModalSaveBtn" onclick="saveAdmin()"><svg><use href="#ic-check"/></svg>حفظ</button>
     </div>
   </div>
 </div>
@@ -3100,35 +3140,47 @@ window.deleteCoupon=async(id)=>{
 // ── ADMINS ──
 // ══════════════════════════════════════════
 window.saveAdmin=async()=>{
-  const name=document.getElementById('adm-name').value.trim();
-  const user=document.getElementById('adm-user').value.trim();
-  const pass=document.getElementById('adm-pass').value;
-  if(!name||!user||pass.length<8){ toast('ادخل كل البيانات وكلمة مرور ٨ أحرف','err'); return; }
+  const editId = document.getElementById('adm-edit-id').value.trim();
+  const name   = document.getElementById('adm-name').value.trim();
+  const user   = document.getElementById('adm-user').value.trim().toLowerCase().replace(/\s/g,'_');
+  const pass   = document.getElementById('adm-pass').value;
+  const isEdit = !!editId;
+  if(!name||!user){ toast('ادخل الاسم واسم المستخدم','err'); return; }
+  if(!isEdit && pass.length<8){ toast('كلمة المرور ٨ أحرف على الأقل','err'); return; }
+  if(isEdit && pass && pass.length<8){ toast('كلمة المرور ٨ أحرف على الأقل','err'); return; }
   const perms={
-    users: document.getElementById('adm-p-users').dataset.val === '1',
-    content: document.getElementById('adm-p-content').dataset.val === '1',
-    codes: document.getElementById('adm-p-codes').dataset.val === '1',
-    broadcast: document.getElementById('adm-p-broadcast').dataset.val === '1'
+    users:     document.getElementById('adm-p-users').dataset.val==='1',
+    content:   document.getElementById('adm-p-content').dataset.val==='1',
+    codes:     document.getElementById('adm-p-codes').dataset.val==='1',
+    broadcast: document.getElementById('adm-p-broadcast').dataset.val==='1',
+    parents:   document.getElementById('adm-p-parents').dataset.val==='1',
+    coupons:   document.getElementById('adm-p-coupons').dataset.val==='1'
   };
+  const active = isEdit ? document.getElementById('adm-p-active').dataset.val==='1' : true;
   try{
-    await db.collection('admins').add({
-      name, username:user, password:btoa(pass), permissions:perms,
-      createdAt:firebase.firestore.FieldValue.serverTimestamp(), active:true
-    });
-    closeModal('adminModal');
+    if(isEdit){
+      const update = { name, username:user, permissions:perms, active };
+      if(pass) update.password = btoa(pass);
+      await db.collection('admins').doc(editId).update(update);
+      logActivity('✏️','تعديل مشرف',name);
+      toast('تم حفظ التعديلات ✓','ok');
+    } else {
+      await db.collection('admins').add({
+        name, username:user, password:btoa(pass), permissions:perms,
+        createdAt:firebase.firestore.FieldValue.serverTimestamp(), active:true
+      });
+      logActivity('👥','إضافة مشرف',name);
+      toast('تم إضافة المشرف ✓','ok');
+    }
+    closeAdminModal();
     loadAdmins();
-    logActivity('👥','إضافة مشرف',name);
-    toast('تم إضافة المشرف ✓','ok');
-    document.getElementById('adm-name').value='';
-    document.getElementById('adm-user').value='';
-    document.getElementById('adm-pass').value='';
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
 function permBadge(label, granted){
-  return `<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:8px;background:${granted?'rgba(0,214,143,0.06)':'rgba(255,77,109,0.06)'};border:1px solid ${granted?'rgba(0,214,143,0.18)':'rgba(255,77,109,0.18)'}">
-    <span style="font-size:13px">${granted?'✅':'❌'}</span>
-    <span style="font-size:11px;font-weight:700;color:${granted?'var(--ok)':'var(--err)'}">${label}</span>
+  return `<div style="display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:7px;background:${granted?'rgba(0,214,143,0.06)':'rgba(255,77,109,0.06)'};border:1px solid ${granted?'rgba(0,214,143,0.18)':'rgba(255,77,109,0.18)'}">
+    <span style="font-size:12px">${granted?'✅':'❌'}</span>
+    <span style="font-size:10px;font-weight:700;color:${granted?'var(--ok)':'var(--err)'}">${label}</span>
   </div>`;
 }
 
@@ -3138,34 +3190,109 @@ async function loadAdmins(){
     if(!window._fbReady){ el.innerHTML='<div class="empty"><p>جاري التحميل...</p></div>'; return; }
     const snap=await db.collection('admins').get();
     const admins=snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(!admins.length){ el.innerHTML='<div class="empty"><p>لا يوجد مشرفون — أضف مشرفاً جديداً</p></div>'; return; }
-    el.innerHTML=admins.map(a=>`
-      <div style="background:var(--s2);border:1px solid var(--b2);border-radius:14px;margin-bottom:10px;overflow:hidden">
+    if(!admins.length){ el.innerHTML='<div class="empty"><svg><use href="#ic-users"/></svg><p>لا يوجد مشرفون — أضف مشرفاً جديداً</p></div>'; return; }
+    el.innerHTML=admins.map(a=>{
+      const p = a.permissions||{};
+      const lastLogin = a.lastLogin?.toDate?.().toLocaleString('ar-EG')||'لم يدخل بعد';
+      return `
+      <div style="background:var(--s2);border:1px solid var(--b2);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:all .2s" ${a.active===false?'style="background:var(--s2);border:1px solid rgba(255,77,109,0.2);border-radius:14px;margin-bottom:10px;overflow:hidden;opacity:.7"':''}>
         <div style="display:flex;align-items:center;gap:12px;padding:14px 16px">
-          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--blue));display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0">${(a.name||'?').slice(0,2)}</div>
-          <div style="flex:1">
-            <div style="font-size:14px;font-weight:800">${a.name}</div>
-            <div style="font-size:11px;color:var(--muted)">@${a.username}</div>
+          <div style="width:44px;height:44px;border-radius:12px;background:${a.active===false?'linear-gradient(135deg,#4a0010,#800020)':'linear-gradient(135deg,var(--navy),var(--blue))'};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0">${(a.name||'?').slice(0,2)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:800">${a.name||'—'}</div>
+            <div style="font-size:11px;color:var(--muted)">@${a.username||'—'}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">🕐 آخر دخول: ${lastLogin}</div>
           </div>
-          <div style="display:flex;gap:6px;align-items:center">
-            <span class="bd ${a.active?'ok':'pu'}" style="font-size:10px">${a.active?'فعال':'موقوف'}</span>
-            <button class="btn icon-btn del" onclick="deleteAdmin('${a.id}','${a.name}')" title="حذف"><svg><use href="#ic-trash"/></svg></button>
+          <div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+            <span class="bd ${a.active===false?'err':'ok'}" style="font-size:10px">${a.active===false?'⛔ موقوف':'✅ فعال'}</span>
+            <button class="btn icon-btn" onclick="editAdmin('${a.id}')" title="تعديل" style="color:var(--blue)"><svg><use href="#ic-edit"/></svg></button>
+            <button onclick="copyAdminCreds('${a.username||''}','${a.id}')" style="padding:4px 8px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px" title="نسخ بيانات الدخول">📋</button>
+            <button class="btn icon-btn del" onclick="deleteAdmin('${a.id}','${(a.name||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-trash"/></svg></button>
           </div>
         </div>
         <div style="border-top:1px solid var(--b2);padding:10px 16px;background:rgba(6,10,22,0.3)">
           <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">الصلاحيات</div>
-          <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">
-            ${permBadge('👥 عرض الطلاب', a.permissions?.users)}
-            ${permBadge('📚 إدارة المحتوى', a.permissions?.content)}
-            ${permBadge('🔑 إدارة الأكواد', a.permissions?.codes)}
-            ${permBadge('📣 الإرسال الجماعي', a.permissions?.broadcast)}
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:5px">
+            ${permBadge('الطلاب', p.users)}
+            ${permBadge('المحتوى', p.content)}
+            ${permBadge('الأكواد', p.codes)}
+            ${permBadge('الإرسال', p.broadcast)}
+            ${permBadge('أولياء الأمور', p.parents)}
+            ${permBadge('الكوبونات', p.coupons)}
           </div>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   }catch(e){ el.innerHTML='<div class="empty"><p>خطأ في التحميل</p></div>'; }
 }
+
+function resetAdminModal(){
+  document.getElementById('adm-edit-id').value='';
+  document.getElementById('adm-name').value='';
+  document.getElementById('adm-user').value='';
+  document.getElementById('adm-pass').value='';
+  document.getElementById('adm-gen-pass-show').style.display='none';
+  document.getElementById('adm-status-row').style.display='none';
+  document.getElementById('adm-pass-hint').style.display='none';
+  document.getElementById('adminModalTitle').innerHTML='<svg><use href="#ic-plus"/></svg>إضافة مشرف جديد';
+  document.getElementById('adminModalSaveBtn').innerHTML='<svg><use href="#ic-check"/></svg>إضافة المشرف';
+  // Reset perms
+  ['adm-p-users','adm-p-content'].forEach(id=>{ const el=document.getElementById(id); if(el){el.dataset.val='1';el.classList.add('on');} });
+  ['adm-p-codes','adm-p-broadcast','adm-p-parents','adm-p-coupons','adm-p-active'].forEach(id=>{ const el=document.getElementById(id); if(el){el.dataset.val='0';el.classList.remove('on');} });
+}
+
+function closeAdminModal(){
+  closeModal('adminModal');
+  resetAdminModal();
+}
+
+window.editAdmin = async (id)=>{
+  try{
+    const snap = await db.collection('admins').doc(id).get();
+    if(!snap.exists){ toast('المشرف مش موجود','err'); return; }
+    const a = snap.data();
+    const p = a.permissions||{};
+    resetAdminModal();
+    document.getElementById('adm-edit-id').value = id;
+    document.getElementById('adm-name').value = a.name||'';
+    document.getElementById('adm-user').value = a.username||'';
+    document.getElementById('adm-pass-hint').style.display='inline';
+    document.getElementById('adm-status-row').style.display='block';
+    document.getElementById('adminModalTitle').innerHTML='<svg><use href="#ic-edit"/></svg>تعديل المشرف';
+    document.getElementById('adminModalSaveBtn').innerHTML='<svg><use href="#ic-check"/></svg>حفظ التعديلات';
+    // Set perms
+    const permMap = {
+      'adm-p-users':p.users,'adm-p-content':p.content,'adm-p-codes':p.codes,
+      'adm-p-broadcast':p.broadcast,'adm-p-parents':p.parents,'adm-p-coupons':p.coupons,
+      'adm-p-active': a.active!==false
+    };
+    Object.entries(permMap).forEach(([pid,val])=>{
+      const el=document.getElementById(pid); if(!el)return;
+      el.dataset.val=val?'1':'0'; el.classList.toggle('on',!!val);
+    });
+    openModal('adminModal');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.copyAdminCreds = (username, id)=>{
+  const txt = `اسم المستخدم: ${username}\nرابط الأدمن: ${location.origin}/plus-math-admin.html`;
+  if(navigator.clipboard) navigator.clipboard.writeText(txt);
+  toast('تم نسخ بيانات الدخول ✓','ok');
+};
+
+window.genAdminPass = ()=>{
+  const ch='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#';
+  const pass=Array.from({length:10},()=>ch[Math.floor(Math.random()*ch.length)]).join('');
+  document.getElementById('adm-pass').value=pass;
+  const show=document.getElementById('adm-gen-pass-show');
+  show.textContent='كلمة المرور: '+pass;
+  show.style.display='block';
+  if(navigator.clipboard) navigator.clipboard.writeText(pass);
+  toast('تم توليد كلمة المرور ونسخها ✓','ok');
+};
+
 window.deleteAdmin=async(id,name)=>{
-  if(!confirm('حذف المشرف '+name+'؟')) return;
+  if(!confirm('حذف المشرف "'+name+'"؟')) return;
   try{ await db.collection('admins').doc(id).delete(); loadAdmins(); logActivity('👤','حذف مشرف',name); toast('تم الحذف','ok'); }catch(e){ toast('خطأ','err'); }
 };
 
