@@ -4803,6 +4803,7 @@ window.sendTicketReplyInline=async()=>{
     await db.collection('tickets').doc(t.id).update({
       adminReply:reply,
       repliedAt:firebase.firestore.FieldValue.serverTimestamp(),
+      replyRead:false,
       status:'closed'
     });
     await db.collection('notifications').doc(userId).collection('items').add({
