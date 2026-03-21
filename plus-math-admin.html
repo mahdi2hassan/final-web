@@ -636,20 +636,43 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
       <!-- ══ OVERVIEW ══ -->
       <div class="page on" id="page-overview">
+        <!-- Stats Row 1 — الأساسية -->
         <div class="stats-row">
           <div class="sc bl"><div class="sc-ico"><svg><use href="#ic-users"/></svg></div>
             <div class="sc-val" id="st-t">—</div><div class="sc-lbl">إجمالي الطلاب</div></div>
           <div class="sc gr"><div class="sc-ico"><svg><use href="#ic-check"/></svg></div>
             <div class="sc-val" id="st-a">—</div><div class="sc-lbl">مشتركون نشطون</div></div>
-          <div class="sc go"><div class="sc-ico"><svg><use href="#ic-key"/></svg></div>
-            <div class="sc-val" id="st-av">—</div><div class="sc-lbl">أكواد متاحة</div></div>
-          <div class="sc pu"><div class="sc-ico"><svg><use href="#ic-up"/></svg></div>
-            <div class="sc-val" id="st-u">—</div><div class="sc-lbl">أكواد مستخدمة</div></div>
           <div class="sc go" style="background:rgba(0,214,143,0.08);border-color:rgba(0,214,143,0.2)">
             <div class="sc-ico" style="background:rgba(0,214,143,0.12);color:var(--ok)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
             </div>
             <div class="sc-val" id="st-revenue">—</div><div class="sc-lbl">إيرادات الشهر</div>
+          </div>
+          <div class="sc go"><div class="sc-ico"><svg><use href="#ic-key"/></svg></div>
+            <div class="sc-val" id="st-av">—</div><div class="sc-lbl">أكواد متاحة</div></div>
+        </div>
+        <!-- Stats Row 2 — تفصيلية -->
+        <div class="stats-row" style="margin-top:8px">
+          <div class="sc" style="background:rgba(255,77,109,0.08);border-color:rgba(255,77,109,0.2)">
+            <div class="sc-ico" style="background:rgba(255,77,109,0.12);color:var(--err)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="sc-val" id="st-expiring">—</div><div class="sc-lbl">ينتهي خلال ٧ أيام</div>
+          </div>
+          <div class="sc" style="background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.2)">
+            <div class="sc-ico" style="background:rgba(245,166,35,0.12);color:var(--warn)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+            </div>
+            <div class="sc-val" id="st-new">—</div><div class="sc-lbl">جدد هذا الشهر</div>
+          </div>
+          <div class="sc" style="background:rgba(128,0,255,0.08);border-color:rgba(128,0,255,0.2)">
+            <div class="sc-ico" style="background:rgba(128,0,255,0.12);color:#a855f7">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+            </div>
+            <div class="sc-val" id="st-seen-today">—</div><div class="sc-lbl">دخلوا اليوم</div>
+          </div>
+          <div class="sc pu"><div class="sc-ico"><svg><use href="#ic-up"/></svg></div>
+            <div class="sc-val" id="st-u">—</div><div class="sc-lbl">أكواد مستخدمة</div>
           </div>
         </div>
 
@@ -980,7 +1003,23 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <div class="ff"><label>تأكيد الكلمة الجديدة</label>
               <input type="password" id="cf-p" placeholder="أعد الكتابة"/></div>
             <button class="btn primary" style="width:100%;justify-content:center" onclick="changePass()">
-              <svg><use href="#ic-check"/></svg>تغيير
+              <svg><use href="#ic-check"/></svg>تغيير كلمة مرور الأدمن
+            </button>
+          </div>
+
+          <div class="card">
+            <h4>🛠️ كلمة مرور مدير المحتوى</h4>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7">
+              كلمة مرور صفحة <strong style="color:var(--text)">content-manager.html</strong> — مستقلة عن كلمة مرور الأدمن
+            </p>
+            <div class="ff"><label>كلمة المرور الجديدة</label>
+              <input type="password" id="cm-new-p" placeholder="٦ أحرف على الأقل"/>
+            </div>
+            <div class="ff"><label>تأكيد كلمة المرور</label>
+              <input type="password" id="cm-cf-p" placeholder="أعد الكتابة"/>
+            </div>
+            <button class="btn primary" style="width:100%;justify-content:center;background:linear-gradient(135deg,rgba(128,0,255,0.8),rgba(74,127,212,0.8))" onclick="changeContentManagerPass()">
+              <svg><use href="#ic-check"/></svg>تغيير كلمة مرور المحتوى
             </button>
           </div>
 
@@ -1181,8 +1220,25 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
             سجل النشاط
           </div>
-          <button class="btn ghost sm" onclick="clearActivity()">مسح السجل</button>
+          <button class="btn ghost sm" onclick="clearActivity()" style="color:var(--err);border-color:rgba(255,77,109,0.3)">🗑️ مسح الكل</button>
         </div>
+        <!-- فلاتر البحث -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <input id="act-search" type="text" placeholder="🔍 ابحث في السجل..." oninput="renderActivity()"
+            style="flex:1;min-width:140px;padding:8px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"/>
+          <select id="act-filter" onchange="renderActivity()"
+            style="padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
+            <option value="all">📋 الكل</option>
+            <option value="🔑">🔑 أكواد</option>
+            <option value="👤">👤 طلاب</option>
+            <option value="📌">📌 ملاحظات</option>
+            <option value="📬">📬 ردود شكاوى</option>
+            <option value="🗑️">🗑️ حذف</option>
+            <option value="✅">✅ تفعيل</option>
+          </select>
+        </div>
+        <!-- إحصائية سريعة -->
+        <div id="act-stats" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
         <div id="activityList">
           <div class="empty"><p>لا يوجد نشاط مسجل</p></div>
         </div>
@@ -2064,6 +2120,24 @@ window.changePass = async ()=>{
     window._adminPass = nw; window._ap = nw;
     ['old-p','new-p','cf-p'].forEach(id=>document.getElementById(id).value='');
     toast('تم تغيير كلمة المرور ✓','ok');
+    logActivity('🔒','تغيير كلمة مرور الأدمن','');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── CHANGE CONTENT MANAGER PASS ──
+window.changeContentManagerPass = async ()=>{
+  const nw = document.getElementById('cm-new-p').value;
+  const cf = document.getElementById('cm-cf-p').value;
+  if(nw.length<6){ toast('كلمة المرور قصيرة — ٦ أحرف على الأقل','err'); return; }
+  if(nw!==cf){ toast('كلمتا المرور مش متطابقتين','err'); return; }
+  try{
+    await db.collection('settings').doc('content-manager').set({
+      pass: nw,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    ['cm-new-p','cm-cf-p'].forEach(id=>document.getElementById(id).value='');
+    toast('✅ تم تغيير كلمة مرور مدير المحتوى','ok');
+    logActivity('🛠️','تغيير كلمة مرور مدير المحتوى','');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
@@ -3169,22 +3243,39 @@ function getActivity(){ try{ return JSON.parse(localStorage.getItem('pm_activity
 function saveActivity(a){ localStorage.setItem('pm_activity',JSON.stringify(a.slice(0,200))); }
 window.logActivity=(icon,action,detail='')=>{
   const a=getActivity();
-  a.unshift({icon,action,detail,time:new Date().toISOString()});
+  const admin=window._loggedAdmin;
+  const who=admin?.name||admin?.username||'مجهول';
+  a.unshift({icon,action,detail,time:new Date().toISOString(),who});
   saveActivity(a);
 };
 function renderActivity(){
   const acts=getActivity();
   const el=document.getElementById('activityList');
+  if(!el) return;
   if(!acts.length){ el.innerHTML='<div class="empty"><p>لا يوجد نشاط مسجل</p></div>'; return; }
-  el.innerHTML=acts.map(a=>`
-    <div style="display:flex;gap:10px;padding:10px 12px;border-bottom:1px solid var(--b2);align-items:center">
-      <span style="font-size:18px;flex-shrink:0">${a.icon}</span>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:700">${a.action}</div>
-        ${a.detail?`<div style="font-size:11px;color:var(--muted);margin-top:2px">${a.detail}</div>`:''}
+  // فلترة
+  const fv=document.getElementById('act-filter')?.value||'all';
+  const sv=(document.getElementById('act-search')?.value||'').trim().toLowerCase();
+  let filtered=acts;
+  if(fv!=='all') filtered=filtered.filter(a=>a.icon===fv||a.action.includes(fv));
+  if(sv) filtered=filtered.filter(a=>(a.action+a.detail+a.who).toLowerCase().includes(sv));
+  if(!filtered.length){el.innerHTML='<div class="empty"><p>لا يوجد نتائج</p></div>';return;}
+  el.innerHTML=filtered.map(a=>{
+    const d=new Date(a.time);
+    const dateStr=d.toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});
+    const timeStr=d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+    return `<div style="display:flex;gap:10px;padding:10px 12px;border-bottom:1px solid var(--b2);align-items:flex-start">
+      <span style="font-size:20px;flex-shrink:0;margin-top:2px">${a.icon}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:800">${a.action}</div>
+        ${a.detail?`<div style="font-size:11px;color:var(--muted);margin-top:2px;word-break:break-all">${a.detail}</div>`:''}
+        <div style="display:flex;gap:8px;margin-top:4px;align-items:center">
+          <span style="font-size:10px;background:rgba(74,127,212,0.1);color:var(--blue);border-radius:5px;padding:1px 6px;font-weight:700">👤 ${a.who||'مجهول'}</span>
+          <span style="font-size:10px;color:var(--muted)">${dateStr} · ${timeStr}</span>
+        </div>
       </div>
-      <div style="font-size:11px;color:var(--muted);flex-shrink:0">${new Date(a.time).toLocaleString('ar-EG')}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 window.clearActivity=()=>{ saveActivity([]); renderActivity(); toast('تم مسح السجل','ok'); };
 
@@ -3597,18 +3688,52 @@ function resetSessionTimer(){
 // ══════════════════════════════════════
 function updateStats(){
   const u=window._users||[],c=window._codes||[];
+  const now = new Date();
   const active = u.filter(x=>x.subscriptionActive&&!x.blocked);
+  const monthStart = new Date(now.getFullYear(),now.getMonth(),1);
+  const sevenDays = new Date(now.getTime()+7*86400000);
+  const todayStart = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+
+  // stats أساسية
   document.getElementById('st-t').textContent=u.length;
   document.getElementById('st-a').textContent=active.length;
   document.getElementById('st-av').textContent=c.filter(x=>!x.used).length;
   document.getElementById('st-u').textContent=c.filter(x=>x.used).length;
+
+  // جدد هذا الشهر
+  const newThisMonth = u.filter(x=>{
+    const d=x.createdAt?.toDate?x.createdAt.toDate():x.createdAt?new Date(x.createdAt):null;
+    return d&&d>=monthStart;
+  }).length;
+  const stNew=document.getElementById('st-new');
+  if(stNew) stNew.textContent=newThisMonth;
+
+  // ينتهي خلال 7 أيام
+  const expiring = u.filter(x=>{
+    if(!x.subscriptionActive||!x.expiresAt) return false;
+    const exp=x.expiresAt.toDate?x.expiresAt.toDate():new Date(x.expiresAt);
+    return exp>=now&&exp<=sevenDays;
+  }).length;
+  const stExp=document.getElementById('st-expiring');
+  if(stExp){
+    stExp.textContent=expiring;
+    stExp.parentElement.style.borderColor=expiring>0?'rgba(255,77,109,0.4)':'rgba(255,77,109,0.2)';
+  }
+
+  // دخلوا اليوم
+  const seenToday = u.filter(x=>{
+    if(!x.lastSeen) return false;
+    const d=x.lastSeen.toDate?x.lastSeen.toDate():new Date(x.lastSeen);
+    return d>=todayStart;
+  }).length;
+  const stSeen=document.getElementById('st-seen-today');
+  if(stSeen) stSeen.textContent=seenToday;
+
   const pd=u.filter(x=>!x.subscriptionActive&&!x.blocked).length;
   const b=document.getElementById('pendBadge');
-  b.textContent=pd;b.style.display=pd?'inline':'none';
+  if(b){b.textContent=pd;b.style.display=pd?'inline':'none';}
   document.getElementById('uf-all').textContent='('+u.length+')';
-  // Revenue
   buildRevenue();
-  // Activity dashboard
   buildActivityDashboard();
 }
 
