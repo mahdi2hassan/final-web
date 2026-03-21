@@ -358,29 +358,6 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
 <main id="mainContent" style="display:none;padding-top:58px">
 
-  <!-- ملاحظة من الأستاذ -->
-  <div id="teacherNote" class="note-banner" style="display:none;margin:10px 16px 6px">
-    <div class="note-banner-ico">📌</div>
-    <div style="flex:1">
-      <div class="note-banner-lbl">ملاحظة من الأستاذ</div>
-      <div id="teacherNoteText"></div>
-    </div>
-    <button onclick="this.closest('.note-banner').style.display='none'"
-      style="background:transparent;border:none;color:rgba(201,168,76,0.5);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
-  </div>
-
-  <!-- رد على الشكوى -->
-  <div id="ticketReplyBanner" class="note-banner" style="display:none;margin:6px 16px 6px;background:rgba(74,127,212,0.08);border-color:rgba(74,127,212,0.3)">
-    <div class="note-banner-ico">📬</div>
-    <div style="flex:1">
-      <div class="note-banner-lbl" style="color:var(--blue)">رد على شكواك</div>
-      <div id="ticketReplySubject" style="font-size:11px;color:var(--muted);margin-bottom:3px"></div>
-      <div id="ticketReplyText"></div>
-    </div>
-    <button onclick="dismissTicketReply()"
-      style="background:transparent;border:none;color:rgba(74,127,212,0.4);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
-  </div>
-
   <div class="hero-bar">
     <div><h1>مرحباً في Plus Mathematics 🎓</h1><p>اضغط على صفك لتبدأ</p></div>
     <div class="hero-stats">
@@ -443,6 +420,29 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
   <div class="cv-search" id="cvSearch" style="display:none">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input id="cvSearchInp" placeholder="ابحث في الفيديوهات والامتحانات..." oninput="searchContent()"/>
+  </div>
+
+  <!-- ملاحظة من الأستاذ -->
+  <div id="teacherNote" class="note-banner" style="display:none">
+    <div class="note-banner-ico">📌</div>
+    <div style="flex:1">
+      <div class="note-banner-lbl">ملاحظة من الأستاذ</div>
+      <div id="teacherNoteText"></div>
+    </div>
+    <button onclick="this.closest('.note-banner').style.display='none'"
+      style="background:transparent;border:none;color:rgba(201,168,76,0.5);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
+  </div>
+
+  <!-- رد على الشكوى -->
+  <div id="ticketReplyBanner" class="note-banner" style="display:none;background:rgba(74,127,212,0.08);border-color:rgba(74,127,212,0.3)">
+    <div class="note-banner-ico">📬</div>
+    <div style="flex:1">
+      <div class="note-banner-lbl" style="color:var(--blue)">رد على شكواك</div>
+      <div id="ticketReplySubject" style="font-size:11px;color:var(--muted);margin-bottom:3px"></div>
+      <div id="ticketReplyText"></div>
+    </div>
+    <button onclick="dismissTicketReply()"
+      style="background:transparent;border:none;color:rgba(74,127,212,0.4);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
   </div>
 
   <!-- Night before exam banner -->
@@ -642,6 +642,11 @@ window.openCourse=async(gradeKey,label,stage)=>{
   setTimeout(()=>{setProg('pv','pvt',vids.length,dV.length);setProg('pe','pet',exams.length,dE.length);setProg('ph','pht',hw.length,dH.length);},400);
   // Night mode
   if(isMine) buildNightMode(vids, dV);
+  // ── اعرض الملاحظة والرد عند فتح الصف ──
+  if(isMine){
+    if(_userData?.notes) showTeacherNote(_userData.notes);
+    if(_user) loadTicketReply(_user.uid);
+  }
 };
 
 async function loadList(grade,tab){
