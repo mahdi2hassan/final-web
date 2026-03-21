@@ -357,6 +357,10 @@ nav{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
       <span id="notifDot" style="display:none;position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--err);border:2px solid var(--bg)"></span>
     </button>
+    <!-- Ticket button -->
+    <button onclick="openTicketModal()" style="width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .2s" title="إرسال شكوى" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--b2)'">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    </button>
     <button class="nav-btn" onclick="doSignOut()">خروج</button>
   </div>
 </nav>
@@ -471,6 +475,32 @@ nav{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center
   </div>
 </div>
 
+<!-- Ticket Modal -->
+<div class="overlay" id="ticketModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>💬 إرسال شكوى أو مشكلة</h3>
+      <button class="mclose" onclick="document.getElementById('ticketModal').classList.remove('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <select id="tk-cat" style="width:100%;padding:10px 12px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;margin-bottom:10px;appearance:none">
+      <option value="technical">🔧 مشكلة تقنية</option>
+      <option value="content">📚 مشكلة في المحتوى</option>
+      <option value="payment">💳 مشكلة في الدفع</option>
+      <option value="subscription">🔑 مشكلة في الاشتراك</option>
+      <option value="other">💬 أخرى</option>
+    </select>
+    <input id="tk-subject" type="text" placeholder="الموضوع..." style="width:100%;padding:10px 12px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;margin-bottom:10px"/>
+    <textarea id="tk-message" rows="4" placeholder="اشرح المشكلة بالتفصيل..." style="width:100%;padding:10px 12px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;resize:vertical;margin-bottom:10px"></textarea>
+    <div id="tk-msg" style="font-size:12px;margin-bottom:8px;display:none"></div>
+    <button onclick="submitTicket()" style="width:100%;padding:12px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+      إرسال
+    </button>
+  </div>
+</div>
+
 <div class="overlay" id="playerModal">
   <div class="modal">
     <div class="modal-head"><h3 id="playerTitle">الفيديو</h3>
@@ -525,7 +555,7 @@ nav{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, collection, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, getDocs, collection, setDoc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app  = initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
 const auth = getAuth(app);
@@ -812,6 +842,38 @@ window.markDone=async(gradeKey,type,itemId)=>{
   }catch(e){showToast('خطأ: '+e.message,'err');}
 };
 window.doSignOut=async()=>{await signOut(auth);window.location.href='index.html';};
+
+// ── TICKETS ──
+window.openTicketModal=()=>{
+  document.getElementById('tk-subject').value='';
+  document.getElementById('tk-message').value='';
+  document.getElementById('tk-msg').style.display='none';
+  document.getElementById('ticketModal').classList.add('open');
+};
+window.submitTicket=async()=>{
+  const subject=document.getElementById('tk-subject').value.trim();
+  const message=document.getElementById('tk-message').value.trim();
+  const category=document.getElementById('tk-cat').value;
+  const msgEl=document.getElementById('tk-msg');
+  if(!subject||!message){
+    msgEl.style.display='block';msgEl.style.color='var(--err)';msgEl.textContent='⚠️ ادخل الموضوع والتفاصيل';return;
+  }
+  try{
+    await setDoc(doc(db,'tickets',Date.now().toString()),{
+      userId:_user.uid,
+      userName:_userData?.name||'—',
+      userPhone:_userData?.phone||'',
+      userGrade:_userData?.grade||'',
+      subject,message,category,
+      status:'open',
+      createdAt:serverTimestamp()
+    });
+    msgEl.style.display='block';msgEl.style.color='var(--ok)';msgEl.textContent='✅ تم الإرسال — سيتم الرد قريباً';
+    setTimeout(()=>document.getElementById('ticketModal').classList.remove('open'),2000);
+  }catch(e){
+    msgEl.style.display='block';msgEl.style.color='var(--err)';msgEl.textContent='خطأ: '+e.message;
+  }
+};
 function getYtId(url){const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);return m?m[1]:'';}
 function setProg(fId,vId,tot,done){const p=tot?Math.round(done/tot*100):0;const f=document.getElementById(fId),v=document.getElementById(vId);if(f)f.style.width=p+'%';if(v)v.textContent=p+'%';}
 </script>

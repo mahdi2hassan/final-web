@@ -608,6 +608,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
         <span>سجل النشاط</span>
       </div>
+      <div class="sb-item" onclick="goPage('tickets')" data-perm="users">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span>التذاكر</span>
+        <span class="sb-badge" id="ticketsBadge" style="display:none;background:var(--err)">0</span>
+      </div>
       <div class="sb-item" onclick="goPage('admins')" data-perm="super">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
         <span>المشرفون</span>
@@ -640,6 +645,12 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <div class="sc-val" id="st-av">—</div><div class="sc-lbl">أكواد متاحة</div></div>
           <div class="sc pu"><div class="sc-ico"><svg><use href="#ic-up"/></svg></div>
             <div class="sc-val" id="st-u">—</div><div class="sc-lbl">أكواد مستخدمة</div></div>
+          <div class="sc go" style="background:rgba(0,214,143,0.08);border-color:rgba(0,214,143,0.2)">
+            <div class="sc-ico" style="background:rgba(0,214,143,0.12);color:var(--ok)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+            <div class="sc-val" id="st-revenue">—</div><div class="sc-lbl">إيرادات الشهر</div>
+          </div>
         </div>
 
         <div class="sh">
@@ -668,10 +679,24 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
         </div>
         <div class="ftabs">
-          <div class="ftab on" onclick="setUF('all')">الكل <span id="uf-all"></span></div>
-          <div class="ftab" onclick="setUF('active')">نشط</div>
-          <div class="ftab" onclick="setUF('inactive')">غير مشترك</div>
-          <div class="ftab" onclick="setUF('blocked')">محظور</div>
+          <div class="ftab on" onclick="window._customFilter=null;setUF('all')">الكل <span id="uf-all"></span></div>
+          <div class="ftab" onclick="window._customFilter=null;setUF('active')">نشط</div>
+          <div class="ftab" onclick="window._customFilter=null;setUF('inactive')">غير مشترك</div>
+          <div class="ftab" onclick="window._customFilter=null;setUF('blocked')">محظور</div>
+          <div class="ftab" style="display:flex;align-items:center;gap:4px">
+            <select onchange="filterByGrade(this.value)" onclick="e=>e.stopPropagation()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;outline:none;padding:0 4px">
+              <option value="">📚 الصف</option>
+              <option value="primary-4">٤ ابتدائي</option>
+              <option value="primary-5">٥ ابتدائي</option>
+              <option value="primary-6">٦ ابتدائي</option>
+              <option value="prep-1">١ إعدادي</option>
+              <option value="prep-2">٢ إعدادي</option>
+              <option value="prep-3">٣ إعدادي</option>
+              <option value="sec-1">١ ثانوي</option>
+              <option value="sec-2">٢ ثانوي</option>
+              <option value="sec-3">٣ ثانوي</option>
+            </select>
+          </div>
         </div>
         <div class="tw"><div class="tw-scroll">
           <table>
@@ -790,6 +815,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
                 <option value="all">كل الطلاب</option>
                 <option value="active">المشتركون النشطون فقط</option>
                 <option value="inactive">غير المشتركين</option>
+                <option value="expiring">اشتراكهم ينتهي خلال 7 أيام ⚠️</option>
                 <option value="grade">صف معين</option>
               </select>
             </div>
@@ -953,12 +979,59 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <button class="btn gold" style="width:100%;justify-content:center;margin-bottom:8px" onclick="exportCSV()">
               <svg><use href="#ic-dl"/></svg>تصدير الطلاب CSV
             </button>
-            <button class="btn ghost" style="width:100%;justify-content:center" onclick="exportCodesCsv()">
+            <button class="btn ghost" style="width:100%;justify-content:center;margin-bottom:8px" onclick="exportCodesCsv()">
               <svg><use href="#ic-dl"/></svg>تصدير الأكواد CSV
+            </button>
+            <button class="btn ghost" style="width:100%;justify-content:center;background:rgba(201,168,76,0.08);border-color:rgba(201,168,76,0.3);color:var(--gold2)" onclick="exportMonthlyReport()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              تقرير الشهر الحالي PDF
             </button>
           </div>
 
         </div>
+      </div>
+
+      <!-- ══ TICKETS ══ -->
+      <div class="page" id="page-tickets">
+        <div class="sh">
+          <div class="sh-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            التذاكر والشكاوى
+          </div>
+          <button class="btn ghost sm" onclick="loadTickets()"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+        </div>
+        <div class="ftabs">
+          <div class="ftab on" onclick="setTF('all')">الكل <span id="tf-all"></span></div>
+          <div class="ftab" onclick="setTF('open')">🔴 مفتوحة</div>
+          <div class="ftab" onclick="setTF('inprogress')">🟡 جاري</div>
+          <div class="ftab" onclick="setTF('closed')">✅ مغلقة</div>
+        </div>
+        <div class="tw"><div class="tw-scroll">
+          <table>
+            <thead><tr>
+              <th>الطالب</th>
+              <th>الموضوع</th>
+              <th>التاريخ</th>
+              <th>الحالة</th>
+              <th>إجراء</th>
+            </tr></thead>
+            <tbody id="ticketsTbl">
+              <tr><td colspan="5"><div class="empty"><p>جاري التحميل...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <!-- ══ TICKET DETAIL ══ -->
+      <div class="page" id="page-ticket-detail">
+        <div class="sh">
+          <button onclick="goPage('tickets')" class="btn ghost sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+            رجوع
+          </button>
+          <div class="sh-title" id="ticket-detail-title">تذكرة</div>
+        </div>
+        <div id="ticket-detail-content" style="max-width:600px"></div>
       </div>
 
       <!-- ══ STUDENT DETAIL ══ -->
@@ -1021,8 +1094,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
           <!-- Top grades -->
           <div class="card">
-            <h4 style="margin-bottom:14px">🏆 أكثر الصفوف اشتراكاً</h4>
-            <div id="gradeChart"></div>
+            <h4 style="margin-bottom:14px">🏆 مقارنة الصفوف (نسبة الاشتراك)</h4>
+            <div id="gradeCompareCard"><div class="empty"><p>جاري التحميل...</p></div></div>
           </div>
         </div>
 
@@ -1030,6 +1103,29 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="card">
           <h4 style="margin-bottom:12px">⚠️ اشتراكات تنتهي قريباً (خلال 7 أيام)</h4>
           <div id="expiringTable"></div>
+        </div>
+
+        <!-- Content stats -->
+        <div class="card" style="margin-top:14px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <h4 style="margin:0">📺 إحصائيات المحتوى الأكثر مشاهدة</h4>
+            <button onclick="buildContentStats()" style="padding:5px 11px;border:1px solid var(--b1);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">تحديث</button>
+          </div>
+          <div class="ff"><label>اختار الصف</label>
+            <select id="cs-grade-sel" onchange="buildContentStats()" style="padding:7px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;appearance:none;width:100%">
+              <option value="">اختار صف...</option>
+              <option value="primary-4">٤ ابتدائي</option>
+              <option value="primary-5">٥ ابتدائي</option>
+              <option value="primary-6">٦ ابتدائي</option>
+              <option value="prep-1">١ إعدادي</option>
+              <option value="prep-2">٢ إعدادي</option>
+              <option value="prep-3">٣ إعدادي</option>
+              <option value="sec-1">١ ثانوي</option>
+              <option value="sec-2">٢ ثانوي</option>
+              <option value="sec-3">٣ ثانوي</option>
+            </select>
+          </div>
+          <div id="contentStatsBody"><div class="empty"><p>اختار صفاً لعرض الإحصائيات</p></div></div>
         </div>
       </div>
 
@@ -1974,6 +2070,12 @@ window.updatePreview = ()=>{
   if(t==='all') f=u;
   else if(t==='active') f=u.filter(x=>x.subscriptionActive&&!x.blocked);
   else if(t==='inactive') f=u.filter(x=>!x.subscriptionActive&&!x.blocked);
+  else if(t==='expiring') f=u.filter(x=>{
+    if(!x.subscriptionActive||!x.expiresAt) return false;
+    const exp=x.expiresAt.toDate?x.expiresAt.toDate():new Date(x.expiresAt);
+    const d=Math.ceil((exp-new Date())/86400000);
+    return d<=7 && d>=0;
+  });
   else if(t==='grade') f=u.filter(x=>!gradeFilter||x.gradeKey===gradeFilter);
   else f=u;
   document.getElementById('bcCount').textContent = 'سيتم الإرسال لـ '+f.length+' طالب';
@@ -2006,6 +2108,12 @@ window.startBC = ()=>{
   if(t==='all') _bl=u;
   else if(t==='active') _bl=u.filter(x=>x.subscriptionActive&&!x.blocked);
   else if(t==='inactive') _bl=u.filter(x=>!x.subscriptionActive&&!x.blocked);
+  else if(t==='expiring') _bl=u.filter(x=>{
+    if(!x.subscriptionActive||!x.expiresAt) return false;
+    const exp=x.expiresAt.toDate?x.expiresAt.toDate():new Date(x.expiresAt);
+    const d=Math.ceil((exp-new Date())/86400000);
+    return d<=7&&d>=0;
+  });
   else if(t==='grade') _bl=u.filter(x=>!gradeFilter||x.gradeKey===gradeFilter);
   else _bl=u;
   // Filter out users with no phone
@@ -2698,6 +2806,7 @@ const pageLabels={
   codes:'الأكواد', coupons:'كوبونات الخصم',
   content:'إدارة المحتوى', broadcast:'إرسال جماعي',
   notifications:'الإشعارات', activity:'سجل النشاط',
+  tickets:'التذاكر والشكاوى', 'ticket-detail':'تذكرة',
   admins:'المشرفون', settings:'الإعدادات',
   'parent-detail':'تفاصيل ولي الأمر'
 };
@@ -2717,9 +2826,9 @@ function goPage(p){
   }
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('on'));
   document.getElementById('page-'+p)?.classList.add('on');
-  const allPages=['overview','analytics','users','parents','codes','coupons','content','broadcast','notifications','activity','admins','settings'];
+  const allPages=['overview','analytics','users','parents','codes','coupons','content','broadcast','notifications','activity','tickets','admins','settings'];
   document.querySelectorAll('.sb-item').forEach((el,i)=>{
-    el.classList.toggle('on', allPages[i]===p || (p==='parent-detail' && allPages[i]==='parents'));
+    el.classList.toggle('on', allPages[i]===p || (p==='parent-detail' && allPages[i]==='parents') || (p==='ticket-detail' && allPages[i]==='tickets'));
   });
   document.getElementById('tbTitle').textContent=pageLabels[p]||p;
   if(p==='broadcast') window.updatePreview?.();
@@ -2729,6 +2838,7 @@ function goPage(p){
   if(p==='coupons') loadCoupons();
   if(p==='admins') loadAdmins();
   if(p==='parents') loadParents();
+  if(p==='tickets') loadTickets();
   if(p==='content'){ window.open('content-manager.html','_blank'); }
   if(window.innerWidth<=768) closeSidebar();
 }
@@ -4346,7 +4456,503 @@ _styleEl.textContent = `
 `;
 document.head.appendChild(_styleEl);
 
+// ══════════════════════════════════════
+// ── TICKETS SYSTEM ──
+// ══════════════════════════════════════
+let _tickets=[], _tf='all';
+
+window.loadTickets = async ()=>{
+  const tbl=document.getElementById('ticketsTbl');
+  tbl.innerHTML='<tr><td colspan="5"><div class="empty"><p>جاري التحميل...</p></div></td></tr>';
+  try{
+    const snap=await db.collection('tickets').orderBy('createdAt','desc').get();
+    _tickets=snap.docs.map(d=>({id:d.id,...d.data()}));
+    // Badge
+    const open=_tickets.filter(t=>t.status==='open').length;
+    const badge=document.getElementById('ticketsBadge');
+    if(badge){badge.textContent=open;badge.style.display=open?'flex':'none';}
+    renderTickets();
+  }catch(e){tbl.innerHTML='<tr><td colspan="5"><div class="empty"><p>خطأ في التحميل</p></div></td></tr>';}
+};
+
+function setTF(f){
+  _tf=f;
+  document.querySelectorAll('#page-tickets .ftab').forEach((t,i)=>t.classList.toggle('on',['all','open','inprogress','closed'][i]===f));
+  renderTickets();
+}
+
+function renderTickets(){
+  const tbl=document.getElementById('ticketsTbl');
+  let list=_tf==='all'?_tickets:_tickets.filter(t=>t.status===_tf);
+  document.getElementById('tf-all').textContent=_tickets.length?'('+_tickets.length+')':'';
+  if(!list.length){tbl.innerHTML='<tr><td colspan="5"><div class="empty"><p>لا يوجد تذاكر</p></div></td></tr>';return;}
+  const statusBadge=s=>s==='open'?'<span class="bd err">🔴 مفتوحة</span>':s==='inprogress'?'<span class="bd" style="background:rgba(245,166,35,0.1);color:var(--warn);border-color:rgba(245,166,35,0.2)">🟡 جاري</span>':'<span class="bd ok">✅ مغلقة</span>';
+  tbl.innerHTML=list.map(t=>`<tr>
+    <td><div class="name-cell">
+      <div class="av" style="font-size:12px">${(t.userName||'ط').slice(0,2)}</div>
+      <div><div style="font-weight:700;font-size:12px">${t.userName||'—'}</div>
+      <div style="font-size:10px;color:var(--muted)">${t.userPhone||'—'}</div></div>
+    </div></td>
+    <td style="font-size:12px;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.subject||'—'}</td>
+    <td style="font-size:11px;color:var(--muted)">${t.createdAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</td>
+    <td>${statusBadge(t.status||'open')}</td>
+    <td><div style="display:flex;gap:4px">
+      <button class="btn icon-btn" onclick="openTicketDetail('${t.id}')" title="فتح"><svg><use href="#ic-eye"/></svg></button>
+      ${t.userPhone?`<button class="btn icon-btn" onclick="waUser('${t.userPhone}','${(t.userName||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-wa"/></svg></button>`:''}
+      <button class="btn icon-btn del" onclick="closeTicket('${t.id}')"><svg><use href="#ic-check"/></svg></button>
+    </div></td>
+  </tr>`).join('');
+}
+
+window.openTicketDetail = async (id)=>{
+  goPage('ticket-detail');
+  const el=document.getElementById('ticket-detail-content');
+  el.innerHTML='<div class="empty"><p>جاري التحميل...</p></div>';
+  try{
+    const snap=await db.collection('tickets').doc(id).get();
+    if(!snap.exists){toast('التذكرة مش موجودة','err');return;}
+    const t={id,...snap.data()};
+    document.getElementById('ticket-detail-title').textContent='تذكرة: '+( t.subject||'—');
+    const statusColors={open:'var(--err)',inprogress:'var(--warn)',closed:'var(--ok)'};
+    const statusLabels={open:'🔴 مفتوحة',inprogress:'🟡 جاري المعالجة',closed:'✅ مغلقة'};
+    el.innerHTML=`
+      <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div class="av">${(t.userName||'ط').slice(0,2)}</div>
+          <div>
+            <div style="font-weight:800;font-size:14px">${t.userName||'—'}</div>
+            <div style="font-size:11px;color:var(--muted)">${t.userPhone||'—'} · ${t.createdAt?.toDate?.().toLocaleString('ar-EG')||'—'}</div>
+          </div>
+          <span style="margin-right:auto;font-size:12px;font-weight:700;color:${statusColors[t.status||'open']}">${statusLabels[t.status||'open']}</span>
+        </div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:8px">${t.subject||'—'}</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.7;padding:12px;background:rgba(8,13,28,0.4);border-radius:10px;margin-bottom:14px">${(t.message||'').replace(/\n/g,'<br>')}</div>
+        ${t.category?`<div style="font-size:11px;color:var(--muted);margin-bottom:14px">📂 الفئة: <strong style="color:var(--text)">${t.category}</strong></div>`:''}
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${t.userPhone?`<button class="btn wa sm" onclick="waUser('${t.userPhone}','${(t.userName||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-wa"/></svg>رد على واتساب</button>`:''}
+          ${t.status!=='inprogress'?`<button class="btn sm" style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);color:var(--warn)" onclick="updateTicketStatus('${id}','inprogress')">🟡 جاري المعالجة</button>`:''}
+          ${t.status!=='closed'?`<button class="btn ok sm" onclick="updateTicketStatus('${id}','closed')"><svg><use href="#ic-check"/></svg>إغلاق التذكرة</button>`:''}
+        </div>
+      </div>
+      <div class="card">
+        <h4>📝 ملاحظة داخلية</h4>
+        <textarea id="ticket-note" rows="3" style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical;margin-top:8px" placeholder="ملاحظة لنفسك...">${t.adminNote||''}</textarea>
+        <button onclick="saveTicketNote('${id}')" class="btn ghost sm" style="margin-top:6px;font-size:11px"><svg><use href="#ic-check"/></svg>حفظ الملاحظة</button>
+      </div>`;
+  }catch(e){toast('خطأ: '+e.message,'err');}
+};
+
+window.updateTicketStatus=async(id,status)=>{
+  try{
+    await db.collection('tickets').doc(id).update({status,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    toast(status==='closed'?'تم إغلاق التذكرة ✓':'تم تحديث الحالة ✓','ok');
+    logActivity('🎫','تحديث تذكرة',id+' → '+status);
+    openTicketDetail(id);
+    loadTickets();
+  }catch(e){toast('خطأ: '+e.message,'err');}
+};
+
+window.closeTicket=async(id)=>{
+  try{
+    await db.collection('tickets').doc(id).update({status:'closed',updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    toast('تم إغلاق التذكرة ✓','ok');
+    loadTickets();
+  }catch(e){toast('خطأ','err');}
+};
+
+window.saveTicketNote=async(id)=>{
+  const note=document.getElementById('ticket-note')?.value||'';
+  try{
+    await db.collection('tickets').doc(id).update({adminNote:note});
+    toast('تم حفظ الملاحظة ✓','ok');
+  }catch(e){toast('خطأ','err');}
+};
+
+// ══════════════════════════════════════
+// ── MONTHLY REPORT PDF ──
+// ══════════════════════════════════════
+window.exportMonthlyReport = ()=>{
+  const users  = window._users||[];
+  const codes  = window._codes||[];
+  const now    = new Date();
+  const monthName = now.toLocaleDateString('ar-EG',{month:'long',year:'numeric'});
+  const monthStart = new Date(now.getFullYear(),now.getMonth(),1);
+
+  const newThisMonth = users.filter(u=>{
+    const d=u.createdAt?.toDate?u.createdAt.toDate():u.createdAt?new Date(u.createdAt):null;
+    return d && d>=monthStart;
+  });
+  const activatedThisMonth = users.filter(u=>{
+    const d=u.activatedAt?.toDate?u.activatedAt.toDate():u.activatedAt?new Date(u.activatedAt):null;
+    return d && d>=monthStart;
+  });
+  const revenue = codes.filter(c=>{
+    if(!c.used||!c.price) return false;
+    const d=c.usedAt?.toDate?c.usedAt.toDate():c.usedAt?new Date(c.usedAt):null;
+    return d && d>=monthStart;
+  }).reduce((s,c)=>s+parseFloat(c.price||0),0);
+  const active = users.filter(u=>u.subscriptionActive&&!u.blocked);
+  const expiring7 = active.filter(u=>{
+    const exp=u.expiresAt?.toDate?u.expiresAt.toDate():u.expiresAt?new Date(u.expiresAt):null;
+    if(!exp) return false;
+    return Math.ceil((exp-now)/86400000)<=7;
+  });
+
+  // Grade breakdown
+  const grades={};
+  users.forEach(u=>{const k=u.grade||'غير محدد';grades[k]=(grades[k]||0)+1;});
+
+  const html=`<!DOCTYPE html><html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"/><title>تقرير ${monthName}</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',sans-serif;background:#fff;color:#111;padding:24px;font-size:13px}
+.header{text-align:center;border-bottom:3px solid #1a3270;padding-bottom:16px;margin-bottom:24px}
+.header h1{font-size:24px;font-weight:900;color:#1a3270}
+.header p{color:#6b7280;font-size:13px;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat{background:#f8f9fc;border:1px solid #e5e9f2;border-radius:12px;padding:16px;text-align:center}
+.stat-v{font-size:28px;font-weight:900;color:#1a3270}
+.stat-l{font-size:11px;color:#6b7280;margin-top:4px;font-weight:600}
+.stat.green .stat-v{color:#059669}
+.stat.gold .stat-v{color:#b8922a}
+.stat.red .stat-v{color:#dc2626}
+h2{font-size:15px;font-weight:800;color:#1a3270;margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid #e5e9f2}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px}
+th{background:#1a3270;color:#fff;padding:8px;text-align:right;font-weight:700}
+td{padding:7px 8px;border-bottom:1px solid #f3f4f6}
+tr:nth-child(even) td{background:#f8f9fc}
+.footer{text-align:center;margin-top:24px;font-size:11px;color:#9ca3af;border-top:1px solid #e5e9f2;padding-top:12px}
+@media print{button{display:none}}
+</style></head>
+<body>
+<div class="header">
+  <h1>📊 تقرير شهر ${monthName}</h1>
+  <p>منصة Plus Mathematics — أ. مهدي حسن · ${now.toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</p>
+</div>
+<div class="stats">
+  <div class="stat"><div class="stat-v">${users.length}</div><div class="stat-l">إجمالي الطلاب</div></div>
+  <div class="stat green"><div class="stat-v">${active.length}</div><div class="stat-l">اشتراك نشط</div></div>
+  <div class="stat gold"><div class="stat-v">${revenue.toLocaleString('ar-EG')} ج</div><div class="stat-l">إيرادات الشهر</div></div>
+  <div class="stat red"><div class="stat-v">${expiring7.length}</div><div class="stat-l">تنتهي خلال 7 أيام</div></div>
+</div>
+<h2>🆕 الطلاب الجدد هذا الشهر (${newThisMonth.length})</h2>
+${newThisMonth.length?`<table><thead><tr><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>تاريخ التسجيل</th></tr></thead><tbody>
+${newThisMonth.map(u=>`<tr><td>${u.name||'—'}</td><td style="direction:ltr">${u.phone||'—'}</td><td>${u.grade||'—'}</td><td>${u.createdAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</td></tr>`).join('')}
+</tbody></table>`:'<p style="color:#6b7280;font-size:12px">لا يوجد طلاب جدد هذا الشهر</p>'}
+<h2>⚠️ اشتراكات تنتهي قريباً (${expiring7.length})</h2>
+${expiring7.length?`<table><thead><tr><th>الاسم</th><th>الهاتف</th><th>الصف</th><th>ينتهي</th></tr></thead><tbody>
+${expiring7.map(u=>{const exp=u.expiresAt?.toDate?u.expiresAt.toDate():new Date(u.expiresAt);return`<tr><td>${u.name||'—'}</td><td style="direction:ltr">${u.phone||'—'}</td><td>${u.grade||'—'}</td><td style="color:#dc2626;font-weight:700">${exp.toLocaleDateString('ar-EG')}</td></tr>`;}).join('')}
+</tbody></table>`:'<p style="color:#6b7280;font-size:12px">لا يوجد اشتراكات تنتهي قريباً</p>'}
+<h2>📚 توزيع الطلاب بالصف</h2>
+<table><thead><tr><th>الصف</th><th>عدد الطلاب</th></tr></thead><tbody>
+${Object.entries(grades).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`<tr><td>${g}</td><td style="font-weight:700">${n}</td></tr>`).join('')}
+</tbody></table>
+<div class="footer">تقرير آلي من داشبورد Plus Mathematics · ${now.toLocaleString('ar-EG')}</div>
+</body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+  setTimeout(()=>w.print(),500);
+  logActivity('📅','تصدير تقرير شهري',monthName);
+};
+
+// ══════════════════════════════════════
+// ── CONTENT STATS (Most Watched) ──
+// ══════════════════════════════════════
+window.buildContentStats = async ()=>{
+  const gradeKey=document.getElementById('cs-grade-sel')?.value;
+  const el=document.getElementById('contentStatsBody');
+  if(!gradeKey){el.innerHTML='<div class="empty"><p>اختار صفاً أولاً</p></div>';return;}
+  el.innerHTML='<div class="empty"><p>جاري التحميل...</p></div>';
+  try{
+    const [vSnap,pr]=await Promise.all([
+      db.collection('content').doc(gradeKey).collection('videos').get(),
+      db.collection('progress').get()
+    ]);
+    const videos=vSnap.docs.map(d=>({id:d.id,...d.data()}));
+    if(!videos.length){el.innerHTML='<div class="empty"><p>لا يوجد فيديوهات لهذا الصف</p></div>';return;}
+    // Count how many students watched each video
+    const counts={};
+    videos.forEach(v=>counts[v.id]=0);
+    pr.docs.forEach(p=>{
+      const gp=p.data()[gradeKey];
+      if(!gp) return;
+      (gp.videos||[]).forEach(vid=>{if(counts[vid]!==undefined)counts[vid]++;});
+    });
+    const total=pr.docs.filter(p=>p.data()[gradeKey]).length||1;
+    const sorted=videos.map(v=>({...v,watched:counts[v.id]||0})).sort((a,b)=>b.watched-a.watched);
+    el.innerHTML=sorted.map((v,i)=>{
+      const pct=Math.round(v.watched/total*100);
+      return `<div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+          <span style="font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:8px">${i+1}. ${v.title||'—'}</span>
+          <span style="color:var(--muted);flex-shrink:0">${v.watched} طالب · ${pct}%</span>
+        </div>
+        <div style="height:6px;background:rgba(74,127,212,0.08);border-radius:3px;overflow:hidden">
+          <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,var(--blue),var(--navy));border-radius:3px;transition:width 1s"></div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){el.innerHTML='<div class="empty"><p>خطأ: '+e.message+'</p></div>';}
+};
+
+// ══════════════════════════════════════
+// ── SECURE PASSWORD HANDLING ──
+// ══════════════════════════════════════
+// Remove hardcoded password — load from Firestore only
+(function secureInit(){
+  // Override PASS with a non-guessable default that gets replaced by Firestore value
+  if(window.PASS === 'plus2026'){
+    window.PASS = '__UNSET__';
+  }
+})();
+
+// Load from Firestore on init (already done in wloadSettings, just reinforce)
+const _secureWloadSettings = window.wloadSettings;
+window.wloadSettings = async ()=>{
+  await _secureWloadSettings?.();
+  // Ensure PASS is always from Firestore
+  if(window._ap) window.PASS = window._ap;
+};
+
 let tTimer;
+
+// ══════════════════════════════════════
+// ── 1. REVENUE DASHBOARD ──
+// ══════════════════════════════════════
+function buildRevenue(){
+  const codes   = window._codes||[];
+  const users   = window._users||[];
+  const used    = codes.filter(c=>c.used && c.price);
+  const total   = used.reduce((s,c)=>s+parseFloat(c.price||0),0);
+  const thisMonth = used.filter(c=>{
+    const d=c.usedAt?.toDate?c.usedAt.toDate():c.usedAt?new Date(c.usedAt):null;
+    return d && d.getMonth()===new Date().getMonth() && d.getFullYear()===new Date().getFullYear();
+  });
+  const monthRev = thisMonth.reduce((s,c)=>s+parseFloat(c.price||0),0);
+  // Update analytics cards
+  const rev = document.getElementById('an-revenue');
+  if(rev) rev.textContent = total.toLocaleString('ar-EG')+' ج';
+  // Update revenue card in overview if exists
+  const revCard = document.getElementById('st-revenue');
+  if(revCard) revCard.textContent = monthRev.toLocaleString('ar-EG')+' ج';
+}
+
+// ══════════════════════════════════════
+// ── 2. WELCOME MESSAGE ON ACTIVATION ──
+// ══════════════════════════════════════
+// Triggered after code activation detected — sends auto WA
+function sendWelcomeMsg(user){
+  if(!user.phone) return;
+  const wa = '20'+user.phone.replace(/^0/,'').replace(/\D/g,'');
+  const msg = encodeURIComponent(
+    'أهلاً '+( user.name||'طالب')+' 👋\n'+
+    'تم تفعيل اشتراكك في Plus Mathematics بنجاح 🎓\n\n'+
+    '📚 صفك: '+(user.grade||'—')+'\n'+
+    '🔑 كودك: '+(user.subscriptionCode||'—')+'\n\n'+
+    'ابدأ مذاكرتك الآن: plusedu.vercel.app\n'+
+    'بالتوفيق 🌟'
+  );
+  window.open('https://wa.me/'+wa+'?text='+msg,'_blank');
+  logActivity('👋','إرسال رسالة ترحيب',user.name||user.phone);
+  toast('فُتح واتساب لإرسال رسالة الترحيب ✓','ok');
+}
+
+// Auto-welcome when new subscription detected
+function checkNewActivations(newUsers){
+  const prev = window._prevUsers||[];
+  if(!prev.length){ window._prevUsers=newUsers; return; }
+  newUsers.forEach(u=>{
+    const old = prev.find(p=>p.id===u.id);
+    if(!old) return;
+    // Just became active
+    if(!old.subscriptionActive && u.subscriptionActive){
+      // Show prompt to send welcome
+      const confirmed = window.confirm('🎉 '+u.name+' فعّل اشتراكه!\nتبعتله رسالة ترحيب على واتساب؟');
+      if(confirmed) sendWelcomeMsg(u);
+    }
+  });
+  window._prevUsers = newUsers;
+}
+
+// ══════════════════════════════════════
+// ── 3. FILTER: INACTIVE > 1 WEEK ──
+// ══════════════════════════════════════
+window.filterInactiveWeek = ()=>{
+  const users = window._users||[];
+  const now = new Date();
+  const weekAgo = new Date(now-7*86400000);
+  // Filter: subscriptionActive but expiresAt within 7 days OR not logged in recently
+  const expiring = users.filter(u=>{
+    if(!u.subscriptionActive) return false;
+    if(!u.expiresAt) return false;
+    const exp = u.expiresAt.toDate?u.expiresAt.toDate():new Date(u.expiresAt);
+    const days = Math.ceil((exp-now)/86400000);
+    return days<=7 && days>=0;
+  });
+  window._uf='custom';
+  window._customFilter = u=>{
+    if(!u.subscriptionActive) return false;
+    const exp = u.expiresAt?.toDate?u.expiresAt.toDate():u.expiresAt?new Date(u.expiresAt):null;
+    if(!exp) return false;
+    return Math.ceil((exp-now)/86400000)<=7;
+  };
+  renderUsers();
+  toast(`يظهر ${expiring.length} طالب اشتراكهم ينتهي خلال 7 أيام`,'ok');
+};
+
+// Patch renderUsers to support custom filter
+const _origRenderUsers = window.renderUsers || renderUsers;
+window.renderUsers = function(){
+  const u=window._users||[];
+  const q=document.getElementById('searchInp')?.value.toLowerCase()||'';
+  let f;
+  if(window._uf==='custom' && window._customFilter){
+    f = u.filter(window._customFilter);
+  } else {
+    f=u.filter(x=>{
+      if(window._uf==='active') return x.subscriptionActive && !x.blocked;
+      if(window._uf==='inactive') return !x.subscriptionActive && !x.blocked;
+      if(window._uf==='blocked') return x.blocked;
+      return true;
+    });
+  }
+  f = f.filter(x=>!q||(x.name||'').includes(q)||(x.phone||'').includes(q)||(x.email||'').toLowerCase().includes(q));
+  // Sort
+  if(window._sortField){
+    f.sort((a,b)=>{
+      let va,vb;
+      if(window._sortField==='name'){ va=a.name||''; vb=b.name||''; }
+      else if(window._sortField==='date'){ va=a.expiresAt?.seconds||0; vb=b.expiresAt?.seconds||0; }
+      else { va=a.subscriptionActive?1:0; vb=b.subscriptionActive?1:0; }
+      return window._sortDir==='asc'?(va>vb?1:-1):(va<vb?1:-1);
+    });
+  }
+  const tb=document.getElementById('usersTbl');
+  if(!f.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>لا يوجد نتائج</p></div></td></tr>';
+    const rv=document.getElementById('recentTbl'); if(rv) rv.innerHTML='<div class="empty"><p>لا يوجد طلاب</p></div>'; return;}
+  const statusBadge = x => {
+    if(x.blocked) return '<span class="bd err">⛔ محظور</span>';
+    if(x.subscriptionActive){
+      const exp=x.expiresAt?.toDate?x.expiresAt.toDate():x.expiresAt?new Date(x.expiresAt):null;
+      if(exp){const d=Math.ceil((exp-new Date())/86400000);if(d<=3)return '<span class="bd err">🔴 '+d+' يوم</span>';if(d<=7)return '<span class="bd" style="background:rgba(245,166,35,0.1);color:var(--warn);border-color:rgba(245,166,35,0.2)">⚠️ '+d+' يوم</span>';}
+      return '<span class="bd ok">✅ نشط</span>';
+    }
+    return '<span class="bd pu">⏳ معلق</span>';
+  };
+  tb.innerHTML=f.map(x=>`<tr style="${x.blocked?'opacity:.6':''}">
+    <td><div class="name-cell">
+      <div class="av" style="${x.blocked?'background:linear-gradient(135deg,var(--err),#800)':''}">${(x.name||'?').slice(0,2)}</div>
+      <div><div style="font-weight:700;font-size:13px">${x.name||'—'}</div>
+      <div style="font-size:10px;color:var(--muted)">${x.signInMethod==='google'?'🔵 Google':'📱 هاتف'}</div></div>
+    </div></td>
+    <td style="direction:ltr;font-size:12px;color:var(--muted)">${x.phone||'—'}</td>
+    <td style="font-size:11px;color:var(--blue);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.email||'—'}</td>
+    <td><span class="cc" onclick="cpTxt('${x.subscriptionCode||''}')">${x.subscriptionCode||'—'}</span></td>
+    <td>${statusBadge(x)}</td>
+    <td style="font-size:11px;color:var(--muted)">${x.expiresAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</td>
+    <td><div style="display:flex;gap:4px;flex-wrap:wrap">
+      <button class="btn icon-btn" onclick="viewUser('${x.id}')" title="تفاصيل"><svg><use href="#ic-eye"/></svg></button>
+      <button class="btn icon-btn" onclick="waUser('${x.phone||''}','${x.name||''}')" title="واتساب"><svg><use href="#ic-wa"/></svg></button>
+      <button class="btn icon-btn" onclick="sendWelcomeMsg(${JSON.stringify({name:x.name||'',phone:x.phone||'',grade:x.grade||'',subscriptionCode:x.subscriptionCode||''})})" title="رسالة ترحيب" style="color:var(--ok)">👋</button>
+      ${x.blocked
+        ?`<button class="btn icon-btn" style="color:var(--ok)" onclick="blockUser('${x.id}',false)"><svg><use href="#ic-shield"/></svg></button>`
+        :`<button class="btn icon-btn" style="color:var(--warn)" onclick="blockUser('${x.id}',true)"><svg><use href="#ic-shield-off"/></svg></button>`}
+      <button class="btn icon-btn del" onclick="deleteUser('${x.id}','${(x.name||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-trash"/></svg></button>
+    </div></td>
+  </tr>`).join('');
+  const rv=document.getElementById('recentTbl');
+  const rec=u.slice(0,5);
+  rv.innerHTML=rec.length?`<table><thead><tr><th>الطالب</th><th>الإيميل</th><th>الحالة</th><th>التسجيل</th></tr></thead><tbody>${rec.map(x=>`<tr>
+    <td><div class="name-cell"><div class="av">${(x.name||'?').slice(0,2)}</div><span style="font-weight:700">${x.name||'—'}</span></div></td>
+    <td style="font-size:11px;color:var(--blue)">${x.email||'—'}</td>
+    <td>${x.blocked?'<span class="bd err">محظور</span>':x.subscriptionActive?'<span class="bd ok">نشط</span>':'<span class="bd pu">معلق</span>'}</td>
+    <td style="font-size:11px;color:var(--muted)">${x.createdAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</td>
+  </tr>`).join('')}</tbody></table>`:'<div class="empty"><svg><use href="#ic-users"/></svg><p>لا يوجد طلاب</p></div>';
+};
+
+// ══════════════════════════════════════
+// ── 4. GRADE FILTER IN USERS PAGE ──
+// ══════════════════════════════════════
+function filterByGrade(gradeKey){
+  if(!gradeKey){ window._uf='all'; window._customFilter=null; renderUsers(); return; }
+  window._uf='custom';
+  window._customFilter = u=>u.gradeKey===gradeKey;
+  renderUsers();
+  toast('فلتر: '+gradeKey,'ok');
+}
+
+// ══════════════════════════════════════
+// ── 5. COMPARE GRADES ──
+// ══════════════════════════════════════
+function buildGradeCompare(){
+  const users = window._users||[];
+  const gradeGroups = {};
+  users.forEach(u=>{
+    const k=u.gradeKey||'غير محدد';
+    if(!gradeGroups[k]) gradeGroups[k]={total:0,active:0,label:u.grade||k};
+    gradeGroups[k].total++;
+    if(u.subscriptionActive) gradeGroups[k].active++;
+  });
+  const sorted=Object.entries(gradeGroups).sort((a,b)=>b[1].total-a[1].total);
+  const el=document.getElementById('gradeCompareCard');
+  if(!el) return;
+  el.innerHTML=sorted.map(([k,v])=>{
+    const pct=v.total?Math.round(v.active/v.total*100):0;
+    return `<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+        <span style="font-weight:700">${v.label}</span>
+        <span style="color:var(--muted)">${v.active}/${v.total} · ${pct}%</span>
+      </div>
+      <div style="height:7px;background:rgba(74,127,212,0.08);border-radius:4px;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,var(--blue),var(--navy));border-radius:4px;transition:width 1s"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════
+// ── 6. SCHEDULED CONTENT ──
+// ══════════════════════════════════════
+window.scheduleContent = async (gradeKey, type, itemId, scheduleDate)=>{
+  if(!gradeKey||!itemId||!scheduleDate){ toast('ادخل كل البيانات','err'); return; }
+  try{
+    const date = new Date(scheduleDate);
+    await db.collection('content').doc(gradeKey).collection(type).doc(itemId).update({
+      scheduledAt: date,
+      isScheduled: true,
+      isHidden: new Date()<date
+    });
+    toast('تم جدولة المحتوى ليظهر في '+date.toLocaleDateString('ar-EG'),'ok');
+    logActivity('🗓️','جدولة محتوى',gradeKey+'/'+type+'/'+itemId);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ══════════════════════════════════════
+// ── 7. HOOK INTO wloadUsers ──
+// ══════════════════════════════════════
+const _orig_wloadUsers = window.wloadUsers;
+window.wloadUsers = async ()=>{
+  await _orig_wloadUsers?.();
+  buildRevenue();
+  if(window._users) checkNewActivations(window._users);
+  buildGradeCompare();
+};
+
+// Add "ينتهي قريباً" and "فلتر بالصف" to users page on load
+document.addEventListener('DOMContentLoaded',()=>{
+  // Add inactive week filter button to users page
+  const ftabs = document.querySelector('#page-users .ftabs');
+  if(ftabs){
+    const btn=document.createElement('div');
+    btn.className='ftab';
+    btn.textContent='⚠️ ينتهي قريباً';
+    btn.onclick=()=>{ document.querySelectorAll('#page-users .ftab').forEach(t=>t.classList.remove('on')); btn.classList.add('on'); filterInactiveWeek(); };
+    ftabs.appendChild(btn);
+  }
+});
 function toast(msg,type='ok'){
   const t=document.getElementById('toast');
   const ic=document.getElementById('ti');

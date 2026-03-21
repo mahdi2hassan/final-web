@@ -39,14 +39,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);
 .edit-row .er-btn:hover{border-color:var(--blue);color:var(--blue)}
 .edit-row .er-btn.add{border-color:rgba(0,214,143,0.3);color:var(--success)}
 
-/* ══ OTP INPUT ══ */
-.otp-wrap{display:flex;gap:8px;justify-content:center;margin:12px 0}
-.otp-inp{width:44px;height:52px;border:2px solid var(--border2);border-radius:10px;background:var(--input);
-  color:var(--text);font-family:'Tajawal',sans-serif;font-size:22px;font-weight:900;text-align:center;
-  outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
-.otp-inp:focus{border-color:var(--blue)}
-.otp-inp.filled{border-color:rgba(0,214,143,0.4);background:rgba(0,214,143,0.04)}
-
 /* ══ PASS STRENGTH ══ */
 .pass-strength{height:4px;border-radius:2px;margin-top:5px;transition:all .3s;background:var(--border2)}
 .pass-strength.weak{background:var(--error);width:30%}
@@ -652,6 +644,10 @@ input::placeholder{color:var(--muted);opacity:.5}
       <button class="btn" onclick="window.location.href='courses.html'" style="margin-bottom:8px">
         <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>ادخل على كورساتك</span>
       </button>
+      <button onclick="showStep('step-ticket')" style="width:100%;padding:10px;margin-bottom:8px;border:1px solid rgba(74,127,212,0.3);border-radius:12px;background:rgba(74,127,212,0.06);color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:7px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        إرسال شكوى أو مشكلة
+      </button>
       <button class="btn-wa" onclick="doSignOut()" style="background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.2);color:var(--error)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         تسجيل الخروج
@@ -661,71 +657,61 @@ input::placeholder{color:var(--muted);opacity:.5}
     <!-- ══ STEP: EDIT FIELD (phone/email + OTP) ══ -->
     <div class="step" id="step-edit-field">
       <div class="step-info">
-        <h3 id="edit-field-title">تعديل رقم الهاتف</h3>
-        <p id="edit-field-desc">ادخل الرقم الجديد وهيتبعتلك كود تأكيد</p>
+        <h3 id="edit-field-title">تعديل البيانات</h3>
+        <p id="edit-field-desc">ادخل القيمة الجديدة واضغط حفظ</p>
       </div>
-
-      <!-- Input phase -->
-      <div id="edit-input-phase">
-        <div class="field">
-          <label id="edit-field-label">الرقم الجديد</label>
-          <input id="edit-field-inp" type="text" placeholder=""
-            style="font-size:15px;direction:ltr;letter-spacing:1px"/>
-        </div>
-        <div class="msg" id="edit-field-msg"></div>
-        <button class="btn" id="edit-field-send-btn" onclick="sendOTP()">
-          <span class="btn-text">📱 إرسال كود التأكيد</span><div class="spin"></div>
-        </button>
+      <div class="field">
+        <label id="edit-field-label">القيمة الجديدة</label>
+        <input id="edit-field-inp" type="text" placeholder=""
+          style="font-size:15px"/>
       </div>
-
-      <!-- OTP phase -->
-      <div id="edit-otp-phase" style="display:none">
-        <div style="text-align:center;margin-bottom:14px">
-          <p style="font-size:13px;color:var(--muted)">تم إرسال كود مكون من 6 أرقام إلى</p>
-          <p style="font-size:14px;font-weight:800;color:var(--text);direction:ltr" id="otp-sent-to"></p>
-        </div>
-        <div class="otp-wrap">
-          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,0)"/>
-          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,1)"/>
-          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,2)"/>
-          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,3)"/>
-          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,4)"/>
-          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,5)"/>
-        </div>
-        <div class="msg" id="otp-msg"></div>
-        <button class="btn" id="otp-verify-btn" onclick="verifyOTP()">
-          <span class="btn-text"><svg><use href="#i-check"/></svg>تأكيد الكود</span><div class="spin"></div>
-        </button>
-        <div style="text-align:center;margin-top:10px">
-          <button onclick="resendOTP()" id="resend-btn" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px">إعادة إرسال الكود (<span id="resend-timer">60</span>ث)</button>
-        </div>
-      </div>
-
-      <!-- Email phase (no OTP needed) -->
-      <div id="edit-email-phase" style="display:none">
-        <div class="field">
-          <label>الإيميل الجديد</label>
-          <input id="edit-email-inp" type="email" placeholder="example@gmail.com"/>
-        </div>
-        <div class="msg" id="edit-email-msg"></div>
-        <button class="btn" id="edit-email-save-btn" onclick="saveEmailDirect()">
-          <span class="btn-text"><svg><use href="#i-check"/></svg>حفظ الإيميل</span><div class="spin"></div>
-        </button>
-      </div>
-
+      <div class="msg" id="edit-field-msg"></div>
+      <button class="btn" id="edit-field-save-btn" onclick="saveFieldDirect()">
+        <span class="btn-text"><svg><use href="#i-check"/></svg>حفظ</span><div class="spin"></div>
+      </button>
       <button onclick="showStep('step-profile')" style="width:100%;padding:10px;margin-top:8px;border:1px solid var(--border2);border-radius:11px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700">← رجوع</button>
     </div>
 
-  </div>
+    <!-- ══ STEP: TICKET ══ -->
+    <div class="step" id="step-ticket">
+      <div class="step-info">
+        <h3>💬 إرسال شكوى أو مشكلة</h3>
+        <p>سيتم الرد عليك في أقرب وقت من الأستاذ</p>
+      </div>
+      <div class="field">
+        <label>الفئة</label>
+        <select id="ticket-cat" style="width:100%;padding:13px 14px;background:var(--input);border:1.5px solid var(--border2);border-radius:12px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;appearance:none">
+          <option value="technical">🔧 مشكلة تقنية</option>
+          <option value="content">📚 مشكلة في المحتوى</option>
+          <option value="payment">💳 مشكلة في الدفع</option>
+          <option value="subscription">🔑 مشكلة في الاشتراك</option>
+          <option value="other">💬 أخرى</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>الموضوع</label>
+        <input type="text" id="ticket-subject" placeholder="وصف مختصر للمشكلة"/>
+      </div>
+      <div class="field">
+        <label>تفاصيل المشكلة</label>
+        <textarea id="ticket-message" rows="4" placeholder="اشرح المشكلة بالتفصيل..."
+          style="width:100%;padding:13px 14px;background:var(--input);border:1.5px solid var(--border2);border-radius:12px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;resize:vertical"></textarea>
+      </div>
+      <div class="msg" id="ticket-msg"></div>
+      <button class="btn" id="ticket-send-btn" onclick="sendTicket()">
+        <span class="btn-text">📨 إرسال</span><div class="spin"></div>
+      </button>
+      <button onclick="showStep('step-profile')" style="width:100%;padding:10px;margin-top:8px;border:1px solid var(--border2);border-radius:11px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700">← رجوع</button>
+    </div>
+
+  </div><!-- auth-body -->
 
   <div class="card-footer">
     <a href="index.html">الصفحة الرئيسية</a> ·
     بالاستمرار توافق على <a href="terms.html">شروط الاستخدام</a>
   </div>
-</div>
-</div>
-
-<!-- Firebase -->
+</div><!-- auth-card -->
+</div><!-- wrapper -->
 <!-- Firebase Compat (global scope) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -942,138 +928,58 @@ function showProfileStep(data){
 }
 
 // ── EDIT FIELD (phone/email) ──
-var _editFieldType = '';
+var _editFieldType='';
 function openEditField(type){
   _editFieldType = type;
-  document.getElementById('edit-input-phase').style.display = type==='phone' ? 'block' : 'none';
-  document.getElementById('edit-otp-phase').style.display = 'none';
-  document.getElementById('edit-email-phase').style.display = type==='email' ? 'block' : 'none';
   document.getElementById('edit-field-msg').className='msg';
-  document.getElementById('edit-email-msg').className='msg';
+  var inp = document.getElementById('edit-field-inp');
+  inp.value='';
   if(type==='phone'){
-    document.getElementById('edit-field-title').textContent = 'تعديل رقم الهاتف';
-    document.getElementById('edit-field-desc').textContent  = 'ادخل الرقم الجديد وهيتبعتلك كود تأكيد';
-    document.getElementById('edit-field-label').textContent = 'الرقم الجديد';
-    var inp = document.getElementById('edit-field-inp');
+    document.getElementById('edit-field-title').textContent = '📱 تعديل رقم الهاتف';
+    document.getElementById('edit-field-desc').textContent  = 'ادخل الرقم الجديد';
+    document.getElementById('edit-field-label').textContent = 'رقم الهاتف الجديد';
     inp.type='tel'; inp.inputMode='numeric'; inp.maxLength=11;
-    inp.placeholder='01xxxxxxxxx'; inp.value='';
+    inp.placeholder='01xxxxxxxxx'; inp.style.direction='ltr';
     inp.oninput = function(){ this.value=this.value.replace(/\D/g,''); };
-    document.getElementById('edit-field-send-btn').querySelector('.btn-text').innerHTML='📱 إرسال كود التأكيد';
   } else {
-    document.getElementById('edit-field-title').textContent = 'تعديل الإيميل';
+    document.getElementById('edit-field-title').textContent = '📧 تعديل الإيميل';
     document.getElementById('edit-field-desc').textContent  = 'ادخل الإيميل الجديد';
-    document.getElementById('edit-email-inp').value='';
+    document.getElementById('edit-field-label').textContent = 'الإيميل الجديد';
+    inp.type='email'; inp.inputMode='email'; inp.maxLength=100;
+    inp.placeholder='example@gmail.com'; inp.style.direction='ltr';
+    inp.oninput = null;
   }
   showStep('step-edit-field');
 }
 
-// OTP via WhatsApp simulation (stored in Firestore as temp code)
-var _otpCode='', _otpResendTimer=null;
-async function sendOTP(){
-  var phone = document.getElementById('edit-field-inp').value.trim();
-  if(phone.length<10){ showMsg('edit-field-msg','ادخل رقم صحيح','error'); return; }
-  var btn = document.getElementById('edit-field-send-btn');
-  setLoad(btn,true);
-  // Generate 6-digit OTP
-  _otpCode = Math.floor(100000+Math.random()*900000).toString();
-  var user = auth.currentUser;
-  // Save OTP in Firestore (expires in 10 min)
-  try{
-    await db.collection('otps').doc(user.uid).set({
-      code: _otpCode,
-      phone: phone,
-      type: _editFieldType,
-      expiresAt: new Date(Date.now()+600000),
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    // Show OTP phase
-    document.getElementById('edit-input-phase').style.display='none';
-    document.getElementById('edit-otp-phase').style.display='block';
-    document.getElementById('otp-sent-to').textContent = phone;
-    document.querySelectorAll('.otp-inp').forEach(function(el){ el.value=''; el.classList.remove('filled'); });
-    document.querySelectorAll('.otp-inp')[0]?.focus();
-    showMsg('edit-field-msg','','');
-    // For demo: open WhatsApp with OTP
-    var wa='20'+phone.replace(/^0/,'').replace(/\D/g,'');
-    setTimeout(function(){
-      window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('كود التأكيد الخاص بك في Plus Mathematics:\n\n*'+_otpCode+'*\n\nصالح لمدة 10 دقائق'),'_blank');
-    },500);
-    startResendTimer();
-  }catch(e){ showMsg('edit-field-msg','خطأ: '+e.message,'error'); }
-  setLoad(btn,false);
-}
-
-function otpMove(el,idx){
-  el.value=el.value.replace(/\D/g,'');
-  el.classList.toggle('filled',el.value!=='');
-  if(el.value && idx<5){
-    document.querySelectorAll('.otp-inp')[idx+1]?.focus();
+async function saveFieldDirect(){
+  var val = document.getElementById('edit-field-inp').value.trim();
+  var btn = document.getElementById('edit-field-save-btn');
+  if(_editFieldType==='phone'){
+    if(val.length<10){ showMsg('edit-field-msg','ادخل رقم صحيح','error'); return; }
+    setLoad(btn,true);
+    try{
+      await db.collection('users').doc(auth.currentUser.uid).update({phone:val});
+      showMsg('prof-msg','✅ تم تحديث الرقم','success');
+      setTimeout(function(){document.getElementById('prof-msg').className='msg';},3000);
+      db.collection('users').doc(auth.currentUser.uid).get().then(function(ud){if(ud.exists)showProfileStep(ud.data());});
+      showStep('step-profile');
+    }catch(e){ showMsg('edit-field-msg','خطأ: '+e.message,'error'); }
+  } else {
+    if(!val.includes('@')||!val.includes('.')){ showMsg('edit-field-msg','ادخل إيميل صحيح','error'); return; }
+    setLoad(btn,true);
+    try{
+      await db.collection('users').doc(auth.currentUser.uid).update({email:val});
+      showMsg('prof-msg','✅ تم تحديث الإيميل','success');
+      setTimeout(function(){document.getElementById('prof-msg').className='msg';},3000);
+      db.collection('users').doc(auth.currentUser.uid).get().then(function(ud){if(ud.exists)showProfileStep(ud.data());});
+      showStep('step-profile');
+    }catch(e){ showMsg('edit-field-msg','خطأ: '+e.message,'error'); }
   }
-  // Auto verify when all filled
-  var all=document.querySelectorAll('.otp-inp');
-  if([...all].every(function(i){return i.value!=='';})) verifyOTP();
-}
-
-async function verifyOTP(){
-  var all=document.querySelectorAll('.otp-inp');
-  var entered=[...all].map(function(i){return i.value;}).join('');
-  if(entered.length<6){ showMsg('otp-msg','ادخل الكود كامل','error'); return; }
-  var btn=document.getElementById('otp-verify-btn');
-  setLoad(btn,true);
-  var user=auth.currentUser;
-  try{
-    var otpDoc=await db.collection('otps').doc(user.uid).get();
-    if(!otpDoc.exists){ showMsg('otp-msg','الكود انتهت صلاحيته','error'); setLoad(btn,false); return; }
-    var otpData=otpDoc.data();
-    var expiry=otpData.expiresAt.toDate?otpData.expiresAt.toDate():new Date(otpData.expiresAt);
-    if(new Date()>expiry){ showMsg('otp-msg','الكود انتهت صلاحيته — اطلب كود جديد','error'); setLoad(btn,false); return; }
-    if(entered!==otpData.code){ showMsg('otp-msg','الكود غلط','error'); setLoad(btn,false); return; }
-    // Save new phone
-    var newPhone=otpData.phone;
-    await db.collection('users').doc(user.uid).update({phone:newPhone});
-    await db.collection('otps').doc(user.uid).delete();
-    clearInterval(_otpResendTimer);
-    showMsg('prof-msg','✅ تم تحديث الرقم بنجاح','success');
-    setTimeout(function(){ document.getElementById('prof-msg').className='msg'; },3000);
-    // Refresh profile
-    db.collection('users').doc(user.uid).get().then(function(ud){ if(ud.exists) showProfileStep(ud.data()); });
-    showStep('step-profile');
-  }catch(e){ showMsg('otp-msg','خطأ: '+e.message,'error'); }
   setLoad(btn,false);
 }
 
-function resendOTP(){
-  document.querySelectorAll('.otp-inp').forEach(function(el){el.value='';el.classList.remove('filled');});
-  document.getElementById('edit-input-phase').style.display='block';
-  document.getElementById('edit-otp-phase').style.display='none';
-  clearInterval(_otpResendTimer);
-}
-
-function startResendTimer(){
-  var t=60;
-  document.getElementById('resend-btn').disabled=true;
-  _otpResendTimer=setInterval(function(){
-    t--;
-    document.getElementById('resend-timer').textContent=t;
-    if(t<=0){ clearInterval(_otpResendTimer); document.getElementById('resend-btn').disabled=false; document.getElementById('resend-timer').textContent='60'; }
-  },1000);
-}
-
-async function saveEmailDirect(){
-  var email=document.getElementById('edit-email-inp').value.trim().toLowerCase();
-  if(!email.includes('@')||!email.includes('.')){ showMsg('edit-email-msg','ادخل إيميل صحيح','error'); return; }
-  var btn=document.getElementById('edit-email-save-btn');
-  setLoad(btn,true);
-  var user=auth.currentUser;
-  try{
-    await db.collection('users').doc(user.uid).update({email:email});
-    showMsg('prof-msg','✅ تم تحديث الإيميل','success');
-    setTimeout(function(){ document.getElementById('prof-msg').className='msg'; },3000);
-    db.collection('users').doc(user.uid).get().then(function(ud){ if(ud.exists) showProfileStep(ud.data()); });
-    showStep('step-profile');
-  }catch(e){ showMsg('edit-email-msg','خطأ: '+e.message,'error'); }
-  setLoad(btn,false);
-}
+// saveEmailDirect removed — merged into saveFieldDirect
 
 // ── CHANGE PASSWORD ──
 function openChangePass(){
@@ -1165,6 +1071,36 @@ function saveName(){
     })
     .catch(function(e){ showMsg('prof-msg','خطأ: '+e.message,'error'); })
     .finally(function(){ setLoad(btn, false); });
+}
+
+// ── SEND TICKET ──
+async function sendTicket(){
+  var subject = document.getElementById('ticket-subject').value.trim();
+  var message = document.getElementById('ticket-message').value.trim();
+  var category= document.getElementById('ticket-cat').value;
+  if(!subject){ showMsg('ticket-msg','ادخل الموضوع','error'); return; }
+  if(!message){ showMsg('ticket-msg','اكتب تفاصيل المشكلة','error'); return; }
+  var btn = document.getElementById('ticket-send-btn');
+  setLoad(btn,true);
+  var user = auth.currentUser;
+  try{
+    var ud = await db.collection('users').doc(user.uid).get();
+    var d = ud.exists ? ud.data() : {};
+    await db.collection('tickets').add({
+      userId: user.uid,
+      userName: d.name||'—',
+      userPhone: d.phone||'',
+      userGrade: d.grade||'',
+      subject, message, category,
+      status: 'open',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showMsg('ticket-msg','✅ تم إرسال التذكرة — سيتم الرد عليك قريباً','success');
+    document.getElementById('ticket-subject').value='';
+    document.getElementById('ticket-message').value='';
+    setTimeout(function(){ showStep('step-profile'); },2500);
+  }catch(e){ showMsg('ticket-msg','خطأ: '+e.message,'error'); }
+  setLoad(btn,false);
 }
 
 function doSignOut(){
