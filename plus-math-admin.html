@@ -657,6 +657,15 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <div class="sh-title"><svg><use href="#ic-users"/></svg>آخر الطلاب</div>
           <button class="btn primary sm" onclick="goPage('users')"><svg><use href="#ic-users"/></svg>عرض الكل</button>
         </div>
+
+        <!-- Activity Dashboard -->
+        <div style="background:var(--s2);border:1px solid var(--b2);border-radius:14px;padding:14px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+            <span style="width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block;animation:pulse 2s infinite"></span>
+            نشاط اليوم
+          </div>
+          <div id="activityDashboard"><div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">جاري التحميل...</div></div>
+        </div>
         <div class="tw"><div class="tw-scroll" id="recentTbl">
           <div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div>
         </div></div>
@@ -2043,7 +2052,7 @@ window.changePass = async ()=>{
   const old = document.getElementById('old-p').value;
   const nw  = document.getElementById('new-p').value;
   const cf  = document.getElementById('cf-p').value;
-  const cur = window._ap || window._adminPass || 'plus2026';
+  const cur = window._ap || window._adminPass;
   if(old!==cur){ toast('كلمة المرور الحالية غلط','err'); return; }
   if(nw.length<6){ toast('كلمة المرور قصيرة جداً','err'); return; }
   if(nw!==cf){ toast('كلمتا المرور مش متطابقتين','err'); return; }
@@ -2654,7 +2663,7 @@ window.dispatchEvent(new Event('fbReady'));
 
 <script>
 // ═══ STATE ═══
-let PASS = 'plus2026';
+let PASS = '__ENCRYPTED__'; // يتحمل من Firestore فقط — مش plain text هنا
 let _uf = 'all', _cf = 'all';
 window._loggedAdmin = null;
 
@@ -2676,9 +2685,14 @@ async function tryLogin(){
       });
     }
 
-    // 1. Check super admin
-    const storedPass = window._ap || PASS;
-    if(u === 'admin' && (p === storedPass || p === PASS)){
+    // 1. Check super admin — password from Firestore only
+    const storedPass = window._ap;
+    if(!storedPass){
+      showLoginErr('يرجى الانتظار — جاري تحميل الإعدادات...');
+      if(btn){ btn.textContent='دخول'; btn.disabled=false; }
+      return;
+    }
+    if(u === 'admin' && p === storedPass){
       window._loggedAdmin = {name:'المدير', username:'admin', isSuperAdmin:true,
         permissions:{users:true,content:true,codes:true,broadcast:true}};
       if(btn){ btn.textContent='دخول'; btn.disabled=false; }
@@ -2709,7 +2723,7 @@ async function tryLogin(){
   }catch(e){
     // Firebase error — try default admin only
     const sp = window._ap || PASS;
-    if(u==='admin' && (p===sp||p===PASS)){ window._loggedAdmin = {name:'المدير',username:'admin',isSuperAdmin:true}; openDashboard(); }
+    if(u==='admin' && p===sp){ window._loggedAdmin = {name:'المدير',username:'admin',isSuperAdmin:true}; openDashboard(); }
     else showLoginErr('تعذر الاتصال — حاول تاني');
   }
   if(btn){ btn.textContent='دخول'; btn.disabled=false; }
@@ -3448,14 +3462,29 @@ function doSearch(){
     (u.name||'').toLowerCase().includes(q)||
     (u.phone||'').includes(q)||
     (u.email||'').toLowerCase().includes(q)
-  ).slice(0,5);
+  ).slice(0,4);
 
   const codes = (window._codes||[]).filter(c=>
     (c.code||'').toLowerCase().includes(q)||
     (c.grade||'').includes(q)
-  ).slice(0,3);
+  ).slice(0,2);
 
-  if(!users.length && !codes.length){ res.style.display='none'; return; }
+  // ── البحث في التذاكر ──
+  const tickets = (_tickets||[]).filter(t=>
+    (t.userName||'').toLowerCase().includes(q)||
+    (t.subject||'').toLowerCase().includes(q)||
+    (t.userPhone||'').includes(q)
+  ).slice(0,2);
+
+  // ── البحث في أولياء الأمور ──
+  const parents = (_parents||[]).filter(p=>
+    (p.name||'').toLowerCase().includes(q)||
+    (p.phone||'').includes(q)
+  ).slice(0,2);
+
+  if(!users.length && !codes.length && !tickets.length && !parents.length){
+    res.style.display='none'; return;
+  }
 
   let html = '';
   if(users.length){
@@ -3473,7 +3502,7 @@ function doSearch(){
       </div>`).join('');
   }
   if(codes.length){
-    html += `<div style="padding:6px 10px;font-size:10px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--b2);border-top:1px solid var(--b2)">🔑 أكواد</div>`;
+    html += `<div style="padding:6px 10px;font-size:10px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--b2);border-top:${users.length?'1px solid var(--b2)':'none'}">🔑 أكواد</div>`;
     html += codes.map(c=>`
       <div onclick="goPage('codes');document.getElementById('searchInp').value='${c.code}';renderCodes();document.getElementById('searchResults').style.display='none'"
         style="padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:background .15s"
@@ -3483,6 +3512,32 @@ function doSearch(){
         <span class="bd ${c.used?'pu':'blue'}" style="font-size:9px;margin-right:auto">${c.used?'مستخدم':'متاح'}</span>
       </div>`).join('');
   }
+  if(tickets.length){
+    html += `<div style="padding:6px 10px;font-size:10px;color:var(--muted);font-weight:700;border-top:1px solid var(--b2)">🎫 تذاكر</div>`;
+    html += tickets.map(t=>`
+      <div onclick="openTicketDetail('${t.id}');document.getElementById('searchInp').value='';document.getElementById('searchResults').style.display='none'"
+        style="padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:background .15s"
+        onmouseover="this.style.background='rgba(74,127,212,0.08)'" onmouseout="this.style.background='transparent'">
+        <span style="font-size:16px">${t.status==='open'?'🔴':t.status==='inprogress'?'🟡':'✅'}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.subject||'—'}</div>
+          <div style="font-size:10px;color:var(--muted)">${t.userName||'—'}</div>
+        </div>
+      </div>`).join('');
+  }
+  if(parents.length){
+    html += `<div style="padding:6px 10px;font-size:10px;color:var(--muted);font-weight:700;border-top:1px solid var(--b2)">👨‍👧 أولياء أمور</div>`;
+    html += parents.map(p=>`
+      <div onclick="openParentDetail('${p.id}');document.getElementById('searchInp').value='';document.getElementById('searchResults').style.display='none'"
+        style="padding:9px 12px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:background .15s"
+        onmouseover="this.style.background='rgba(74,127,212,0.08)'" onmouseout="this.style.background='transparent'">
+        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#4c1d95);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0">${(p.name||'?').slice(0,2)}</div>
+        <div>
+          <div style="font-size:12px;font-weight:700">${p.name||'—'}</div>
+          <div style="font-size:10px;color:var(--muted)">${p.phone||'—'}</div>
+        </div>
+      </div>`).join('');
+  }
   res.innerHTML = html;
   res.style.display = 'block';
 }
@@ -3490,6 +3545,116 @@ function doSearch(){
 document.addEventListener('click', e=>{
   if(!e.target.closest('.tb-search')) document.getElementById('searchResults').style.display='none';
 });
+
+// ══════════════════════════════════════
+// ── SESSION TIMEOUT (30 دقيقة) ──
+// ══════════════════════════════════════
+let _sessionTimer=null, _sessionWarnTimer=null;
+const SESSION_TIMEOUT = 30*60*1000; // 30 دقيقة
+const SESSION_WARN    = 25*60*1000; // تحذير بعد 25 دقيقة
+
+function resetSessionTimer(){
+  clearTimeout(_sessionTimer);
+  clearTimeout(_sessionWarnTimer);
+  // Warning at 25 min
+  _sessionWarnTimer = setTimeout(()=>{
+    toast('⚠️ الجلسة ستنتهي خلال 5 دقائق — تحرك الماوس للتجديد','warn');
+  }, SESSION_WARN);
+  // Logout at 30 min
+  _sessionTimer = setTimeout(()=>{
+    toast('انتهت الجلسة — يرجى تسجيل الدخول مجدداً','err');
+    setTimeout(()=>{
+      document.getElementById('shell').classList.remove('open');
+      document.getElementById('loginWrap').style.display='flex';
+      window._loggedAdmin=null;
+    },2000);
+  }, SESSION_TIMEOUT);
+}
+
+// Reset timer on any activity
+['mousemove','keydown','click','touchstart'].forEach(ev=>{
+  document.addEventListener(ev, resetSessionTimer, {passive:true});
+});
+
+// ══════════════════════════════════════
+// ── REAL-TIME STATS AUTO-REFRESH ──
+// ══════════════════════════════════════
+function updateStats(){
+  const u=window._users||[],c=window._codes||[];
+  const active = u.filter(x=>x.subscriptionActive&&!x.blocked);
+  document.getElementById('st-t').textContent=u.length;
+  document.getElementById('st-a').textContent=active.length;
+  document.getElementById('st-av').textContent=c.filter(x=>!x.used).length;
+  document.getElementById('st-u').textContent=c.filter(x=>x.used).length;
+  const pd=u.filter(x=>!x.subscriptionActive&&!x.blocked).length;
+  const b=document.getElementById('pendBadge');
+  b.textContent=pd;b.style.display=pd?'inline':'none';
+  document.getElementById('uf-all').textContent='('+u.length+')';
+  // Revenue
+  buildRevenue();
+  // Activity dashboard
+  buildActivityDashboard();
+}
+
+// Auto-refresh stats every 60 seconds
+setInterval(()=>{
+  if(window._fbReady && window.wloadUsers){
+    window.wloadUsers().catch(()=>{});
+  }
+}, 60000);
+
+// ══════════════════════════════════════
+// ── ACTIVITY DASHBOARD (من فتح الموقع اليوم) ──
+// ══════════════════════════════════════
+function buildActivityDashboard(){
+  const el = document.getElementById('activityDashboard');
+  if(!el) return;
+  const users = window._users||[];
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+
+  // طلاب سجلوا النهارده
+  const todayNew = users.filter(u=>{
+    const d=u.createdAt?.toDate?u.createdAt.toDate():u.createdAt?new Date(u.createdAt):null;
+    return d && d>=todayStart;
+  });
+  // طلاب اشتراكهم ينتهي النهارده
+  const expiringToday = users.filter(u=>{
+    if(!u.expiresAt) return false;
+    const exp=u.expiresAt.toDate?u.expiresAt.toDate():new Date(u.expiresAt);
+    return exp.toDateString()===now.toDateString();
+  });
+  // اشتراكات فُعِّلت النهارده
+  const activatedToday = users.filter(u=>{
+    const d=u.activatedAt?.toDate?u.activatedAt.toDate():u.activatedAt?new Date(u.activatedAt):null;
+    return d && d>=todayStart;
+  });
+
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+      <div style="background:rgba(0,214,143,0.06);border:1px solid rgba(0,214,143,0.2);border-radius:11px;padding:12px;text-align:center">
+        <div style="font-size:22px;font-weight:900;color:var(--ok)">${activatedToday.length}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;font-weight:600">اشتراك مفعّل اليوم</div>
+      </div>
+      <div style="background:rgba(74,127,212,0.06);border:1px solid var(--b2);border-radius:11px;padding:12px;text-align:center">
+        <div style="font-size:22px;font-weight:900;color:var(--blue)">${todayNew.length}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;font-weight:600">تسجيل جديد اليوم</div>
+      </div>
+      <div style="background:rgba(255,77,109,0.06);border:1px solid rgba(255,77,109,0.2);border-radius:11px;padding:12px;text-align:center">
+        <div style="font-size:22px;font-weight:900;color:var(--err)">${expiringToday.length}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;font-weight:600">ينتهي اشتراكه اليوم</div>
+      </div>
+    </div>
+    ${expiringToday.length?`
+    <div style="margin-top:10px;font-size:11px;color:var(--muted);font-weight:700;margin-bottom:6px">⏰ ينتهي اشتراكهم اليوم:</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px">
+      ${expiringToday.map(u=>`
+        <div onclick="openStudentDetail('${u.id}')" style="display:flex;align-items:center;gap:6px;padding:5px 10px;background:rgba(255,77,109,0.06);border:1px solid rgba(255,77,109,0.2);border-radius:8px;cursor:pointer;font-size:12px">
+          <span style="font-weight:700">${u.name||'—'}</span>
+          <span style="color:var(--muted)">${u.phone||''}</span>
+        </div>`).join('')}
+    </div>`:''}`;
+}
 
 // ══════════════════════════════════════
 // ── SORT USERS ──
@@ -4223,6 +4388,8 @@ function openDashboard(){
   waitLoad();
   // Show welcome after data loads
   setTimeout(()=>showWelcome(), 1500);
+  // Start session timeout
+  resetSessionTimer();
 }
 
 // ══════════════════════════════════════
@@ -4452,6 +4619,7 @@ _styleEl.textContent = `
 @keyframes cmSlide{from{width:0}to{width:100%}}
 @keyframes fadeOut{from{opacity:1}to{opacity:0}}
 @keyframes pulse-notif{0%,100%{background:rgba(74,127,212,0.1)}50%{background:rgba(74,127,212,0.25)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
 .pulse-notif{animation:pulse-notif 1s ease 3}
 `;
 document.head.appendChild(_styleEl);
@@ -4586,16 +4754,18 @@ window.saveTicketNote=async(id)=>{
 window.sendTicketReply=async(ticketId, userId, userName, subject)=>{
   const reply=document.getElementById('ticket-reply')?.value.trim();
   if(!reply){toast('اكتب رداً أولاً','err');return;}
-  if(!userId){toast('لا يوجد userId للطالب','err');return;}
+  if(!userId){toast('لا يوجد userId للطالب — تأكد إن الطالب مسجل دخوله قبل بعت التذكرة','err');return;}
+  const btn = document.querySelector('#ticket-detail-content .btn.ok.sm');
+  if(btn){btn.disabled=true;btn.textContent='جاري الإرسال...';}
   try{
-    // Save reply on ticket
+    // 1. احفظ الرد على التذكرة
     await db.collection('tickets').doc(ticketId).update({
       adminReply: reply,
       repliedAt: firebase.firestore.FieldValue.serverTimestamp(),
       status: 'closed'
     });
-    // Send notification to student
-    await db.collection('notifications').doc(userId).collection('items').add({
+    // 2. ابعت إشعار للطالب في notifications/{userId}/items
+    const notifRef = await db.collection('notifications').doc(userId).collection('items').add({
       icon: '📬',
       title: 'رد على شكواك: '+subject,
       body: reply,
@@ -4604,11 +4774,19 @@ window.sendTicketReply=async(ticketId, userId, userName, subject)=>{
       ticketId: ticketId,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-    toast('✅ تم إرسال الرد لـ '+userName+' في إشعاراته','ok');
-    logActivity('📬','رد على تذكرة',userName+': '+reply.slice(0,30));
+    toast('✅ تم إرسال الرد لـ '+userName+' — سيظهر في إشعاراته','ok');
+    logActivity('📬','رد على تذكرة',userName+': '+reply.slice(0,40));
     openTicketDetail(ticketId);
     loadTickets();
-  }catch(e){toast('خطأ: '+e.message,'err');}
+  }catch(e){
+    // لو فشل بسبب Rules، اعرض رسالة واضحة
+    if(e.message && e.message.includes('permission')){
+      toast('❌ خطأ في الصلاحيات — ارفع firestore.rules على Firebase Console','err');
+    } else {
+      toast('خطأ: '+e.message,'err');
+    }
+    if(btn){btn.disabled=false;btn.innerHTML='<svg><use href="#ic-send"/></svg>إرسال الرد للطالب';}
+  }
 };
 
 window.sendTicketReplyWA=(phone,name,reply)=>{
