@@ -582,6 +582,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <svg><use href="#ic-users"/></svg><span>الطلاب</span>
         <span class="sb-badge" id="pendBadge" style="display:none">0</span>
       </div>
+      <div class="sb-item" onclick="goPage('parents')" data-perm="users">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span>أولياء الأمور</span>
+        <span class="sb-badge" id="parentsBadge" style="display:none">0</span>
+      </div>
       <div class="sb-item" onclick="goPage('codes')" data-perm="codes">
         <svg><use href="#ic-key"/></svg><span>الأكواد</span>
       </div>
@@ -682,6 +687,50 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <tbody id="usersTbl"><tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
           </table>
         </div></div>
+      </div>
+
+      <!-- ══ PARENTS ══ -->
+      <div class="page" id="page-parents">
+        <div class="sh">
+          <div class="sh-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            أولياء الأمور
+          </div>
+          <div style="display:flex;gap:7px;flex-wrap:wrap">
+            <button class="btn ghost sm" onclick="loadParents()"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+          </div>
+        </div>
+        <div class="ftabs">
+          <div class="ftab on" onclick="setPF('all')">الكل <span id="pf-all"></span></div>
+          <div class="ftab" onclick="setPF('blocked')">محظور</div>
+        </div>
+        <div class="tw"><div class="tw-scroll">
+          <table>
+            <thead><tr>
+              <th>ولي الأمر</th>
+              <th>الهاتف</th>
+              <th>تاريخ التسجيل</th>
+              <th>الحالة</th>
+              <th>إجراء</th>
+            </tr></thead>
+            <tbody id="parentsTbl">
+              <tr><td colspan="5"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><p>جاري التحميل...</p></div></td></tr>
+            </tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <!-- ══ PARENT DETAIL ══ -->
+      <div class="page" id="page-parent-detail">
+        <div class="sh">
+          <button onclick="goPage('parents')" class="btn ghost sm" style="margin-left:8px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+            رجوع
+          </button>
+          <div class="sh-title" id="parent-detail-title">تفاصيل ولي الأمر</div>
+          <div style="display:flex;gap:6px" id="parent-detail-actions"></div>
+        </div>
+        <div id="parent-detail-content" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px"></div>
       </div>
 
       <!-- ══ CODES ══ -->
@@ -2604,10 +2653,12 @@ function closeSidebar(){
 // ═══ NAV ═══
 const pageLabels={
   overview:'نظرة عامة', analytics:'الإحصائيات المتقدمة',
-  users:'الطلاب', codes:'الأكواد', coupons:'كوبونات الخصم',
+  users:'الطلاب', parents:'أولياء الأمور',
+  codes:'الأكواد', coupons:'كوبونات الخصم',
   content:'إدارة المحتوى', broadcast:'إرسال جماعي',
   notifications:'الإشعارات', activity:'سجل النشاط',
-  admins:'المشرفون', settings:'الإعدادات'
+  admins:'المشرفون', settings:'الإعدادات',
+  'parent-detail':'تفاصيل ولي الأمر'
 };
 function goPage(p){
   // Permission check for non-super admins
@@ -2616,18 +2667,18 @@ function goPage(p){
   const isSuper = admin.isSuperAdmin === true;
   if(!isSuper){
     const permMap = {
-      users:'users', codes:'codes', coupons:'codes',
+      users:'users', parents:'users', codes:'codes', coupons:'codes',
       content:'content', broadcast:'broadcast',
-      admins:null, settings:null  // null = super only
+      admins:null, settings:null
     };
     if(p in permMap && !permMap[p]){ toast('ليس لديك صلاحية لهذه الصفحة','err'); return; }
     if(p in permMap && permMap[p] && !perms[permMap[p]]){ toast('ليس لديك صلاحية لهذه الصفحة','err'); return; }
   }
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('on'));
   document.getElementById('page-'+p)?.classList.add('on');
-  const allPages=['overview','analytics','users','codes','coupons','content','broadcast','notifications','activity','admins','settings'];
+  const allPages=['overview','analytics','users','parents','codes','coupons','content','broadcast','notifications','activity','admins','settings'];
   document.querySelectorAll('.sb-item').forEach((el,i)=>{
-    el.classList.toggle('on', allPages[i]===p);
+    el.classList.toggle('on', allPages[i]===p || (p==='parent-detail' && allPages[i]==='parents'));
   });
   document.getElementById('tbTitle').textContent=pageLabels[p]||p;
   if(p==='broadcast') window.updatePreview?.();
@@ -2636,6 +2687,7 @@ function goPage(p){
   if(p==='activity') renderActivity();
   if(p==='coupons') loadCoupons();
   if(p==='admins') loadAdmins();
+  if(p==='parents') loadParents();
   if(p==='content'){ window.open('content-manager.html','_blank'); }
   if(window.innerWidth<=768) closeSidebar();
 }
@@ -3436,6 +3488,146 @@ function updateSdGradeOptions(stage, currentGradeKey){
     sel.innerHTML+=`<option value="${key}" ${key===currentGradeKey?'selected':''}>${label}</option>`;
   });
 }
+
+// ══════════════════════════════════════
+// ── PARENTS MANAGEMENT ──
+// ══════════════════════════════════════
+let _parents=[], _pf='all';
+
+window.loadParents = async ()=>{
+  const tbl = document.getElementById('parentsTbl');
+  tbl.innerHTML='<tr><td colspan="5"><div class="empty"><p>جاري التحميل...</p></div></td></tr>';
+  try{
+    const snap = await db.collection('parents').get();
+    _parents = snap.docs.map(d=>({id:d.id,...d.data()}));
+    const badge = document.getElementById('parentsBadge');
+    if(_parents.length){ badge.textContent=_parents.length; badge.style.display='flex'; }
+    renderParents();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+function setPF(f){
+  _pf=f;
+  document.querySelectorAll('#page-parents .ftab').forEach((t,i)=>t.classList.toggle('on',['all','blocked'][i]===f));
+  renderParents();
+}
+
+function renderParents(){
+  const tbl = document.getElementById('parentsTbl');
+  let list = _pf==='blocked' ? _parents.filter(p=>p.blocked) : _parents;
+  document.getElementById('pf-all').textContent = _parents.length?'('+_parents.length+')':'';
+  if(!list.length){
+    tbl.innerHTML='<tr><td colspan="5"><div class="empty"><p>لا يوجد أولياء أمور</p></div></td></tr>'; return;
+  }
+  tbl.innerHTML = list.map(p=>`<tr style="${p.blocked?'opacity:.6':''}">
+    <td><div class="name-cell">
+      <div class="av" style="background:linear-gradient(135deg,#7c3aed,#4c1d95)">${(p.name||'و').slice(0,2)}</div>
+      <div><div style="font-weight:700;font-size:13px">${p.name||'—'}</div>
+      <div style="font-size:10px;color:var(--muted)">👨‍👧 ولي أمر</div></div>
+    </div></td>
+    <td style="direction:ltr;font-size:12px;color:var(--muted)">${p.phone||'—'}</td>
+    <td style="font-size:11px;color:var(--muted)">${p.createdAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</td>
+    <td>${p.blocked?'<span class="bd err">⛔ محظور</span>':'<span class="bd ok">✅ نشط</span>'}</td>
+    <td><div style="display:flex;gap:4px;flex-wrap:wrap">
+      <button class="btn icon-btn" onclick="openParentDetail('${p.id}')" title="تفاصيل"><svg><use href="#ic-eye"/></svg></button>
+      <button class="btn icon-btn" onclick="waParent('${p.phone||''}','${(p.name||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-wa"/></svg></button>
+      ${p.blocked
+        ?`<button class="btn icon-btn" style="color:var(--ok)" onclick="blockParent('${p.id}',false)"><svg><use href="#ic-shield"/></svg></button>`
+        :`<button class="btn icon-btn" style="color:var(--warn)" onclick="blockParent('${p.id}',true)"><svg><use href="#ic-shield-off"/></svg></button>`}
+      <button class="btn icon-btn del" onclick="deleteParent('${p.id}','${(p.name||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-trash"/></svg></button>
+    </div></td>
+  </tr>`).join('');
+}
+
+window.openParentDetail = async (id)=>{
+  goPage('parent-detail');
+  const content = document.getElementById('parent-detail-content');
+  content.innerHTML='<div class="empty"><p>جاري التحميل...</p></div>';
+  try{
+    const pd = await db.collection('parents').doc(id).get();
+    if(!pd.exists){ toast('ولي الأمر مش موجود','err'); return; }
+    const p = {id,...pd.data()};
+    document.getElementById('parent-detail-title').textContent = p.name||'ولي الأمر';
+    document.getElementById('parent-detail-actions').innerHTML = `
+      <button class="btn wa sm" onclick="waParent('${p.phone||''}','${(p.name||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-wa"/></svg>واتساب</button>
+      ${p.blocked
+        ?`<button class="btn sm" style="background:rgba(0,214,143,0.1);border:1px solid rgba(0,214,143,0.3);color:var(--ok)" onclick="blockParent('${id}',false)">رفع الحظر</button>`
+        :`<button class="btn sm" style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);color:var(--warn)" onclick="blockParent('${id}',true)">⛔ حظر</button>`}
+      <button class="btn sm" style="background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--err)" onclick="deleteParent('${id}','${(p.name||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-trash"/></svg>حذف</button>`;
+    const fmt=ts=>ts?.toDate?.().toLocaleDateString('ar-EG')||'—';
+    const tr2=(l,v)=>`<tr style="border-bottom:1px solid var(--b2)"><td style="padding:8px 4px;font-size:12px;color:var(--muted);font-weight:600;width:110px">${l}</td><td style="padding:8px 4px;font-size:13px;font-weight:700">${v}</td></tr>`;
+    content.innerHTML=`
+      <div class="card">
+        <h4>👨‍👧 بيانات ولي الأمر</h4>
+        <table style="width:100%;border-collapse:collapse">
+          ${tr2('الاسم',p.name||'—')}
+          ${tr2('الهاتف',`<span style="direction:ltr;display:inline-block">${p.phone||'—'}</span>`)}
+          ${tr2('الإيميل',`<span style="color:var(--blue);font-size:11px">${p.email||'—'}</span>`)}
+          ${tr2('تاريخ التسجيل',fmt(p.createdAt))}
+          ${tr2('الحالة',p.blocked?'<span class="bd err">⛔ محظور</span>':'<span class="bd ok">✅ نشط</span>')}
+        </table>
+        <div style="margin-top:14px;padding:12px;background:rgba(74,127,212,0.05);border:1px solid var(--b2);border-radius:10px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:8px">📩 إرسال رسالة</div>
+          <textarea id="par-msg-txt" rows="2" placeholder="اكتب رسالتك..."
+            style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical;margin-bottom:6px"></textarea>
+          <button onclick="sendParentWAMsg('${p.phone||''}','${(p.name||'').replace(/'/g,"\\'")}',document.getElementById('par-msg-txt').value)"
+            class="btn wa sm" style="width:100%"><svg><use href="#ic-wa"/></svg>إرسال على واتساب</button>
+        </div>
+        <div style="margin-top:10px">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">ملاحظات</div>
+          <textarea id="par-notes" rows="2"
+            style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical"
+            placeholder="ملاحظة على ولي الأمر...">${p.notes||''}</textarea>
+          <button onclick="saveParentNote('${id}')" class="btn ghost sm" style="margin-top:6px;font-size:11px"><svg><use href="#ic-check"/></svg>حفظ الملاحظة</button>
+        </div>
+      </div>`;
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.blockParent = async (id,block)=>{
+  if(block&&!confirm('حظر ولي الأمر؟')) return;
+  try{
+    await db.collection('parents').doc(id).update({blocked:block});
+    const idx=_parents.findIndex(p=>p.id===id);
+    if(idx>=0) _parents[idx].blocked=block;
+    toast(block?'تم الحظر ✓':'تم رفع الحظر ✓',block?'err':'ok');
+    logActivity(block?'⛔':'✅',block?'حظر ولي أمر':'رفع حظر',id);
+    if(document.getElementById('page-parent-detail')?.classList.contains('on')) openParentDetail(id);
+    else renderParents();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.deleteParent = async (id,name)=>{
+  if(!confirm(`حذف حساب "${name}"؟`)) return;
+  try{
+    await db.collection('parents').doc(id).delete();
+    _parents=_parents.filter(p=>p.id!==id);
+    toast('تم الحذف ✓','ok');
+    logActivity('🗑️','حذف ولي أمر',name||id);
+    goPage('parents'); renderParents();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.waParent=(phone,name)=>{
+  if(!phone){toast('لا يوجد رقم','err');return;}
+  const wa='20'+phone.replace(/^0/,'').replace(/\D/g,'');
+  window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('مرحباً '+(name||'')+' من Plus Mathematics 📚\n'),'_blank');
+};
+
+window.sendParentWAMsg=(phone,name,msg)=>{
+  if(!phone){toast('لا يوجد رقم','err');return;}
+  if(!msg?.trim()){toast('اكتب رسالة أولاً','err');return;}
+  const wa='20'+phone.replace(/^0/,'').replace(/\D/g,'');
+  window.open('https://wa.me/'+wa+'?text='+encodeURIComponent(msg.trim()),'_blank');
+};
+
+window.saveParentNote=async(id)=>{
+  const notes=document.getElementById('par-notes')?.value||'';
+  try{
+    await db.collection('parents').doc(id).update({notes,notesUpdatedAt:new Date()});
+    toast('تم حفظ الملاحظة ✓','ok');
+  }catch(e){toast('خطأ: '+e.message,'err');}
+};
 
 // ── EXTEND SUBSCRIPTION ──
 window.extendSub = async (id, days) => {
