@@ -855,10 +855,15 @@ window.editItem = (tab, id) => {
   toast('جاهز للتعديل ✏️','ok');
 };
 
-// Load admin pass
+// Load content manager pass
 try{
-  const ad = await getDoc(doc(db,'settings','admin'));
-  if(ad.exists()) window._adminPass = ad.data().pass;
+  const cm = await getDoc(doc(db,'settings','content-manager'));
+  if(cm.exists() && cm.data().pass) window._adminPass = cm.data().pass;
+  else {
+    // fallback لـ admin pass
+    const ad = await getDoc(doc(db,'settings','admin'));
+    if(ad.exists()) window._adminPass = ad.data().pass;
+  }
 }catch(e){}
 // ── Expose Firebase to window for books functions ──
 window._db = db;

@@ -443,35 +443,32 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
     <div class="nm-head">🌙 وضع ليلة الامتحان — مراجعة سريعة</div>
     <ul class="nm-list" id="nightList"></ul>
   </div>
-  <div class="cv-body">
-    <div class="tab-pane on" id="tp-videos">
-      <!-- ملاحظة الأستاذ — تظهر قبل الفيديوهات -->
-      <div id="teacherNote" class="banner-hidden" style="margin:12px 0 8px;padding:12px 14px;border-radius:12px;
-        background:rgba(201,168,76,0.08);border:1.5px solid rgba(201,168,76,0.3);
-        display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7">
-        <span id="teacherNoteIcon" style="font-size:18px;flex-shrink:0">📌</span>
-        <div style="flex:1">
-          <div style="font-size:10px;font-weight:800;margin-bottom:3px"><span class="note-banner-lbl-text" style="color:rgba(201,168,76,1)">ملاحظة من الأستاذ</span></div>
-          <div id="teacherNoteText"></div>
-        </div>
-        <button onclick="var _tn=document.getElementById('teacherNote'); _tn.classList.remove('banner-visible'); _tn.classList.add('banner-hidden');"
-          style="background:transparent;border:none;color:rgba(201,168,76,0.4);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
-      </div>
-      <!-- رد على الشكوى -->
-      <div id="ticketReplyBanner" class="banner-hidden" style="margin:0 0 8px;padding:12px 14px;border-radius:12px;
-        background:rgba(74,127,212,0.08);border:1.5px solid rgba(74,127,212,0.3);
-        display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7">
-        <span style="font-size:18px;flex-shrink:0">📬</span>
-        <div style="flex:1">
-          <div style="font-size:10px;font-weight:800;color:var(--blue);margin-bottom:3px">رد على شكواك</div>
-          <div id="ticketReplySubject" style="font-size:11px;color:var(--muted);margin-bottom:2px"></div>
-          <div id="ticketReplyText"></div>
-        </div>
-        <button onclick="dismissTicketReply()"
-          style="background:transparent;border:none;color:rgba(74,127,212,0.4);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
-      </div>
-      <div class="video-list" id="videoList"><div class="empty"><p>جاري التحميل...</p></div></div>
+  <!-- ملاحظة الأستاذ — تظهر في كل التابات -->
+  <div id="teacherNote" class="banner-hidden" style="margin:10px 16px 0;padding:12px 14px;border-radius:12px;
+    background:rgba(201,168,76,0.08);border:1.5px solid rgba(201,168,76,0.3);
+    display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7">
+    <span id="teacherNoteIcon" style="font-size:18px;flex-shrink:0">📌</span>
+    <div style="flex:1">
+      <div style="font-size:10px;font-weight:800;margin-bottom:3px"><span class="note-banner-lbl-text" style="color:rgba(201,168,76,1)">ملاحظة من الأستاذ</span></div>
+      <div id="teacherNoteText"></div>
     </div>
+  </div>
+  <!-- رد على الشكوى — تظهر في كل التابات -->
+  <div id="ticketReplyBanner" class="banner-hidden" style="margin:8px 16px 0;padding:12px 14px;border-radius:12px;
+    background:rgba(74,127,212,0.08);border:1.5px solid rgba(74,127,212,0.3);
+    display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7">
+    <span style="font-size:18px;flex-shrink:0">📬</span>
+    <div style="flex:1">
+      <div style="font-size:10px;font-weight:800;color:var(--blue);margin-bottom:3px">رد على شكواك</div>
+      <div id="ticketReplySubject" style="font-size:11px;color:var(--muted);margin-bottom:2px"></div>
+      <div id="ticketReplyText"></div>
+    </div>
+    <button onclick="dismissTicketReply()"
+      style="background:transparent;border:none;color:rgba(74,127,212,0.4);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
+  </div>
+
+  <div class="cv-body">
+    <div class="tab-pane on" id="tp-videos"><div class="video-list" id="videoList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-exams"><div class="exam-list" id="examList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-homework"><div class="hw-list" id="hwList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-books"><div id="booksList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
@@ -625,6 +622,7 @@ onAuthStateChanged(auth,async(user)=>{
     if(_userData.expiresAt) startCountdown(_userData.expiresAt);
     // ── إشعار تلقائي قرب انتهاء الاشتراك ──
     checkSubscriptionExpiry(_userData, user.uid);
+    sendWelcomeNotif(_userData, user.uid);
     // Teacher note
     if(_userData.notes) showTeacherNote(_userData.notes, _userData.noteColor);
     // ── رد على الشكاوى ──
@@ -1109,6 +1107,24 @@ async function markNotifRead(notifId){
   }catch(e){}
 }
 // ── إشعار تلقائي قرب انتهاء الاشتراك ──
+async function sendWelcomeNotif(userData, uid){
+  // إشعار ترحيب مرة واحدة بس
+  var key = 'welcome_notif_' + uid;
+  if(localStorage.getItem(key)) return;
+  try{
+    await addDoc(collection(db,'notifications',uid,'items'),{
+      icon: '🎉',
+      title: 'أهلاً ' + (userData.name?.split(' ')[0]||'بيك') + ' في Plus Mathematics!',
+      body: 'يسعدنا انضمامك — اضغط على صفك وابدأ رحلتك الدراسية 🚀',
+      read: false,
+      type: 'welcome',
+      createdAt: serverTimestamp()
+    });
+    localStorage.setItem(key,'1');
+    checkNotifDot();
+  }catch(e){}
+}
+
 async function checkSubscriptionExpiry(userData, uid){
   if(!userData.expiresAt) return;
   var exp = userData.expiresAt.toDate ? userData.expiresAt.toDate() : new Date(userData.expiresAt);
