@@ -4536,8 +4536,23 @@ window.openTicketDetail = async (id)=>{
       </div>
       <div class="card">
         <h4>📝 ملاحظة داخلية</h4>
-        <textarea id="ticket-note" rows="3" style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical;margin-top:8px" placeholder="ملاحظة لنفسك...">${t.adminNote||''}</textarea>
+        <textarea id="ticket-note" rows="3" style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical;margin-top:8px" placeholder="ملاحظة لنفسك (مش بتوصل للطالب)...">${t.adminNote||''}</textarea>
         <button onclick="saveTicketNote('${id}')" class="btn ghost sm" style="margin-top:6px;font-size:11px"><svg><use href="#ic-check"/></svg>حفظ الملاحظة</button>
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h4>📬 الرد على الطالب</h4>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">الرد هيوصل للطالب في إشعاراته لما يفتح صفحة الكورسات</p>
+        <textarea id="ticket-reply" rows="3" style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical;margin-bottom:8px" placeholder="اكتب ردك هنا...">${t.adminReply||''}</textarea>
+        <div style="display:flex;gap:8px">
+          <button onclick="sendTicketReply('${id}','${(t.userId||'').replace(/'/g,"\\'")}','${(t.userName||'').replace(/'/g,"\\'")}','${(t.subject||'').replace(/'/g,"\\'")}')"
+            class="btn ok sm" style="flex:1">
+            <svg><use href="#ic-send"/></svg>إرسال الرد للطالب
+          </button>
+          ${t.userPhone?`<button class="btn wa sm" onclick="sendTicketReplyWA('${t.userPhone}','${(t.userName||'').replace(/'/g,"\\'")}',document.getElementById('ticket-reply').value)">
+            <svg><use href="#ic-wa"/></svg>إرسال على واتساب
+          </button>`:''}
+        </div>
       </div>`;
   }catch(e){toast('خطأ: '+e.message,'err');}
 };
@@ -4566,6 +4581,42 @@ window.saveTicketNote=async(id)=>{
     await db.collection('tickets').doc(id).update({adminNote:note});
     toast('تم حفظ الملاحظة ✓','ok');
   }catch(e){toast('خطأ','err');}
+};
+
+window.sendTicketReply=async(ticketId, userId, userName, subject)=>{
+  const reply=document.getElementById('ticket-reply')?.value.trim();
+  if(!reply){toast('اكتب رداً أولاً','err');return;}
+  if(!userId){toast('لا يوجد userId للطالب','err');return;}
+  try{
+    // Save reply on ticket
+    await db.collection('tickets').doc(ticketId).update({
+      adminReply: reply,
+      repliedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'closed'
+    });
+    // Send notification to student
+    await db.collection('notifications').doc(userId).collection('items').add({
+      icon: '📬',
+      title: 'رد على شكواك: '+subject,
+      body: reply,
+      read: false,
+      type: 'ticket_reply',
+      ticketId: ticketId,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('✅ تم إرسال الرد لـ '+userName+' في إشعاراته','ok');
+    logActivity('📬','رد على تذكرة',userName+': '+reply.slice(0,30));
+    openTicketDetail(ticketId);
+    loadTickets();
+  }catch(e){toast('خطأ: '+e.message,'err');}
+};
+
+window.sendTicketReplyWA=(phone,name,reply)=>{
+  if(!phone){toast('لا يوجد رقم هاتف','err');return;}
+  if(!reply?.trim()){toast('اكتب رداً أولاً','err');return;}
+  const wa='20'+phone.replace(/^0/,'').replace(/\D/g,'');
+  const msg=encodeURIComponent('مرحباً '+name+' 👋\nرد Plus Mathematics على شكواك:\n\n'+reply.trim());
+  window.open('https://wa.me/'+wa+'?text='+msg,'_blank');
 };
 
 // ══════════════════════════════════════
