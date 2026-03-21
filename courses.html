@@ -115,13 +115,13 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 .loader{width:44px;height:44px;border:3px solid rgba(74,127,212,0.2);
   border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
 #loadingScreen p{font-size:13px;color:var(--muted)}
-#annBanner{display:none;position:fixed;top:58px;left:0;right:0;z-index:190;
+#annBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:190;
   padding:9px 16px;align-items:center;justify-content:center;gap:10px;
   font-size:12px;font-weight:600;color:#fff;
   background:linear-gradient(135deg,var(--navy),var(--blue));box-shadow:0 2px 12px rgba(74,127,212,0.4)}
 #annBanner.show{display:flex}
-nav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;display:flex;align-items:center;gap:12px;
-  padding:0 clamp(14px,4vw,24px);background:var(--s1);backdrop-filter:blur(20px);border-bottom:1px solid var(--b2)}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;align-items:center;justify-content:space-around;gap:0;
+  padding:0 8px;background:var(--s1);backdrop-filter:blur(20px);border-top:1px solid var(--b2);safe-area-inset-bottom:env(safe-area-inset-bottom)}
 .nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
 .nav-logo img{width:32px;height:32px;object-fit:contain}
 .nav-logo h2{font-size:13px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -158,7 +158,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;height:58px;display:flex;ali
 .gc-title{font-size:clamp(12px,3vw,13px);font-weight:800;margin-bottom:3px}
 .gc-sub{font-size:11px;color:var(--muted)}
 .gc-foot{padding:8px clamp(10px,2.5vw,13px);border-top:1px solid var(--b2);display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted)}
-#courseView{display:none;position:fixed;top:58px;left:0;right:0;bottom:0;z-index:150;background:var(--bg);overflow-y:auto}
+#courseView{display:none;position:fixed;top:0;left:0;right:0;bottom:58px;z-index:150;background:var(--bg);overflow-y:auto}
 #courseView.open{display:block;animation:fadeUp .25s ease both}
 .cv-hd{position:sticky;top:0;z-index:10;background:var(--s1);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--b2);padding:12px clamp(14px,4vw,20px);display:flex;align-items:center;gap:12px}
@@ -332,30 +332,30 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
 </div>
 
 <nav id="navbar" style="display:none">
-  <a href="index.html" class="nav-logo">
-    <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.display='none'"/>
-    <h2>Plus Math</h2>
-  </a>
-  <div class="nav-mid">أهلاً، <strong id="userName">طالب</strong> 👋</div>
-  <div style="display:flex;align-items:center;gap:8px">
-    <!-- Countdown -->
-    <div id="countdownWrap" class="countdown-wrap" style="display:none">
-      ⏰ <span id="countdownVal">—</span>
-    </div>
-    <!-- Profile link -->
-    <a href="plus-math-auth.html" style="width:34px;height:34px;border-radius:10px;border:1px solid var(--b2);background:rgba(74,127,212,0.06);display:flex;align-items:center;justify-content:center;color:var(--muted);text-decoration:none;transition:all .2s" title="بروفايلي" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--b2)'">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    </a>
-    <!-- Ticket button -->
-    <button onclick="openTicketModal()" style="width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .2s" title="إرسال شكوى" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--b2)'">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-    </button>
-    <button class="nav-btn" onclick="doSignOut()">خروج</button>
+  <!-- اسم الطالب والأيام وسط الشريط -->
+  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+    <div style="font-size:11px;color:var(--muted)">أهلاً <strong id="userName" style="color:var(--text)">طالب</strong> 👋</div>
+    <div id="countdownWrap" class="countdown-wrap" style="display:none">⏰ <span id="countdownVal">—</span></div>
   </div>
+  <!-- بروفايل -->
+  <a href="plus-math-auth.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--muted);padding:6px 12px;border-radius:10px;min-width:52px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span style="font-size:9px;font-weight:700">بروفايلي</span>
+  </a>
+  <!-- شكوى -->
+  <button onclick="openTicketModal()" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;color:var(--muted);padding:6px 12px;border-radius:10px;min-width:52px;font-family:'Tajawal',sans-serif">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+    <span style="font-size:9px;font-weight:700">شكوى</span>
+  </button>
+  <!-- خروج -->
+  <button onclick="doSignOut()" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;color:var(--muted);padding:6px 12px;border-radius:10px;min-width:52px;font-family:'Tajawal',sans-serif">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    <span style="font-size:9px;font-weight:700">خروج</span>
+  </button>
 </nav>
 
 <!-- ══ BANNERS — دايماً ظاهرة فوق كل حاجة ══ -->
-<div id="teacherNote" style="position:fixed;top:58px;left:0;right:0;z-index:190;display:none;
+<div id="teacherNote" style="position:fixed;top:0;left:0;right:0;z-index:190;display:none;
   padding:12px 16px;background:rgba(16,20,40,0.97);border-bottom:2px solid rgba(201,168,76,0.4);
   align-items:flex-start;gap:10px;font-size:13px;line-height:1.7;color:var(--text)">
   <span style="font-size:18px;flex-shrink:0">📌</span>
@@ -367,7 +367,7 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
     style="background:transparent;border:none;color:rgba(201,168,76,0.5);cursor:pointer;font-size:20px;flex-shrink:0;padding:0;line-height:1;margin-top:-2px">×</button>
 </div>
 
-<div id="ticketReplyBanner" style="position:fixed;top:58px;left:0;right:0;z-index:189;display:none;
+<div id="ticketReplyBanner" style="position:fixed;top:0;left:0;right:0;z-index:189;display:none;
   padding:12px 16px;background:rgba(10,18,45,0.97);border-bottom:2px solid rgba(74,127,212,0.4);
   align-items:flex-start;gap:10px;font-size:13px;line-height:1.7;color:var(--text)">
   <span style="font-size:18px;flex-shrink:0">📬</span>
@@ -380,7 +380,7 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
     style="background:transparent;border:none;color:rgba(74,127,212,0.5);cursor:pointer;font-size:20px;flex-shrink:0;padding:0;line-height:1;margin-top:-2px">×</button>
 </div>
 
-<main id="mainContent" style="display:none;padding-top:68px">
+<main id="mainContent" style="display:none;padding-bottom:68px">
 
   <div class="hero-bar">
     <div><h1>مرحباً في Plus Mathematics 🎓</h1><p>اضغط على صفك لتبدأ</p></div>
@@ -1013,7 +1013,7 @@ function showTeacherNote(notes){
   // ادفع رد الشكوى تحت الملاحظة
   const h = banner.offsetHeight || 50;
   const tr = document.getElementById('ticketReplyBanner');
-  if(tr) tr.style.top = (58 + h) + 'px';
+  if(tr) tr.style.top = h + 'px';
 }
 
 // ── TICKET REPLY BANNER ──
