@@ -110,6 +110,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 .o2{width:300px;height:300px;background:rgba(110,75,10,0.3);bottom:-60px;right:-60px}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.banner-hidden{display:none!important}
+.banner-visible{display:flex!important}
 #loadingScreen{position:fixed;inset:0;z-index:500;background:var(--bg);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 .loader{width:44px;height:44px;border:3px solid rgba(74,127,212,0.2);
@@ -355,7 +357,7 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
 </nav>
 
 <!-- ══ BANNERS — دايماً ظاهرة فوق كل حاجة ══ -->
-<div id="teacherNote" hidden style="position:fixed;top:0;left:0;right:0;z-index:190;
+<div id="teacherNote" class="banner-hidden" style="position:fixed;top:0;left:0;right:0;z-index:190;
   padding:12px 16px;background:rgba(16,20,40,0.97);border-bottom:2px solid rgba(201,168,76,0.4);
   align-items:flex-start;gap:10px;font-size:13px;line-height:1.7;color:var(--text)">
   <span style="font-size:18px;flex-shrink:0">📌</span>
@@ -363,11 +365,11 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
     <div style="font-size:10px;font-weight:800;color:var(--gold2);letter-spacing:.5px;margin-bottom:3px">ملاحظة من الأستاذ</div>
     <div id="teacherNoteText"></div>
   </div>
-  <button onclick="document.getElementById('teacherNote').setAttribute('hidden',''); document.getElementById('teacherNote').style.display='none'"
+  <button onclick="var _tn=document.getElementById('teacherNote'); _tn.classList.remove('banner-visible'); _tn.classList.add('banner-hidden');"
     style="background:transparent;border:none;color:rgba(201,168,76,0.5);cursor:pointer;font-size:20px;flex-shrink:0;padding:0;line-height:1;margin-top:-2px">×</button>
 </div>
 
-<div id="ticketReplyBanner" hidden style="position:fixed;top:0;left:0;right:0;z-index:189;
+<div id="ticketReplyBanner" class="banner-hidden" style="position:fixed;top:0;left:0;right:0;z-index:189;
   padding:12px 16px;background:rgba(10,18,45,0.97);border-bottom:2px solid rgba(74,127,212,0.4);
   align-items:flex-start;gap:10px;font-size:13px;line-height:1.7;color:var(--text)">
   <span style="font-size:18px;flex-shrink:0">📬</span>
@@ -600,7 +602,6 @@ onAuthStateChanged(auth,async(user)=>{
     // Countdown
     if(_userData.expiresAt) startCountdown(_userData.expiresAt);
     // Teacher note
-    console.log('[DEBUG] userData.notes =', _userData.notes);
     if(_userData.notes) showTeacherNote(_userData.notes);
     // ── رد على الشكاوى ──
     loadTicketReply(user.uid);
@@ -1008,23 +1009,17 @@ function startCountdown(expiresAt){
 // ══════════════════════════════════════
 function showTeacherNote(notes){
   if(!notes||!notes.trim()) return;
-  const banner = document.getElementById('teacherNote');
+  var banner = document.getElementById('teacherNote');
+  if(!banner) return;
   document.getElementById('teacherNoteText').textContent = notes;
-  banner.removeAttribute('hidden');
-  banner.style.display='flex';
-  // ادفع رد الشكوى تحت الملاحظة بعد ما يظهر
-  setTimeout(()=>{
-    const h = banner.offsetHeight || 48;
-    const tr = document.getElementById('ticketReplyBanner');
-    if(tr && tr.style.display==='flex') tr.style.top = h + 'px';
-  }, 50);
+  banner.classList.remove('banner-hidden');
+  banner.classList.add('banner-visible');
 }
 
 // ── TICKET REPLY BANNER ──
 // ══════════════════════════════════════
 async function loadTicketReply(uid){
   try{
-    console.log('[DEBUG] loadTicketReply uid=', uid);
     const snap = await getDocs(
       query(
         collection(db,'tickets'),
@@ -1032,26 +1027,24 @@ async function loadTicketReply(uid){
         where('status','==','closed')
       )
     );
-    console.log('[DEBUG] tickets found:', snap.docs.length);
     const replied = snap.docs
       .map(d=>({id:d.id,...d.data()}))
       .filter(t=> t.adminReply && !t.replyRead)
       .sort((a,b)=>(b.repliedAt?.seconds||0)-(a.repliedAt?.seconds||0));
-    console.log('[DEBUG] unread replies:', replied.length, replied.map(t=>({id:t.id,reply:t.adminReply,replyRead:t.replyRead})));
 
     if(replied.length > 0){
       const latest = replied[0];
       document.getElementById('ticketReplySubject').textContent = latest.subject||'';
       document.getElementById('ticketReplyText').textContent = latest.adminReply;
-      const trb=document.getElementById('ticketReplyBanner'); trb.removeAttribute('hidden'); trb.style.display='flex';
+      var trb=document.getElementById('ticketReplyBanner'); if(trb){ trb.classList.remove('banner-hidden'); trb.classList.add('banner-visible'); }
       window._latestTicketReplyId = latest.id;
     }
   }catch(e){ console.warn('loadTicketReply:', e.message); }
 }
 
 async function dismissTicketReply(){
-  const trb=document.getElementById('ticketReplyBanner');
-  trb.style.display='none'; trb.setAttribute('hidden','');
+  var trb=document.getElementById('ticketReplyBanner');
+  if(trb){ trb.classList.remove('banner-visible'); trb.classList.add('banner-hidden'); }
   // علّم الرد كـ "تم القراءة" في Firestore
   if(window._latestTicketReplyId){
     try{

@@ -4672,14 +4672,17 @@ function renderTickets(){
   tbl.innerHTML=list.map(t=>`<tr>
     <td><div class="name-cell">
       <div class="av" style="font-size:12px">${(t.userName||'ط').slice(0,2)}</div>
-      <div><div style="font-weight:700;font-size:12px">${t.userName||'—'}</div>
-      <div style="font-size:10px;color:var(--muted)">${t.userPhone||'—'}</div></div>
+      <div>
+        <div style="font-weight:700;font-size:12px">${t.userName||'—'}</div>
+        <div style="font-size:10px;color:var(--muted)">${t.userPhone||'—'}</div>
+      </div>
     </div></td>
-    <td style="font-size:12px;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.subject||'—'}</td>
+    <td style="font-size:12px;font-weight:600;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.subject||'—'}</td>
     <td style="font-size:11px;color:var(--muted)">${t.createdAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</td>
     <td>${statusBadge(t.status||'open')}</td>
-    <td><div style="display:flex;gap:4px">
-      <button class="btn icon-btn" onclick="openTicketDetail('${t.id}')" title="فتح"><svg><use href="#ic-eye"/></svg></button>
+    <td><div style="display:flex;gap:4px;flex-wrap:wrap">
+      <button class="btn icon-btn" onclick="openTicketDetail('${t.id}')" title="تفاصيل التذكرة"><svg><use href="#ic-eye"/></svg></button>
+      ${t.userId?`<button class="btn icon-btn" style="color:var(--blue)" onclick="openStudentFromTicket('${t.userId}')" title="عرض الطالب وإرسال ملاحظة"><svg><use href="#ic-users"/></svg></button>`:''}
       ${t.userPhone?`<button class="btn icon-btn" onclick="waUser('${t.userPhone}','${(t.userName||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-wa"/></svg></button>`:''}
       <button class="btn icon-btn" style="color:var(--ok)" onclick="closeTicket('${t.id}')" title="إغلاق"><svg><use href="#ic-check"/></svg></button>
       <button class="btn icon-btn del" onclick="deleteTicket('${t.id}')" title="حذف"><svg><use href="#ic-trash"/></svg></button>
@@ -4699,6 +4702,7 @@ window.openTicketDetail = async (id)=>{
     window._currentTicket = t;
     document.getElementById('ticket-detail-title').textContent='تذكرة: '+(t.subject||'—');
     document.getElementById('ticket-detail-actions').innerHTML=`
+      ${t.userId?`<button class="btn primary sm" onclick="openStudentFromTicket('${t.userId}')"><svg><use href="#ic-users"/></svg>عرض الطالب</button>`:''}
       <button class="btn sm" style="background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--err)"
         onclick="deleteTicket('${id}')"><svg><use href="#ic-trash"/></svg>حذف</button>`;
     const statusColors={open:'var(--err)',inprogress:'var(--warn)',closed:'var(--ok)'};
@@ -4752,6 +4756,26 @@ window.openTicketDetail = async (id)=>{
   }
 };
 
+
+window.openStudentFromTicket = async (userId)=>{
+  // ابحث عن الطالب بـ userId مباشرة
+  if(!userId){ toast('لا يوجد userId','err'); return; }
+  try{
+    // ابحث في _users أول
+    const found = (window._users||[]).find(u=>u.id===userId);
+    if(found){
+      openStudentDetail(found.id);
+    } else {
+      // جيبه من Firestore مباشرة
+      const snap = await db.collection('users').doc(userId).get();
+      if(snap.exists){
+        openStudentDetail(userId);
+      } else {
+        toast('الطالب مش موجود','err');
+      }
+    }
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
 
 window.deleteTicket=async(id)=>{
   if(!confirm('حذف التذكرة نهائياً؟')) return;
