@@ -3883,9 +3883,18 @@ window.openStudentDetail = async (id)=>{
 
         <!-- Notes -->
         <div style="margin-top:10px">
-          <div style="font-size:12px;font-weight:700;margin-bottom:6px">ملاحظات</div>
-          <textarea id="sd-notes" rows="2" style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical" placeholder="أكتب ملاحظة على الطالب...">${d.notes||''}</textarea>
-          <button onclick="saveStudentNote('${id}')" class="btn ghost sm" style="margin-top:6px;font-size:11px"><svg><use href="#ic-check"/></svg>حفظ الملاحظة</button>
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">ملاحظة للطالب</div>
+          <div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">
+            <span style="font-size:11px;color:var(--muted);align-self:center">لون البانر:</span>
+            ${['gold','blue','err','ok'].map(col=>`
+              <button onclick="document.getElementById('sd-note-color').value='${col}';document.querySelectorAll('.note-color-btn').forEach(b=>b.classList.remove('on'));this.classList.add('on')"
+                class="note-color-btn${(d.noteColor||'gold')===col?' on':''}"
+                style="width:22px;height:22px;border-radius:6px;border:2px solid ${(d.noteColor||'gold')===col?'#fff':'transparent'};cursor:pointer;background:${{gold:'rgba(201,168,76,0.6)',blue:'rgba(74,127,212,0.6)',err:'rgba(255,77,109,0.6)',ok:'rgba(0,214,143,0.6)'}[col]}"></button>
+            `).join('')}
+          </div>
+          <input type="hidden" id="sd-note-color" value="${d.noteColor||'gold'}"/>
+          <textarea id="sd-notes" rows="2" style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical" placeholder="اكتب ملاحظة على الطالب...">${d.notes||''}</textarea>
+          <button onclick="saveStudentNote('${id}')" class="btn primary sm" style="margin-top:6px;width:100%;justify-content:center"><svg><use href="#ic-check"/></svg>حفظ وإرسال للطالب</button>
         </div>
       </div>
 
@@ -4238,10 +4247,28 @@ window.changeStudentGrade = async (id)=>{
 };
 
 window.saveStudentNote = async (id)=>{
-  const note = document.getElementById('sd-notes')?.value||'';
+  const note = document.getElementById('sd-notes')?.value.trim()||'';
+  const color = document.getElementById('sd-note-color')?.value||'gold';
   try{
-    await db.collection('users').doc(id).update({notes:note, notesUpdatedAt:firebase.firestore.FieldValue.serverTimestamp()});
-    toast('تم حفظ الملاحظة ✓','ok');
+    // 1. احفظ في users
+    await db.collection('users').doc(id).update({
+      notes: note,
+      noteColor: color,
+      notesUpdatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    // 2. لو في نص — ابعت إشعار للطالب
+    if(note){
+      await db.collection('notifications').doc(id).collection('items').add({
+        icon: color==='err'?'⚠️':color==='ok'?'✅':color==='blue'?'📘':'📌',
+        title: 'ملاحظة من الأستاذ',
+        body: note,
+        read: false,
+        type: 'teacher_note',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    toast('✅ تم حفظ الملاحظة وإرسالها للطالب','ok');
+    logActivity('📌','ملاحظة على طالب', note.slice(0,40));
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
