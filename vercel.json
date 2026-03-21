@@ -1,0 +1,42 @@
+{
+  "rewrites": [
+    { "source": "/admin", "destination": "/plus-math-admin.html" },
+    { "source": "/login", "destination": "/plus-math-auth.html" },
+    { "source": "/courses", "destination": "/courses.html" },
+    { "source": "/books", "destination": "/books.html" },
+    { "source": "/profile", "destination": "/profile.html" },
+    { "source": "/renew", "destination": "/renew.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/content", "destination": "/content-manager.html" }
+  ],
+  "redirects": [
+    { "source": "/404", "destination": "/404.html", "permanent": false },
+    { "source": "/offline", "destination": "/offline.html", "permanent": false }
+  ],
+  "headers": [
+    {
+      "source": "/plus-math-admin.html",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    },
+    {
+      "source": "/content-manager.html",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "X-Frame-Options", "value": "DENY" }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ],
+  "cleanUrls": true,
+  "trailingSlash": false
+}
