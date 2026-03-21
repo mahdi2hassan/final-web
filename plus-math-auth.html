@@ -29,6 +29,31 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);
 .orb1{width:400px;height:400px;background:rgba(26,50,112,0.5);top:-100px;left:-120px}
 .orb2{width:300px;height:300px;background:rgba(130,90,15,0.35);bottom:-80px;right:-60px}
 
+/* ══ EDITABLE INFO ROW ══ */
+.edit-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border2);font-size:13px;gap:8px}
+.edit-row:last-child{border:none;padding-bottom:0}
+.edit-row .er-lbl{color:var(--muted);font-weight:600;flex-shrink:0;min-width:70px}
+.edit-row .er-val{font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.edit-row .er-val.missing{color:var(--error);font-size:11px;font-weight:600}
+.edit-row .er-btn{padding:3px 9px;border:1px solid var(--border2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px;font-weight:700;flex-shrink:0;transition:all .2s}
+.edit-row .er-btn:hover{border-color:var(--blue);color:var(--blue)}
+.edit-row .er-btn.add{border-color:rgba(0,214,143,0.3);color:var(--success)}
+
+/* ══ OTP INPUT ══ */
+.otp-wrap{display:flex;gap:8px;justify-content:center;margin:12px 0}
+.otp-inp{width:44px;height:52px;border:2px solid var(--border2);border-radius:10px;background:var(--input);
+  color:var(--text);font-family:'Tajawal',sans-serif;font-size:22px;font-weight:900;text-align:center;
+  outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+.otp-inp:focus{border-color:var(--blue)}
+.otp-inp.filled{border-color:rgba(0,214,143,0.4);background:rgba(0,214,143,0.04)}
+
+/* ══ PASS STRENGTH ══ */
+.pass-strength{height:4px;border-radius:2px;margin-top:5px;transition:all .3s;background:var(--border2)}
+.pass-strength.weak{background:var(--error);width:30%}
+.pass-strength.fair{background:var(--warn);width:60%}
+.pass-strength.strong{background:var(--success);width:100%}
+.pass-strength-lbl{font-size:10px;color:var(--muted);margin-top:3px;text-align:left}
+
 /* ══ PROGRESS STEPS ══ */
 .steps-progress{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:20px;padding:0 16px}
 .sp-step{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;position:relative}
@@ -539,19 +564,17 @@ input::placeholder{color:var(--muted);opacity:.5}
 
     <!-- ══ STEP: PROFILE ══ -->
     <div class="step" id="step-profile">
-      <!-- Avatar + name with edit -->
+      <!-- Avatar + name -->
       <div style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(74,127,212,0.06);border:1px solid var(--border2);border-radius:13px;margin-bottom:14px">
-        <div id="prof-avatar" style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,var(--primary),#0d1a40);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;flex-shrink:0">ط</div>
+        <div id="prof-avatar" style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#1a3270,#0d1a40);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;color:#fff;flex-shrink:0">ط</div>
         <div style="flex:1;min-width:0">
-          <!-- Name display mode -->
           <div id="prof-name-wrap" style="display:flex;align-items:center;gap:7px">
             <div id="prof-name" style="font-size:16px;font-weight:900">—</div>
             <button onclick="toggleNameEdit(true)" style="padding:3px 8px;border:1px solid var(--border2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px;font-weight:700">تعديل</button>
           </div>
-          <!-- Name edit mode -->
-          <div id="prof-name-edit" style="display:none;gap:6px">
+          <div id="prof-name-edit" style="display:none;flex-direction:column;gap:5px">
             <input id="prof-name-inp" type="text" placeholder="اسمك الكامل"
-              style="flex:1;padding:7px 10px;background:var(--input);border:1.5px solid var(--border2);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;width:100%;margin-bottom:5px"/>
+              style="padding:7px 10px;background:var(--input);border:1.5px solid var(--border2);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;width:100%"/>
             <div style="display:flex;gap:5px">
               <button onclick="saveName()" class="btn" style="flex:1;padding:7px;font-size:12px">
                 <span class="btn-text"><svg><use href="#i-check"/></svg>حفظ</span><div class="spin"></div>
@@ -562,21 +585,69 @@ input::placeholder{color:var(--muted);opacity:.5}
           <div id="prof-grade" style="font-size:12px;color:var(--muted);margin-top:2px">—</div>
         </div>
       </div>
+
+      <!-- Editable info rows -->
+      <div style="background:rgba(8,13,28,0.4);border:1px solid var(--border2);border-radius:12px;padding:8px 12px;margin-bottom:12px">
+        <!-- Phone -->
+        <div class="edit-row">
+          <span class="er-lbl">📱 الهاتف</span>
+          <span class="er-val" id="prof-phone-val" style="direction:ltr">—</span>
+          <button id="prof-phone-btn" class="er-btn" onclick="openEditField('phone')">تعديل</button>
+        </div>
+        <!-- Email -->
+        <div class="edit-row">
+          <span class="er-lbl">📧 الإيميل</span>
+          <span class="er-val" id="prof-email-val">—</span>
+          <button id="prof-email-btn" class="er-btn" onclick="openEditField('email')">تعديل</button>
+        </div>
+      </div>
+
       <!-- Sub info -->
-      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--border2)">
-          <span style="color:var(--muted)">الكود</span><span style="font-family:monospace;color:var(--gold2);letter-spacing:2px" id="prof-code">—</span>
+      <div style="display:flex;flex-direction:column;gap:0;background:rgba(8,13,28,0.4);border:1px solid var(--border2);border-radius:12px;padding:8px 12px;margin-bottom:12px">
+        <div class="edit-row">
+          <span class="er-lbl">🔑 الكود</span>
+          <span style="font-family:monospace;color:var(--gold2);letter-spacing:2px;font-weight:700;font-size:13px" id="prof-code">—</span>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid var(--border2)">
-          <span style="color:var(--muted)">ينتهي</span><span id="prof-exp" style="font-weight:700;color:var(--success)">—</span>
+        <div class="edit-row">
+          <span class="er-lbl">📅 ينتهي</span>
+          <span id="prof-exp" style="font-weight:700;color:var(--success);font-size:13px">—</span>
         </div>
-        <div style="display:flex;justify-content:space-between;font-size:13px;padding:7px 0">
-          <span style="color:var(--muted)">الأيام المتبقية</span><span id="prof-days" style="font-weight:900;font-size:15px">—</span>
+        <div class="edit-row" style="border:none;padding-bottom:0">
+          <span class="er-lbl">⏰ المتبقي</span>
+          <span id="prof-days" style="font-weight:900;font-size:15px">—</span>
         </div>
-        <div style="height:6px;background:rgba(74,127,212,0.1);border-radius:3px;overflow:hidden;margin-top:4px">
+        <div style="height:5px;background:rgba(74,127,212,0.1);border-radius:3px;overflow:hidden;margin-top:8px">
           <div id="prof-bar" style="height:100%;border-radius:3px;background:linear-gradient(90deg,var(--success),#006040);transition:width 1s;width:0%"></div>
         </div>
       </div>
+
+      <!-- Password section -->
+      <div style="background:rgba(8,13,28,0.4);border:1px solid var(--border2);border-radius:12px;padding:8px 12px;margin-bottom:12px">
+        <div class="edit-row" style="border:none;padding:0">
+          <span class="er-lbl">🔒 كلمة المرور</span>
+          <span class="er-val" style="color:var(--muted);font-size:11px">••••••••</span>
+          <button class="er-btn" onclick="openChangePass()" style="white-space:nowrap">تغيير</button>
+        </div>
+        <div id="change-pass-form" style="display:none;flex-direction:column;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)">
+          <input id="old-pass-inp" type="password" placeholder="كلمة المرور الحالية"
+            style="padding:8px 10px;background:var(--input);border:1.5px solid var(--border2);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;width:100%"/>
+          <input id="new-pass-inp" type="password" placeholder="كلمة المرور الجديدة (٨ أحرف+)"
+            oninput="checkPassStrength(this.value)"
+            style="padding:8px 10px;background:var(--input);border:1.5px solid var(--border2);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;width:100%"/>
+          <div class="pass-strength" id="pass-strength-bar"></div>
+          <div class="pass-strength-lbl" id="pass-strength-lbl"></div>
+          <input id="new-pass-confirm" type="password" placeholder="تأكيد كلمة المرور الجديدة"
+            style="padding:8px 10px;background:var(--input);border:1.5px solid var(--border2);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;width:100%"/>
+          <div style="display:flex;gap:6px">
+            <button onclick="doChangePass()" class="btn" style="flex:1;padding:8px;font-size:12px">
+              <span class="btn-text"><svg><use href="#i-check"/></svg>تغيير</span><div class="spin"></div>
+            </button>
+            <button onclick="document.getElementById('change-pass-form').style.display='none'" style="padding:8px 12px;border:1px solid var(--border2);border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px">إلغاء</button>
+          </div>
+          <button onclick="doForgotPass()" style="padding:5px;background:transparent;border:none;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;text-align:center">نسيت كلمة المرور؟ إرسال رابط Reset</button>
+        </div>
+      </div>
+
       <div class="msg" id="prof-msg"></div>
       <button class="btn" onclick="window.location.href='courses.html'" style="margin-bottom:8px">
         <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>ادخل على كورساتك</span>
@@ -585,6 +656,64 @@ input::placeholder{color:var(--muted);opacity:.5}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         تسجيل الخروج
       </button>
+    </div>
+
+    <!-- ══ STEP: EDIT FIELD (phone/email + OTP) ══ -->
+    <div class="step" id="step-edit-field">
+      <div class="step-info">
+        <h3 id="edit-field-title">تعديل رقم الهاتف</h3>
+        <p id="edit-field-desc">ادخل الرقم الجديد وهيتبعتلك كود تأكيد</p>
+      </div>
+
+      <!-- Input phase -->
+      <div id="edit-input-phase">
+        <div class="field">
+          <label id="edit-field-label">الرقم الجديد</label>
+          <input id="edit-field-inp" type="text" placeholder=""
+            style="font-size:15px;direction:ltr;letter-spacing:1px"/>
+        </div>
+        <div class="msg" id="edit-field-msg"></div>
+        <button class="btn" id="edit-field-send-btn" onclick="sendOTP()">
+          <span class="btn-text">📱 إرسال كود التأكيد</span><div class="spin"></div>
+        </button>
+      </div>
+
+      <!-- OTP phase -->
+      <div id="edit-otp-phase" style="display:none">
+        <div style="text-align:center;margin-bottom:14px">
+          <p style="font-size:13px;color:var(--muted)">تم إرسال كود مكون من 6 أرقام إلى</p>
+          <p style="font-size:14px;font-weight:800;color:var(--text);direction:ltr" id="otp-sent-to"></p>
+        </div>
+        <div class="otp-wrap">
+          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,0)"/>
+          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,1)"/>
+          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,2)"/>
+          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,3)"/>
+          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,4)"/>
+          <input class="otp-inp" type="tel" maxlength="1" inputmode="numeric" oninput="otpMove(this,5)"/>
+        </div>
+        <div class="msg" id="otp-msg"></div>
+        <button class="btn" id="otp-verify-btn" onclick="verifyOTP()">
+          <span class="btn-text"><svg><use href="#i-check"/></svg>تأكيد الكود</span><div class="spin"></div>
+        </button>
+        <div style="text-align:center;margin-top:10px">
+          <button onclick="resendOTP()" id="resend-btn" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px">إعادة إرسال الكود (<span id="resend-timer">60</span>ث)</button>
+        </div>
+      </div>
+
+      <!-- Email phase (no OTP needed) -->
+      <div id="edit-email-phase" style="display:none">
+        <div class="field">
+          <label>الإيميل الجديد</label>
+          <input id="edit-email-inp" type="email" placeholder="example@gmail.com"/>
+        </div>
+        <div class="msg" id="edit-email-msg"></div>
+        <button class="btn" id="edit-email-save-btn" onclick="saveEmailDirect()">
+          <span class="btn-text"><svg><use href="#i-check"/></svg>حفظ الإيميل</span><div class="spin"></div>
+        </button>
+      </div>
+
+      <button onclick="showStep('step-profile')" style="width:100%;padding:10px;margin-top:8px;border:1px solid var(--border2);border-radius:11px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700">← رجوع</button>
     </div>
 
   </div>
@@ -760,13 +889,44 @@ function renewSendWA(){
   });
 }
 
-// ── Show Profile Step (for logged-in active user) ──
+// ── Show Profile Step ──
 function showProfileStep(data){
   var name = data.name||'طالب';
   document.getElementById('prof-avatar').textContent = name.slice(0,2);
   document.getElementById('prof-name').textContent   = name;
   document.getElementById('prof-grade').textContent  = data.grade||'—';
   document.getElementById('prof-code').textContent   = data.subscriptionCode||'—';
+
+  // Phone
+  var phoneEl = document.getElementById('prof-phone-val');
+  var phoneBtn = document.getElementById('prof-phone-btn');
+  if(data.phone && data.phone.trim()){
+    phoneEl.textContent = data.phone;
+    phoneEl.className = 'er-val';
+    phoneBtn.textContent = 'تعديل';
+    phoneBtn.className = 'er-btn';
+  } else {
+    phoneEl.textContent = '⚠️ غير مضاف';
+    phoneEl.className = 'er-val missing';
+    phoneBtn.textContent = 'إضافة';
+    phoneBtn.className = 'er-btn add';
+  }
+
+  // Email
+  var emailEl = document.getElementById('prof-email-val');
+  var emailBtn = document.getElementById('prof-email-btn');
+  if(data.email && !data.email.includes('@plusinmath')){
+    emailEl.textContent = data.email;
+    emailEl.className = 'er-val';
+    emailBtn.textContent = 'تعديل';
+  } else {
+    emailEl.textContent = '⚠️ غير مضاف';
+    emailEl.className = 'er-val missing';
+    emailBtn.textContent = 'إضافة';
+    emailBtn.className = 'er-btn add';
+  }
+
+  // Expiry
   var now = new Date();
   if(data.expiresAt){
     var exp = data.expiresAt.toDate?data.expiresAt.toDate():new Date(data.expiresAt);
@@ -780,6 +940,202 @@ function showProfileStep(data){
   }
   showStep('step-profile');
 }
+
+// ── EDIT FIELD (phone/email) ──
+var _editFieldType = '';
+function openEditField(type){
+  _editFieldType = type;
+  document.getElementById('edit-input-phase').style.display = type==='phone' ? 'block' : 'none';
+  document.getElementById('edit-otp-phase').style.display = 'none';
+  document.getElementById('edit-email-phase').style.display = type==='email' ? 'block' : 'none';
+  document.getElementById('edit-field-msg').className='msg';
+  document.getElementById('edit-email-msg').className='msg';
+  if(type==='phone'){
+    document.getElementById('edit-field-title').textContent = 'تعديل رقم الهاتف';
+    document.getElementById('edit-field-desc').textContent  = 'ادخل الرقم الجديد وهيتبعتلك كود تأكيد';
+    document.getElementById('edit-field-label').textContent = 'الرقم الجديد';
+    var inp = document.getElementById('edit-field-inp');
+    inp.type='tel'; inp.inputMode='numeric'; inp.maxLength=11;
+    inp.placeholder='01xxxxxxxxx'; inp.value='';
+    inp.oninput = function(){ this.value=this.value.replace(/\D/g,''); };
+    document.getElementById('edit-field-send-btn').querySelector('.btn-text').innerHTML='📱 إرسال كود التأكيد';
+  } else {
+    document.getElementById('edit-field-title').textContent = 'تعديل الإيميل';
+    document.getElementById('edit-field-desc').textContent  = 'ادخل الإيميل الجديد';
+    document.getElementById('edit-email-inp').value='';
+  }
+  showStep('step-edit-field');
+}
+
+// OTP via WhatsApp simulation (stored in Firestore as temp code)
+var _otpCode='', _otpResendTimer=null;
+async function sendOTP(){
+  var phone = document.getElementById('edit-field-inp').value.trim();
+  if(phone.length<10){ showMsg('edit-field-msg','ادخل رقم صحيح','error'); return; }
+  var btn = document.getElementById('edit-field-send-btn');
+  setLoad(btn,true);
+  // Generate 6-digit OTP
+  _otpCode = Math.floor(100000+Math.random()*900000).toString();
+  var user = auth.currentUser;
+  // Save OTP in Firestore (expires in 10 min)
+  try{
+    await db.collection('otps').doc(user.uid).set({
+      code: _otpCode,
+      phone: phone,
+      type: _editFieldType,
+      expiresAt: new Date(Date.now()+600000),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    // Show OTP phase
+    document.getElementById('edit-input-phase').style.display='none';
+    document.getElementById('edit-otp-phase').style.display='block';
+    document.getElementById('otp-sent-to').textContent = phone;
+    document.querySelectorAll('.otp-inp').forEach(function(el){ el.value=''; el.classList.remove('filled'); });
+    document.querySelectorAll('.otp-inp')[0]?.focus();
+    showMsg('edit-field-msg','','');
+    // For demo: open WhatsApp with OTP
+    var wa='20'+phone.replace(/^0/,'').replace(/\D/g,'');
+    setTimeout(function(){
+      window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('كود التأكيد الخاص بك في Plus Mathematics:\n\n*'+_otpCode+'*\n\nصالح لمدة 10 دقائق'),'_blank');
+    },500);
+    startResendTimer();
+  }catch(e){ showMsg('edit-field-msg','خطأ: '+e.message,'error'); }
+  setLoad(btn,false);
+}
+
+function otpMove(el,idx){
+  el.value=el.value.replace(/\D/g,'');
+  el.classList.toggle('filled',el.value!=='');
+  if(el.value && idx<5){
+    document.querySelectorAll('.otp-inp')[idx+1]?.focus();
+  }
+  // Auto verify when all filled
+  var all=document.querySelectorAll('.otp-inp');
+  if([...all].every(function(i){return i.value!=='';})) verifyOTP();
+}
+
+async function verifyOTP(){
+  var all=document.querySelectorAll('.otp-inp');
+  var entered=[...all].map(function(i){return i.value;}).join('');
+  if(entered.length<6){ showMsg('otp-msg','ادخل الكود كامل','error'); return; }
+  var btn=document.getElementById('otp-verify-btn');
+  setLoad(btn,true);
+  var user=auth.currentUser;
+  try{
+    var otpDoc=await db.collection('otps').doc(user.uid).get();
+    if(!otpDoc.exists){ showMsg('otp-msg','الكود انتهت صلاحيته','error'); setLoad(btn,false); return; }
+    var otpData=otpDoc.data();
+    var expiry=otpData.expiresAt.toDate?otpData.expiresAt.toDate():new Date(otpData.expiresAt);
+    if(new Date()>expiry){ showMsg('otp-msg','الكود انتهت صلاحيته — اطلب كود جديد','error'); setLoad(btn,false); return; }
+    if(entered!==otpData.code){ showMsg('otp-msg','الكود غلط','error'); setLoad(btn,false); return; }
+    // Save new phone
+    var newPhone=otpData.phone;
+    await db.collection('users').doc(user.uid).update({phone:newPhone});
+    await db.collection('otps').doc(user.uid).delete();
+    clearInterval(_otpResendTimer);
+    showMsg('prof-msg','✅ تم تحديث الرقم بنجاح','success');
+    setTimeout(function(){ document.getElementById('prof-msg').className='msg'; },3000);
+    // Refresh profile
+    db.collection('users').doc(user.uid).get().then(function(ud){ if(ud.exists) showProfileStep(ud.data()); });
+    showStep('step-profile');
+  }catch(e){ showMsg('otp-msg','خطأ: '+e.message,'error'); }
+  setLoad(btn,false);
+}
+
+function resendOTP(){
+  document.querySelectorAll('.otp-inp').forEach(function(el){el.value='';el.classList.remove('filled');});
+  document.getElementById('edit-input-phase').style.display='block';
+  document.getElementById('edit-otp-phase').style.display='none';
+  clearInterval(_otpResendTimer);
+}
+
+function startResendTimer(){
+  var t=60;
+  document.getElementById('resend-btn').disabled=true;
+  _otpResendTimer=setInterval(function(){
+    t--;
+    document.getElementById('resend-timer').textContent=t;
+    if(t<=0){ clearInterval(_otpResendTimer); document.getElementById('resend-btn').disabled=false; document.getElementById('resend-timer').textContent='60'; }
+  },1000);
+}
+
+async function saveEmailDirect(){
+  var email=document.getElementById('edit-email-inp').value.trim().toLowerCase();
+  if(!email.includes('@')||!email.includes('.')){ showMsg('edit-email-msg','ادخل إيميل صحيح','error'); return; }
+  var btn=document.getElementById('edit-email-save-btn');
+  setLoad(btn,true);
+  var user=auth.currentUser;
+  try{
+    await db.collection('users').doc(user.uid).update({email:email});
+    showMsg('prof-msg','✅ تم تحديث الإيميل','success');
+    setTimeout(function(){ document.getElementById('prof-msg').className='msg'; },3000);
+    db.collection('users').doc(user.uid).get().then(function(ud){ if(ud.exists) showProfileStep(ud.data()); });
+    showStep('step-profile');
+  }catch(e){ showMsg('edit-email-msg','خطأ: '+e.message,'error'); }
+  setLoad(btn,false);
+}
+
+// ── CHANGE PASSWORD ──
+function openChangePass(){
+  var form=document.getElementById('change-pass-form');
+  form.style.display = form.style.display==='flex'?'none':'flex';
+  form.style.flexDirection='column';
+  document.getElementById('old-pass-inp').value='';
+  document.getElementById('new-pass-inp').value='';
+  document.getElementById('new-pass-confirm').value='';
+  document.getElementById('pass-strength-bar').className='pass-strength';
+  document.getElementById('pass-strength-lbl').textContent='';
+}
+
+function checkPassStrength(val){
+  var bar=document.getElementById('pass-strength-bar');
+  var lbl=document.getElementById('pass-strength-lbl');
+  if(!val){bar.className='pass-strength';lbl.textContent='';return;}
+  var score=0;
+  if(val.length>=8) score++;
+  if(val.length>=12) score++;
+  if(/[A-Z]/.test(val)||/[0-9]/.test(val)) score++;
+  if(/[^A-Za-z0-9]/.test(val)) score++;
+  if(score<=1){bar.className='pass-strength weak';lbl.textContent='ضعيفة';}
+  else if(score<=2){bar.className='pass-strength fair';lbl.textContent='متوسطة';}
+  else{bar.className='pass-strength strong';lbl.textContent='قوية ✓';}
+}
+
+async function doChangePass(){
+  var oldPass=document.getElementById('old-pass-inp').value;
+  var newPass=document.getElementById('new-pass-inp').value;
+  var confirm2=document.getElementById('new-pass-confirm').value;
+  if(!oldPass){ showMsg('prof-msg','ادخل كلمة المرور الحالية','error'); return; }
+  if(newPass.length<8){ showMsg('prof-msg','كلمة المرور الجديدة ٨ أحرف على الأقل','error'); return; }
+  if(newPass!==confirm2){ showMsg('prof-msg','كلمتا المرور غير متطابقتين','error'); return; }
+  var user=auth.currentUser;
+  var btn=document.querySelector('#change-pass-form .btn');
+  setLoad(btn,true);
+  try{
+    // Re-authenticate first
+    var cred=firebase.auth.EmailAuthProvider.credential(user.email, oldPass);
+    await user.reauthenticateWithCredential(cred);
+    await user.updatePassword(newPass);
+    showMsg('prof-msg','✅ تم تغيير كلمة المرور','success');
+    openChangePass(); // hide form
+    setTimeout(function(){ document.getElementById('prof-msg').className='msg'; },3000);
+  }catch(e){
+    var msgs={'auth/wrong-password':'كلمة المرور الحالية غلط','auth/too-many-requests':'حاولت كتير — انتظر'};
+    showMsg('prof-msg',msgs[e.code]||'خطأ: '+e.message,'error');
+  }
+  setLoad(btn,false);
+}
+
+async function doForgotPass(){
+  var user=auth.currentUser;
+  if(!user||!user.email){ showMsg('prof-msg','لا يوجد إيميل مرتبط بالحساب','error'); return; }
+  try{
+    await auth.sendPasswordResetEmail(user.email);
+    showMsg('prof-msg','✅ تم إرسال رابط Reset على '+user.email,'success');
+  }catch(e){ showMsg('prof-msg','خطأ: '+e.message,'error'); }
+}
+
+// ── SHOW PROFILE STEP ── (moved here)
 
 function toggleNameEdit(show){
   document.getElementById('prof-name-wrap').style.display = show ? 'none' : 'flex';
