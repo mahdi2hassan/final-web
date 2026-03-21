@@ -20,70 +20,61 @@ html,body{min-height:100dvh;font-family:'Tajawal',sans-serif;background:var(--bg
   background-size:55px 55px}
 .o1{position:fixed;width:400px;height:400px;background:rgba(26,50,112,0.5);top:-100px;left:-120px;border-radius:50%;filter:blur(100px);z-index:0}
 .o2{position:fixed;width:300px;height:300px;background:rgba(130,90,15,0.35);bottom:-80px;right:-60px;border-radius:50%;filter:blur(100px);z-index:0}
-
 .wrapper{position:relative;z-index:10;width:100%;max-width:420px}
 .auth-card{background:var(--card);backdrop-filter:blur(24px);border:1px solid var(--border);
-  border-radius:24px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.65);
-  animation:cardIn .5s cubic-bezier(.22,1,.36,1)}
+  border-radius:24px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,0.65);animation:cardIn .5s cubic-bezier(.22,1,.36,1)}
 @keyframes cardIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-
 .auth-header{padding:24px 28px 16px;text-align:center;
   background:linear-gradient(180deg,rgba(26,50,112,0.25),transparent);border-bottom:1px solid var(--border2)}
 .auth-header .ico{font-size:40px;margin-bottom:10px}
 .auth-header h1{font-size:18px;font-weight:900;margin-bottom:4px}
 .auth-header p{font-size:12px;color:var(--muted)}
-
 .auth-body{padding:20px 24px}
-
 .step{display:none}
 .step.active{display:block;animation:fadeUp .3s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-
 .field{margin-bottom:14px}
 .field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px}
 .field input{width:100%;padding:13px 14px;background:var(--input);border:1.5px solid var(--border2);
-  border-radius:12px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:15px;outline:none;
-  transition:border-color .2s;appearance:none}
+  border-radius:12px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
 .field input:focus{border-color:var(--blue)}
-
 .btn{width:100%;padding:13px;border:none;border-radius:12px;cursor:pointer;
   font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;
   background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;
   display:flex;align-items:center;justify-content:center;gap:8px;
   box-shadow:0 6px 20px rgba(74,127,212,0.3);transition:all .2s;position:relative}
-.btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(74,127,212,0.38)}
-.btn:disabled{opacity:.7;transform:none;cursor:not-allowed}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.7;cursor:not-allowed;transform:none}
 .btn .spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
   border-radius:50%;animation:spin .7s linear infinite;display:none}
-.btn.loading .btn-text{display:none}
-.btn.loading .spin{display:block}
+.btn.loading .btn-text{display:none}.btn.loading .spin{display:block}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-.msg{font-size:12px;padding:8px 10px;border-radius:8px;margin-bottom:10px;display:none;
-  align-items:center;gap:6px}
+.msg{font-size:12px;padding:8px 10px;border-radius:8px;margin-bottom:10px;display:none;align-items:center;gap:6px}
 .msg.show{display:flex}
 .msg.error{background:rgba(255,77,109,0.1);color:var(--error);border:1px solid rgba(255,77,109,0.2)}
 .msg.success{background:rgba(0,214,143,0.08);color:var(--success);border:1px solid rgba(0,214,143,0.2)}
-
 .divider{text-align:center;font-size:12px;color:var(--muted);margin:12px 0;position:relative}
 .divider::before,.divider::after{content:'';position:absolute;top:50%;width:35%;height:1px;background:var(--border2)}
 .divider::before{right:0}.divider::after{left:0}
-
-/* Profile card */
 .prof-card{background:rgba(74,127,212,0.06);border:1px solid var(--border2);border-radius:13px;
   padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .prof-av{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--navy));
   display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;flex-shrink:0}
+.prof-info{flex:1}
 .prof-info h3{font-size:15px;font-weight:900;margin-bottom:2px}
 .prof-info p{font-size:11px;color:var(--muted)}
-
-.info-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border2);font-size:13px}
+.section-title{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.5px;
+  margin:14px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border2)}
+.info-row{display:flex;justify-content:space-between;padding:8px 0;
+  border-bottom:1px solid rgba(74,127,212,0.06);font-size:13px}
 .info-row:last-child{border:none;padding-bottom:0}
 .info-row .lbl{color:var(--muted);font-weight:600}
 .info-row .val{font-weight:700}
-
+.sub-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.sub-badge.ok{background:rgba(0,214,143,0.1);color:var(--success);border:1px solid rgba(0,214,143,0.2)}
+.sub-badge.err{background:rgba(255,77,109,0.1);color:var(--error);border:1px solid rgba(255,77,109,0.2)}
+.sub-badge.warn{background:rgba(245,166,35,0.1);color:var(--warn);border:1px solid rgba(245,166,35,0.2)}
 .prog-item{margin-bottom:12px}
-.prog-item:last-child{margin-bottom:0}
 .prog-head{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
 .prog-head .name{color:var(--muted);font-weight:600}
 .prog-head .cnt{font-weight:700}
@@ -92,23 +83,21 @@ html,body{min-height:100dvh;font-family:'Tajawal',sans-serif;background:var(--bg
 .pf-blue{background:linear-gradient(90deg,var(--blue),var(--navy))}
 .pf-gold{background:linear-gradient(90deg,var(--gold),#8a6010)}
 .pf-ok{background:linear-gradient(90deg,var(--success),#006040)}
-
-.section-title{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.5px;
-  text-transform:uppercase;margin:16px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border2)}
-
-.sub-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.sub-badge.ok{background:rgba(0,214,143,0.1);color:var(--success);border:1px solid rgba(0,214,143,0.2)}
-.sub-badge.err{background:rgba(255,77,109,0.1);color:var(--error);border:1px solid rgba(255,77,109,0.2)}
-.sub-badge.warn{background:rgba(245,166,35,0.1);color:var(--warn);border:1px solid rgba(245,166,35,0.2)}
-
+.note-banner{padding:11px 13px;background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.25);
+  border-radius:11px;margin-top:14px;display:flex;gap:9px;align-items:flex-start}
+.note-banner-ico{font-size:18px;flex-shrink:0}
+.note-banner-lbl{font-size:10px;font-weight:800;color:var(--gold2);margin-bottom:3px}
+.note-banner-txt{font-size:12px;line-height:1.7;color:var(--text)}
 .back-btn{width:100%;padding:10px;border:1px solid var(--border);border-radius:12px;cursor:pointer;
   background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;
   display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s;margin-top:8px}
 .back-btn:hover{border-color:var(--blue);color:var(--text)}
-
+.refresh-btn{font-size:11px;color:var(--muted);background:transparent;border:1px solid var(--border2);
+  border-radius:7px;padding:4px 9px;cursor:pointer;font-family:'Tajawal',sans-serif;
+  display:inline-flex;align-items:center;gap:4px;transition:all .2s;flex-shrink:0}
+.refresh-btn:hover{border-color:var(--blue);color:var(--blue)}
 .card-footer{padding:12px 24px;border-top:1px solid var(--border2);text-align:center;font-size:11px;color:var(--muted)}
 .card-footer a{color:var(--blue);text-decoration:none}
-
 .toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%) translateY(80px);
   background:rgba(10,15,34,.97);border:1px solid var(--border);border-radius:10px;
   padding:9px 16px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;
@@ -121,7 +110,6 @@ html,body{min-height:100dvh;font-family:'Tajawal',sans-serif;background:var(--bg
 <div class="bg-grid"></div>
 <div class="o1"></div>
 <div class="o2"></div>
-
 <div class="wrapper">
 <div class="auth-card">
   <div class="auth-header">
@@ -129,15 +117,14 @@ html,body{min-height:100dvh;font-family:'Tajawal',sans-serif;background:var(--bg
     <h1>حساب ولي الأمر</h1>
     <p>تابع تقدم ابنك في Plus Mathematics</p>
   </div>
-
   <div class="auth-body">
 
-    <!-- ══ STEP: LOGIN ══ -->
+    <!-- ══ LOGIN ══ -->
     <div class="step active" id="step-login">
       <div class="field">
-        <label>رقم هاتفك (ولي الأمر)</label>
+        <label>رقم هاتفك</label>
         <input type="tel" id="par-phone" placeholder="01xxxxxxxxx" maxlength="11" inputmode="numeric"
-          oninput="this.value=this.value.replace(/\D/g,'')"/>
+          oninput="this.value=this.value.replace(/\D/g,'')" onkeydown="if(event.key==='Enter')doParLogin()"/>
       </div>
       <div class="field">
         <label>كلمة المرور</label>
@@ -145,17 +132,16 @@ html,body{min-height:100dvh;font-family:'Tajawal',sans-serif;background:var(--bg
       </div>
       <div class="msg" id="login-msg"></div>
       <button class="btn" id="login-btn" onclick="doParLogin()">
-        <span class="btn-text">دخول</span>
-        <div class="spin"></div>
+        <span class="btn-text">دخول</span><div class="spin"></div>
       </button>
-      <div class="divider">حساب جديد؟</div>
-      <button class="btn" id="reg-btn" onclick="showStep('step-register')"
+      <div class="divider">ليس لديك حساب؟</div>
+      <button class="btn" onclick="showStep('step-register')"
         style="background:transparent;border:1px solid var(--border);color:var(--muted);box-shadow:none">
         <span class="btn-text">إنشاء حساب ولي أمر</span>
       </button>
     </div>
 
-    <!-- ══ STEP: REGISTER ══ -->
+    <!-- ══ REGISTER ══ -->
     <div class="step" id="step-register">
       <div class="field">
         <label>اسمك</label>
@@ -167,77 +153,45 @@ html,body{min-height:100dvh;font-family:'Tajawal',sans-serif;background:var(--bg
           oninput="this.value=this.value.replace(/\D/g,'')"/>
       </div>
       <div class="field">
+        <label>رقم هاتف ابنك (الطالب)</label>
+        <input type="tel" id="par-reg-student" placeholder="01xxxxxxxxx" maxlength="11" inputmode="numeric"
+          oninput="this.value=this.value.replace(/\D/g,'')" style="border-color:rgba(201,168,76,0.35)"/>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">⚠️ هيتربط بحسابك بشكل دائم — مش هيتغير بعد كده</div>
+      </div>
+      <div class="field">
         <label>كلمة المرور</label>
         <input type="password" id="par-reg-pass" placeholder="٦ أحرف على الأقل" minlength="6"/>
       </div>
       <div class="msg" id="reg-msg"></div>
       <button class="btn" id="reg-submit-btn" onclick="doParRegister()">
-        <span class="btn-text">إنشاء حساب</span>
-        <div class="spin"></div>
+        <span class="btn-text">إنشاء حساب</span><div class="spin"></div>
       </button>
       <button class="back-btn" onclick="showStep('step-login')">← رجوع</button>
     </div>
 
-    <!-- ══ STEP: SEARCH STUDENT ══ -->
-    <div class="step" id="step-search">
-      <div style="margin-bottom:14px;font-size:13px;color:var(--muted)">
-        أهلاً <strong id="par-welcome-name" style="color:var(--text)">—</strong> 👋<br/>
-        ادخل رقم تليفون الطالب لتشوف تقدمه
-      </div>
-      <div class="field">
-        <label>رقم تليفون الطالب</label>
-        <input type="tel" id="student-phone" placeholder="01xxxxxxxxx" maxlength="11" inputmode="numeric"
-          oninput="this.value=this.value.replace(/\D/g,'')" onkeydown="if(event.key==='Enter')searchStudent()"/>
-      </div>
-      <div class="msg" id="search-msg"></div>
-      <button class="btn" id="search-btn" onclick="searchStudent()">
-        <span class="btn-text">🔍 عرض التقدم</span>
-        <div class="spin"></div>
-      </button>
-      <button class="back-btn" onclick="parSignOut()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        تسجيل الخروج
-      </button>
-    </div>
-
-    <!-- ══ STEP: STUDENT PROGRESS ══ -->
+    <!-- ══ PROGRESS ══ -->
     <div class="step" id="step-progress">
-      <!-- Student header -->
       <div class="prof-card">
         <div class="prof-av" id="stu-av">ط</div>
         <div class="prof-info">
           <h3 id="stu-name">—</h3>
           <p id="stu-grade">—</p>
         </div>
+        <button class="refresh-btn" onclick="refreshProgress()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+          تحديث
+        </button>
       </div>
 
-      <!-- Subscription status -->
-      <div class="section-title">الاشتراك</div>
-      <div style="margin-bottom:12px">
-        <div class="info-row">
-          <span class="lbl">الحالة</span>
-          <span class="val" id="stu-sub-status"></span>
-        </div>
-        <div class="info-row">
-          <span class="lbl">الكود</span>
-          <span class="val" id="stu-code" style="font-family:monospace;color:var(--gold2);letter-spacing:1px">—</span>
-        </div>
-        <div class="info-row">
-          <span class="lbl">ينتهي</span>
-          <span class="val" id="stu-exp">—</span>
-        </div>
-        <div class="info-row">
-          <span class="lbl">المتبقي</span>
-          <span class="val" id="stu-days">—</span>
-        </div>
-        <!-- Sub progress bar -->
-        <div style="height:5px;background:rgba(74,127,212,0.08);border-radius:3px;overflow:hidden;margin-top:8px">
-          <div id="stu-sub-bar" style="height:100%;border-radius:3px;background:linear-gradient(90deg,var(--success),#006040);width:0%;transition:width 1s"></div>
-        </div>
+      <div class="section-title">📅 الاشتراك</div>
+      <div class="info-row"><span class="lbl">الحالة</span><span class="val" id="stu-sub-status"></span></div>
+      <div class="info-row"><span class="lbl">ينتهي في</span><span class="val" id="stu-exp">—</span></div>
+      <div class="info-row"><span class="lbl">الأيام المتبقية</span><span class="val" id="stu-days">—</span></div>
+      <div style="height:6px;background:rgba(74,127,212,0.08);border-radius:3px;overflow:hidden;margin:10px 0 4px">
+        <div id="stu-sub-bar" style="height:100%;border-radius:3px;background:linear-gradient(90deg,var(--success),#006040);width:0%;transition:width 1.2s"></div>
       </div>
 
-      <!-- Academic progress -->
-      <div class="section-title">التقدم الأكاديمي</div>
+      <div class="section-title">📊 التقدم الأكاديمي</div>
       <div class="prog-item">
         <div class="prog-head"><span class="name">▶ فيديوهات الشرح</span><span class="cnt" id="stu-v-cnt">0/0</span></div>
         <div class="prog-bar"><div class="prog-fill pf-blue" id="stu-v-bar" style="width:0%"></div></div>
@@ -251,16 +205,23 @@ html,body{min-height:100dvh;font-family:'Tajawal',sans-serif;background:var(--bg
         <div class="prog-bar"><div class="prog-fill pf-ok" id="stu-h-bar" style="width:0%"></div></div>
       </div>
 
-      <div class="section-title" style="margin-top:14px"></div>
-      <button class="back-btn" onclick="showStep('step-search')">← بحث عن طالب آخر</button>
-      <button class="back-btn" onclick="parSignOut()" style="margin-top:6px;color:var(--error);border-color:rgba(255,77,109,0.2)">تسجيل الخروج</button>
+      <div class="note-banner" id="teacher-note" style="display:none">
+        <div class="note-banner-ico">📌</div>
+        <div>
+          <div class="note-banner-lbl">ملاحظة من الأستاذ</div>
+          <div class="note-banner-txt" id="teacher-note-txt"></div>
+        </div>
+      </div>
+
+      <button class="back-btn" onclick="parSignOut()" style="margin-top:14px;color:var(--error);border-color:rgba(255,77,109,0.2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        تسجيل الخروج
+      </button>
     </div>
 
   </div>
-
   <div class="card-footer">
-    <a href="index.html">الصفحة الرئيسية</a> ·
-    <a href="plus-math-auth.html">حساب الطالب</a>
+    <a href="index.html">الصفحة الرئيسية</a> · <a href="plus-math-auth.html">حساب الطالب</a>
   </div>
 </div>
 </div>
@@ -279,184 +240,142 @@ firebase.initializeApp({
   messagingSenderId:"444492731461",
   appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
 });
-const auth = firebase.auth();
-const db   = firebase.firestore();
+var auth=firebase.auth(), db=firebase.firestore();
+var _studentId=null;
 
-// ── Helpers ──
 function phoneToEmail(p){ return '20'+p.replace(/\D/g,'').replace(/^0/,'')+'@plusparent.edu'; }
-function showStep(id){
-  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-function showMsg(id,txt,type){
-  var el=document.getElementById(id); if(!el)return;
-  el.textContent=txt; el.className='msg show '+type;
-}
-function setLoad(btn,state){ btn.disabled=state; btn.classList.toggle('loading',state); }
-function fmt(ts){ return ts?.toDate?ts.toDate().toLocaleDateString('ar-EG'):ts?new Date(ts).toLocaleDateString('ar-EG'):'—'; }
+function showStep(id){ document.querySelectorAll('.step').forEach(function(s){s.classList.remove('active');}); document.getElementById(id).classList.add('active'); }
+function showMsg(id,txt,type){ var el=document.getElementById(id); if(!el)return; el.textContent=txt; el.className='msg show '+type; }
+function setLoad(btn,s){ btn.disabled=s; btn.classList.toggle('loading',s); }
+function fmt(ts){ return ts&&ts.toDate?ts.toDate().toLocaleDateString('ar-EG'):ts?new Date(ts).toLocaleDateString('ar-EG'):'—'; }
+var tTimer;
+function toast(msg,type){ var t=document.getElementById('toast'); t.className='toast '+(type||'ok')+' show'; document.getElementById('tMsg').textContent=msg; clearTimeout(tTimer); tTimer=setTimeout(function(){t.classList.remove('show');},3000); }
 
-let tTimer;
-function toast(msg,type='ok'){
-  var t=document.getElementById('toast');
-  t.className='toast '+type+' show';
-  document.getElementById('tMsg').textContent=msg;
-  clearTimeout(tTimer);
-  tTimer=setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-// ── Auth state ──
+// ── AUTH STATE ──
 auth.onAuthStateChanged(function(user){
-  if(user){
-    // Check if parent account
-    db.collection('parents').doc(user.uid).get().then(function(pd){
-      if(pd.exists){
-        document.getElementById('par-welcome-name').textContent = pd.data().name||'ولي الأمر';
-        showStep('step-search');
-      } else {
-        // Not a parent account — sign out
-        auth.signOut().then(()=>showStep('step-login'));
-      }
-    });
-  } else {
-    showStep('step-login');
-  }
+  if(!user){ showStep('step-login'); return; }
+  db.collection('parents').doc(user.uid).get().then(function(pd){
+    if(!pd.exists){ auth.signOut(); return; }
+    var d=pd.data();
+    if(d.blocked){ auth.signOut(); toast('حسابك موقوف — تواصل مع الأستاذ','err'); return; }
+    _studentId=d.studentId||null;
+    if(_studentId) loadStudentProgress(_studentId);
+    else { auth.signOut(); showStep('step-login'); }
+  }).catch(function(){ showStep('step-login'); });
 });
 
-// ── REGISTER PARENT ──
+// ── REGISTER ──
 function doParRegister(){
-  var name  = document.getElementById('par-reg-name').value.trim();
-  var phone = document.getElementById('par-reg-phone').value.trim();
-  var pass  = document.getElementById('par-reg-pass').value;
-  if(!name)  { showMsg('reg-msg','ادخل اسمك','error'); return; }
-  if(phone.length<10){ showMsg('reg-msg','رقم الهاتف غير صحيح','error'); return; }
-  if(pass.length<6)  { showMsg('reg-msg','كلمة المرور قصيرة — 6 أحرف على الأقل','error'); return; }
-  var btn = document.getElementById('reg-submit-btn');
+  var name=document.getElementById('par-reg-name').value.trim();
+  var phone=document.getElementById('par-reg-phone').value.trim();
+  var stuPh=document.getElementById('par-reg-student').value.trim();
+  var pass=document.getElementById('par-reg-pass').value;
+  if(!name){ showMsg('reg-msg','ادخل اسمك','error'); return; }
+  if(phone.length<10){ showMsg('reg-msg','رقم هاتفك غير صحيح','error'); return; }
+  if(stuPh.length<10){ showMsg('reg-msg','رقم الطالب غير صحيح','error'); return; }
+  if(pass.length<6){ showMsg('reg-msg','كلمة المرور 6 أحرف على الأقل','error'); return; }
+  var btn=document.getElementById('reg-submit-btn');
   setLoad(btn,true);
-  var email = phoneToEmail(phone);
-  auth.createUserWithEmailAndPassword(email, pass)
-    .then(function(cred){
-      return db.collection('parents').doc(cred.user.uid).set({
-        name, phone, email, createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+  db.collection('users').where('phone','==',stuPh).limit(1).get()
+    .then(function(snap){
+      if(snap.empty) throw {message:'مش لاقي طالب بالرقم ده ❌ — تأكد من رقم ابنك'};
+      var stuId=snap.docs[0].id;
+      return auth.createUserWithEmailAndPassword(phoneToEmail(phone),pass)
+        .then(function(cred){
+          return db.collection('parents').doc(cred.user.uid).set({
+            name:name, phone:phone, email:phoneToEmail(phone),
+            studentId:stuId, studentPhone:stuPh,
+            createdAt:firebase.firestore.FieldValue.serverTimestamp()
+          });
+        });
     })
-    .then(function(){
-      document.getElementById('par-welcome-name').textContent = name;
-      showStep('step-search');
-      toast('تم إنشاء حسابك ✓');
-    })
+    .then(function(){ toast('تم إنشاء الحساب ✓'); })
     .catch(function(e){
-      var msgs = {
-        'auth/email-already-in-use':'الرقم ده مسجل بالفعل — ادخل أو غيّر الرقم',
-        'auth/weak-password':'كلمة المرور ضعيفة'
-      };
-      showMsg('reg-msg', msgs[e.code]||'خطأ: '+e.message,'error');
+      var msgs={'auth/email-already-in-use':'الرقم مسجل بالفعل — ادخل أو غيّر الرقم','auth/weak-password':'كلمة المرور ضعيفة'};
+      showMsg('reg-msg',msgs[e.code]||e.message||'خطأ غير متوقع','error');
     })
     .finally(function(){ setLoad(btn,false); });
 }
 
-// ── LOGIN PARENT ──
+// ── LOGIN ──
 function doParLogin(){
-  var phone = document.getElementById('par-phone').value.trim();
-  var pass  = document.getElementById('par-pass').value;
+  var phone=document.getElementById('par-phone').value.trim();
+  var pass=document.getElementById('par-pass').value;
   if(phone.length<10){ showMsg('login-msg','رقم الهاتف غير صحيح','error'); return; }
   if(!pass){ showMsg('login-msg','ادخل كلمة المرور','error'); return; }
-  var btn = document.getElementById('login-btn');
+  var btn=document.getElementById('login-btn');
   setLoad(btn,true);
-  var email = phoneToEmail(phone);
-  auth.signInWithEmailAndPassword(email, pass)
+  auth.signInWithEmailAndPassword(phoneToEmail(phone),pass)
     .catch(function(e){
-      var msgs = {
-        'auth/user-not-found':'الحساب مش موجود — سجل حساب جديد',
-        'auth/wrong-password':'كلمة المرور غلط',
-        'auth/invalid-credential':'بيانات الدخول غلط'
-      };
-      showMsg('login-msg', msgs[e.code]||'بيانات الدخول غلط','error');
+      var msgs={'auth/user-not-found':'الحساب مش موجود — سجل حساب جديد','auth/wrong-password':'كلمة المرور غلط','auth/invalid-credential':'بيانات الدخول غلط'};
+      showMsg('login-msg',msgs[e.code]||'بيانات الدخول غلط','error');
       setLoad(btn,false);
     });
 }
 
-// ── SEARCH STUDENT ──
-async function searchStudent(){
-  var phone = document.getElementById('student-phone').value.trim();
-  if(phone.length<10){ showMsg('search-msg','ادخل رقم صحيح','error'); return; }
-  var btn = document.getElementById('search-btn');
-  setLoad(btn,true);
-  document.getElementById('search-msg').className='msg';
+// ── LOAD PROGRESS ──
+async function loadStudentProgress(stuId){
+  showStep('step-progress');
   try{
-    // Find student by phone
-    var snap = await db.collection('users').where('phone','==',phone).limit(1).get();
-    if(snap.empty){
-      showMsg('search-msg','مش لاقي طالب بالرقم ده ❌','error');
-      setLoad(btn,false); return;
+    var snap=await db.collection('users').doc(stuId).get();
+    if(!snap.exists){ toast('بيانات الطالب غير موجودة','err'); return; }
+    var stu=snap.data();
+    document.getElementById('stu-av').textContent=(stu.name||'ط').slice(0,2);
+    document.getElementById('stu-name').textContent=stu.name||'—';
+    document.getElementById('stu-grade').textContent=stu.grade||'—';
+    document.getElementById('stu-exp').textContent=fmt(stu.expiresAt);
+    // Days
+    var now=new Date(), daysLeft=0, pct=0;
+    if(stu.expiresAt){
+      var exp=stu.expiresAt.toDate?stu.expiresAt.toDate():new Date(stu.expiresAt);
+      daysLeft=Math.max(0,Math.ceil((exp-now)/86400000));
+      var st2=stu.activatedAt&&stu.activatedAt.toDate?stu.activatedAt.toDate():new Date(stu.activatedAt||now);
+      var tot=Math.max(1,Math.ceil((exp-st2)/86400000));
+      pct=Math.round(daysLeft/tot*100);
     }
-    var stu = {id:snap.docs[0].id, ...snap.docs[0].data()};
-    // Load progress
-    var pr = await db.collection('progress').doc(stu.id).get();
-    var progress = pr.exists ? pr.data() : {};
-    var gradeKey = stu.gradeKey||'';
-    var gProg = progress[gradeKey]||{};
-    var doneV = (gProg.videos||[]).length;
-    var doneE = (gProg.exams||[]).length;
-    var doneH = (gProg.homework||[]).length;
-    // Load content counts
-    var totalV=0,totalE=0,totalH=0;
-    if(gradeKey){
+    var dEl=document.getElementById('stu-days');
+    dEl.textContent=daysLeft+' يوم';
+    dEl.style.color=daysLeft<=3?'var(--error)':daysLeft<=7?'var(--warn)':'var(--success)';
+    var sEl=document.getElementById('stu-sub-status');
+    if(!stu.subscriptionActive||daysLeft===0) sEl.innerHTML='<span class="sub-badge err">⛔ منتهي</span>';
+    else if(daysLeft<=7) sEl.innerHTML='<span class="sub-badge warn">⚠️ ينتهي قريباً</span>';
+    else sEl.innerHTML='<span class="sub-badge ok">✅ نشط</span>';
+    // Notes
+    if(stu.notes&&stu.notes.trim()){
+      document.getElementById('teacher-note-txt').textContent=stu.notes;
+      document.getElementById('teacher-note').style.display='flex';
+    } else {
+      document.getElementById('teacher-note').style.display='none';
+    }
+    // Progress
+    var pr=await db.collection('progress').doc(stuId).get();
+    var prog=pr.exists?pr.data():{};
+    var gk=stu.gradeKey||'';
+    var gp=prog[gk]||{};
+    var dV=(gp.videos||[]).length, dE=(gp.exams||[]).length, dH=(gp.homework||[]).length;
+    var tV=0,tE=0,tH=0;
+    if(gk){
       try{
-        var [vs,es,hs] = await Promise.all([
-          db.collection('content').doc(gradeKey).collection('videos').get(),
-          db.collection('content').doc(gradeKey).collection('exams').get(),
-          db.collection('content').doc(gradeKey).collection('homework').get()
+        var res=await Promise.all([
+          db.collection('content').doc(gk).collection('videos').get(),
+          db.collection('content').doc(gk).collection('exams').get(),
+          db.collection('content').doc(gk).collection('homework').get()
         ]);
-        totalV=vs.size; totalE=es.size; totalH=hs.size;
+        tV=res[0].size; tE=res[1].size; tH=res[2].size;
       }catch(e){}
     }
-    // Fill UI
-    document.getElementById('stu-av').textContent   = (stu.name||'ط').slice(0,2);
-    document.getElementById('stu-name').textContent  = stu.name||'—';
-    document.getElementById('stu-grade').textContent = stu.grade||'—';
-    document.getElementById('stu-code').textContent  = stu.subscriptionCode||'—';
-    document.getElementById('stu-exp').textContent   = fmt(stu.expiresAt);
-    // Days & status
-    var now = new Date();
-    var daysLeft=0, pct=0;
-    if(stu.expiresAt){
-      var exp = stu.expiresAt.toDate?stu.expiresAt.toDate():new Date(stu.expiresAt);
-      daysLeft = Math.max(0,Math.ceil((exp-now)/86400000));
-      var start = stu.activatedAt?.toDate?stu.activatedAt.toDate():new Date(stu.activatedAt||now);
-      var total = Math.max(1,Math.ceil((exp-start)/86400000));
-      pct = Math.round(daysLeft/total*100);
-    }
-    var daysEl = document.getElementById('stu-days');
-    daysEl.textContent = daysLeft+' يوم';
-    daysEl.style.color = daysLeft<=3?'var(--error)':daysLeft<=7?'var(--warn)':'var(--success)';
-    var statusEl = document.getElementById('stu-sub-status');
-    if(!stu.subscriptionActive || daysLeft===0){
-      statusEl.innerHTML = '<span class="sub-badge err">⛔ منتهي</span>';
-    } else if(daysLeft<=7){
-      statusEl.innerHTML = '<span class="sub-badge warn">⚠️ ينتهي قريباً</span>';
-    } else {
-      statusEl.innerHTML = '<span class="sub-badge ok">✅ نشط</span>';
-    }
     setTimeout(function(){
-      document.getElementById('stu-sub-bar').style.width = pct+'%';
-      // Progress bars
-      function setBar(barId,cntId,done,total){
-        var p=total?Math.round(done/total*100):0;
-        document.getElementById(barId).style.width=p+'%';
-        document.getElementById(cntId).textContent=done+'/'+total;
-      }
-      setBar('stu-v-bar','stu-v-cnt',doneV,totalV);
-      setBar('stu-e-bar','stu-e-cnt',doneE,totalE);
-      setBar('stu-h-bar','stu-h-cnt',doneH,totalH);
+      document.getElementById('stu-sub-bar').style.width=pct+'%';
+      function sb(bid,cid,d,t){ var p=t?Math.round(d/t*100):0; document.getElementById(bid).style.width=p+'%'; document.getElementById(cid).textContent=d+'/'+t; }
+      sb('stu-v-bar','stu-v-cnt',dV,tV);
+      sb('stu-e-bar','stu-e-cnt',dE,tE);
+      sb('stu-h-bar','stu-h-cnt',dH,tH);
     },300);
-    showStep('step-progress');
-  }catch(e){ showMsg('search-msg','خطأ: '+e.message,'error'); }
-  setLoad(btn,false);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
 }
 
-function parSignOut(){
-  auth.signOut().then(()=>showStep('step-login'));
-}
+function refreshProgress(){ if(_studentId) loadStudentProgress(_studentId); }
+function parSignOut(){ auth.signOut().then(function(){ showStep('step-login'); }); }
 </script>
 </body>
 </html>
