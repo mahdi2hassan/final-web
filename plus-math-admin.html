@@ -4730,25 +4730,17 @@ window.openTicketDetail = async (id)=>{
             :`<button class="btn sm" style="background:rgba(74,127,212,0.1);border:1px solid rgba(74,127,212,0.3);color:var(--blue)" onclick="updateTicketStatus('${id}','open')">🔴 إعادة فتح</button>`}
         </div>
       </div>
-      <div class="card">
-        <h4 style="margin-bottom:6px">📬 الرد على الطالب</h4>
-        <p style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6">
-          الرد هيظهر للطالب كـ banner في صفحة الكورسات
-          ${t.adminReply?'<br/><strong style="color:var(--ok)">✅ تم الرد مسبقاً</strong>':''}
+      <div class="card" style="text-align:center">
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7">
+          للرد على الطالب — افتح صفحته واكتب الملاحظة من هناك
         </p>
-        ${t.adminReply?`
-        <div style="padding:10px;background:rgba(0,214,143,0.06);border:1px solid rgba(0,214,143,0.2);border-radius:8px;font-size:12px;color:var(--muted);margin-bottom:10px;white-space:pre-wrap">
-          ${t.adminReply}
-        </div>`:''}
-        <textarea id="tk-reply-inp" rows="4"
-          style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;resize:vertical;margin-bottom:8px"
-          placeholder="اكتب ردك هنا — هيظهر للطالب في صفحة الكورسات..."></textarea>
-        <div style="display:flex;gap:8px">
-          <button id="tk-reply-btn" class="btn ok sm" style="flex:1" onclick="sendTicketReplyInline()">
-            <svg><use href="#ic-send"/></svg>إرسال للطالب
-          </button>
-          ${t.userPhone?`<button class="btn wa sm" onclick="sendTicketReplyWA()"><svg><use href="#ic-wa"/></svg>واتساب</button>`:''}
-        </div>
+        ${t.userId?`
+        <button onclick="openStudentFromTicket('${t.userId}')" class="btn primary" style="width:100%;justify-content:center">
+          <svg><use href="#ic-users"/></svg>
+          فتح صفحة الطالب للرد
+        </button>`:`
+        <div style="font-size:12px;color:var(--err)">⚠️ لا يوجد userId — تواصل عبر واتساب</div>
+        ${t.userPhone?`<button class="btn wa sm" style="width:100%;margin-top:8px;justify-content:center" onclick="sendTicketReplyWA()"><svg><use href="#ic-wa"/></svg>رد على واتساب</button>`:''}`}
       </div>`;
   }catch(e){
     el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`;
@@ -4758,21 +4750,39 @@ window.openTicketDetail = async (id)=>{
 
 
 window.openStudentFromTicket = async (userId)=>{
-  // ابحث عن الطالب بـ userId مباشرة
   if(!userId){ toast('لا يوجد userId','err'); return; }
   try{
-    // ابحث في _users أول
     const found = (window._users||[]).find(u=>u.id===userId);
     if(found){
       openStudentDetail(found.id);
     } else {
-      // جيبه من Firestore مباشرة
       const snap = await db.collection('users').doc(userId).get();
       if(snap.exists){
         openStudentDetail(userId);
       } else {
         toast('الطالب مش موجود','err');
       }
+    }
+    // ضيف تذكير بالشكوى في أعلى صفحة الطالب
+    const t = window._currentTicket;
+    if(t){
+      setTimeout(()=>{
+        const content = document.getElementById('student-detail-content');
+        if(!content) return;
+        const existing = document.getElementById('ticket-reminder');
+        if(existing) existing.remove();
+        const div = document.createElement('div');
+        div.id = 'ticket-reminder';
+        div.style.cssText = 'background:rgba(74,127,212,0.08);border:1.5px solid rgba(74,127,212,0.3);border-radius:12px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:flex-start;gap:10px';
+        div.innerHTML = `
+          <span style="font-size:18px">🎫</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:11px;font-weight:800;color:var(--blue);margin-bottom:3px">شكوى مفتوحة — اكتب ملاحظة كرد</div>
+            <div style="font-size:12px;font-weight:700">${t.subject||'—'}</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px;white-space:pre-wrap">${(t.message||'').slice(0,120)}${t.message?.length>120?'...':''}</div>
+          </div>`;
+        content.insertBefore(div, content.firstChild);
+      }, 400);
     }
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
