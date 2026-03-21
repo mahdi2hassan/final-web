@@ -599,6 +599,15 @@ onAuthStateChanged(auth,async(user)=>{
     document.getElementById('statGrade').textContent=_userData.grade||'—';
     document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
     window._userData = _userData;
+    // TEST BUTTON — هيتشال بعد التأكيد
+    setTimeout(()=>{
+      var tb=document.createElement('button');
+      tb.id='test-banner-btn';
+      tb.style.cssText='position:fixed;bottom:70px;left:10px;z-index:999;padding:8px 12px;background:red;color:#fff;border:none;border-radius:8px;font-family:Tajawal,sans-serif;font-size:12px;cursor:pointer';
+      tb.textContent='TEST BANNER';
+      tb.onclick=function(){showTeacherNote('هذه ملاحظة تجريبية من الأستاذ — البانر شغال!');};
+      document.body.appendChild(tb);
+    },2000);
     // Countdown
     if(_userData.expiresAt) startCountdown(_userData.expiresAt);
     // Teacher note
