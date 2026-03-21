@@ -1039,6 +1039,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             رجوع
           </button>
           <div class="sh-title" id="ticket-detail-title">تذكرة</div>
+          <div style="display:flex;gap:6px" id="ticket-detail-actions"></div>
         </div>
         <div id="ticket-detail-content" style="max-width:600px"></div>
       </div>
@@ -4680,7 +4681,8 @@ function renderTickets(){
     <td><div style="display:flex;gap:4px">
       <button class="btn icon-btn" onclick="openTicketDetail('${t.id}')" title="فتح"><svg><use href="#ic-eye"/></svg></button>
       ${t.userPhone?`<button class="btn icon-btn" onclick="waUser('${t.userPhone}','${(t.userName||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-wa"/></svg></button>`:''}
-      <button class="btn icon-btn del" onclick="closeTicket('${t.id}')"><svg><use href="#ic-check"/></svg></button>
+      <button class="btn icon-btn" style="color:var(--ok)" onclick="closeTicket('${t.id}')" title="إغلاق"><svg><use href="#ic-check"/></svg></button>
+      <button class="btn icon-btn del" onclick="deleteTicket('${t.id}')" title="حذف"><svg><use href="#ic-trash"/></svg></button>
     </div></td>
   </tr>`).join('');
 }
@@ -4693,49 +4695,146 @@ window.openTicketDetail = async (id)=>{
     const snap=await db.collection('tickets').doc(id).get();
     if(!snap.exists){toast('التذكرة مش موجودة','err');return;}
     const t={id,...snap.data()};
-    document.getElementById('ticket-detail-title').textContent='تذكرة: '+( t.subject||'—');
+    // ── خزّن بيانات التذكرة الحالية في JS object — مش inline في HTML ──
+    window._currentTicket = t;
+    document.getElementById('ticket-detail-title').textContent='تذكرة: '+(t.subject||'—');
+    document.getElementById('ticket-detail-actions').innerHTML=`
+      <button class="btn sm" style="background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--err)"
+        onclick="deleteTicket('${id}')"><svg><use href="#ic-trash"/></svg>حذف</button>`;
     const statusColors={open:'var(--err)',inprogress:'var(--warn)',closed:'var(--ok)'};
     const statusLabels={open:'🔴 مفتوحة',inprogress:'🟡 جاري المعالجة',closed:'✅ مغلقة'};
+    const catLabels={technical:'🔧 تقنية',content:'📚 محتوى',payment:'💳 دفع',subscription:'🔑 اشتراك',other:'💬 أخرى'};
     el.innerHTML=`
       <div class="card" style="margin-bottom:12px">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
           <div class="av">${(t.userName||'ط').slice(0,2)}</div>
-          <div>
+          <div style="flex:1;min-width:0">
             <div style="font-weight:800;font-size:14px">${t.userName||'—'}</div>
             <div style="font-size:11px;color:var(--muted)">${t.userPhone||'—'} · ${t.createdAt?.toDate?.().toLocaleString('ar-EG')||'—'}</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.2);font-family:monospace;margin-top:2px">${t.userId||'no uid'}</div>
           </div>
-          <span style="margin-right:auto;font-size:12px;font-weight:700;color:${statusColors[t.status||'open']}">${statusLabels[t.status||'open']}</span>
+          <span style="font-size:12px;font-weight:700;color:${statusColors[t.status||'open']};flex-shrink:0">${statusLabels[t.status||'open']}</span>
         </div>
-        <div style="font-size:13px;font-weight:700;margin-bottom:8px">${t.subject||'—'}</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.7;padding:12px;background:rgba(8,13,28,0.4);border-radius:10px;margin-bottom:14px">${(t.message||'').replace(/\n/g,'<br>')}</div>
-        ${t.category?`<div style="font-size:11px;color:var(--muted);margin-bottom:14px">📂 الفئة: <strong style="color:var(--text)">${t.category}</strong></div>`:''}
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          ${t.userPhone?`<button class="btn wa sm" onclick="waUser('${t.userPhone}','${(t.userName||'').replace(/'/g,"\\'")}')"><svg><use href="#ic-wa"/></svg>رد على واتساب</button>`:''}
-          ${t.status!=='inprogress'?`<button class="btn sm" style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);color:var(--warn)" onclick="updateTicketStatus('${id}','inprogress')">🟡 جاري المعالجة</button>`:''}
-          ${t.status!=='closed'?`<button class="btn ok sm" onclick="updateTicketStatus('${id}','closed')"><svg><use href="#ic-check"/></svg>إغلاق التذكرة</button>`:''}
+        ${t.category?`<div style="font-size:11px;color:var(--muted);margin-bottom:8px">📂 ${catLabels[t.category]||t.category}</div>`:''}
+        <div style="font-size:14px;font-weight:800;margin-bottom:8px">${t.subject||'—'}</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.8;padding:12px;background:rgba(8,13,28,0.4);border-radius:10px;margin-bottom:14px;white-space:pre-wrap">${t.message||'—'}</div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          ${t.userPhone?`<button class="btn wa sm" onclick="waUser('${t.userPhone}','${(t.userName||'').replace(/'/g,"\'")}')"><svg><use href="#ic-wa"/></svg>واتساب</button>`:''}
+          ${t.status!=='inprogress'?`<button class="btn sm" style="background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);color:var(--warn)" onclick="updateTicketStatus('${id}','inprogress')">🟡 جاري</button>`:''}
+          ${t.status!=='closed'
+            ?`<button class="btn ok sm" onclick="updateTicketStatus('${id}','closed')"><svg><use href="#ic-check"/></svg>إغلاق</button>`
+            :`<button class="btn sm" style="background:rgba(74,127,212,0.1);border:1px solid rgba(74,127,212,0.3);color:var(--blue)" onclick="updateTicketStatus('${id}','open')">🔴 إعادة فتح</button>`}
         </div>
+      </div>
+      <div class="card" style="margin-bottom:12px">
+        <h4 style="margin-bottom:6px">📝 ملاحظة داخلية</h4>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:8px">مش بتوصل للطالب — بس ليك إنت</p>
+        <textarea id="tk-note-inp" rows="3"
+          style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical;margin-bottom:8px"
+          placeholder="اكتب ملاحظتك هنا...">${t.adminNote||''}</textarea>
+        <button id="tk-note-btn" class="btn ghost sm" style="font-size:11px" onclick="saveTicketNoteInline()">
+          <svg><use href="#ic-check"/></svg>حفظ الملاحظة
+        </button>
       </div>
       <div class="card">
-        <h4>📝 ملاحظة داخلية</h4>
-        <textarea id="ticket-note" rows="3" style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical;margin-top:8px" placeholder="ملاحظة لنفسك (مش بتوصل للطالب)...">${t.adminNote||''}</textarea>
-        <button onclick="saveTicketNote('${id}')" class="btn ghost sm" style="margin-top:6px;font-size:11px"><svg><use href="#ic-check"/></svg>حفظ الملاحظة</button>
-      </div>
-
-      <div class="card" style="margin-top:12px">
-        <h4>📬 الرد على الطالب</h4>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">الرد هيوصل للطالب في إشعاراته لما يفتح صفحة الكورسات</p>
-        <textarea id="ticket-reply" rows="3" style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical;margin-bottom:8px" placeholder="اكتب ردك هنا...">${t.adminReply||''}</textarea>
+        <h4 style="margin-bottom:6px">📬 الرد على الطالب</h4>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6">الرد هيوصل في إشعارات الطالب لما يفتح الكورسات
+          ${t.adminReply?'<br/><strong style="color:var(--ok)">✅ تم الرد مسبقاً</strong>':''}</p>
+        ${t.adminReply?`<div style="padding:10px;background:rgba(0,214,143,0.06);border:1px solid rgba(0,214,143,0.2);border-radius:8px;font-size:12px;color:var(--muted);margin-bottom:10px;white-space:pre-wrap">${t.adminReply}</div>`:''}
+        <textarea id="tk-reply-inp" rows="3"
+          style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical;margin-bottom:8px"
+          placeholder="اكتب ردك هنا..."></textarea>
         <div style="display:flex;gap:8px">
-          <button onclick="sendTicketReply('${id}','${(t.userId||'').replace(/'/g,"\\'")}','${(t.userName||'').replace(/'/g,"\\'")}','${(t.subject||'').replace(/'/g,"\\'")}')"
-            class="btn ok sm" style="flex:1">
+          <button id="tk-reply-btn" class="btn ok sm" style="flex:1" onclick="sendTicketReplyInline()">
             <svg><use href="#ic-send"/></svg>إرسال الرد للطالب
           </button>
-          ${t.userPhone?`<button class="btn wa sm" onclick="sendTicketReplyWA('${t.userPhone}','${(t.userName||'').replace(/'/g,"\\'")}',document.getElementById('ticket-reply').value)">
-            <svg><use href="#ic-wa"/></svg>إرسال على واتساب
-          </button>`:''}
+          ${t.userPhone?`<button class="btn wa sm" onclick="sendTicketReplyWA()"><svg><use href="#ic-wa"/></svg>واتساب</button>`:''}
         </div>
       </div>`;
+  }catch(e){
+    el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`;
+    toast('خطأ: '+e.message,'err');
+  }
+};
+
+
+window.deleteTicket=async(id)=>{
+  if(!confirm('حذف التذكرة نهائياً؟')) return;
+  try{
+    await db.collection('tickets').doc(id).delete();
+    _tickets=_tickets.filter(t=>t.id!==id);
+    toast('تم الحذف ✓','ok');
+    logActivity('🗑️','حذف تذكرة',id);
+    goPage('tickets');
+    renderTickets();
   }catch(e){toast('خطأ: '+e.message,'err');}
+};
+
+window.saveTicketNoteInline=async()=>{
+  const t=window._currentTicket;
+  if(!t){toast('لا توجد تذكرة محملة','err');return;}
+  const note=document.getElementById('tk-note-inp')?.value||'';
+  const btn=document.getElementById('tk-note-btn');
+  if(btn){btn.disabled=true;btn.textContent='جاري الحفظ...';}
+  try{
+    await db.collection('tickets').doc(t.id).update({
+      adminNote:note,
+      noteUpdatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('✅ تم حفظ الملاحظة','ok');
+  }catch(e){toast('خطأ: '+e.message,'err');}
+  if(btn){btn.disabled=false;btn.innerHTML='<svg><use href="#ic-check"/></svg>حفظ الملاحظة';}
+};
+
+window.sendTicketReplyInline=async()=>{
+  const t=window._currentTicket;
+  if(!t){toast('لا توجد تذكرة محملة','err');return;}
+  const reply=document.getElementById('tk-reply-inp')?.value.trim();
+  if(!reply){toast('اكتب رداً أولاً','err');return;}
+  // userId دايماً موجود — هو Firebase Auth UID للطالب
+  const userId = t.userId;
+  if(!userId){
+    toast('⚠️ userId مش موجود في التذكرة — جرب ابعت عبر واتساب','err');
+    return;
+  }
+  const btn=document.getElementById('tk-reply-btn');
+  if(btn){btn.disabled=true;btn.textContent='جاري الإرسال...';}
+  try{
+    await db.collection('tickets').doc(t.id).update({
+      adminReply:reply,
+      repliedAt:firebase.firestore.FieldValue.serverTimestamp(),
+      status:'closed'
+    });
+    await db.collection('notifications').doc(userId).collection('items').add({
+      icon:'📬',
+      title:'رد على شكواك: '+(t.subject||''),
+      body:reply,
+      read:false,
+      type:'ticket_reply',
+      ticketId:t.id,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('✅ تم إرسال الرد لـ '+(t.userName||'الطالب'),'ok');
+    logActivity('📬','رد على تذكرة',(t.userName||'')+': '+reply.slice(0,40));
+    openTicketDetail(t.id);
+    loadTickets();
+  }catch(e){
+    if(e.message&&e.message.toLowerCase().includes('permission')){
+      toast('❌ خطأ صلاحيات — ارفع firestore.rules على Firebase','err');
+    }else{
+      toast('خطأ: '+e.message,'err');
+    }
+    if(btn){btn.disabled=false;btn.innerHTML='<svg><use href="#ic-send"/></svg>إرسال الرد للطالب';}
+  }
+};
+
+window.sendTicketReplyWA=()=>{
+  const t=window._currentTicket;
+  if(!t||!t.userPhone){toast('لا يوجد رقم هاتف','err');return;}
+  const reply=document.getElementById('tk-reply-inp')?.value.trim();
+  if(!reply){toast('اكتب رداً أولاً','err');return;}
+  const wa='20'+t.userPhone.replace(/^0/,'').replace(/\D/g,'');
+  window.open('https://wa.me/'+wa+'?text='+encodeURIComponent('مرحباً '+(t.userName||'')+' 👋\nرد Plus Mathematics على شكواك:\n\n'+reply),'_blank');
 };
 
 window.updateTicketStatus=async(id,status)=>{
@@ -4754,52 +4853,6 @@ window.closeTicket=async(id)=>{
     toast('تم إغلاق التذكرة ✓','ok');
     loadTickets();
   }catch(e){toast('خطأ','err');}
-};
-
-window.saveTicketNote=async(id)=>{
-  const note=document.getElementById('ticket-note')?.value||'';
-  try{
-    await db.collection('tickets').doc(id).update({adminNote:note});
-    toast('تم حفظ الملاحظة ✓','ok');
-  }catch(e){toast('خطأ','err');}
-};
-
-window.sendTicketReply=async(ticketId, userId, userName, subject)=>{
-  const reply=document.getElementById('ticket-reply')?.value.trim();
-  if(!reply){toast('اكتب رداً أولاً','err');return;}
-  if(!userId){toast('لا يوجد userId للطالب — تأكد إن الطالب مسجل دخوله قبل بعت التذكرة','err');return;}
-  const btn = document.querySelector('#ticket-detail-content .btn.ok.sm');
-  if(btn){btn.disabled=true;btn.textContent='جاري الإرسال...';}
-  try{
-    // 1. احفظ الرد على التذكرة
-    await db.collection('tickets').doc(ticketId).update({
-      adminReply: reply,
-      repliedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      status: 'closed'
-    });
-    // 2. ابعت إشعار للطالب في notifications/{userId}/items
-    const notifRef = await db.collection('notifications').doc(userId).collection('items').add({
-      icon: '📬',
-      title: 'رد على شكواك: '+subject,
-      body: reply,
-      read: false,
-      type: 'ticket_reply',
-      ticketId: ticketId,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    toast('✅ تم إرسال الرد لـ '+userName+' — سيظهر في إشعاراته','ok');
-    logActivity('📬','رد على تذكرة',userName+': '+reply.slice(0,40));
-    openTicketDetail(ticketId);
-    loadTickets();
-  }catch(e){
-    // لو فشل بسبب Rules، اعرض رسالة واضحة
-    if(e.message && e.message.includes('permission')){
-      toast('❌ خطأ في الصلاحيات — ارفع firestore.rules على Firebase Console','err');
-    } else {
-      toast('خطأ: '+e.message,'err');
-    }
-    if(btn){btn.disabled=false;btn.innerHTML='<svg><use href="#ic-send"/></svg>إرسال الرد للطالب';}
-  }
 };
 
 window.sendTicketReplyWA=(phone,name,reply)=>{
