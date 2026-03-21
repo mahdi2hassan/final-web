@@ -357,6 +357,30 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
 <!-- notif popup removed -->
 
 <main id="mainContent" style="display:none;padding-top:58px">
+
+  <!-- ملاحظة من الأستاذ -->
+  <div id="teacherNote" class="note-banner" style="display:none;margin:10px 16px 6px">
+    <div class="note-banner-ico">📌</div>
+    <div style="flex:1">
+      <div class="note-banner-lbl">ملاحظة من الأستاذ</div>
+      <div id="teacherNoteText"></div>
+    </div>
+    <button onclick="this.closest('.note-banner').style.display='none'"
+      style="background:transparent;border:none;color:rgba(201,168,76,0.5);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
+  </div>
+
+  <!-- رد على الشكوى -->
+  <div id="ticketReplyBanner" class="note-banner" style="display:none;margin:6px 16px 6px;background:rgba(74,127,212,0.08);border-color:rgba(74,127,212,0.3)">
+    <div class="note-banner-ico">📬</div>
+    <div style="flex:1">
+      <div class="note-banner-lbl" style="color:var(--blue)">رد على شكواك</div>
+      <div id="ticketReplySubject" style="font-size:11px;color:var(--muted);margin-bottom:3px"></div>
+      <div id="ticketReplyText"></div>
+    </div>
+    <button onclick="dismissTicketReply()"
+      style="background:transparent;border:none;color:rgba(74,127,212,0.4);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
+  </div>
+
   <div class="hero-bar">
     <div><h1>مرحباً في Plus Mathematics 🎓</h1><p>اضغط على صفك لتبدأ</p></div>
     <div class="hero-stats">
@@ -389,27 +413,6 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
   </div>
 </main>
 
-<!-- ملاحظة من الأستاذ + رد على الشكوى — تظهر دايماً فوق المحتوى -->
-<div id="teacherNote" class="note-banner" style="display:none;margin:10px 16px 0">
-  <div class="note-banner-ico">📌</div>
-  <div style="flex:1">
-    <div class="note-banner-lbl">ملاحظة من الأستاذ</div>
-    <div id="teacherNoteText"></div>
-  </div>
-  <button onclick="this.closest('.note-banner').style.display='none'"
-    style="background:transparent;border:none;color:rgba(201,168,76,0.5);cursor:pointer;font-size:16px;flex-shrink:0;padding:0;line-height:1">×</button>
-</div>
-
-<div id="ticketReplyBanner" class="note-banner" style="display:none;margin:8px 16px 0;background:rgba(74,127,212,0.08);border-color:rgba(74,127,212,0.3)">
-  <div class="note-banner-ico">📬</div>
-  <div style="flex:1">
-    <div class="note-banner-lbl" style="color:var(--blue)">رد على شكواك</div>
-    <div id="ticketReplySubject" style="font-size:11px;color:var(--muted);margin-bottom:3px"></div>
-    <div id="ticketReplyText"></div>
-  </div>
-  <button onclick="dismissTicketReply()"
-    style="background:transparent;border:none;color:rgba(74,127,212,0.4);cursor:pointer;font-size:16px;flex-shrink:0;padding:0;line-height:1">×</button>
-</div>
 
 <div id="courseView">
   <div class="cv-hd">
