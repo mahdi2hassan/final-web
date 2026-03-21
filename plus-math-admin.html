@@ -4726,27 +4726,22 @@ window.openTicketDetail = async (id)=>{
             :`<button class="btn sm" style="background:rgba(74,127,212,0.1);border:1px solid rgba(74,127,212,0.3);color:var(--blue)" onclick="updateTicketStatus('${id}','open')">🔴 إعادة فتح</button>`}
         </div>
       </div>
-      <div class="card" style="margin-bottom:12px">
-        <h4 style="margin-bottom:6px">📝 ملاحظة داخلية</h4>
-        <p style="font-size:11px;color:var(--muted);margin-bottom:8px">مش بتوصل للطالب — بس ليك إنت</p>
-        <textarea id="tk-note-inp" rows="3"
-          style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical;margin-bottom:8px"
-          placeholder="اكتب ملاحظتك هنا...">${t.adminNote||''}</textarea>
-        <button id="tk-note-btn" class="btn ghost sm" style="font-size:11px" onclick="saveTicketNoteInline()">
-          <svg><use href="#ic-check"/></svg>حفظ الملاحظة
-        </button>
-      </div>
       <div class="card">
         <h4 style="margin-bottom:6px">📬 الرد على الطالب</h4>
-        <p style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6">الرد هيوصل في إشعارات الطالب لما يفتح الكورسات
-          ${t.adminReply?'<br/><strong style="color:var(--ok)">✅ تم الرد مسبقاً</strong>':''}</p>
-        ${t.adminReply?`<div style="padding:10px;background:rgba(0,214,143,0.06);border:1px solid rgba(0,214,143,0.2);border-radius:8px;font-size:12px;color:var(--muted);margin-bottom:10px;white-space:pre-wrap">${t.adminReply}</div>`:''}
-        <textarea id="tk-reply-inp" rows="3"
-          style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:vertical;margin-bottom:8px"
-          placeholder="اكتب ردك هنا..."></textarea>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.6">
+          الرد هيظهر للطالب كـ banner في صفحة الكورسات
+          ${t.adminReply?'<br/><strong style="color:var(--ok)">✅ تم الرد مسبقاً</strong>':''}
+        </p>
+        ${t.adminReply?`
+        <div style="padding:10px;background:rgba(0,214,143,0.06);border:1px solid rgba(0,214,143,0.2);border-radius:8px;font-size:12px;color:var(--muted);margin-bottom:10px;white-space:pre-wrap">
+          ${t.adminReply}
+        </div>`:''}
+        <textarea id="tk-reply-inp" rows="4"
+          style="width:100%;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;resize:vertical;margin-bottom:8px"
+          placeholder="اكتب ردك هنا — هيظهر للطالب في صفحة الكورسات..."></textarea>
         <div style="display:flex;gap:8px">
           <button id="tk-reply-btn" class="btn ok sm" style="flex:1" onclick="sendTicketReplyInline()">
-            <svg><use href="#ic-send"/></svg>إرسال الرد للطالب
+            <svg><use href="#ic-send"/></svg>إرسال للطالب
           </button>
           ${t.userPhone?`<button class="btn wa sm" onclick="sendTicketReplyWA()"><svg><use href="#ic-wa"/></svg>واتساب</button>`:''}
         </div>
