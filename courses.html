@@ -603,6 +603,8 @@ onAuthStateChanged(auth,async(user)=>{
     if(_userData.notes) showTeacherNote(_userData.notes);
     // Set video watermark with student info
     setTimeout(()=>{ if(window.setWatermark) window.setWatermark(_userData.name||'طالب', _userData.phone||''); }, 500);
+    // ── تحميل الإشعارات من Firestore فور تسجيل الدخول ──
+    loadFirestoreNotifications(user.uid);
     try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
     try{const pr=await getDoc(doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={};}
     buildGrades();
@@ -1014,79 +1016,113 @@ document.addEventListener('click', e=>{
   }
 });
 
-async function checkAndShowNotifications(gradeKey, progress){
-  const notifs = [];
+// ══════════════════════════════════════
+// ── NOTIFICATIONS ──
+// ══════════════════════════════════════
+
+// يتشغل فور تسجيل الدخول — يجيب إشعارات الأدمن من Firestore
+async function loadFirestoreNotifications(uid){
   try{
-    // ── 1. إشعارات من الأدمن (ردود التذاكر ورسائل) ──
-    const fsNotifs = await window._getDocs(
-      window._collection(window._db,'notifications',_user.uid,'items')
-    );
-    fsNotifs.docs
+    const snap = await getDocs(collection(db,'notifications',uid,'items'));
+    const unread = snap.docs
       .map(d=>({id:d.id,...d.data()}))
       .filter(n=>!n.read)
-      .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0))
-      .slice(0,5)
-      .forEach(n=>{
-        notifs.push({
-          ico: n.icon||'📬',
-          title: n.title||'رسالة جديدة',
-          txt: n.body||'',
-          id: n.id,
-          isSystem: true
-        });
-      });
-  }catch(e){}
+      .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+
+    if(unread.length > 0){
+      document.getElementById('notifDot').style.display = 'block';
+      // أضيف الإشعارات للـ list
+      renderNotifsList(unread, []);
+      // أظهر popup مرة واحدة
+      const seenKey = 'fsnotif_seen_'+uid;
+      if(!sessionStorage.getItem(seenKey)){
+        setTimeout(()=>{
+          _notifOpen=true;
+          document.getElementById('notifPopup').classList.add('show');
+          sessionStorage.setItem(seenKey,'1');
+        },1500);
+      }
+    }
+  }catch(e){ console.warn('loadFirestoreNotifications:', e.message); }
+}
+
+// يتشغل لما الطالب يفتح صفه — يضيف إشعارات المحتوى
+async function checkAndShowNotifications(gradeKey, progress){
+  const contentNotifs = [];
   try{
-    // ── 2. امتحانات لم تُحل ──
-    const exams = await window._getDocs(window._collection(window._db,'content',gradeKey,'exams'));
+    const exams = await getDocs(collection(db,'content',gradeKey,'exams'));
     const doneExams = progress[gradeKey]?.exams||[];
     const newExams = exams.docs.filter(d=>!doneExams.includes(d.id));
-    if(newExams.length>0) notifs.push({ico:'📝', title:`عندك ${newExams.length} امتحان جديد!`, txt:'في تاب الامتحانات'});
-    // ── 3. واجبات لم تُسلّم ──
-    const hw = await window._getDocs(window._collection(window._db,'content',gradeKey,'homework'));
+    if(newExams.length>0) contentNotifs.push({ico:'📝', title:`عندك ${newExams.length} امتحان جديد!`, txt:'في تاب الامتحانات'});
+    const hw = await getDocs(collection(db,'content',gradeKey,'homework'));
     const doneHw = progress[gradeKey]?.homework||[];
     const pendHw = hw.docs.filter(d=>!doneHw.includes(d.id));
-    if(pendHw.length>0) notifs.push({ico:'📋', title:`${pendHw.length} واجب لم يُسلم بعد`, txt:'في تاب الواجبات'});
+    if(pendHw.length>0) contentNotifs.push({ico:'📋', title:`${pendHw.length} واجب لم يُسلم بعد`, txt:'في تاب الواجبات'});
   }catch(e){}
 
-  const list = document.getElementById('notifList');
-  if(!notifs.length){
-    list.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">كل حاجة تمام ✓</div>';
-    return;
+  // اجيب إشعارات الأدمن الموجودة
+  let adminNotifs = [];
+  if(_user){
+    try{
+      const snap = await getDocs(collection(db,'notifications',_user.uid,'items'));
+      adminNotifs = snap.docs
+        .map(d=>({id:d.id,...d.data()}))
+        .filter(n=>!n.read)
+        .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0))
+        .slice(0,5);
+    }catch(e){}
   }
-  list.innerHTML = notifs.map(n=>`
-    <div class="notif-item-pop" style="${n.isSystem?'background:rgba(74,127,212,0.06);border-radius:8px;margin-bottom:4px;border:1px solid var(--b2)':''}">
-      <div class="notif-ico-pop">${n.ico}</div>
-      <div class="notif-txt-pop">
-        <strong>${n.title}</strong>
-        ${n.txt?`<br/><span style="font-size:11px">${n.txt}</span>`:''}
-        ${n.isSystem?`<br/><button onclick="markNotifRead('${n.id}')" style="font-size:10px;background:transparent;border:none;color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;padding:2px 0">تم القراءة ✓</button>`:''}
-      </div>
-    </div>`).join('');
 
-  document.getElementById('notifDot').style.display='block';
-  // Auto-show once per session
-  const seen = sessionStorage.getItem('notif_seen_'+gradeKey);
-  if(!seen){
-    setTimeout(()=>{
-      _notifOpen=true;
-      document.getElementById('notifPopup').classList.add('show');
-      sessionStorage.setItem('notif_seen_'+gradeKey,'1');
-    },1200);
+  const allNotifs = [...adminNotifs.map(n=>({...n, isSystem:true})), ...contentNotifs];
+  renderNotifsList(adminNotifs, contentNotifs);
+
+  if(allNotifs.length > 0){
+    document.getElementById('notifDot').style.display='block';
+    const seen = sessionStorage.getItem('notif_seen_'+gradeKey);
+    if(!seen){
+      setTimeout(()=>{
+        _notifOpen=true;
+        document.getElementById('notifPopup').classList.add('show');
+        sessionStorage.setItem('notif_seen_'+gradeKey,'1');
+      },1200);
+    }
   }
 }
 
-// Mark Firestore notification as read
+function renderNotifsList(adminNotifs, contentNotifs){
+  const list = document.getElementById('notifList');
+  const allEmpty = adminNotifs.length===0 && contentNotifs.length===0;
+  if(allEmpty){
+    list.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">كل حاجة تمام ✓</div>';
+    return;
+  }
+  const adminHTML = adminNotifs.map(n=>`
+    <div class="notif-item-pop" style="background:rgba(74,127,212,0.06);border-radius:8px;margin-bottom:5px;border:1px solid var(--b2);padding:8px">
+      <div class="notif-ico-pop">${n.icon||'📬'}</div>
+      <div class="notif-txt-pop">
+        <strong>${n.title||'رسالة جديدة'}</strong>
+        ${n.body?`<br/><span style="font-size:11px;color:var(--muted)">${n.body}</span>`:''}
+        <br/><button onclick="markNotifRead('${n.id}')" style="font-size:10px;background:transparent;border:none;color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;padding:2px 0;margin-top:2px">✓ تم القراءة</button>
+      </div>
+    </div>`).join('');
+
+  const contentHTML = contentNotifs.map(n=>`
+    <div class="notif-item-pop">
+      <div class="notif-ico-pop">${n.ico}</div>
+      <div class="notif-txt-pop"><strong>${n.title}</strong><br/><span style="font-size:11px">${n.txt}</span></div>
+    </div>`).join('');
+
+  list.innerHTML = adminHTML + contentHTML;
+}
+
 async function markNotifRead(notifId){
   if(!notifId||!_user) return;
   try{
-    await window._updateDoc(
-      window._doc(window._db,'notifications',_user.uid,'items',notifId),
-      {read:true}
-    );
-    // Refresh notifications
-    checkAndShowNotifications(_userData?.gradeKey||'', _progress);
-  }catch(e){}
+    await updateDoc(doc(db,'notifications',_user.uid,'items',notifId),{read:true});
+    // أعد تحميل
+    loadFirestoreNotifications(_user.uid);
+    if(_userData?.gradeKey) checkAndShowNotifications(_userData.gradeKey, _progress);
+  }catch(e){ console.warn('markNotifRead:', e); }
 }
 
 // ══════════════════════════════════════
