@@ -600,6 +600,7 @@ onAuthStateChanged(auth,async(user)=>{
     // Countdown
     if(_userData.expiresAt) startCountdown(_userData.expiresAt);
     // Teacher note
+    console.log('[DEBUG] userData.notes =', _userData.notes);
     if(_userData.notes) showTeacherNote(_userData.notes);
     // ── رد على الشكاوى ──
     loadTicketReply(user.uid);
@@ -1023,6 +1024,7 @@ function showTeacherNote(notes){
 // ══════════════════════════════════════
 async function loadTicketReply(uid){
   try{
+    console.log('[DEBUG] loadTicketReply uid=', uid);
     const snap = await getDocs(
       query(
         collection(db,'tickets'),
@@ -1030,10 +1032,12 @@ async function loadTicketReply(uid){
         where('status','==','closed')
       )
     );
+    console.log('[DEBUG] tickets found:', snap.docs.length);
     const replied = snap.docs
       .map(d=>({id:d.id,...d.data()}))
       .filter(t=> t.adminReply && !t.replyRead)
       .sort((a,b)=>(b.repliedAt?.seconds||0)-(a.repliedAt?.seconds||0));
+    console.log('[DEBUG] unread replies:', replied.length, replied.map(t=>({id:t.id,reply:t.adminReply,replyRead:t.replyRead})));
 
     if(replied.length > 0){
       const latest = replied[0];
