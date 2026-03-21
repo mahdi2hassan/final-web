@@ -1,130 +1,177 @@
 // ══════════════════════════════════════════════════════
 // Firebase Firestore Security Rules — Plus Mathematics
 // ══════════════════════════════════════════════════════
-// ارفع الملف ده على Firebase Console → Firestore → Rules
+// ارفع الملف ده على:
+// Firebase Console → Firestore Database → Rules → Publish
 // ══════════════════════════════════════════════════════
 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Helper functions ──
+    // ─────────────────────────────
+    // Helper Functions
+    // ─────────────────────────────
     function isSignedIn() {
       return request.auth != null;
     }
-    function isOwner(uid) {
-      return isSignedIn() && request.auth.uid == uid;
+    function uid() {
+      return request.auth.uid;
+    }
+    function isOwner(ownerId) {
+      return isSignedIn() && uid() == ownerId;
     }
     function isActiveSubscriber() {
       return isSignedIn() &&
-        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.subscriptionActive == true;
+        exists(/databases/$(database)/documents/users/$(uid())) &&
+        get(/databases/$(database)/documents/users/$(uid())).data.subscriptionActive == true;
     }
-    function isParent() {
+    function isParentOf(studentUid) {
       return isSignedIn() &&
-        exists(/databases/$(database)/documents/parents/$(request.auth.uid));
+        exists(/databases/$(database)/documents/parents/$(uid())) &&
+        get(/databases/$(database)/documents/parents/$(uid())).data.studentId == studentUid;
     }
 
-    // ══ USERS ══
-    // الطالب يقرأ ويعدل بياناته بس — الأدمن مش بيتحقق من هنا (Cloud Functions)
-    match /users/{uid} {
-      allow read: if isOwner(uid) || isParentOf(uid);
-      allow create: if isSignedIn() && request.auth.uid == uid;
-      allow update: if isOwner(uid) && onlyUpdatesAllowedFields();
-      // لا حذف من العميل
+    // ══════════════════════════════
+    // USERS
+    // ══════════════════════════════
+    match /users/{userId} {
+      // الطالب يقرأ بياناته — ولي الأمر يقرأ بيانات ابنه
+      allow read: if isOwner(userId) || isParentOf(userId);
+      // إنشاء حساب جديد
+      allow create: if isSignedIn() && uid() == userId;
+      // تعديل الاسم والهاتف والإيميل فقط
+      allow update: if isOwner(userId) &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['name','phone','email']);
       allow delete: if false;
     }
 
-    function onlyUpdatesAllowedFields() {
-      // الطالب يقدر يعدل: الاسم، الهاتف، الإيميل فقط
-      let allowed = ['name', 'phone', 'email'];
-      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowed);
+    match /users/{userId}/devices/{devId} {
+      allow read, write: if isOwner(userId);
     }
 
-    function isParentOf(uid) {
-      return isSignedIn() &&
-        exists(/databases/$(database)/documents/parents/$(request.auth.uid)) &&
-        get(/databases/$(database)/documents/parents/$(request.auth.uid)).data.studentId == uid;
+    // ══════════════════════════════
+    // PROGRESS
+    // ══════════════════════════════
+    match /progress/{userId} {
+      allow read: if isOwner(userId) || isParentOf(userId);
+      allow write: if isOwner(userId);
     }
 
-    // ══ USER DEVICES ══
-    match /users/{uid}/devices/{devId} {
-      allow read, write: if isOwner(uid);
-    }
-
-    // ══ PROGRESS ══
-    match /progress/{uid} {
-      allow read: if isOwner(uid) || isParentOf(uid);
-      allow write: if isOwner(uid);
-    }
-
-    // ══ CONTENT ══
-    // المحتوى متاح للمشتركين النشطين فقط
+    // ══════════════════════════════
+    // CONTENT — للمشتركين النشطين فقط
+    // ══════════════════════════════
     match /content/{gradeKey}/{type}/{itemId} {
       allow read: if isActiveSubscriber();
-      allow write: if false; // الكتابة من الأدمن فقط (content-manager)
+      allow write: if false;
     }
 
-    // ══ BOOKS ══
+    // ══════════════════════════════
+    // BOOKS
+    // ══════════════════════════════
     match /books/{bookId} {
       allow read: if isActiveSubscriber();
       allow write: if false;
     }
 
-    // ══ CODES ══
-    // الطالب يقدر يقرأ كود معين للتحقق — مش يشوف الكل
+    // ══════════════════════════════
+    // CODES — قراءة للمسجلين فقط
+    // ══════════════════════════════
     match /codes/{codeId} {
       allow read: if isSignedIn();
       allow write: if false;
     }
 
-    // ══ COUPONS ══
+    // ══════════════════════════════
+    // COUPONS
+    // ══════════════════════════════
     match /coupons/{couponId} {
       allow read: if isSignedIn();
       allow write: if false;
     }
 
-    // ══ PARENTS ══
-    // ولي الأمر يقرأ ويعدل بياناته بس
-    match /parents/{uid} {
-      allow read, write: if isOwner(uid);
-    }
-
-    // ══ SETTINGS ══
-    // الإعدادات متاحة للقراءة للكل (سعر، دفع، إعلانات) — الكتابة من الأدمن
-    match /settings/{doc} {
-      allow read: if true;
-      allow write: if false;
-    }
-
-    // ══ TICKETS (نظام التذاكر) ══
-    match /tickets/{ticketId} {
-      allow read: if isOwner(resource.data.userId);
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isOwner(resource.data.userId) &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status','updatedAt']);
+    // ══════════════════════════════
+    // PARENTS
+    // ══════════════════════════════
+    match /parents/{parentId} {
+      allow read: if isOwner(parentId);
+      allow create: if isSignedIn() && uid() == parentId;
+      allow update: if isOwner(parentId) &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['name','phone']);
       allow delete: if false;
     }
 
-    // ══ OTPs ══ (تم إلغاؤها — لو محتاجها تاني)
-    match /otps/{uid} {
-      allow read, write: if isOwner(uid);
+    // ══════════════════════════════
+    // SETTINGS — قراءة للجميع، كتابة مفتوحة (الأدمن من العميل)
+    // ══════════════════════════════
+    match /settings/{doc} {
+      allow read: if true;
+      // الكتابة مفتوحة — الأدمن بيكتب من العميل مباشرة
+      // لو عايز تأمين أكتر: استخدم Firebase Admin SDK
+      allow write: if true;
     }
 
-    // ══ ADMINS ══ — محمية تماماً من العميل
+    // ══════════════════════════════
+    // TICKETS — نظام الشكاوى
+    // ══════════════════════════════
+    match /tickets/{ticketId} {
+      // الطالب يقرأ تذاكره بس
+      allow read: if isSignedIn() &&
+        (resource == null || resource.data.userId == uid());
+      // الطالب يبعت تذكرة جديدة
+      allow create: if isSignedIn() &&
+        request.resource.data.userId == uid() &&
+        request.resource.data.status == 'open';
+      // الكتابة والتحديث مفتوحة (الأدمن بيرد ويغير الحالة من العميل)
+      allow update: if true;
+      allow delete: if true;
+    }
+
+    // ══════════════════════════════
+    // NOTIFICATIONS — إشعارات الأدمن للطالب
+    // ══════════════════════════════
+    match /notifications/{userId}/items/{notifId} {
+      // الطالب يقرأ إشعاراته بس
+      allow read: if isOwner(userId);
+      // الطالب يعلّم الإشعار كـ "تم القراءة"
+      allow update: if isOwner(userId) &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['read']);
+      // الأدمن يكتب إشعارات (من العميل — مفتوح)
+      allow create: if true;
+      allow delete: if isOwner(userId);
+    }
+
+    // ══════════════════════════════
+    // OTPs (مش مستخدمة حالياً)
+    // ══════════════════════════════
+    match /otps/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // ══════════════════════════════
+    // ADMINS — محمية تماماً
+    // ══════════════════════════════
     match /admins/{adminId} {
       allow read, write: if false;
     }
 
-    // ══ ACTIVITY LOG ══ — قراءة فقط من الأدمن
+    // ══════════════════════════════
+    // ACTIVITY LOG — محمي
+    // ══════════════════════════════
     match /activity/{logId} {
       allow read, write: if false;
     }
 
-    // ══ ANNOUNCEMENTS (legacy) ══
+    // ══════════════════════════════
+    // ANNOUNCEMENTS
+    // ══════════════════════════════
     match /announcements/{id} {
       allow read: if true;
       allow write: if false;
     }
+
   }
 }
