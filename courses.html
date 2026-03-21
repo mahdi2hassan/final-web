@@ -343,7 +343,7 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
   <button id="notifBell" onclick="toggleNotifPanel()" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;color:var(--muted);padding:6px 12px;border-radius:10px;min-width:52px;font-family:'Tajawal',sans-serif;position:relative">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
     <span style="font-size:9px;font-weight:700">إشعارات</span>
-    <span id="notifDot" style="display:none;position:absolute;top:4px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--err);border:2px solid var(--bg)"></span>
+    <span id="notifDot" style="display:none;position:absolute;top:2px;right:6px;min-width:17px;height:17px;border-radius:9px;background:var(--err);border:2px solid var(--bg);font-size:9px;font-weight:900;color:#fff;align-items:center;justify-content:center;padding:0 3px">0</span>
   </button>
   <!-- بروفايل -->
   <a href="plus-math-auth.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--muted);padding:6px 12px;border-radius:10px;min-width:52px">
@@ -372,33 +372,6 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
   </div>
   <div id="notifList"><div style="text-align:center;font-size:12px;color:var(--muted);padding:16px">لا يوجد إشعارات</div></div>
 </div>
-
-<!-- ══ BANNERS ══ -->
-<div id="teacherNote" class="banner-hidden" style="position:fixed;top:0;left:0;right:0;z-index:190;
-  padding:12px 16px;background:rgba(16,20,40,0.97);border-bottom:2px solid rgba(201,168,76,0.4);
-  align-items:flex-start;gap:10px;font-size:13px;line-height:1.7;color:var(--text)">
-  <span style="font-size:18px;flex-shrink:0">📌</span>
-  <div style="flex:1">
-    <div style="font-size:10px;font-weight:800;color:var(--gold2);letter-spacing:.5px;margin-bottom:3px">ملاحظة من الأستاذ</div>
-    <div id="teacherNoteText"></div>
-  </div>
-  <button onclick="var _tn=document.getElementById('teacherNote'); _tn.classList.remove('banner-visible'); _tn.classList.add('banner-hidden');"
-    style="background:transparent;border:none;color:rgba(201,168,76,0.5);cursor:pointer;font-size:20px;flex-shrink:0;padding:0;line-height:1;margin-top:-2px">×</button>
-</div>
-
-<div id="ticketReplyBanner" class="banner-hidden" style="position:fixed;top:0;left:0;right:0;z-index:189;
-  padding:12px 16px;background:rgba(10,18,45,0.97);border-bottom:2px solid rgba(74,127,212,0.4);
-  align-items:flex-start;gap:10px;font-size:13px;line-height:1.7;color:var(--text)">
-  <span style="font-size:18px;flex-shrink:0">📬</span>
-  <div style="flex:1">
-    <div style="font-size:10px;font-weight:800;color:var(--blue);letter-spacing:.5px;margin-bottom:3px">رد على شكواك</div>
-    <div id="ticketReplySubject" style="font-size:11px;color:var(--muted);margin-bottom:2px"></div>
-    <div id="ticketReplyText"></div>
-  </div>
-  <button onclick="dismissTicketReply()"
-    style="background:transparent;border:none;color:rgba(74,127,212,0.5);cursor:pointer;font-size:20px;flex-shrink:0;padding:0;line-height:1;margin-top:-2px">×</button>
-</div>
-
 <main id="mainContent" style="display:none;padding-bottom:68px">
 
   <div class="hero-bar">
@@ -471,7 +444,34 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
     <ul class="nm-list" id="nightList"></ul>
   </div>
   <div class="cv-body">
-    <div class="tab-pane on" id="tp-videos"><div class="video-list" id="videoList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
+    <div class="tab-pane on" id="tp-videos">
+      <!-- ملاحظة الأستاذ — تظهر قبل الفيديوهات -->
+      <div id="teacherNote" class="banner-hidden" style="margin:12px 0 8px;padding:12px 14px;border-radius:12px;
+        background:rgba(201,168,76,0.08);border:1.5px solid rgba(201,168,76,0.3);
+        display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7">
+        <span id="teacherNoteIcon" style="font-size:18px;flex-shrink:0">📌</span>
+        <div style="flex:1">
+          <div style="font-size:10px;font-weight:800;margin-bottom:3px"><span class="note-banner-lbl-text" style="color:rgba(201,168,76,1)">ملاحظة من الأستاذ</span></div>
+          <div id="teacherNoteText"></div>
+        </div>
+        <button onclick="var _tn=document.getElementById('teacherNote'); _tn.classList.remove('banner-visible'); _tn.classList.add('banner-hidden');"
+          style="background:transparent;border:none;color:rgba(201,168,76,0.4);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
+      </div>
+      <!-- رد على الشكوى -->
+      <div id="ticketReplyBanner" class="banner-hidden" style="margin:0 0 8px;padding:12px 14px;border-radius:12px;
+        background:rgba(74,127,212,0.08);border:1.5px solid rgba(74,127,212,0.3);
+        display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7">
+        <span style="font-size:18px;flex-shrink:0">📬</span>
+        <div style="flex:1">
+          <div style="font-size:10px;font-weight:800;color:var(--blue);margin-bottom:3px">رد على شكواك</div>
+          <div id="ticketReplySubject" style="font-size:11px;color:var(--muted);margin-bottom:2px"></div>
+          <div id="ticketReplyText"></div>
+        </div>
+        <button onclick="dismissTicketReply()"
+          style="background:transparent;border:none;color:rgba(74,127,212,0.4);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
+      </div>
+      <div class="video-list" id="videoList"><div class="empty"><p>جاري التحميل...</p></div></div>
+    </div>
     <div class="tab-pane" id="tp-exams"><div class="exam-list" id="examList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-homework"><div class="hw-list" id="hwList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-books"><div id="booksList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
@@ -616,8 +616,15 @@ onAuthStateChanged(auth,async(user)=>{
     document.getElementById('statGrade').textContent=_userData.grade||'—';
     document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
     window._userData = _userData;
+    // ── آخر وقت دخول ──
+    updateDoc(doc(db,'users',user.uid),{
+      lastSeen: serverTimestamp(),
+      lastSeenDate: new Date().toLocaleDateString('ar-EG')
+    }).catch(()=>{});
     // Countdown
     if(_userData.expiresAt) startCountdown(_userData.expiresAt);
+    // ── إشعار تلقائي قرب انتهاء الاشتراك ──
+    checkSubscriptionExpiry(_userData, user.uid);
     // Teacher note
     if(_userData.notes) showTeacherNote(_userData.notes, _userData.noteColor);
     // ── رد على الشكاوى ──
@@ -1088,7 +1095,9 @@ async function loadNotifications(){
         </div>
         <button onclick="markNotifRead('${n.id}')" style="background:transparent;border:none;color:var(--blue);cursor:pointer;font-size:11px;flex-shrink:0;font-family:'Tajawal',sans-serif;padding:0">✓ قرأت</button>
       </div>`;}).join('');
-    document.getElementById('notifDot').style.display = 'block';
+    var dot = document.getElementById('notifDot');
+    dot.textContent = notifs.length > 9 ? '9+' : notifs.length;
+    dot.style.display = 'flex';
   }catch(e){ list.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--err);padding:8px">خطأ في التحميل</div>'; }
 }
 async function markNotifRead(notifId){
@@ -1096,13 +1105,45 @@ async function markNotifRead(notifId){
   try{
     await updateDoc(doc(db,'notifications',_user.uid,'items',notifId),{read:true});
     loadNotifications();
+    checkNotifDot();
   }catch(e){}
 }
+// ── إشعار تلقائي قرب انتهاء الاشتراك ──
+async function checkSubscriptionExpiry(userData, uid){
+  if(!userData.expiresAt) return;
+  var exp = userData.expiresAt.toDate ? userData.expiresAt.toDate() : new Date(userData.expiresAt);
+  var days = Math.ceil((exp - new Date()) / 86400000);
+  // بعت إشعار بس لو 1، 2، أو 3 أيام متبقية
+  if(days > 3 || days <= 0) return;
+  // تحقق لو بعتنا إشعار النهارده قبل كده
+  var sentKey = 'expiry_notif_sent_' + uid + '_' + days;
+  if(localStorage.getItem(sentKey)) return;
+  try{
+    await addDoc(collection(db,'notifications',uid,'items'),{
+      icon: days <= 1 ? '🚨' : '⏰',
+      title: days === 1 ? 'اشتراكك ينتهي النهارده! 🚨' : 'اشتراكك ينتهي خلال ' + days + ' أيام ⏰',
+      body: 'جدد اشتراكك عشان تفضل تذاكر مع Plus Mathematics 📚',
+      read: false,
+      type: 'expiry_warning',
+      createdAt: serverTimestamp()
+    });
+    localStorage.setItem(sentKey, '1');
+    checkNotifDot();
+  }catch(e){}
+}
+
 async function checkNotifDot(){
   if(!_user) return;
   try{
     var snap = await getDocs(query(collection(db,'notifications',_user.uid,'items'), where('read','==',false)));
-    if(snap.docs.length > 0) document.getElementById('notifDot').style.display = 'block';
+    var count = snap.docs.length;
+    var dot = document.getElementById('notifDot');
+    if(count > 0){
+      dot.textContent = count > 9 ? '9+' : count;
+      dot.style.display = 'flex';
+    } else {
+      dot.style.display = 'none';
+    }
   }catch(e){}
 }
 // ══════════════════════════════════════

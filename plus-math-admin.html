@@ -692,6 +692,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <div class="ftab" onclick="window._customFilter=null;setUF('active')">نشط</div>
           <div class="ftab" onclick="window._customFilter=null;setUF('inactive')">غير مشترك</div>
           <div class="ftab" onclick="window._customFilter=null;setUF('blocked')">محظور</div>
+          <div class="ftab" onclick="(()=>{window._uf='custom';window._customFilter=u=>{if(!u.lastSeen)return true;const d=Math.floor((new Date()-( u.lastSeen.toDate?u.lastSeen.toDate():new Date(u.lastSeen)))/86400000);return d>=7;};document.querySelectorAll('#page-users .ftab').forEach(t=>t.classList.remove('on'));this.classList.add('on');renderUsers();})()">😴 غايب +٧ أيام</div>
           <div class="ftab" style="display:flex;align-items:center;gap:4px">
             <select onchange="filterByGrade(this.value)" onclick="e=>e.stopPropagation()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;outline:none;padding:0 4px">
               <option value="">📚 الصف</option>
@@ -716,6 +717,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
               <th>الكود</th>
               <th onclick="sortUsers('status')" style="cursor:pointer;user-select:none">الحالة <span id="sort-status"></span></th>
               <th onclick="sortUsers('date')" style="cursor:pointer;user-select:none">ينتهي <span id="sort-date"></span></th>
+              <th>آخر دخول</th>
               <th>إجراء</th>
             </tr></thead>
             <tbody id="usersTbl"><tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
@@ -3808,6 +3810,7 @@ window.openStudentDetail = async (id)=>{
         <table style="width:100%;border-collapse:collapse;font-size:13px">
           ${tr('طريقة التسجيل',d.signInMethod==='google'?'🔵 Google':'📱 هاتف')}
           ${tr('تاريخ التسجيل',d.createdAt?.toDate?.().toLocaleString('ar-EG')||'—')}
+          ${tr('آخر دخول',d.lastSeen?.toDate?.().toLocaleString('ar-EG')||'لم يدخل بعد')}
         </table>
       </div>
 
@@ -5205,6 +5208,14 @@ window.renderUsers = function(){
     <td><span class="cc" onclick="cpTxt('${x.subscriptionCode||''}')">${x.subscriptionCode||'—'}</span></td>
     <td>${statusBadge(x)}</td>
     <td style="font-size:11px;color:var(--muted)">${x.expiresAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</td>
+    <td style="font-size:11px">${(()=>{
+      if(!x.lastSeen) return '<span style="color:var(--muted)">لم يدخل</span>';
+      const ls=x.lastSeen.toDate?x.lastSeen.toDate():new Date(x.lastSeen);
+      const days=Math.floor((new Date()-ls)/86400000);
+      const color=days>=7?'var(--err)':days>=3?'var(--warn)':'var(--ok)';
+      const label=days===0?'اليوم':days===1?'أمس':days+' يوم';
+      return `<span style="color:${color};font-weight:700">${label}</span>`;
+    })()}</td>
     <td><div style="display:flex;gap:4px;flex-wrap:wrap">
       <button class="btn icon-btn" onclick="viewUser('${x.id}')" title="تفاصيل"><svg><use href="#ic-eye"/></svg></button>
       <button class="btn icon-btn" onclick="waUser('${x.phone||''}','${x.name||''}')" title="واتساب"><svg><use href="#ic-wa"/></svg></button>
