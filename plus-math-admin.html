@@ -2529,6 +2529,23 @@ window.delContent = async (tab, id) => {
 // Signal ready
 window._fbReady = true;
 
+// ── تحميل كلمة مرور الأدمن قبل Login ──
+(async()=>{
+  try{
+    const adm = await db.collection('settings').doc('admin').get();
+    if(adm.exists && adm.data().pass){
+      window._ap = adm.data().pass;
+    } else {
+      // لو مش موجود في Firestore — اخزّن كلمة المرور الافتراضية
+      window._ap = 'plus2026';
+    }
+  }catch(e){
+    // لو Firebase مش شغال — استخدم الافتراضي
+    window._ap = 'plus2026';
+  }
+  window._settingsLoaded = true;
+})();
+
 // ══ BOOKS MANAGEMENT ══
 window.previewCover = (url) => {
   const wrap = document.getElementById('bCoverPreview');
@@ -2677,21 +2694,18 @@ async function tryLogin(){
   if(btn){ btn.textContent='جاري التحقق...'; btn.disabled=true; }
 
   try{
-    // Wait for Firebase
-    if(!window._fbReady){
-      await new Promise((res,rej)=>{
-        const iv=setInterval(()=>{ if(window._fbReady){ clearInterval(iv); res(); } },200);
-        setTimeout(()=>{ clearInterval(iv); res(); },5000); // resolve anyway
+    // Wait for Firebase + settings to load
+    if(!window._fbReady || !window._settingsLoaded){
+      await new Promise((res)=>{
+        const iv=setInterval(()=>{
+          if(window._fbReady && window._settingsLoaded){ clearInterval(iv); res(); }
+        },100);
+        setTimeout(()=>{ clearInterval(iv); res(); },4000);
       });
     }
 
-    // 1. Check super admin — password from Firestore only
-    const storedPass = window._ap;
-    if(!storedPass){
-      showLoginErr('يرجى الانتظار — جاري تحميل الإعدادات...');
-      if(btn){ btn.textContent='دخول'; btn.disabled=false; }
-      return;
-    }
+    // 1. Check super admin
+    const storedPass = window._ap || 'plus2026';
     if(u === 'admin' && p === storedPass){
       window._loggedAdmin = {name:'المدير', username:'admin', isSuperAdmin:true,
         permissions:{users:true,content:true,codes:true,broadcast:true}};
@@ -2721,8 +2735,7 @@ async function tryLogin(){
 
     showLoginErr('بيانات الدخول غلط ❌');
   }catch(e){
-    // Firebase error — try default admin only
-    const sp = window._ap || PASS;
+    const sp = window._ap || 'plus2026';
     if(u==='admin' && p===sp){ window._loggedAdmin = {name:'المدير',username:'admin',isSuperAdmin:true}; openDashboard(); }
     else showLoginErr('تعذر الاتصال — حاول تاني');
   }
