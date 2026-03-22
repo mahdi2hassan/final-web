@@ -1813,7 +1813,23 @@ window.wloadUsers = async ()=>{
 
     window._users = users;
     renderUsers(); updateStats();
-  }catch(e){ toast('خطأ: '+e.message,'err'); console.error(e); }
+  }catch(e){
+    console.error('wloadUsers error:', e);
+    // حتى لو فشل التحميل — ضبط array فاضية عشان الصفحة تشتغل
+    if(!window._users) window._users = [];
+    renderUsers(); updateStats();
+    // لو مشكلة permissions — بيّن رسالة واضحة
+    if(e.message&&(e.message.includes('permission')||e.message.includes('PERMISSION_DENIED'))){
+      toast('⚠️ خطأ صلاحيات Firestore — ارفع الـ Rules الجديدة','err');
+      const tb = document.getElementById('usersTbl');
+      if(tb) tb.innerHTML=`<tr><td colspan="8"><div style="padding:14px;text-align:center">
+        <div style="font-size:13px;color:var(--err);font-weight:800;margin-bottom:6px">⚠️ خطأ صلاحيات Firestore</div>
+        <div style="font-size:12px;color:var(--muted)">روح Firebase Console → Firestore → Rules وارفع الـ Rules الجديدة</div>
+      </div></td></tr>`;
+    } else {
+      toast('خطأ تحميل الطلاب: '+e.message,'err');
+    }
+  }
 };
 
 // ── CODES ──
@@ -1822,7 +1838,16 @@ window.wloadCodes = async ()=>{
     const s = await db.collection('codes').get();
     window._codes = s.docs.map(d=>({id:d.id,...d.data()}));
     renderCodes(); updateStats();
-  }catch(e){ toast('خطأ أكواد: '+e.message,'err'); console.error(e); }
+  }catch(e){
+    console.error('wloadCodes error:', e);
+    if(!window._codes) window._codes = [];
+    renderCodes(); updateStats();
+    if(e.message&&(e.message.includes('permission')||e.message.includes('PERMISSION_DENIED'))){
+      toast('⚠️ خطأ صلاحيات — ارفع Firestore Rules','err');
+    } else {
+      toast('خطأ أكواد: '+e.message,'err');
+    }
+  }
 };
 
 // ── SETTINGS ──
@@ -2873,14 +2898,16 @@ window._fbReady = true;
     if(adm.exists && adm.data().pass){
       window._ap = adm.data().pass;
     } else {
-      // لو مش موجود في Firestore — اخزّن كلمة المرور الافتراضية
       window._ap = 'plus2026';
     }
   }catch(e){
-    // لو Firebase مش شغال — استخدم الافتراضي
+    // لو Firestore Rules مانعة أو Firebase مش شغال — استخدم الافتراضي
+    console.warn('settings load:', e.message);
     window._ap = 'plus2026';
+  }finally{
+    // دايماً نضع _settingsLoaded = true حتى لو حصل خطأ
+    window._settingsLoaded = true;
   }
-  window._settingsLoaded = true;
 })();
 
 // ══ BOOKS MANAGEMENT ══
@@ -3006,10 +3033,6 @@ window.clearBook = () => {
 };
 
 
-(ref,data)=>ref.add(data) = addDoc;
-// getDocs helper removed
-(ref,data)=>ref.update(data) = updateDoc;
-(ref)=>ref.delete() = deleteDoc;
 window.dispatchEvent(new Event('fbReady'));
 
 
