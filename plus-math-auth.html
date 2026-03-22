@@ -955,24 +955,29 @@ function openEditField(type){
 async function saveFieldDirect(){
   var val = document.getElementById('edit-field-inp').value.trim();
   var btn = document.getElementById('edit-field-save-btn');
+  var user = auth.currentUser;
   if(_editFieldType==='phone'){
     if(val.length<10){ showMsg('edit-field-msg','ادخل رقم صحيح','error'); return; }
     setLoad(btn,true);
     try{
-      await db.collection('users').doc(auth.currentUser.uid).update({phone:val});
+      await db.collection('users').doc(user.uid).update({phone:val});
+      // إشعار أدمن
+      db.collection('adminNotifications').add({type:'data_edit',icon:'✏️',title:'تعديل بيانات طالب',body:'عدّل رقم هاتفه إلى '+val,userId:user.uid,read:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){});
       showMsg('prof-msg','✅ تم تحديث الرقم','success');
       setTimeout(function(){document.getElementById('prof-msg').className='msg';},3000);
-      db.collection('users').doc(auth.currentUser.uid).get().then(function(ud){if(ud.exists)showProfileStep(ud.data());});
+      db.collection('users').doc(user.uid).get().then(function(ud){if(ud.exists)showProfileStep(ud.data());});
       showStep('step-profile');
     }catch(e){ showMsg('edit-field-msg','خطأ: '+e.message,'error'); }
   } else {
     if(!val.includes('@')||!val.includes('.')){ showMsg('edit-field-msg','ادخل إيميل صحيح','error'); return; }
     setLoad(btn,true);
     try{
-      await db.collection('users').doc(auth.currentUser.uid).update({email:val});
+      await db.collection('users').doc(user.uid).update({email:val});
+      // إشعار أدمن
+      db.collection('adminNotifications').add({type:'data_edit',icon:'✏️',title:'تعديل بيانات طالب',body:'عدّل الإيميل إلى '+val,userId:user.uid,read:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){});
       showMsg('prof-msg','✅ تم تحديث الإيميل','success');
       setTimeout(function(){document.getElementById('prof-msg').className='msg';},3000);
-      db.collection('users').doc(auth.currentUser.uid).get().then(function(ud){if(ud.exists)showProfileStep(ud.data());});
+      db.collection('users').doc(user.uid).get().then(function(ud){if(ud.exists)showProfileStep(ud.data());});
       showStep('step-profile');
     }catch(e){ showMsg('edit-field-msg','خطأ: '+e.message,'error'); }
   }
@@ -1063,6 +1068,8 @@ function saveName(){
   setLoad(btn, true);
   db.collection('users').doc(user.uid).update({ name: newName })
     .then(function(){
+      // إشعار أدمن
+      db.collection('adminNotifications').add({type:'data_edit',icon:'✏️',title:'تعديل اسم طالب',body:'غيّر اسمه إلى: '+newName,userId:user.uid,userName:newName,read:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){});
       document.getElementById('prof-name').textContent = newName;
       document.getElementById('prof-avatar').textContent = newName.slice(0,2);
       toggleNameEdit(false);
@@ -1296,8 +1303,13 @@ function submitCode(){
           showMsg('code-msg','الكود مخصص لـ "'+( GRADE_LABELS[codeData.gradeKey]||codeData.gradeKey)+'" — مش صفك ❌','error');
           setLoad(btn,false); return;
         }
-        // ── 29-day expiry ──
-        var expiry = new Date(Date.now() + 29*24*60*60*1000);
+        // ── expiry from code or 29 days ──
+        var expiry;
+        if(codeData.customExpiry){
+          expiry = codeData.customExpiry.toDate ? codeData.customExpiry.toDate() : new Date(codeData.customExpiry);
+        } else {
+          expiry = new Date(Date.now() + 29*24*60*60*1000);
+        }
         return cd.ref.update({used:true, usedBy:user.uid, usedAt:firebase.firestore.FieldValue.serverTimestamp()})
           .then(function(){
             return db.collection('users').doc(user.uid).update({
@@ -1309,6 +1321,22 @@ function submitCode(){
               grade:  (ud.data().grade||codeData.grade||''),
               gradeKey:(ud.data().gradeKey||codeData.gradeKey||myGradeKey)
             });
+          })
+          .then(function(){
+            // ── إشعار للأدمن عند تفعيل كود ──
+            return db.collection('adminNotifications').add({
+              type: 'code_activated',
+              icon: '🔑',
+              title: 'تفعيل كود جديد',
+              body: (ud.data().name||'طالب') + ' فعّل كود ' + code + ' — ' + (ud.data().grade||''),
+              userId: user.uid,
+              userName: ud.data().name||'—',
+              userPhone: ud.data().phone||'',
+              userGrade: ud.data().grade||'',
+              code: code,
+              read: false,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(function(){});
           })
           .then(function(){ showStep('step-success'); });
       });

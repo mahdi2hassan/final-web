@@ -617,6 +617,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
         <span>المشرفون</span>
       </div>
+      <div class="sb-item" onclick="goPage('sessions')" data-perm="super">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        <span>جلساتك</span>
+      </div>
       <div class="sb-item" onclick="goPage('settings')" data-perm="super">
         <svg><use href="#ic-settings"/></svg><span>الإعدادات</span>
       </div>
@@ -689,6 +693,41 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
           <div id="activityDashboard"><div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">جاري التحميل...</div></div>
         </div>
+
+        <!-- Overview 3-column grid: notifications + tickets + notes -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:14px">
+          <!-- أحدث الإشعارات -->
+          <div style="background:var(--s2);border:1px solid var(--b2);border-radius:13px;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--b2)">
+              <div style="font-size:12px;font-weight:800;display:flex;align-items:center;gap:6px"><span>🔔</span>أحدث الإشعارات</div>
+              <button onclick="goPage('notifications')" style="padding:3px 9px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px;font-weight:700">الكل</button>
+            </div>
+            <div id="ov-notifs" style="padding:8px;max-height:180px;overflow-y:auto">
+              <div style="text-align:center;font-size:11px;color:var(--muted);padding:12px">جاري التحميل...</div>
+            </div>
+          </div>
+          <!-- أحدث الشكاوى -->
+          <div style="background:var(--s2);border:1px solid var(--b2);border-radius:13px;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--b2)">
+              <div style="font-size:12px;font-weight:800;display:flex;align-items:center;gap:6px"><span>🎫</span>أحدث الشكاوى</div>
+              <button onclick="goPage('tickets')" style="padding:3px 9px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px;font-weight:700">الكل</button>
+            </div>
+            <div id="ov-tickets" style="padding:8px;max-height:180px;overflow-y:auto">
+              <div style="text-align:center;font-size:11px;color:var(--muted);padding:12px">جاري التحميل...</div>
+            </div>
+          </div>
+          <!-- أحدث المذكرات (سجل النشاط) -->
+          <div style="background:var(--s2);border:1px solid var(--b2);border-radius:13px;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--b2)">
+              <div style="font-size:12px;font-weight:800;display:flex;align-items:center;gap:6px"><span>📋</span>آخر النشاط</div>
+              <button onclick="goPage('activity')" style="padding:3px 9px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px;font-weight:700">الكل</button>
+            </div>
+            <div id="ov-activity" style="padding:8px;max-height:180px;overflow-y:auto">
+              <div style="text-align:center;font-size:11px;color:var(--muted);padding:12px">جاري التحميل...</div>
+            </div>
+          </div>
+        </div>
+
         <div class="tw"><div class="tw-scroll" id="recentTbl">
           <div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div>
         </div></div>
@@ -802,13 +841,36 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="3,6 5,6 21,6"/><path d="M19,6v14a2,2,0,01-2,2H7a2,2,0,01-2-2V6m3,0V4a2,2,0,012-2h4a2,2,0,012,2v2"/></svg>
               مسح المستخدمة
             </button>
+            <button class="btn gold sm" onclick="exportCodesCsv()"><svg><use href="#ic-dl"/></svg>CSV</button>
             <button class="btn primary sm" onclick="openGenModal()"><svg><use href="#ic-key"/></svg>توليد أكواد</button>
           </div>
         </div>
-        <div class="ftabs">
-          <div class="ftab on" onclick="setCF('all')">الكل</div>
-          <div class="ftab" onclick="setCF('unused')">متاح</div>
-          <div class="ftab" onclick="setCF('used')">مستخدم</div>
+        <!-- فلاتر الأكواد -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;align-items:center">
+          <div class="ftabs" style="flex:1;min-width:160px;margin:0">
+            <div class="ftab on" onclick="setCF('all')">الكل</div>
+            <div class="ftab" onclick="setCF('unused')">متاح</div>
+            <div class="ftab" onclick="setCF('used')">مستخدم</div>
+          </div>
+          <select id="cf-stage" onchange="renderCodes()" style="padding:6px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px;outline:none">
+            <option value="">كل المراحل</option>
+            <option value="primary">ابتدائي</option>
+            <option value="prep">إعدادي</option>
+            <option value="sec">ثانوي</option>
+          </select>
+          <select id="cf-grade" onchange="renderCodes()" style="padding:6px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px;outline:none">
+            <option value="">كل الصفوف</option>
+            <option value="primary-4">٤ ابتدائي</option>
+            <option value="primary-5">٥ ابتدائي</option>
+            <option value="primary-6">٦ ابتدائي</option>
+            <option value="prep-1">١ إعدادي</option>
+            <option value="prep-2">٢ إعدادي</option>
+            <option value="prep-3">٣ إعدادي</option>
+            <option value="sec-1">١ ثانوي</option>
+            <option value="sec-2">٢ ثانوي</option>
+            <option value="sec-3">٣ ثانوي</option>
+          </select>
+          <input id="cf-price" type="number" placeholder="فلتر السعر..." oninput="renderCodes()" style="width:110px;padding:6px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px;outline:none"/>
         </div>
         <div class="tw"><div class="tw-scroll">
           <table>
@@ -1244,6 +1306,38 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </div>
       </div>
 
+      <!-- ══ SESSIONS ══ -->
+      <div class="page" id="page-sessions">
+        <div class="sh">
+          <div class="sh-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            جلساتك النشطة
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn ghost sm" onclick="loadSessions()"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+            <button class="btn sm" style="background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:var(--err)" onclick="endAllSessions()">⛔ إنهاء كل الجلسات</button>
+          </div>
+        </div>
+        <div style="padding:12px;background:rgba(74,127,212,0.06);border:1px solid var(--b1);border-radius:12px;font-size:12px;color:var(--muted);margin-bottom:14px">
+          🔐 الجلسات بتتسجل تلقائياً كل ما تدخل على الأدمن من أي مكان — تقدر تشوفها وتنهيها في أي وقت
+        </div>
+        <!-- Current session info -->
+        <div id="current-session-card" style="background:rgba(0,214,143,0.06);border:1px solid rgba(0,214,143,0.2);border-radius:13px;padding:14px;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:38px;height:38px;border-radius:10px;background:rgba(0,214,143,0.12);display:flex;align-items:center;justify-content:center;font-size:18px">🖥️</div>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:800;color:var(--ok)">الجلسة الحالية ← هنا دلوقتي</div>
+              <div id="current-session-info" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+            </div>
+            <span class="bd ok">نشطة</span>
+          </div>
+        </div>
+        <!-- All sessions -->
+        <div id="sessionsList">
+          <div class="empty"><p>جاري التحميل...</p></div>
+        </div>
+      </div>
+
       <!-- ══ ADMINS ══ -->
       <div class="page" id="page-admins">
         <div class="sh">
@@ -1416,12 +1510,71 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
           <div class="yn-toggle" id="adm-p-coupons" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
         </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-analytics')">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(167,139,250,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">الإحصائيات</div><div style="font-size:10px;color:var(--muted)">يشوف تقارير وإحصائيات الموقع</div></div>
+          </div>
+          <div class="yn-toggle" id="adm-p-analytics" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-tickets')">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(74,127,212,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">الشكاوى والتذاكر</div><div style="font-size:10px;color:var(--muted)">يرد على شكاوى الطلاب</div></div>
+          </div>
+          <div class="yn-toggle" id="adm-p-tickets" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-delete')" style="border-bottom:none">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(255,77,109,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">حذف وحظر</div><div style="font-size:10px;color:var(--muted)">يقدر يحذف طلاب ويحظرهم</div></div>
+          </div>
+          <div class="yn-toggle" id="adm-p-delete" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
       </div>
     </div>
     <div id="adm-gen-pass-show" style="display:none;padding:8px 12px;background:rgba(74,127,212,0.06);border:1px solid var(--b2);border-radius:8px;font-size:12px;color:var(--muted);margin-bottom:10px;direction:ltr;letter-spacing:1px"></div>
     <div class="mfooter">
       <button class="btn ghost" onclick="closeAdminModal()">إلغاء</button>
       <button class="btn ok" id="adminModalSaveBtn" onclick="saveAdmin()"><svg><use href="#ic-check"/></svg>حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Code Modal -->
+<div class="mbg" id="editCodeModal">
+  <div class="modal" style="max-width:420px">
+    <h3><svg><use href="#ic-edit"/></svg>تعديل الكود</h3>
+    <input type="hidden" id="ec-id"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div class="ff" style="margin:0"><label>كود الاشتراك</label>
+        <input type="text" id="ec-code" style="text-transform:uppercase;font-family:monospace;letter-spacing:2px;font-size:14px" oninput="this.value=this.value.toUpperCase()"/></div>
+      <div class="ff" style="margin:0"><label>السعر (جنيه)</label>
+        <input type="number" id="ec-price" placeholder="200"/></div>
+    </div>
+    <div class="ff" style="margin-bottom:10px"><label>المرحلة الدراسية</label>
+      <select id="ec-stage" onchange="updateEditCodeGrades()">
+        <option value="">— اختار المرحلة —</option>
+        <option value="primary">ابتدائي</option>
+        <option value="prep">إعدادي</option>
+        <option value="sec">ثانوي</option>
+      </select>
+    </div>
+    <div class="ff" id="ec-grade-wrap" style="display:none;margin-bottom:10px"><label>الصف</label>
+      <select id="ec-grade"></select>
+    </div>
+    <div style="padding:10px;background:rgba(255,77,109,0.05);border:1px solid rgba(255,77,109,0.15);border-radius:9px;font-size:12px;color:var(--muted);margin-bottom:10px">
+      ⚠️ تعديل الصف والمرحلة هيأثر على من يقدر يستخدم الكود ده
+    </div>
+    <div class="mfooter">
+      <button class="btn ghost" onclick="closeModal('editCodeModal')">إلغاء</button>
+      <button class="btn primary" onclick="saveCodeEdit()"><svg><use href="#ic-check"/></svg>حفظ التعديلات</button>
     </div>
   </div>
 </div>
@@ -1561,6 +1714,47 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script>
 
+/*
+  ════════════════════════════════════════════════════
+  ⚠️ FIRESTORE RULES المطلوبة لحل مشكلة الصلاحيات:
+  روح Firebase Console → Firestore → Rules وضيف:
+
+  rules_version = '2';
+  service cloud.firestore {
+    match /databases/{database}/documents {
+      match /users/{userId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      match /codes/{codeId} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null;
+      }
+      match /content/{gradeKey}/{collection}/{doc} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null;
+      }
+      match /adminNotifications/{doc} {
+        allow write: if request.auth != null;
+        allow read: if false; // الأدمن بس يقرأ من الأدمن بانيل
+      }
+      match /adminSessions/{doc} {
+        allow read, write: if true; // جلسات الأدمن
+      }
+      match /settings/{doc} {
+        allow read: if request.auth != null;
+        allow write: if false; // الأدمن بس من الأدمن بانيل
+      }
+      match /tickets/{doc} {
+        allow read, write: if request.auth != null;
+      }
+      match /coupons/{doc} {
+        allow read: if request.auth != null;
+        allow write: if false;
+      }
+    }
+  }
+  ════════════════════════════════════════════════════
+*/
 const cfg = {
   apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
   authDomain:"plusinmath-web.firebaseapp.com",
@@ -2237,6 +2431,72 @@ function sendNext(){
   }
 }
 
+// ══════════════════════════════════════
+// ── BUILD CONTENT STATS (FIXED) ──
+// ══════════════════════════════════════
+window.buildContentStats = async ()=>{
+  const gradeKey = document.getElementById('cs-grade-sel')?.value;
+  const el = document.getElementById('contentStatsBody');
+  if(!el) return;
+  if(!gradeKey){ el.innerHTML='<div class="empty"><p>اختار صفاً لعرض الإحصائيات</p></div>'; return; }
+  el.innerHTML='<div class="empty"><p>⏳ جاري التحميل...</p></div>';
+  try{
+    if(!window._fbReady || !window.db){ el.innerHTML='<div class="empty"><p>⏳ جاري الاتصال بقاعدة البيانات...</p></div>'; return; }
+    const [vsSnap, esSnap, hsSnap] = await Promise.all([
+      db.collection('content').doc(gradeKey).collection('videos').orderBy('order').get(),
+      db.collection('content').doc(gradeKey).collection('exams').get(),
+      db.collection('content').doc(gradeKey).collection('homework').get()
+    ]);
+    const videos = vsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const exams  = esSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const hw     = hsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const users  = (window._users||[]).filter(u=>u.gradeKey===gradeKey);
+    const GL={'primary-4':'الرابع الابتدائي','primary-5':'الخامس الابتدائي','primary-6':'السادس الابتدائي','prep-1':'الأول الإعدادي','prep-2':'الثاني الإعدادي','prep-3':'الثالث الإعدادي','sec-1':'الأول الثانوي','sec-2':'الثاني الثانوي','sec-3':'الثالث الثانوي'};
+    el.innerHTML=`
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+        <div style="background:rgba(74,127,212,0.06);border:1px solid var(--b2);border-radius:11px;padding:12px;text-align:center">
+          <div style="font-size:22px;font-weight:900;color:var(--blue)">${videos.length}</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600">▶ فيديوهات</div>
+        </div>
+        <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:11px;padding:12px;text-align:center">
+          <div style="font-size:22px;font-weight:900;color:var(--gold)">${exams.length}</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600">✍ امتحانات</div>
+        </div>
+        <div style="background:rgba(0,214,143,0.06);border:1px solid rgba(0,214,143,0.2);border-radius:11px;padding:12px;text-align:center">
+          <div style="font-size:22px;font-weight:900;color:var(--ok)">${hw.length}</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600">📄 واجبات</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:700">👥 طلاب هذا الصف: <span style="color:var(--text)">${users.length}</span> — نشطون: <span style="color:var(--ok)">${users.filter(u=>u.subscriptionActive).length}</span></div>
+      ${videos.length?`
+      <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px">أحدث الفيديوهات</div>
+      ${videos.slice(0,5).map(v=>`
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(74,127,212,0.04);border:1px solid var(--b2);border-radius:8px;margin-bottom:5px">
+          <span style="color:var(--blue);font-size:13px">▶</span>
+          <span style="flex:1;font-size:12px;font-weight:600">${v.title||'—'}</span>
+          ${v.duration?`<span style="font-size:10px;color:var(--muted)">${v.duration}</span>`:''}
+        </div>`).join('')}`:''}`;
+  }catch(e){
+    if(e.message&&(e.message.includes('permission')||e.message.includes('PERMISSION_DENIED'))){
+      el.innerHTML=`<div style="padding:14px;background:rgba(255,77,109,0.06);border:1px solid rgba(255,77,109,0.2);border-radius:10px;font-size:12px">
+        <div style="font-weight:800;color:var(--err);margin-bottom:6px">⚠️ خطأ صلاحيات Firestore</div>
+        <div style="color:var(--muted);line-height:1.7">
+          عشان تحل المشكلة دي، روح Firebase Console → Firestore → Rules وضيف الـ rule دي:<br><br>
+          <code style="background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:6px;font-size:11px;direction:ltr;display:block;margin-top:6px">
+            match /content/{gradeKey}/{collection}/{doc} {<br>
+            &nbsp;&nbsp;allow read: if request.auth != null;<br>
+            &nbsp;&nbsp;allow write: if request.auth != null;<br>
+            }
+          </code>
+        </div>
+      </div>`;
+    } else {
+      el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`;
+    }
+    console.error('buildContentStats error:',e);
+  }
+};
+
 // ── CONTENT SEARCH/FILTER ──
 let _contentAllItems = [];
 window.filterContent = ()=>{
@@ -2846,21 +3106,21 @@ function applyPermissions(){
 
   // Show/hide topbar actions for non-super
   if(!isSuper){
-    // Hide export and settings from topbar
     const exportBtn = document.querySelector('.tb-btn[onclick*="exportCSV"]');
     if(exportBtn && !perms.users) exportBtn.style.display='none';
   }
 
+  // Hide delete/block buttons for admins without delete permission
+  if(!isSuper && !perms.delete){
+    document.querySelectorAll('.icon-btn.del').forEach(b=>b.style.display='none');
+    document.querySelectorAll('[onclick*="blockUser"],[onclick*="deleteUser"]').forEach(b=>{
+      if(!b.closest('.lbtn')) b.style.display='none';
+    });
+  }
+
   // Navigate to first allowed page
   if(!isSuper){
-    const allowed = ['overview'];
-    if(perms.users)     allowed.push('users');
-    if(perms.content)   allowed.push('content');
-    if(perms.codes)     allowed.push('codes','coupons');
-    if(perms.broadcast) allowed.push('broadcast');
-    allowed.push('notifications','activity');
-    // Default: go to first meaningful page
-    const first = perms.users?'users':perms.content?'content':perms.codes?'codes':perms.broadcast?'broadcast':'overview';
+    const first = perms.users?'users':perms.content?'content':perms.codes?'codes':perms.broadcast?'broadcast':perms.analytics?'analytics':'overview';
     setTimeout(()=>goPage(first), 100);
   }
 
@@ -2911,7 +3171,8 @@ const pageLabels={
   content:'إدارة المحتوى', broadcast:'إرسال جماعي',
   notifications:'الإشعارات', activity:'سجل النشاط',
   tickets:'التذاكر والشكاوى', 'ticket-detail':'تذكرة',
-  admins:'المشرفون', settings:'الإعدادات',
+  admins:'المشرفون', sessions:'جلساتك',
+  settings:'الإعدادات',
   'parent-detail':'تفاصيل ولي الأمر'
 };
 function goPage(p){
@@ -2923,14 +3184,15 @@ function goPage(p){
     const permMap = {
       users:'users', parents:'users', codes:'codes', coupons:'codes',
       content:'content', broadcast:'broadcast',
-      admins:null, settings:null
+      analytics:'analytics', tickets:'tickets',
+      admins:null, settings:null, sessions:null
     };
-    if(p in permMap && !permMap[p]){ toast('ليس لديك صلاحية لهذه الصفحة','err'); return; }
+    if(p in permMap && permMap[p]===null){ toast('ليس لديك صلاحية لهذه الصفحة','err'); return; }
     if(p in permMap && permMap[p] && !perms[permMap[p]]){ toast('ليس لديك صلاحية لهذه الصفحة','err'); return; }
   }
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('on'));
   document.getElementById('page-'+p)?.classList.add('on');
-  const allPages=['overview','analytics','users','parents','codes','coupons','content','broadcast','notifications','activity','tickets','admins','settings'];
+  const allPages=['overview','analytics','users','parents','codes','coupons','content','broadcast','notifications','activity','tickets','admins','sessions','settings'];
   document.querySelectorAll('.sb-item').forEach((el,i)=>{
     el.classList.toggle('on', allPages[i]===p || (p==='parent-detail' && allPages[i]==='parents') || (p==='ticket-detail' && allPages[i]==='tickets'));
   });
@@ -2943,6 +3205,8 @@ function goPage(p){
   if(p==='admins') loadAdmins();
   if(p==='parents') loadParents();
   if(p==='tickets') loadTickets();
+  if(p==='sessions') loadSessions();
+  if(p==='overview') buildOverviewWidgets();
   if(p==='content'){ window.open('content-manager.html','_blank'); }
   if(window.innerWidth<=768) closeSidebar();
 }
@@ -3004,8 +3268,14 @@ function renderUsers(){
 function renderCodes(){
   const c=window._codes||[];
   const q=document.getElementById('searchInp').value.toLowerCase();
+  const cfStage = document.getElementById('cf-stage')?.value||'';
+  const cfGrade = document.getElementById('cf-grade')?.value||'';
+  const cfPrice = document.getElementById('cf-price')?.value.trim()||'';
   let f=c.filter(x=>_cf==='all'?true:_cf==='unused'?!x.used:x.used)
-         .filter(x=>!q||(x.code||'').toLowerCase().includes(q)||(x.grade||'').includes(q));
+         .filter(x=>!q||(x.code||'').toLowerCase().includes(q)||(x.grade||'').includes(q))
+         .filter(x=>!cfStage||x.stage===cfStage)
+         .filter(x=>!cfGrade||x.gradeKey===cfGrade)
+         .filter(x=>!cfPrice||(x.price&&parseFloat(x.price)===parseFloat(cfPrice)));
   const tb=document.getElementById('codesTbl');
   if(!f.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><svg><use href="#ic-key"/></svg><p>لا يوجد أكواد</p></div></td></tr>';return;}
   tb.innerHTML=f.map(x=>{
@@ -3023,6 +3293,7 @@ function renderCodes(){
       <td style="font-size:11px;color:var(--muted)">${usedByName}</td>
       <td><div style="display:flex;gap:4px;flex-wrap:wrap">
         <button class="btn icon-btn" onclick="cpTxt('${x.code||''}')" title="نسخ الكود"><svg><use href="#ic-copy"/></svg></button>
+        <button class="btn icon-btn" onclick="openEditCodeModal('${x.id}')" title="تعديل" style="color:var(--blue)"><svg><use href="#ic-edit"/></svg></button>
         ${x.used
           ?`<button class="btn icon-btn" onclick="reuseCode('${x.id}')" title="إعادة استخدام" style="color:var(--ok)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></button>`
           :''}
@@ -3385,7 +3656,10 @@ window.saveAdmin=async()=>{
     codes:     document.getElementById('adm-p-codes').dataset.val==='1',
     broadcast: document.getElementById('adm-p-broadcast').dataset.val==='1',
     parents:   document.getElementById('adm-p-parents').dataset.val==='1',
-    coupons:   document.getElementById('adm-p-coupons').dataset.val==='1'
+    coupons:   document.getElementById('adm-p-coupons').dataset.val==='1',
+    analytics: document.getElementById('adm-p-analytics')?.dataset.val==='1',
+    tickets:   document.getElementById('adm-p-tickets')?.dataset.val==='1',
+    delete:    document.getElementById('adm-p-delete')?.dataset.val==='1'
   };
   const active = isEdit ? document.getElementById('adm-p-active').dataset.val==='1' : true;
   try{
@@ -3426,7 +3700,7 @@ async function loadAdmins(){
       const p = a.permissions||{};
       const lastLogin = a.lastLogin?.toDate?.().toLocaleString('ar-EG')||'لم يدخل بعد';
       return `
-      <div style="background:var(--s2);border:1px solid var(--b2);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:all .2s" ${a.active===false?'style="background:var(--s2);border:1px solid rgba(255,77,109,0.2);border-radius:14px;margin-bottom:10px;overflow:hidden;opacity:.7"':''}>
+      <div style="background:var(--s2);border:1px solid ${a.active===false?'rgba(255,77,109,0.2)':'var(--b2)'};border-radius:14px;margin-bottom:10px;overflow:hidden;transition:all .2s;${a.active===false?'opacity:.7':''}">
         <div style="display:flex;align-items:center;gap:12px;padding:14px 16px">
           <div style="width:44px;height:44px;border-radius:12px;background:${a.active===false?'linear-gradient(135deg,#4a0010,#800020)':'linear-gradient(135deg,var(--navy),var(--blue))'};display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0">${(a.name||'?').slice(0,2)}</div>
           <div style="flex:1;min-width:0">
@@ -3443,13 +3717,16 @@ async function loadAdmins(){
         </div>
         <div style="border-top:1px solid var(--b2);padding:10px 16px;background:rgba(6,10,22,0.3)">
           <div style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">الصلاحيات</div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:5px">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:5px">
             ${permBadge('الطلاب', p.users)}
             ${permBadge('المحتوى', p.content)}
             ${permBadge('الأكواد', p.codes)}
             ${permBadge('الإرسال', p.broadcast)}
             ${permBadge('أولياء الأمور', p.parents)}
             ${permBadge('الكوبونات', p.coupons)}
+            ${permBadge('الإحصائيات', p.analytics)}
+            ${permBadge('الشكاوى', p.tickets)}
+            ${permBadge('حذف/حظر', p.delete)}
           </div>
         </div>
       </div>`;
@@ -3469,7 +3746,7 @@ function resetAdminModal(){
   document.getElementById('adminModalSaveBtn').innerHTML='<svg><use href="#ic-check"/></svg>إضافة المشرف';
   // Reset perms
   ['adm-p-users','adm-p-content'].forEach(id=>{ const el=document.getElementById(id); if(el){el.dataset.val='1';el.classList.add('on');} });
-  ['adm-p-codes','adm-p-broadcast','adm-p-parents','adm-p-coupons','adm-p-active'].forEach(id=>{ const el=document.getElementById(id); if(el){el.dataset.val='0';el.classList.remove('on');} });
+  ['adm-p-codes','adm-p-broadcast','adm-p-parents','adm-p-coupons','adm-p-active','adm-p-analytics','adm-p-tickets','adm-p-delete'].forEach(id=>{ const el=document.getElementById(id); if(el){el.dataset.val='0';el.classList.remove('on');} });
 }
 
 function closeAdminModal(){
@@ -3495,6 +3772,7 @@ window.editAdmin = async (id)=>{
     const permMap = {
       'adm-p-users':p.users,'adm-p-content':p.content,'adm-p-codes':p.codes,
       'adm-p-broadcast':p.broadcast,'adm-p-parents':p.parents,'adm-p-coupons':p.coupons,
+      'adm-p-analytics':p.analytics,'adm-p-tickets':p.tickets,'adm-p-delete':p.delete,
       'adm-p-active': a.active!==false
     };
     Object.entries(permMap).forEach(([pid,val])=>{
@@ -4559,6 +4837,12 @@ function openDashboard(){
   setTimeout(()=>showWelcome(), 1500);
   // Start session timeout
   resetSessionTimer();
+  // Register session and load notifications
+  setTimeout(()=>{
+    registerSession();
+    loadAdminNotifications();
+    buildOverviewWidgets();
+  }, 2500);
 }
 
 // ══════════════════════════════════════
@@ -5445,12 +5729,277 @@ function toast(msg,type='ok'){
   const t=document.getElementById('toast');
   const ic=document.getElementById('ti');
   t.className='toast '+type;
-  document.getElementById('tMsg').textContent=msg;
+  document.getElementById('tm').textContent=msg;
   ic.innerHTML=type==='ok'?'<use href="#ic-check"/>':(type==='err'?'<use href="#ic-x"/>':'<use href="#ic-bell"/>');
   t.classList.add('show');
   clearTimeout(tTimer);
   tTimer=setTimeout(()=>t.classList.remove('show'),3200);
 }
+
+// ══════════════════════════════════════
+// ── SESSIONS MANAGEMENT ──
+// ══════════════════════════════════════
+const _SESSION_ID = 'sess_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+const _SESSION_KEY = 'pm_session_id';
+
+// Save current session info on login
+function registerSession(){
+  const admin = window._loggedAdmin||{};
+  const sessionData = {
+    sessionId: _SESSION_ID,
+    adminUser: admin.username||'admin',
+    adminName: admin.name||'المدير',
+    userAgent: navigator.userAgent,
+    platform: navigator.platform||'—',
+    loginTime: new Date().toISOString(),
+    lastActive: new Date().toISOString(),
+    active: true,
+    location: Intl.DateTimeFormat().resolvedOptions().timeZone||'—'
+  };
+  localStorage.setItem(_SESSION_KEY, _SESSION_ID);
+  // Save to Firestore
+  if(window._fbReady){
+    db.collection('adminSessions').doc(_SESSION_ID).set(sessionData).catch(()=>{});
+    // Update heartbeat every 2 minutes
+    setInterval(()=>{
+      if(window._loggedAdmin){
+        db.collection('adminSessions').doc(_SESSION_ID).update({lastActive:new Date().toISOString()}).catch(()=>{});
+      }
+    }, 120000);
+  }
+}
+
+window.loadSessions = async ()=>{
+  const el = document.getElementById('sessionsList');
+  const csInfo = document.getElementById('current-session-info');
+  if(csInfo){
+    const now = new Date();
+    csInfo.textContent = `المتصفح: ${navigator.userAgent.split(') ')[0].split('(')[1]||'—'} · دخلت: ${now.toLocaleString('ar-EG')}`;
+  }
+  try{
+    if(!window._fbReady){ el.innerHTML='<div class="empty"><p>جاري الاتصال...</p></div>'; return; }
+    el.innerHTML='<div class="empty"><p>جاري التحميل...</p></div>';
+    const snap = await db.collection('adminSessions').orderBy('loginTime','desc').limit(20).get();
+    const sessions = snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(!sessions.length){ el.innerHTML='<div class="empty"><p>لا يوجد جلسات محفوظة</p></div>'; return; }
+    const parseUA = ua=>{
+      if(!ua) return '—';
+      if(ua.includes('Chrome')&&!ua.includes('Edg')) return '🌐 Chrome';
+      if(ua.includes('Firefox')) return '🦊 Firefox';
+      if(ua.includes('Safari')&&!ua.includes('Chrome')) return '🍎 Safari';
+      if(ua.includes('Edg')) return '🔷 Edge';
+      return '🌐 متصفح';
+    };
+    el.innerHTML = sessions.map(s=>{
+      const isCurrent = s.id === _SESSION_ID;
+      const loginDate = new Date(s.loginTime);
+      const lastDate = new Date(s.lastActive||s.loginTime);
+      const minAgo = Math.floor((Date.now()-lastDate.getTime())/60000);
+      const isRecent = minAgo < 10;
+      return `<div style="background:var(--s2);border:1px solid ${isCurrent?'rgba(0,214,143,0.3)':isRecent&&s.active?'rgba(74,127,212,0.3)':'var(--b2)'};border-radius:13px;padding:14px;margin-bottom:10px">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <div style="font-size:22px;flex-shrink:0">${isCurrent?'🖥️':isRecent&&s.active?'💻':'📴'}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap">
+              <span style="font-size:13px;font-weight:800">${parseUA(s.userAgent)}</span>
+              ${isCurrent?'<span class="bd ok">الجلسة الحالية</span>':isRecent&&s.active?'<span class="bd blue">نشطة</span>':'<span class="bd pu">قديمة</span>'}
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:3px">👤 ${s.adminName||s.adminUser||'—'} · 🌍 ${s.location||'—'}</div>
+            <div style="font-size:11px;color:var(--muted)">🕐 دخل: ${loginDate.toLocaleString('ar-EG')} · آخر نشاط: ${lastDate.toLocaleString('ar-EG')}</div>
+          </div>
+          ${!isCurrent?`<button onclick="endSession('${s.id}')" style="padding:5px 11px;border:1px solid rgba(255,77,109,0.3);border-radius:7px;background:rgba(255,77,109,0.06);color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;flex-shrink:0">إنهاء</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){ el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`; }
+};
+
+window.endSession = async (sessionId)=>{
+  if(!confirm('إنهاء هذه الجلسة؟')) return;
+  try{
+    await db.collection('adminSessions').doc(sessionId).update({active:false,endedAt:new Date().toISOString(),endedBy:_SESSION_ID});
+    toast('تم إنهاء الجلسة ✓','ok');
+    logActivity('🔐','إنهاء جلسة',sessionId.slice(0,16));
+    loadSessions();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.endAllSessions = async ()=>{
+  if(!confirm('إنهاء كل الجلسات الأخرى؟')) return;
+  try{
+    const snap = await db.collection('adminSessions').where('active','==',true).get();
+    const batch = db.batch();
+    snap.docs.forEach(d=>{
+      if(d.id !== _SESSION_ID){
+        batch.update(d.ref,{active:false,endedAt:new Date().toISOString(),endedBy:_SESSION_ID});
+      }
+    });
+    await batch.commit();
+    toast('تم إنهاء كل الجلسات الأخرى ✓','ok');
+    logActivity('🔐','إنهاء كل الجلسات','جميع الجلسات النشطة');
+    loadSessions();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ══════════════════════════════════════
+// ── CODE EDIT FUNCTIONS ──
+// ══════════════════════════════════════
+const GRADE_EDIT_MAP = {
+  primary:['primary-4|الصف الرابع الابتدائي','primary-5|الصف الخامس الابتدائي','primary-6|الصف السادس الابتدائي'],
+  prep:   ['prep-1|الصف الأول الإعدادي','prep-2|الصف الثاني الإعدادي','prep-3|الصف الثالث الإعدادي'],
+  sec:    ['sec-1|الصف الأول الثانوي','sec-2|الصف الثاني الثانوي','sec-3|الصف الثالث الثانوي']
+};
+
+window.updateEditCodeGrades = ()=>{
+  const stage = document.getElementById('ec-stage')?.value;
+  const wrap = document.getElementById('ec-grade-wrap');
+  const sel  = document.getElementById('ec-grade');
+  if(!stage){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  sel.innerHTML='<option value="">كل صفوف المرحلة</option>';
+  (GRADE_EDIT_MAP[stage]||[]).forEach(o=>{
+    const[key,label]=o.split('|');
+    sel.innerHTML+=`<option value="${key}">${label}</option>`;
+  });
+};
+
+window.openEditCodeModal = (id)=>{
+  const code = (window._codes||[]).find(c=>c.id===id);
+  if(!code){ toast('الكود مش موجود','err'); return; }
+  document.getElementById('ec-id').value = id;
+  document.getElementById('ec-code').value = code.code||'';
+  document.getElementById('ec-price').value = code.price||'';
+  const stage = code.stage||'';
+  document.getElementById('ec-stage').value = stage;
+  updateEditCodeGrades();
+  if(code.gradeKey) setTimeout(()=>{ document.getElementById('ec-grade').value = code.gradeKey; },50);
+  openModal('editCodeModal');
+};
+
+window.saveCodeEdit = async ()=>{
+  const id    = document.getElementById('ec-id').value;
+  const code  = document.getElementById('ec-code').value.trim().toUpperCase();
+  const price = document.getElementById('ec-price').value.trim();
+  const stage = document.getElementById('ec-stage').value;
+  const gradeKey = document.getElementById('ec-grade')?.value||'';
+  if(!code||code.length<4){ toast('ادخل كود صحيح (4 أحرف على الأقل)','err'); return; }
+  const allGrades = Object.values(GRADE_EDIT_MAP).flat();
+  const gradeLabel = gradeKey
+    ? (allGrades.find(o=>o.startsWith(gradeKey+'|'))||'').split('|')[1]||gradeKey
+    : stage?{primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[stage]||stage:'';
+  const upd = { code, price };
+  if(stage) upd.stage = stage;
+  if(gradeKey){ upd.gradeKey = gradeKey; upd.grade = gradeLabel; }
+  try{
+    await db.collection('codes').doc(id).update(upd);
+    closeModal('editCodeModal');
+    await wloadCodes();
+    logActivity('✏️','تعديل كود',`${code} → سعر:${price||'—'} صف:${gradeLabel||'—'}`);
+    toast('تم تعديل الكود ✓','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ══════════════════════════════════════
+// ── OVERVIEW WIDGETS (Notifs + Tickets + Activity) ──
+// ══════════════════════════════════════
+async function buildOverviewWidgets(){
+  // أحدث الإشعارات (من localStorage + Firestore)
+  const notifEl = document.getElementById('ov-notifs');
+  if(notifEl){
+    try{
+      const localNotifs = getNotifs().slice(0,5);
+      // + admin notifications from Firestore
+      let firestoreNotifs = [];
+      if(window._fbReady){
+        const snap = await db.collection('adminNotifications').orderBy('createdAt','desc').limit(5).get();
+        firestoreNotifs = snap.docs.map(d=>({id:d.id,...d.data()}));
+      }
+      const combined = [
+        ...firestoreNotifs.map(n=>({icon:n.icon||'📌',title:n.title,body:n.body,time:n.createdAt?.toDate?.()?.toLocaleString('ar-EG')||'—',read:n.read,fromFirestore:true,id:n.id})),
+        ...localNotifs.map(n=>({...n,time:new Date(n.time).toLocaleString('ar-EG')}))
+      ].slice(0,6);
+      if(!combined.length){ notifEl.innerHTML='<div style="text-align:center;font-size:11px;color:var(--muted);padding:10px">لا يوجد إشعارات</div>'; }
+      else {
+        notifEl.innerHTML = combined.map(n=>`
+          <div style="display:flex;gap:8px;padding:7px 4px;border-bottom:1px solid var(--b2);align-items:flex-start;cursor:pointer" onclick="${n.fromFirestore?`markAdminNotifRead('${n.id}')`:`markNotifRead(${n.id})`}">
+            <span style="font-size:16px;flex-shrink:0">${n.icon||'📌'}</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;${!n.read?'color:var(--text)':'color:var(--muted)'}">${n.title||'—'}</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.body||''}</div>
+            </div>
+            ${!n.read?'<div style="width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0;margin-top:4px"></div>':''}
+          </div>`).join('');
+      }
+    }catch(e){ notifEl.innerHTML='<div style="text-align:center;font-size:11px;color:var(--muted);padding:10px">—</div>'; }
+  }
+
+  // أحدث الشكاوى
+  const ticketEl = document.getElementById('ov-tickets');
+  if(ticketEl){
+    try{
+      if(window._fbReady){
+        const snap = await db.collection('tickets').orderBy('createdAt','desc').limit(5).get();
+        const tickets = snap.docs.map(d=>({id:d.id,...d.data()}));
+        if(!tickets.length){ ticketEl.innerHTML='<div style="text-align:center;font-size:11px;color:var(--muted);padding:10px">لا يوجد شكاوى</div>'; }
+        else {
+          ticketEl.innerHTML = tickets.map(t=>`
+            <div style="padding:7px 4px;border-bottom:1px solid var(--b2);cursor:pointer" onclick="openTicketDetail('${t.id}');goPage('ticket-detail')">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                <span class="bd ${t.status==='open'?'err':t.status==='closed'?'pu':'blue'}" style="font-size:9px">${t.status==='open'?'مفتوحة':t.status==='closed'?'مغلقة':'قيد المعالجة'}</span>
+                <span style="font-size:12px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.subject||'—'}</span>
+              </div>
+              <div style="font-size:10px;color:var(--muted)">${t.userName||'—'} · ${t.createdAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</div>
+            </div>`).join('');
+        }
+      } else { ticketEl.innerHTML='<div style="text-align:center;font-size:11px;color:var(--muted);padding:10px">—</div>'; }
+    }catch(e){ ticketEl.innerHTML='<div style="text-align:center;font-size:11px;color:var(--muted);padding:10px">—</div>'; }
+  }
+
+  // آخر النشاط (المذكرات)
+  const actEl = document.getElementById('ov-activity');
+  if(actEl){
+    const acts = getActivity().slice(0,6);
+    if(!acts.length){ actEl.innerHTML='<div style="text-align:center;font-size:11px;color:var(--muted);padding:10px">لا يوجد نشاط</div>'; }
+    else {
+      actEl.innerHTML = acts.map(a=>`
+        <div style="display:flex;gap:8px;padding:7px 4px;border-bottom:1px solid var(--b2);align-items:flex-start">
+          <span style="font-size:15px;flex-shrink:0">${a.icon}</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.action}</div>
+            <div style="font-size:10px;color:var(--muted)">${a.who||'—'} · ${new Date(a.time).toLocaleString('ar-EG',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'})}</div>
+          </div>
+        </div>`).join('');
+    }
+  }
+}
+
+window.markAdminNotifRead = async (id)=>{
+  try{
+    await db.collection('adminNotifications').doc(id).update({read:true});
+    buildOverviewWidgets();
+  }catch(e){}
+};
+
+// ══════════════════════════════════════
+// ── ADMIN NOTIFICATIONS LOADER ──
+// ══════════════════════════════════════
+async function loadAdminNotifications(){
+  if(!window._fbReady) return;
+  try{
+    const snap = await db.collection('adminNotifications')
+      .where('read','==',false).orderBy('createdAt','desc').limit(20).get();
+    const items = snap.docs.map(d=>({id:d.id,...d.data()}));
+    items.forEach(n=>{
+      addNotif(n.icon||'📌', n.title||'إشعار', n.body||'');
+    });
+    // Mark as read in Firestore after loading
+    const batch = db.batch();
+    snap.docs.forEach(d=>batch.update(d.ref,{read:true}));
+    if(!snap.empty) batch.commit().catch(()=>{});
+  }catch(e){ console.warn('adminNotifications load:',e.message); }
+}
+
+
 </script>
 </body>
 </html>
