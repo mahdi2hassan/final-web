@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Plus Mathematics – داش المشرف</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04060f;--s1:rgba(8,13,28,0.93);--s2:rgba(12,18,40,0.8);--s3:rgba(16,24,52,0.6);
+  --b1:rgba(74,127,212,0.22);--b2:rgba(74,127,212,0.12);
+  --blue:#4a7fd4;--navy:#1a3270;--gold:#c9a84c;--gold2:#f0d080;
+  --text:#eef2ff;--muted:#6a7a9e;--muted2:#4a5a7e;
+  --ok:#00d68f;--err:#ff4d6d;--warn:#f5a623;--purple:#a78bfa;
+  --inp:rgba(6,10,22,0.8);--r:14px;
+}
+html,body{min-height:100dvh;font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(74,127,212,0.04) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(74,127,212,0.04) 1px,transparent 1px);background-size:44px 44px}
+.orb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0}
+.o1{width:500px;height:500px;background:rgba(26,50,112,0.4);top:-150px;right:-150px}
+.o2{width:300px;height:300px;background:rgba(110,75,10,0.25);bottom:-60px;left:-60px}
+
+/* ═══ SCREENS ═══ */
+.screen{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
+.screen.active{display:flex}
+
+/* ═══ CARD ═══ */
+.card{background:var(--s2);backdrop-filter:blur(24px);border:1px solid var(--b1);
+  border-radius:22px;padding:clamp(26px,5vw,38px) clamp(20px,5vw,34px);
+  width:100%;max-width:380px;
+  box-shadow:0 32px 80px rgba(0,0,0,0.6);
+  animation:popIn .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes popIn{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+.card-logo{width:54px;height:54px;object-fit:contain;display:block;margin:0 auto 12px;
+  filter:drop-shadow(0 4px 14px rgba(74,127,212,.5))}
+.card-logo-fallback{width:54px;height:54px;border-radius:14px;
+  background:linear-gradient(135deg,var(--blue),var(--navy));
+  display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px}
+.card h2{font-size:17px;font-weight:900;text-align:center;
+  background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.card .subtitle{font-size:11px;color:var(--muted);text-align:center;margin:4px 0 24px}
+
+/* ═══ FORM FIELDS ═══ */
+.ff{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.ff label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
+.ff input{padding:12px 14px;background:var(--inp);border:1.5px solid var(--b1);
+  border-radius:11px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;width:100%}
+.ff input:focus{border-color:var(--blue)}
+
+/* ═══ BUTTONS ═══ */
+.btn{width:100%;padding:13px;border:none;border-radius:11px;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;margin-top:4px}
+.btn:hover{transform:translateY(-1px)}
+.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn.primary{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;
+  box-shadow:0 5px 20px rgba(74,127,212,.3)}
+.btn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff;
+  box-shadow:0 5px 20px rgba(0,214,143,.2)}
+
+/* ═══ TOPBAR ═══ */
+.topbar{position:sticky;top:0;z-index:50;height:56px;display:flex;align-items:center;gap:12px;
+  padding:0 clamp(14px,4vw,24px);background:var(--s1);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--b2)}
+.tb-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+.tb-logo img{width:28px;height:28px;object-fit:contain}
+.tb-logo h2{font-size:13px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tb-name{flex:1;font-size:13px;font-weight:700;color:var(--muted)}
+.tb-name strong{color:var(--text)}
+.tb-acts{display:flex;gap:8px;margin-right:auto}
+.tbtn{padding:7px 13px;border:1px solid var(--b1);border-radius:9px;background:transparent;
+  color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:5px;text-decoration:none;white-space:nowrap}
+.tbtn:hover{border-color:var(--blue);color:var(--text)}
+.tbtn svg{width:13px;height:13px}
+.tbtn.danger:hover{border-color:var(--err);color:var(--err)}
+
+/* باقي الـ CSS موجود كما هو (للاختصار، لم أعيد نسخه هنا) */
+</style>
+</head>
+<body>
+
+<!-- SVG icons موجودة كما هي -->
+
+<div class="bg-grid"></div>
+<div class="o1 orb"></div>
+<div class="o2 orb"></div>
+
+<!-- ══════════════════════════════════════════
+     SCREEN: ENTER NAME ONLY
+══════════════════════════════════════════ -->
+<div class="screen active" id="screenName">
+  <div class="card">
+    <img class="card-logo" src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus"
+      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+    <div class="card-logo-fallback" style="display:none">➕</div>
+    <h2>مرحباً بك في Plus</h2>
+    <p class="subtitle">داش المشرف · أدخل اسمك للدخول</p>
+    <div class="ff">
+      <label>اسمك</label>
+      <input type="text" id="inpName" placeholder="مثال: أحمد سالم" maxlength="40"
+        onkeydown="if(event.key==='Enter')goToDashboard()"/>
+    </div>
+    <button class="btn primary" onclick="goToDashboard()">
+      <svg><use href="#i-plus"/></svg>دخول
+    </button>
+    <div class="err-msg" id="nameErr" style="color:var(--err);margin-top:8px;text-align:center;display:none">
+      من فضلك أدخل اسمك
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     APP DASHBOARD (باقي الـ HTML كما هو)
+══════════════════════════════════════════ -->
+<div id="app" style="display:none">
+  <div class="topbar">
+    <a href="index.html" class="tb-logo">
+      <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.display='none'"/>
+      <h2>Plus Math</h2>
+    </a>
+    <div class="tb-name">مشرف: <strong id="tbName">—</strong></div>
+    <div class="tb-acts">
+      <button class="tbtn danger" onclick="doLogout()"><svg><use href="#i-out"/></svg>خروج</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- باقي محتوى الداشبورد (welcome-banner, grade cards, tabs, forms, etc.) موجود كما في الكود الأصلي -->
+    <!-- للاختصار لم أعيد نسخه هنا، انسخه من الكود الأصلي اللي بعته قبل كده -->
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><svg id="tIc"><use href="#i-check"/></svg><span id="tMsg"></span></div>
+
+<!-- ══════════════════ FIREBASE ══════════════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, setDoc, serverTimestamp, query, where }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+const cfg = {
+  apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
+  authDomain:"plusinmath-web.firebaseapp.com",
+  projectId:"plusinmath-web",
+  storageBucket:"plusinmath-web.firebasestorage.app",
+  messagingSenderId:"444492731461",
+  appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
+};
+const app  = initializeApp(cfg);
+const db   = getFirestore(app);
+const stor = getStorage(app);
+
+// ── باقي دوال Firebase (loadCount, saveVideo, saveExam, saveHomework, uploadFile, etc.) كما هي ──
+// انسخها من الكود الأصلي بدون تغيير
+
+window._fbReady = true;
+</script>
+
+<!-- ══════════════════ APP JS (المعدل) ══════════════════ -->
+<script>
+// ── متغيرات عامة ──
+let _supData = null;
+window._curGrade = '';
+let _curTab = 'v';
+const GRADES_LABEL = { /* نفس القائمة الأصلية */ };
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goToDashboard(){
+  const name = document.getElementById('inpName').value.trim();
+  if(!name){
+    document.getElementById('nameErr').style.display = 'block';
+    return;
+  }
+  document.getElementById('nameErr').style.display = 'none';
+
+  localStorage.setItem('pm_sup_name', name);
+
+  _supData = {
+    name,
+    permissions: { videos: true, exams: true, homework: true }
+  };
+
+  openApp();
+}
+
+function openApp(){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('app').style.display = 'block';
+
+  const name = _supData?.name || localStorage.getItem('pm_sup_name') || 'مشرف';
+  document.getElementById('tbName').textContent = name;
+  document.getElementById('wbName').textContent = name;
+  document.getElementById('wbAvatar').textContent = name.slice(0,2);
+
+  // إخفاء أي عناصر متعلقة بالكود إذا وجدت
+  const myCodeBtn = document.querySelector('.tbtn svg use[href="#i-key"]');
+  if(myCodeBtn) myCodeBtn.parentElement.parentElement.style.display = 'none';
+
+  loadAllGradeStats();
+}
+
+function doLogout(){
+  localStorage.removeItem('pm_sup_name');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('inpName').value = '';
+  showScreen('screenName');
+}
+
+// ── init ──
+(async function init(){
+  const savedName = localStorage.getItem('pm_sup_name');
+  if(savedName){
+    let tries = 0;
+    while(!window._fbReady && tries < 50){
+      await new Promise(r=>setTimeout(r,100)); tries++;
+    }
+    _supData = {
+      name: savedName,
+      permissions: { videos: true, exams: true, homework: true }
+    };
+    openApp();
+    return;
+  }
+  showScreen('screenName');
+})();
+
+// باقي الدوال (pickGrade, switchTab, saveVideo, loadList, renderItems, toast, إلخ) → انسخها كما هي من الكود الأصلي
+</script>
+</body>
+</html>
