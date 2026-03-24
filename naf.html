@@ -101,14 +101,14 @@ li {
     border-radius: 10px;
 }
 
-/* الصفحة */
+/* الصفحة + الهيدر بنفس خط Tajawal تمامًا (محدث للطباعة) */
 @page {
     size: A4;
     margin: 20mm;
 
     @top-center {
         content: "التربية الدولية – مهدي حسن عبدالعظيم حسن – كلية التربية – جامعة بني سويف";
-        font-family: 'Tajawal', "Traditional Arabic", "Arial", sans-serif;
+        font-family: 'Tajawal', "Traditional Arabic", "Arial", sans-serif !important;   /* ← نفس خط الكلمات بالضبط */
         font-size: 11pt;
         color: #00695c;
         border-bottom: 1px solid #ccc;
@@ -156,6 +156,13 @@ h2 {
 
 .cover {
     page-break-after: always;
+}
+
+/* تأكيد إضافي للهيدر في الطباعة */
+@page {
+    @top-center {
+        font-family: 'Tajawal', "Traditional Arabic", "Arial", sans-serif !important;
+    }
 }
 
 }
@@ -229,7 +236,7 @@ h2 {
 </p>
 </div>
 
-<!-- القسم الثالث (النص الكامل والمفصل) -->
+<!-- القسم الثالث -->
 <div class="box" id="s3">
 <h2>ثالثًا: مجالات التربية الدولية (الأبعاد الرئيسية)</h2>
 <p>
