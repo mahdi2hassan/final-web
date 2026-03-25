@@ -1032,12 +1032,41 @@ Object.values(GRADES).flat().forEach(g=>{window._GM[g.key]=g;});
 
 function buildGrades(){
   const ud=window._userData||{};
-  // كل المراحل بما فيها الجامعة والمراحل الديناميكية
+  const STAGE_LABELS_AR={primary:'المرحلة الابتدائية',prep:'المرحلة الإعدادية',sec:'المرحلة الثانوية',univ:'الجامعات والكورسات'};
   const allStages = Object.keys(GRADES);
+
   allStages.forEach(stage=>{
-    const grid=document.getElementById('grid-'+stage);if(!grid)return;
     const grades=GRADES[stage]||[];
-    if(!grades.length){ grid.innerHTML=''; return; }
+    let grid=document.getElementById('grid-'+stage);
+
+    // لو الـ stage جديد ومفيش section ليه — نعمله ديناميكياً
+    if(!grid && grades.length>0){
+      const main=document.getElementById('mainContent');
+      const div=document.createElement('div');
+      div.innerHTML=`
+        <div class="sdiv"></div>
+        <div class="section">
+          <div class="section-head">
+            <div class="sh-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
+            <div><h2>${STAGE_LABELS_AR[stage]||stage}</h2><p>${grades.length} صف / كورس</p></div>
+          </div>
+          <div class="grades-grid" id="grid-${stage}"></div>
+        </div>`;
+      main.appendChild(div);
+      grid=document.getElementById('grid-'+stage);
+    }
+
+    if(!grid) return;
+
+    // إخفاء الـ section لو فاضي
+    const section=grid.closest('.section');
+    if(!grades.length){
+      grid.innerHTML='';
+      if(section) section.style.display='none';
+      return;
+    }
+    if(section) section.style.display='';
+
     grid.innerHTML=grades.map(g=>{
       const isMine=ud.gradeKey===g.key;
       const isLocked=ud.gradeKey && !isMine;
