@@ -404,6 +404,14 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
     </div>
     <div class="grades-grid" id="grid-sec"></div>
   </div>
+  <div class="sdiv"></div>
+  <div class="section">
+    <div class="section-head">
+      <div class="sh-icon" style="background:rgba(168,85,247,0.12);color:#a855f7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div><h2>الجامعات والكورسات</h2><p>كورسات جامعية وتخصصية</p></div>
+    </div>
+    <div class="grades-grid" id="grid-univ"></div>
+  </div>
 </main>
 
 
@@ -429,6 +437,9 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
     </button>
     <button class="cv-tab" onclick="switchTab('progress',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>تقدمك
+    </button>
+    <button class="cv-tab" onclick="switchTab('research',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>أبحاث
     </button>
   </div>
 
@@ -488,10 +499,66 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
         </a>
       </div>
     </div>
+
+    <!-- تاب الأبحاث -->
+    <div class="tab-pane" id="tp-research">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="font-size:14px;font-weight:800">📝 أبحاثي</div>
+        <button onclick="openNewResearch()" class="btn primary sm">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          بحث جديد
+        </button>
+      </div>
+      <div id="myResearchList">
+        <div class="empty"><p>لا يوجد أبحاث — أضف بحثك الأول</p></div>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- Ticket Modal -->
+<!-- Research Form Modal -->
+<div class="overlay" id="researchModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>📝 <span id="resModalTitle">بحث جديد</span></h3>
+      <button class="mclose" onclick="closeResearchModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <input type="hidden" id="res-edit-id"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">موضوع البحث</label>
+        <input id="res-topic" type="text" placeholder="عنوان البحث..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/></div>
+      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">اسم الطالب</label>
+        <input id="res-student-name" type="text" placeholder="الاسم الكامل..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">المقرر</label>
+        <input id="res-subject" type="text" placeholder="مثال: تربية مقارنة..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/></div>
+      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">الفرقة / الصف</label>
+        <input id="res-grade-text" type="text" placeholder="مثال: الثالثة - أدبي..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">القسم</label>
+        <input id="res-dept" type="text" placeholder="مثال: رياضيات، عام رياضة..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/></div>
+      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">الكود</label>
+        <input id="res-code" type="text" placeholder="كودك..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;font-family:monospace;letter-spacing:2px" oninput="this.value=this.value.toUpperCase()"/></div>
+    </div>
+    <div style="margin-bottom:12px">
+      <label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">محتوى البحث / التفاصيل</label>
+      <textarea id="res-details" rows="6" placeholder="اكتب محتوى البحث هنا..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;resize:vertical;line-height:1.8"></textarea>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="saveStudentResearch()" style="flex:1;padding:12px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+        حفظ البحث
+      </button>
+      <button onclick="printStudentResearch()" style="padding:12px 16px;border:1px solid var(--b1);border-radius:11px;background:transparent;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">
+        🖨️ طباعة
+      </button>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="ticketModal">
   <div class="modal">
     <div class="modal-head">
@@ -633,7 +700,11 @@ onAuthStateChanged(auth,async(user)=>{
     setTimeout(()=>{ if(window.setWatermark) window.setWatermark(_userData.name||'طالب', _userData.phone||''); }, 500);
     try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
     try{const pr=await getDoc(doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={};}
+    // ── تحميل المراحل الديناميكية ──
+    await loadDynamicGrades();
     buildGrades();
+    // ── تحميل أبحاث الطالب ──
+    loadMyResearches();
     // ── AUTO-OPEN صف الطالب ──
     if(_userData.gradeKey){
       const g=window._GM[_userData.gradeKey];
@@ -910,7 +981,8 @@ function setProg(fId,vId,tot,done){const p=tot?Math.round(done/tot*100):0;const 
 </script>
 
 <script>
-const GRADES={
+// المراحل الافتراضية — تتحدث من Firestore تلقائياً
+let GRADES={
   primary:[
     {key:'primary-4',label:'الصف الرابع الابتدائي',sub:'كل محتوى الصف الرابع',img:'https://plusedu.vercel.app/store/1/ye 1.png',stage:'ابتدائي'},
     {key:'primary-5',label:'الصف الخامس الابتدائي',sub:'كل محتوى الصف الخامس',img:'https://plusedu.vercel.app/store/1/ye-2.jpg',stage:'ابتدائي'},
@@ -925,30 +997,61 @@ const GRADES={
     {key:'sec-1',label:'الصف الأول الثانوي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/year 1.png',stage:'ثانوي'},
     {key:'sec-2',label:'الصف الثاني الثانوي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/year-2.jpg',stage:'ثانوي'},
     {key:'sec-3',label:'الصف الثالث الثانوي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/year-3.jpg',stage:'ثانوي'},
-  ]
+  ],
+  univ:[]
 };
+
+// جيب المراحل الإضافية من Firestore (لو فيه)
+async function loadDynamicGrades(){
+  try{
+    const snap=await getDocs(collection(db,'grades'));
+    if(snap.empty) return;
+    const fromDB={};
+    snap.docs.forEach(d=>{
+      const g={id:d.id,...d.data()};
+      if(!fromDB[g.stage]) fromDB[g.stage]=[];
+      fromDB[g.stage].push(g);
+    });
+    ['primary','prep','sec','univ'].forEach(s=>{
+      if(fromDB[s]&&fromDB[s].length>0)
+        GRADES[s]=fromDB[s].sort((a,b)=>(a.order||0)-(b.order||0));
+    });
+    // مراحل إضافية
+    Object.keys(fromDB).forEach(s=>{
+      if(!GRADES[s]) GRADES[s]=fromDB[s];
+    });
+    window._GM={};
+    Object.values(GRADES).flat().forEach(g=>{window._GM[g.key]=g;});
+    buildGrades();
+  }catch(e){ console.warn('loadDynamicGrades:',e.message); }
+}
+
 // Grade map for auto-open
 window._GM={};
 Object.values(GRADES).flat().forEach(g=>{window._GM[g.key]=g;});
 
 function buildGrades(){
   const ud=window._userData||{};
-  ['primary','prep','sec'].forEach(stage=>{
+  // كل المراحل بما فيها الجامعة والمراحل الديناميكية
+  const allStages = Object.keys(GRADES);
+  allStages.forEach(stage=>{
     const grid=document.getElementById('grid-'+stage);if(!grid)return;
-    grid.innerHTML=GRADES[stage].map(g=>{
+    const grades=GRADES[stage]||[];
+    if(!grades.length){ grid.innerHTML=''; return; }
+    grid.innerHTML=grades.map(g=>{
       const isMine=ud.gradeKey===g.key;
-      const isLocked=ud.gradeKey && !isMine; // locked if student has a grade but this isn't it
+      const isLocked=ud.gradeKey && !isMine;
       return `<div id="gcard-${g.key}" class="grade-card"
-        onclick="${isMine?`openCourse('${g.key}','${g.label}','${g.stage}')`:`showToast('هذا الصف مش صفك — اشترك في الصف الصح 🔒','err')`}"
+        onclick="${isMine?`openCourse('${g.key}','${g.label}','${g.stage||stage}')`:`showToast('هذا الصف مش صفك — اشترك في الصف الصح 🔒','err')`}"
         style="${isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':isLocked?'opacity:.45;cursor:not-allowed':''}">
-        <img src="${g.img}" class="gc-img" onerror="this.style.display='none'"/>
+        ${g.img?`<img src="${g.img}" class="gc-img" onerror="this.style.display='none'"/>`:''}
         ${isMine?'<div class="gc-badge mine">صفك ✓</div>':isLocked?'<div class="gc-badge" style="background:rgba(255,77,109,0.8);color:#fff">🔒</div>':''}
         <div class="gc-body">
           <div class="gc-title">${g.label}</div>
-          <div class="gc-sub">${isMine?'📚 محتواك الأساسي':isLocked?'مش صفك':g.sub}</div>
+          <div class="gc-sub">${isMine?'📚 محتواك الأساسي':isLocked?'مش صفك':g.sub||''}</div>
         </div>
         <div class="gc-foot">
-          <span>${isMine?'فيديوهات · امتحانات · واجبات':isLocked?'اشترك في صفك':'اضغط للمشاهدة'}</span>
+          <span>${isMine?'فيديوهات · امتحانات · أبحاث':isLocked?'اشترك في صفك':'اضغط للمشاهدة'}</span>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
         </div>
       </div>`;
@@ -967,6 +1070,7 @@ function switchTab(name,btn){
   document.getElementById('tp-'+name)?.classList.add('on');
   if(btn)btn.classList.add('on');
   if(name==='books') loadBooksTab();
+  if(name==='research') loadMyResearches();
   // Show/hide search bar (only for videos/exams)
   const srch = document.getElementById('cvSearch');
   if(srch) srch.style.display = (name==='videos'||name==='exams') ? 'flex' : 'none';
@@ -1029,6 +1133,169 @@ function startCountdown(expiresAt){
 }
 
 // ══════════════════════════════════════
+// ══════════════════════════════════════
+// ── RESEARCH SYSTEM ──
+// ══════════════════════════════════════
+window._myResearches=[];
+
+window.openNewResearch=()=>{
+  document.getElementById('res-edit-id').value='';
+  document.getElementById('resModalTitle').textContent='بحث جديد';
+  ['res-topic','res-student-name','res-subject','res-grade-text','res-dept','res-code','res-details'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  // ملء البيانات تلقائياً من بيانات الطالب
+  if(_userData){
+    const nameEl=document.getElementById('res-student-name');
+    if(nameEl && _userData.name) nameEl.value=_userData.name;
+    const codeEl=document.getElementById('res-code');
+    if(codeEl && _userData.subscriptionCode) codeEl.value=_userData.subscriptionCode;
+    const gradeEl=document.getElementById('res-grade-text');
+    if(gradeEl && _userData.grade) gradeEl.value=_userData.grade;
+  }
+  document.getElementById('researchModal').classList.add('open');
+};
+
+window.closeResearchModal=()=>{
+  document.getElementById('researchModal').classList.remove('open');
+};
+
+window.saveStudentResearch=async()=>{
+  const topic=document.getElementById('res-topic').value.trim();
+  const studentName=document.getElementById('res-student-name').value.trim();
+  if(!topic||!studentName){showToast('ادخل موضوع البحث واسم الطالب','err');return;}
+  const editId=document.getElementById('res-edit-id').value;
+  const data={
+    topic,
+    studentName,
+    subject:document.getElementById('res-subject').value.trim(),
+    gradeText:document.getElementById('res-grade-text').value.trim(),
+    dept:document.getElementById('res-dept').value.trim(),
+    code:document.getElementById('res-code').value.trim().toUpperCase(),
+    details:document.getElementById('res-details').value.trim(),
+    userId:_user?.uid||'',
+    gradeKey:_userData?.gradeKey||'',
+    stage:_userData?.stage||'',
+    updatedAt:serverTimestamp()
+  };
+  try{
+    if(editId){
+      await updateDoc(doc(db,'research',editId),data);
+    } else {
+      data.createdAt=serverTimestamp();
+      await addDoc(collection(db,'research'),data);
+    }
+    showToast('✅ تم حفظ البحث','ok');
+    closeResearchModal();
+    loadMyResearches();
+  }catch(e){showToast('خطأ: '+e.message,'err');}
+};
+
+window.loadMyResearches=async()=>{
+  if(!_user) return;
+  try{
+    const snap=await getDocs(query(collection(db,'research'),where('userId','==',_user.uid)));
+    window._myResearches=snap.docs.map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    renderMyResearches();
+  }catch(e){console.warn('loadMyResearches:',e.message);}
+};
+
+window.renderMyResearches=()=>{
+  const el=document.getElementById('myResearchList');
+  if(!el) return;
+  if(!window._myResearches.length){
+    el.innerHTML='<div class="empty"><p>لا يوجد أبحاث — أضف بحثك الأول</p></div>';
+    return;
+  }
+  el.innerHTML=window._myResearches.map(r=>`
+    <div style="background:var(--s2);border:1px solid var(--b2);border-radius:13px;padding:14px;margin-bottom:10px">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <div style="width:40px;height:40px;border-radius:10px;background:rgba(199,100,40,0.12);border:1px solid rgba(199,100,40,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📝</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:800;margin-bottom:3px">${r.topic||'—'}</div>
+          <div style="font-size:11px;color:var(--muted)">${r.subject||''} ${r.gradeText?'· '+r.gradeText:''} ${r.dept?'· '+r.dept:''}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">${r.createdAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          <button onclick="editMyResearch('${r.id}')" style="padding:5px 8px;border:1px solid var(--b2);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-size:12px">✏️</button>
+          <button onclick="printMyResearch('${r.id}')" style="padding:5px 8px;border:1px solid var(--b2);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-size:12px">🖨️</button>
+        </div>
+      </div>
+    </div>`).join('');
+};
+
+window.editMyResearch=(id)=>{
+  const r=window._myResearches.find(x=>x.id===id);
+  if(!r) return;
+  document.getElementById('res-edit-id').value=id;
+  document.getElementById('resModalTitle').textContent='تعديل البحث';
+  document.getElementById('res-topic').value=r.topic||'';
+  document.getElementById('res-student-name').value=r.studentName||'';
+  document.getElementById('res-subject').value=r.subject||'';
+  document.getElementById('res-grade-text').value=r.gradeText||'';
+  document.getElementById('res-dept').value=r.dept||'';
+  document.getElementById('res-code').value=r.code||'';
+  document.getElementById('res-details').value=r.details||'';
+  document.getElementById('researchModal').classList.add('open');
+};
+
+window.printStudentResearch=()=>{
+  // طباعة البحث الحالي المفتوح في المودال
+  const topic=document.getElementById('res-topic').value.trim();
+  const studentName=document.getElementById('res-student-name').value.trim();
+  const subject=document.getElementById('res-subject').value.trim();
+  const gradeText=document.getElementById('res-grade-text').value.trim();
+  const dept=document.getElementById('res-dept').value.trim();
+  const code=document.getElementById('res-code').value.trim();
+  const details=document.getElementById('res-details').value.trim();
+  _printResearch({topic,studentName,subject,gradeText,dept,code,details});
+};
+
+window.printMyResearch=(id)=>{
+  const r=window._myResearches.find(x=>x.id===id);
+  if(r) _printResearch(r);
+};
+
+function _printResearch(r){
+  const html=`<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+body{font-family:'Tajawal',"Traditional Arabic","Arial",sans-serif;font-size:16px;line-height:2;max-width:900px;margin:auto;direction:rtl;text-align:right}
+.cover{text-align:center;min-height:100vh;display:flex;flex-direction:column;justify-content:center;page-break-after:always}
+.cover h1{font-size:2.6em;color:#c62828}
+.info{font-size:1.1em;line-height:2.8;margin-top:30px}
+h2{color:#c62828;margin:60px 0 20px;border-right:8px solid #c62828;padding-right:15px}
+.box{background:#f9fbfc;border-right:6px solid #c62828;padding:30px 40px;margin:40px 0;border-radius:10px;white-space:pre-wrap;text-align:right;line-height:2}
+.print-btn{display:block;margin:60px auto;padding:12px 36px;font-size:18px;background:#c62828;color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Tajawal',sans-serif}
+@page{size:A4;margin:20mm;@top-center{content:"${r.studentName||''} – ${r.subject||''} – ${r.code||''} – ${r.gradeText||''}";font-family:'Tajawal',sans-serif;font-size:11pt;color:#c62828;border-bottom:1px solid #ccc}@bottom-center{content:"صفحة " counter(page);font-size:11pt}}
+@page :first{@bottom-center{content:""}}
+@media print{.print-btn{display:none}body{font-size:13pt}h1,h2{text-align:center;border:none}.box{background:none;border:none}}
+</style>
+</head>
+<body>
+<div class="cover">
+  <h1>${r.topic||'—'}</h1>
+  <div class="info">
+    إعداد الطالب<br/><br/>
+    <strong>${r.studentName||'—'}</strong><br/><br/>
+    ${r.gradeText||''}${r.dept?' – '+r.dept:''}<br/>
+    ${r.subject?'المادة: '+r.subject+'<br/>':''}
+    ${r.code?'الكود: '+r.code:''}
+  </div>
+</div>
+<h2>${r.topic||'—'}</h2>
+<div class="box">${(r.details||'لا يوجد محتوى').replace(/\n/g,'<br/>')}</div>
+<button class="print-btn" onclick="window.print()">🖨️ طباعة البحث</button>
+</body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+}
+
 // ── TEACHER NOTE ──
 // ══════════════════════════════════════
 function showTeacherNote(notes, color){

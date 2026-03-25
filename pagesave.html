@@ -594,8 +594,16 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
         <span>الكوبونات</span>
       </div>
+      <div class="sb-item" onclick="goPage('grades')" data-perm="content">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        <span>المراحل والصفوف</span>
+      </div>
       <div class="sb-item" onclick="goPage('content')" data-perm="content">
         <svg><use href="#ic-book"/></svg><span>المحتوى</span>
+      </div>
+      <div class="sb-item" onclick="goPage('research')" data-perm="content">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+        <span>الأبحاث</span>
       </div>
       <div class="sb-item" onclick="goPage('broadcast')" data-perm="broadcast">
         <svg><use href="#ic-send"/></svg><span>إرسال جماعي</span>
@@ -852,24 +860,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <div class="ftab" onclick="setCF('unused')">متاح</div>
             <div class="ftab" onclick="setCF('used')">مستخدم</div>
           </div>
-          <select id="cf-stage" onchange="renderCodes()" style="padding:6px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px;outline:none">
+          <select id="cf-stage" onchange="updateCFGrade();renderCodes()" style="padding:6px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px;outline:none">
             <option value="">كل المراحل</option>
             <option value="primary">ابتدائي</option>
             <option value="prep">إعدادي</option>
             <option value="sec">ثانوي</option>
+            <option value="univ">جامعة</option>
           </select>
-          <select id="cf-grade" onchange="renderCodes()" style="padding:6px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px;outline:none">
-            <option value="">كل الصفوف</option>
-            <option value="primary-4">٤ ابتدائي</option>
-            <option value="primary-5">٥ ابتدائي</option>
-            <option value="primary-6">٦ ابتدائي</option>
-            <option value="prep-1">١ إعدادي</option>
-            <option value="prep-2">٢ إعدادي</option>
-            <option value="prep-3">٣ إعدادي</option>
-            <option value="sec-1">١ ثانوي</option>
-            <option value="sec-2">٢ ثانوي</option>
-            <option value="sec-3">٣ ثانوي</option>
-          </select>
+<select id="cf-grade" onchange="renderCodes()" style="padding:6px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px;outline:none"><option value="">كل الصفوف</option></select>
           <input id="cf-price" type="number" placeholder="فلتر السعر..." oninput="renderCodes()" style="width:110px;padding:6px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px;outline:none"/>
         </div>
         <div class="tw"><div class="tw-scroll">
@@ -896,6 +894,62 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <svg><use href="#ic-book"/></svg>فتح إدارة المحتوى
           </a>
         </div>
+      </div>
+
+      <!-- ══ GRADES MANAGEMENT ══ -->
+      <div class="page" id="page-grades">
+        <div class="sh">
+          <div class="sh-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            إدارة المراحل والصفوف
+          </div>
+          <button class="btn primary sm" onclick="openGradeModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            إضافة صف/كورس
+          </button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:16px" id="gradeStagesList">
+          <div class="empty"><p>جاري التحميل...</p></div>
+        </div>
+      </div>
+
+      <!-- ══ RESEARCH ══ -->
+      <div class="page" id="page-research">
+        <div class="sh">
+          <div class="sh-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+            إدارة الأبحاث
+          </div>
+          <button class="btn primary sm" onclick="openResearchModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            بحث جديد
+          </button>
+        </div>
+        <!-- فلاتر -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <select id="res-stage-filter" onchange="renderResearch()" style="padding:7px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
+            <option value="">كل المراحل</option>
+            <option value="primary">ابتدائي</option>
+            <option value="prep">إعدادي</option>
+            <option value="sec">ثانوي</option>
+            <option value="univ">جامعة</option>
+          </select>
+          <input id="res-search" placeholder="🔍 ابحث..." oninput="renderResearch()" style="flex:1;padding:7px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"/>
+        </div>
+        <div class="tw"><div class="tw-scroll">
+          <table>
+            <thead><tr>
+              <th>موضوع البحث</th>
+              <th>الطالب</th>
+              <th>المرحلة</th>
+              <th>الفرقة</th>
+              <th>القسم</th>
+              <th>التاريخ</th>
+              <th>إجراء</th>
+            </tr></thead>
+            <tbody id="researchTbl"><tr><td colspan="7"><div class="empty"><p>لا يوجد أبحاث</p></div></td></tr></tbody>
+          </table>
+        </div></div>
       </div>
 
       <!-- ══ BROADCAST ══ -->
@@ -1547,6 +1601,79 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   </div>
 </div>
 
+<!-- Research Modal -->
+<div class="mbg" id="researchModal">
+  <div class="modal" style="max-width:500px">
+    <h3>📝 بحث جديد</h3>
+    <input type="hidden" id="res-edit-id"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div class="ff" style="margin:0"><label>موضوع البحث</label>
+        <input type="text" id="res-topic" placeholder="عنوان البحث..."/></div>
+      <div class="ff" style="margin:0"><label>اسم الطالب</label>
+        <input type="text" id="res-student-name" placeholder="الاسم الكامل..."/></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div class="ff" style="margin:0"><label>المرحلة</label>
+        <select id="res-stage" onchange="updateResGrades()">
+          <option value="">— اختار —</option>
+          <option value="primary">ابتدائي</option>
+          <option value="prep">إعدادي</option>
+          <option value="sec">ثانوي</option>
+          <option value="univ">جامعة</option>
+        </select></div>
+      <div class="ff" style="margin:0"><label>الفرقة/الصف</label>
+        <select id="res-grade"><option value="">— اختار —</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div class="ff" style="margin:0"><label>القسم</label>
+        <input type="text" id="res-dept" placeholder="مثال: رياضيات، أدبي..."/></div>
+      <div class="ff" style="margin:0"><label>اسم المقرر</label>
+        <input type="text" id="res-subject" placeholder="مثال: تربية مقارنة..."/></div>
+    </div>
+    <div class="ff"><label>الكود (اختياري)</label>
+      <input type="text" id="res-code" placeholder="كود الطالب..." style="font-family:monospace;letter-spacing:2px" oninput="this.value=this.value.toUpperCase()"/></div>
+    <div class="ff"><label>تفاصيل البحث / المحتوى</label>
+      <textarea id="res-details" rows="4" placeholder="اكتب تفاصيل البحث هنا..." style="resize:vertical"></textarea></div>
+    <div class="mfooter">
+      <button class="btn ghost" onclick="closeModal('researchModal')">إلغاء</button>
+      <button class="btn primary" onclick="saveResearch()"><svg><use href="#ic-check"/></svg>حفظ البحث</button>
+    </div>
+  </div>
+</div>
+
+<!-- Grade Modal -->
+<div class="mbg" id="gradeModal">
+  <div class="modal" style="max-width:460px">
+    <h3>📚 إضافة صف أو كورس جديد</h3>
+    <input type="hidden" id="gm-edit-key"/>
+    <div class="ff"><label>المرحلة</label>
+      <select id="gm-stage" onchange="updateGMGrades()">
+        <option value="primary">ابتدائي</option>
+        <option value="prep">إعدادي</option>
+        <option value="sec">ثانوي</option>
+        <option value="univ">جامعة</option>
+        <option value="new">➕ مرحلة جديدة...</option>
+      </select></div>
+    <div class="ff" id="gm-new-stage-wrap" style="display:none"><label>اسم المرحلة الجديدة</label>
+      <input type="text" id="gm-new-stage-name" placeholder="مثال: تحضيرية..."/></div>
+    <div class="ff"><label>المسمى (يظهر للطلاب)</label>
+      <input type="text" id="gm-label" placeholder="مثال: الصف الأول الإعدادي"/></div>
+    <div class="ff"><label>المفتاح الداخلي (gradeKey)</label>
+      <input type="text" id="gm-key" placeholder="مثال: prep-1" style="font-family:monospace;direction:ltr"/></div>
+    <div class="ff"><label>وصف مختصر</label>
+      <input type="text" id="gm-sub" placeholder="مثال: كل محتوى الصف الأول"/></div>
+    <div class="ff"><label>رابط صورة الغلاف (اختياري)</label>
+      <input type="url" id="gm-img" placeholder="https://..."/></div>
+    <p style="font-size:11px;color:var(--muted);line-height:1.6;margin-bottom:12px">
+      ⚡ بعد الإضافة — هيظهر تلقائياً في الكورسات وصفحة التسجيل وإدارة المحتوى
+    </p>
+    <div class="mfooter">
+      <button class="btn ghost" onclick="closeModal('gradeModal')">إلغاء</button>
+      <button class="btn primary" onclick="saveGrade()"><svg><use href="#ic-check"/></svg>إضافة</button>
+    </div>
+  </div>
+</div>
+
 <!-- Edit Code Modal -->
 <div class="mbg" id="editCodeModal">
   <div class="modal" style="max-width:420px">
@@ -1564,6 +1691,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <option value="primary">ابتدائي</option>
         <option value="prep">إعدادي</option>
         <option value="sec">ثانوي</option>
+        <option value="univ">جامعة</option>
       </select>
     </div>
     <div class="ff" id="ec-grade-wrap" style="display:none;margin-bottom:10px"><label>الصف</label>
@@ -1924,7 +2052,8 @@ window.savePaySettings = async ()=>{
 const GRADE_MAP = {
   primary:['primary-4|الصف الرابع الابتدائي','primary-5|الصف الخامس الابتدائي','primary-6|الصف السادس الابتدائي'],
   prep:   ['prep-1|الصف الأول الإعدادي','prep-2|الصف الثاني الإعدادي','prep-3|الصف الثالث الإعدادي'],
-  sec:    ['sec-1|الصف الأول الثانوي','sec-2|الصف الثاني الثانوي','sec-3|الصف الثالث الثانوي']
+  sec:    ['sec-1|الصف الأول الثانوي','sec-2|الصف الثاني الثانوي','sec-3|الصف الثالث الثانوي'],
+  univ:   []
 };
 window.updateGenGrades = ()=>{
   const stage = document.getElementById('gs').value;
@@ -1950,9 +2079,9 @@ window.genCodes = async ()=>{
   const allGrades = Object.values(GRADE_MAP).flat();
   const gradeLabel = gradeKey
     ? (allGrades.find(o=>o.startsWith(gradeKey+'|'))||'').split('|')[1]||gradeKey
-    : {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[stage]||stage;
+    : {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'}[stage]||stage;
 
-  const stageLabel = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[stage]||stage;
+  const stageLabel = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'}[stage]||stage;
   const ch = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   const mk = ()=>Array.from({length:6},()=>ch[Math.floor(Math.random()*ch.length)]).join('');
   const list = [];
@@ -2166,7 +2295,7 @@ window.viewUser = async (id)=>{
     const ud = await db.collection('users').doc(id).get();
     if(!ud.exists){ toast('لم يتم العثور على الطالب','err'); return; }
     const d = ud.data();
-    const stageMap={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'};
+    const stageMap={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
     const statusLabel = d.blocked ? '⛔ محظور' : d.subscriptionActive ? '✅ مشترك' : '⏳ غير مشترك';
 
     // Load devices
@@ -3309,7 +3438,7 @@ function renderCodes(){
       <td>
         <span class="cc" onclick="cpTxt('${x.code||''}')" style="font-family:monospace;font-size:13px;letter-spacing:2px;font-weight:800">${x.code||'—'}</span>
       </td>
-      <td style="font-size:12px;color:var(--muted)">${{primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[x.stage]||x.stage||'—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${{primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'}[x.stage]||x.stage||'—'}</td>
       <td style="font-size:12px;color:var(--muted)">${x.grade||'—'}</td>
       <td style="font-size:12px;color:var(--gold2)">${x.price?x.price+' جنيه':'—'}</td>
       <td><span class="bd ${x.used?'pu':'blue'}">${x.used?'مستخدم':'متاح'}</span></td>
@@ -4139,7 +4268,7 @@ window.exportExpired = ()=>{
       u.name||'',
       u.phone||'',
       u.grade||'',
-      {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[u.stage]||'',
+      {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'}[u.stage]||'',
       u.createdAt?.toDate?.().toLocaleDateString('ar-EG')||''
     ])
   ];
@@ -4166,7 +4295,7 @@ window.openStudentDetail = async (id)=>{
     if(!ud.exists){ content.innerHTML='<div class="empty"><p>الطالب مش موجود</p></div>'; return; }
     const d = ud.data();
     const devices = devSnap.docs.map(dd=>({id:dd.id,...dd.data()}));
-    const stageMap={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'};
+    const stageMap={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
     const maxDev = d.maxDevices||3;
     const now = new Date();
 
@@ -5870,7 +5999,8 @@ window.endAllSessions = async ()=>{
 const GRADE_EDIT_MAP = {
   primary:['primary-4|الصف الرابع الابتدائي','primary-5|الصف الخامس الابتدائي','primary-6|الصف السادس الابتدائي'],
   prep:   ['prep-1|الصف الأول الإعدادي','prep-2|الصف الثاني الإعدادي','prep-3|الصف الثالث الإعدادي'],
-  sec:    ['sec-1|الصف الأول الثانوي','sec-2|الصف الثاني الثانوي','sec-3|الصف الثالث الثانوي']
+  sec:    ['sec-1|الصف الأول الثانوي','sec-2|الصف الثاني الثانوي','sec-3|الصف الثالث الثانوي'],
+  univ:   []
 };
 
 window.updateEditCodeGrades = ()=>{
@@ -5909,7 +6039,7 @@ window.saveCodeEdit = async ()=>{
   const allGrades = Object.values(GRADE_EDIT_MAP).flat();
   const gradeLabel = gradeKey
     ? (allGrades.find(o=>o.startsWith(gradeKey+'|'))||'').split('|')[1]||gradeKey
-    : stage?{primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[stage]||stage:'';
+    : stage?{primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'}[stage]||stage:'';
   const upd = { code, price };
   if(stage) upd.stage = stage;
   if(gradeKey){ upd.gradeKey = gradeKey; upd.grade = gradeLabel; }
@@ -6021,6 +6151,368 @@ async function loadAdminNotifications(){
     if(!snap.empty) batch.commit().catch(()=>{});
   }catch(e){ console.warn('adminNotifications load:',e.message); }
 }
+
+// ══════════════════════════════════════════════════════
+// ── DYNAMIC GRADES SYSTEM ──
+// ══════════════════════════════════════════════════════
+
+// الجدول الأساسي — بيتحدث من Firestore
+window._dynamicGrades = {
+  primary:[
+    {key:'primary-4',label:'الصف الرابع الابتدائي',sub:'كل محتوى الصف الرابع',stage:'primary',img:''},
+    {key:'primary-5',label:'الصف الخامس الابتدائي',sub:'كل محتوى الصف الخامس',stage:'primary',img:''},
+    {key:'primary-6',label:'الصف السادس الابتدائي',sub:'كل محتوى الصف السادس',stage:'primary',img:''},
+  ],
+  prep:[
+    {key:'prep-1',label:'الصف الأول الإعدادي',sub:'كل محتوى الصف الأول',stage:'prep',img:''},
+    {key:'prep-2',label:'الصف الثاني الإعدادي',sub:'كل محتوى الصف الثاني',stage:'prep',img:''},
+    {key:'prep-3',label:'الصف الثالث الإعدادي',sub:'كل محتوى الصف الثالث',stage:'prep',img:''},
+  ],
+  sec:[
+    {key:'sec-1',label:'الصف الأول الثانوي',sub:'كل محتوى الصف الأول',stage:'sec',img:''},
+    {key:'sec-2',label:'الصف الثاني الثانوي',sub:'كل محتوى الصف الثاني',stage:'sec',img:''},
+    {key:'sec-3',label:'الصف الثالث الثانوي',sub:'كل محتوى الصف الثالث',stage:'sec',img:''},
+  ],
+  univ:[]
+};
+
+const STAGE_LABELS = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
+const STAGE_ICONS  = {primary:'🏫',prep:'📘',sec:'🎓',univ:'🏛️'};
+
+// جيب المراحل من Firestore وحدّث الـ local
+async function loadDynamicGrades(){
+  try{
+    const snap = await db.collection('grades').get();
+    if(snap.empty) return; // استخدم الافتراضي
+    const fromDB = {};
+    snap.docs.forEach(d=>{
+      const g = {id:d.id,...d.data()};
+      if(!fromDB[g.stage]) fromDB[g.stage]=[];
+      fromDB[g.stage].push(g);
+    });
+    // ادمج مع الافتراضي
+    ['primary','prep','sec','univ'].forEach(s=>{
+      if(fromDB[s]&&fromDB[s].length>0)
+        window._dynamicGrades[s]=fromDB[s].sort((a,b)=>(a.order||0)-(b.order||0));
+    });
+    // حدّث كل الـ selects
+    refreshAllGradeSelects();
+  }catch(e){ console.warn('loadDynamicGrades:',e); }
+}
+
+function getAllGradesFlat(){
+  return Object.values(window._dynamicGrades).flat();
+}
+
+function gradeLabel(key){
+  const g = getAllGradesFlat().find(x=>x.key===key);
+  return g?.label||key;
+}
+
+function refreshAllGradeSelects(){
+  // حدّث GRADE_MAP و GRADE_EDIT_MAP
+  ['primary','prep','sec','univ'].forEach(s=>{
+    const opts = (window._dynamicGrades[s]||[]).map(g=>g.key+'|'+g.label);
+    GRADE_MAP[s] = opts;
+    GRADE_EDIT_MAP[s] = opts;
+  });
+  // حدّث فلتر الأكواد
+  updateCFGrade();
+  // حدّث توليد الأكواد
+  if(document.getElementById('gs')) updateGenGrades();
+}
+
+// ── إضافة/تعديل صف ──
+window.openGradeModal = (editKey='')=>{
+  document.getElementById('gm-edit-key').value = editKey;
+  if(editKey){
+    const g = getAllGradesFlat().find(x=>x.key===editKey);
+    if(g){
+      document.getElementById('gm-stage').value = g.stage||'';
+      document.getElementById('gm-label').value = g.label||'';
+      document.getElementById('gm-key').value   = g.key||'';
+      document.getElementById('gm-sub').value   = g.sub||'';
+      document.getElementById('gm-img').value   = g.img||'';
+    }
+  } else {
+    document.getElementById('gm-stage').value='primary';
+    ['gm-label','gm-key','gm-sub','gm-img'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('gm-edit-key').value='';
+  }
+  document.getElementById('gm-new-stage-wrap').style.display='none';
+  openModal('gradeModal');
+};
+
+window.updateGMGrades = ()=>{
+  const v = document.getElementById('gm-stage').value;
+  document.getElementById('gm-new-stage-wrap').style.display = v==='new'?'block':'none';
+};
+
+window.saveGrade = async ()=>{
+  let stage = document.getElementById('gm-stage').value;
+  if(stage==='new'){
+    const newName = document.getElementById('gm-new-stage-name').value.trim();
+    if(!newName){ toast('ادخل اسم المرحلة الجديدة','err'); return; }
+    stage = newName.toLowerCase().replace(/\s/g,'_');
+    STAGE_LABELS[stage] = newName;
+    if(!window._dynamicGrades[stage]) window._dynamicGrades[stage]=[];
+  }
+  const label = document.getElementById('gm-label').value.trim();
+  const key   = document.getElementById('gm-key').value.trim().toLowerCase().replace(/\s/g,'-');
+  const sub   = document.getElementById('gm-sub').value.trim();
+  const img   = document.getElementById('gm-img').value.trim();
+  if(!label||!key){ toast('ادخل المسمى والمفتاح','err'); return; }
+  if(!/^[a-z0-9\-_]+$/.test(key)){ toast('المفتاح: أحرف إنجليزية وأرقام وشرطات فقط','err'); return; }
+  const editKey = document.getElementById('gm-edit-key').value;
+  try{
+    const data = {key,label,sub,img,stage,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+    if(editKey){
+      // تعديل
+      const docId = getAllGradesFlat().find(x=>x.key===editKey)?.id;
+      if(docId) await db.collection('grades').doc(docId).update(data);
+    } else {
+      // إضافة جديد
+      const existing = getAllGradesFlat().find(x=>x.key===key);
+      if(existing){ toast('المفتاح موجود بالفعل','err'); return; }
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      data.order = (window._dynamicGrades[stage]||[]).length;
+      await db.collection('grades').add(data);
+    }
+    toast('✅ تم '+(editKey?'تعديل':'إضافة')+' '+label,'ok');
+    logActivity('📚', editKey?'تعديل صف':'إضافة صف جديد', label);
+    closeModal('gradeModal');
+    await loadDynamicGrades();
+    renderGradesList();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.deleteGrade = async (key)=>{
+  if(!confirm('حذف هذا الصف نهائياً؟\n⚠️ هيشيل كل محتواه من Firestore!')) return;
+  try{
+    const g = getAllGradesFlat().find(x=>x.key===key);
+    if(g?.id) await db.collection('grades').doc(g.id).delete();
+    toast('تم الحذف','ok');
+    await loadDynamicGrades();
+    renderGradesList();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.renderGradesList = ()=>{
+  const el = document.getElementById('gradeStagesList');
+  if(!el) return;
+  const stages = ['primary','prep','sec','univ'];
+  el.innerHTML = stages.map(s=>{
+    const grades = window._dynamicGrades[s]||[];
+    return `<div class="card" style="padding:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:14px;font-weight:800">${STAGE_ICONS[s]||'📚'} ${STAGE_LABELS[s]||s}</div>
+        <button class="btn primary sm" onclick="openGradeModal('');document.getElementById('gm-stage').value='${s}'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          إضافة
+        </button>
+      </div>
+      ${grades.length ? grades.map(g=>`
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--b2)">
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:700">${g.label}</div>
+            <div style="font-size:10px;color:var(--muted);font-family:monospace">${g.key}</div>
+          </div>
+          <button class="btn ghost sm" onclick="openGradeModal('${g.key}')" style="font-size:10px">✏️</button>
+          <button class="btn sm" onclick="deleteGrade('${g.key}')" style="font-size:10px;color:var(--err);border-color:rgba(255,77,109,0.3);background:rgba(255,77,109,0.05)">🗑️</button>
+        </div>`).join('')
+      : '<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px">لا يوجد صفوف — أضف جديد</div>'}
+    </div>`;
+  }).join('');
+};
+
+// ── تحديث فلتر الصفوف بناءً على المرحلة ──
+window.updateCFGrade = ()=>{
+  const stage = document.getElementById('cf-stage')?.value||'';
+  const sel   = document.getElementById('cf-grade');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">كل الصفوف</option>';
+  (window._dynamicGrades[stage]||getAllGradesFlat().filter(g=>!stage||g.stage===stage)).forEach(g=>{
+    sel.innerHTML += `<option value="${g.key}">${g.label}</option>`;
+  });
+};
+
+// ── تحديث فلتر البحث بناءً على المرحلة ──
+window.updateResGrades = ()=>{
+  const stage = document.getElementById('res-stage')?.value||'';
+  const sel   = document.getElementById('res-grade');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— اختار —</option>';
+  (window._dynamicGrades[stage]||[]).forEach(g=>{
+    sel.innerHTML += `<option value="${g.key}">${g.label}</option>`;
+  });
+};
+
+// ══════════════════════════════════════════════════════
+// ── RESEARCH SYSTEM ──
+// ══════════════════════════════════════════════════════
+window._researches = [];
+
+window.loadResearch = async ()=>{
+  try{
+    const snap = await db.collection('research').orderBy('createdAt','desc').get();
+    window._researches = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderResearch();
+  }catch(e){ console.warn('loadResearch:',e.message); }
+};
+
+window.renderResearch = ()=>{
+  const tbl = document.getElementById('researchTbl');
+  if(!tbl) return;
+  const stage = document.getElementById('res-stage-filter')?.value||'';
+  const q = (document.getElementById('res-search')?.value||'').trim().toLowerCase();
+  let list = window._researches;
+  if(stage) list = list.filter(r=>r.stage===stage);
+  if(q) list = list.filter(r=>(r.topic+r.studentName+r.dept+r.subject).toLowerCase().includes(q));
+  if(!list.length){
+    tbl.innerHTML='<tr><td colspan="7"><div class="empty"><p>لا يوجد أبحاث</p></div></td></tr>';
+    return;
+  }
+  tbl.innerHTML = list.map(r=>`<tr>
+    <td style="font-size:12px;font-weight:700;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.topic||'—'}</td>
+    <td style="font-size:12px">${r.studentName||'—'}</td>
+    <td style="font-size:11px;color:var(--muted)">${STAGE_LABELS[r.stage]||r.stage||'—'}</td>
+    <td style="font-size:11px;color:var(--muted)">${r.grade||r.gradeLabel||'—'}</td>
+    <td style="font-size:11px;color:var(--muted)">${r.dept||'—'}</td>
+    <td style="font-size:11px;color:var(--muted)">${r.createdAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</td>
+    <td><div style="display:flex;gap:4px">
+      <button class="btn icon-btn" onclick="printResearch('${r.id}')" title="طباعة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></button>
+      <button class="btn icon-btn" onclick="editResearch('${r.id}')" title="تعديل"><svg><use href="#ic-edit"/></svg></button>
+      <button class="btn icon-btn del" onclick="deleteResearch('${r.id}')" title="حذف"><svg><use href="#ic-trash"/></svg></button>
+    </div></td>
+  </tr>`).join('');
+};
+
+window.openResearchModal = (editId='')=>{
+  document.getElementById('res-edit-id').value = editId;
+  if(!editId){
+    ['res-topic','res-student-name','res-dept','res-subject','res-code','res-details'].forEach(id=>{
+      const el = document.getElementById(id); if(el) el.value='';
+    });
+    document.getElementById('res-stage').value='';
+    document.getElementById('res-grade').innerHTML='<option value="">— اختار —</option>';
+  }
+  openModal('researchModal');
+};
+
+window.editResearch = (id)=>{
+  const r = window._researches.find(x=>x.id===id);
+  if(!r) return;
+  openResearchModal(id);
+  setTimeout(()=>{
+    document.getElementById('res-topic').value = r.topic||'';
+    document.getElementById('res-student-name').value = r.studentName||'';
+    document.getElementById('res-dept').value = r.dept||'';
+    document.getElementById('res-subject').value = r.subject||'';
+    document.getElementById('res-code').value = r.code||'';
+    document.getElementById('res-details').value = r.details||'';
+    document.getElementById('res-stage').value = r.stage||'';
+    updateResGrades();
+    setTimeout(()=>{ document.getElementById('res-grade').value = r.gradeKey||''; },100);
+  },100);
+};
+
+window.saveResearch = async ()=>{
+  const topic = document.getElementById('res-topic').value.trim();
+  const studentName = document.getElementById('res-student-name').value.trim();
+  if(!topic||!studentName){ toast('ادخل موضوع البحث واسم الطالب','err'); return; }
+  const stage    = document.getElementById('res-stage').value;
+  const gradeKey = document.getElementById('res-grade').value;
+  const dept     = document.getElementById('res-dept').value.trim();
+  const subject  = document.getElementById('res-subject').value.trim();
+  const code     = document.getElementById('res-code').value.trim().toUpperCase();
+  const details  = document.getElementById('res-details').value.trim();
+  const editId   = document.getElementById('res-edit-id').value;
+  const data = {
+    topic, studentName, stage,
+    gradeKey, gradeLabel: gradeLabel(gradeKey),
+    dept, subject, code, details,
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  try{
+    if(editId){
+      await db.collection('research').doc(editId).update(data);
+      toast('✅ تم تعديل البحث','ok');
+    } else {
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      await db.collection('research').add(data);
+      toast('✅ تم حفظ البحث','ok');
+    }
+    logActivity('📝','حفظ بحث',topic+' — '+studentName);
+    closeModal('researchModal');
+    loadResearch();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.deleteResearch = async (id)=>{
+  if(!confirm('حذف البحث نهائياً؟')) return;
+  try{
+    await db.collection('research').doc(id).delete();
+    window._researches = window._researches.filter(r=>r.id!==id);
+    renderResearch();
+    toast('تم الحذف','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.printResearch = (id)=>{
+  const r = window._researches.find(x=>x.id===id);
+  if(!r) return;
+  const stageLabel = STAGE_LABELS[r.stage]||r.stage||'';
+  const gradeL = r.gradeLabel||gradeLabel(r.gradeKey)||r.gradeKey||'';
+  const html = `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+body{font-family:'Tajawal',"Traditional Arabic","Arial",sans-serif;font-size:16px;line-height:2;max-width:900px;margin:auto;direction:rtl;text-align:right}
+.cover{text-align:center;min-height:100vh;display:flex;flex-direction:column;justify-content:center;page-break-after:always}
+.cover h1{font-size:2.6em;color:#c62828}
+.info{font-size:1.1em;line-height:2.5;margin-top:30px}
+h2{color:#c62828;margin:60px 0 20px;border-right:8px solid #c62828;padding-right:15px}
+.box{background:#f9fbfc;border-right:6px solid #c62828;padding:30px;margin:40px 0;border-radius:10px;white-space:pre-wrap}
+.print-btn{display:block;margin:60px auto;padding:12px 36px;font-size:18px;background:#c62828;color:#fff;border:none;border-radius:10px;cursor:pointer}
+@page{size:A4;margin:20mm;@top-center{content:"${r.studentName||''} – ${r.subject||''} – ${r.code||''} – ${gradeL}";font-family:'Tajawal',sans-serif;font-size:11pt;color:#c62828;border-bottom:1px solid #ccc}@bottom-center{content:"صفحة " counter(page);font-size:11pt}}
+@page :first{@bottom-center{content:""}}
+@media print{.print-btn{display:none}body{font-size:13pt}h1,h2{text-align:center;border:none}}
+</style>
+</head>
+<body>
+<div class="cover">
+  <h1>${r.topic||'—'}</h1>
+  <div class="info">
+    إعداد الطالب<br><br>
+    <strong>${r.studentName||'—'}</strong><br><br>
+    ${gradeL}${r.dept?' – '+r.dept:''}<br>
+    ${r.subject?'المادة: '+r.subject+'<br>':''}
+    ${stageLabel?' '+stageLabel:''}
+    ${r.code?'<br>الكود: '+r.code:''}
+  </div>
+</div>
+<h2>${r.topic||'—'}</h2>
+<div class="box">${(r.details||'لا يوجد محتوى').replace(/\n/g,'<br/>')}</div>
+<button class="print-btn" onclick="window.print()">🖨️ طباعة البحث</button>
+</body></html>`;
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+};
+
+// ── hook loadResearch on page open ──
+const _origGoPage = window.goPage;
+window.goPage = (p,...args)=>{
+  _origGoPage?.(p,...args);
+  if(p==='research') loadResearch();
+  if(p==='grades') renderGradesList();
+};
+
+// ── تحميل المراحل عند الفتح ──
+loadDynamicGrades();
+
 
 
 </script>

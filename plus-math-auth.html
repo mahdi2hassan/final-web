@@ -445,6 +445,7 @@ input::placeholder{color:var(--muted);opacity:.5}
           <option value="primary">ابتدائي</option>
           <option value="prep">إعدادي</option>
           <option value="sec">ثانوي</option>
+          <option value="univ">جامعة</option>
         </select>
       </div>
       <div class="field">
@@ -733,7 +734,9 @@ const db   = firebase.firestore();
 const GRADE_LABELS = {
   'primary-4':'الصف الرابع الابتدائي','primary-5':'الصف الخامس الابتدائي','primary-6':'الصف السادس الابتدائي',
   'prep-1':'الصف الأول الإعدادي','prep-2':'الصف الثاني الإعدادي','prep-3':'الصف الثالث الإعدادي',
-  'sec-1':'الصف الأول الثانوي','sec-2':'الصف الثاني الثانوي','sec-3':'الصف الثالث الثانوي'
+  'sec-1':'الصف الأول الثانوي','sec-2':'الصف الثاني الثانوي','sec-3':'الصف الثالث الثانوي',
+  'courses-primary':'كورسات ابتدائي','courses-prep':'كورسات إعدادي','courses-sec':'كورسات ثانوي',
+  'univ-general':'كورسات جامعية'
 };
 
 // ── UI Helpers ──
@@ -1245,19 +1248,54 @@ function forgotPass(e){
 }
 
 // ── GRADE SELECTION ──
+// المراحل الديناميكية — تتحدث من Firestore
+var DYNAMIC_GRADE_OPTS = {
+  primary:['الصف الرابع الابتدائي|primary-4','الصف الخامس الابتدائي|primary-5','الصف السادس الابتدائي|primary-6','كورسات ابتدائي|courses-primary'],
+  prep:   ['الصف الأول الإعدادي|prep-1','الصف الثاني الإعدادي|prep-2','الصف الثالث الإعدادي|prep-3','كورسات إعدادي|courses-prep'],
+  sec:    ['الصف الأول الثانوي|sec-1','الصف الثاني الثانوي|sec-2','الصف الثالث الثانوي|sec-3','كورسات ثانوي|courses-sec'],
+  univ:   []
+};
+
+// تحميل المراحل الإضافية من Firestore
+(function loadAuthGrades(){
+  try{
+    db.collection('grades').get().then(function(snap){
+      if(snap.empty) return;
+      var fromDB={};
+      snap.docs.forEach(function(d){
+        var g=d.data();
+        if(!fromDB[g.stage]) fromDB[g.stage]=[];
+        fromDB[g.stage].push(g.label+'|'+g.key);
+        // حدّث GRADE_LABELS
+        GRADE_LABELS[g.key]=g.label;
+      });
+      Object.keys(fromDB).forEach(function(s){
+        if(fromDB[s]&&fromDB[s].length>0) DYNAMIC_GRADE_OPTS[s]=fromDB[s];
+      });
+      // حدّث الـ select لو مفتوح
+      if(document.getElementById('grade-stage').value) updateGradeOptions();
+    });
+  }catch(e){}
+})();
+
 function updateGradeOptions(){
   var stage = document.getElementById('grade-stage').value;
   var sel   = document.getElementById('grade-level');
-  var opts  = {
-    primary:['الصف الرابع الابتدائي|primary-4','الصف الخامس الابتدائي|primary-5','الصف السادس الابتدائي|primary-6'],
-    prep:   ['الصف الأول الإعدادي|prep-1','الصف الثاني الإعدادي|prep-2','الصف الثالث الإعدادي|prep-3'],
-    sec:    ['الصف الأول الثانوي|sec-1','الصف الثاني الثانوي|sec-2','الصف الثالث الثانوي|sec-3']
-  };
+  var gradeWrap = document.getElementById('grade-level-wrap');
   sel.innerHTML = '<option value="">— اختار الصف —</option>';
-  (opts[stage]||[]).forEach(function(o){
+  var opts = DYNAMIC_GRADE_OPTS[stage]||[];
+  if(opts.length===0 && stage==='univ'){
+    // لو مفيش صفوف جامعية — خلي الطالب يختار كورس واحد
+    sel.innerHTML = '<option value="univ-general">كورسات جامعية عامة</option>';
+    GRADE_LABELS['univ-general'] = 'كورسات جامعية';
+    if(gradeWrap) gradeWrap.style.display='block';
+    return;
+  }
+  opts.forEach(function(o){
     var p=o.split('|');
     sel.innerHTML += '<option value="'+p[1]+'">'+p[0]+'</option>';
   });
+  if(gradeWrap) gradeWrap.style.display = opts.length?'block':'none';
 }
 
 function saveGradeAndGoCode(){
