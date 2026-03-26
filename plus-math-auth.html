@@ -1261,18 +1261,15 @@ var DYNAMIC_GRADE_OPTS = {
   try{
     db.collection('grades').get().then(function(snap){
       if(snap.empty) return;
-      var fromDB={};
       snap.docs.forEach(function(d){
         var g=d.data();
-        if(!fromDB[g.stage]) fromDB[g.stage]=[];
-        fromDB[g.stage].push(g.label+'|'+g.key);
-        // حدّث GRADE_LABELS
+        if(!g.stage||!g.key) return;
+        if(!DYNAMIC_GRADE_OPTS[g.stage]) DYNAMIC_GRADE_OPTS[g.stage]=[];
+        // أضف بس لو مش موجود — محافظ على الأساسية
+        var exists=DYNAMIC_GRADE_OPTS[g.stage].some(function(o){return o.startsWith(g.key+'|');});
+        if(!exists) DYNAMIC_GRADE_OPTS[g.stage].push(g.label+'|'+g.key);
         GRADE_LABELS[g.key]=g.label;
       });
-      Object.keys(fromDB).forEach(function(s){
-        if(fromDB[s]&&fromDB[s].length>0) DYNAMIC_GRADE_OPTS[s]=fromDB[s];
-      });
-      // حدّث الـ select لو مفتوح
       if(document.getElementById('grade-stage').value) updateGradeOptions();
     });
   }catch(e){}

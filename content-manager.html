@@ -869,68 +869,67 @@ try{
 window._db = db;
 window._fbReady=true;
 
-// ── تحميل الصفوف الديناميكية من Firestore ──
-try{
-  const gradesSnap = await getDocs(collection(db,'grades'));
-  if(!gradesSnap.empty){
-    const sel = document.getElementById('gSel');
-    // امسح الخيارات الموجودة
-    sel.innerHTML = '<option value="">— اختار الصف —</option>';
-    // نظّم حسب المرحلة
-    const byStage = {};
-    const stageOrder = ['primary','prep','sec','univ'];
-    const stageAR = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
-    gradesSnap.docs.forEach(d=>{
-      const g = {id:d.id,...d.data()};
-      if(!byStage[g.stage]) byStage[g.stage]=[];
-      byStage[g.stage].push(g);
-      // حدّث GRADES_LABEL
-      if(window.GRADES_LABEL) GRADES_LABEL[g.key]=g.label;
-    });
-    // اعرض بترتيب المراحل
-    const orderedStages = [
-      ...stageOrder.filter(s=>byStage[s]),
-      ...Object.keys(byStage).filter(s=>!stageOrder.includes(s))
-    ];
-    orderedStages.forEach(stage=>{
-      const grp = document.createElement('optgroup');
-      grp.label = stageAR[stage]||stage;
-      byStage[stage]
-        .sort((a,b)=>(a.order||0)-(b.order||0))
-        .forEach(g=>{
-          const opt = document.createElement('option');
-          opt.value = g.key;
-          opt.textContent = g.label;
-          grp.appendChild(opt);
-        });
+// ── الصفوف الأساسية — ثابتة دايماً ──
+const BASE_GRADES_CM = {
+  primary:[
+    {key:'primary-4',label:'الصف الرابع الابتدائي'},
+    {key:'primary-5',label:'الصف الخامس الابتدائي'},
+    {key:'primary-6',label:'الصف السادس الابتدائي'},
+  ],
+  prep:[
+    {key:'prep-1',label:'الصف الأول الإعدادي'},
+    {key:'prep-2',label:'الصف الثاني الإعدادي'},
+    {key:'prep-3',label:'الصف الثالث الإعدادي'},
+  ],
+  sec:[
+    {key:'sec-1',label:'الصف الأول الثانوي'},
+    {key:'sec-2',label:'الصف الثاني الثانوي'},
+    {key:'sec-3',label:'الصف الثالث الثانوي'},
+  ],
+  univ:[]
+};
+const STAGE_AR_CM={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
+
+function buildCMGradeSelect(extra){
+  const merged = JSON.parse(JSON.stringify(BASE_GRADES_CM));
+  // أضف الجديدة بدون تكرار
+  (extra||[]).forEach(g=>{
+    if(!merged[g.stage]) merged[g.stage]=[];
+    if(!merged[g.stage].some(x=>x.key===g.key)){
+      merged[g.stage].push(g);
+    }
+    if(window.GRADES_LABEL) GRADES_LABEL[g.key]=g.label;
+  });
+  const stageOrder=['primary','prep','sec','univ'];
+  const allStages=[...stageOrder,...Object.keys(merged).filter(s=>!stageOrder.includes(s))];
+  ['gSel','bGrade'].forEach(selId=>{
+    const sel=document.getElementById(selId);
+    if(!sel) return;
+    sel.innerHTML=`<option value="">${selId==='gSel'?'— اختار الصف —':'كل الصفوف'}</option>`;
+    allStages.forEach(stage=>{
+      const grades=merged[stage]||[];
+      if(!grades.length) return;
+      const grp=document.createElement('optgroup');
+      grp.label=STAGE_AR_CM[stage]||stage;
+      grades.sort((a,b)=>(a.order||0)-(b.order||0)).forEach(g=>{
+        const opt=document.createElement('option');
+        opt.value=g.key; opt.textContent=g.label;
+        grp.appendChild(opt);
+      });
       sel.appendChild(grp);
     });
-  }
-  // حدّث bGrade (الكتب)
-  if(!gradesSnap.empty){
-    const bGrade = document.getElementById('bGrade');
-    if(bGrade){
-      bGrade.innerHTML = '<option value="">كل الصفوف</option>';
-      const byStage2 = {};
-      const stageAR2 = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
-      gradesSnap.docs.forEach(d=>{
-        const g=d.data();
-        if(!byStage2[g.stage]) byStage2[g.stage]=[];
-        byStage2[g.stage].push(g);
-      });
-      Object.keys(byStage2).forEach(stage=>{
-        const grp=document.createElement('optgroup');
-        grp.label=stageAR2[stage]||stage;
-        byStage2[stage].sort((a,b)=>(a.order||0)-(b.order||0)).forEach(g=>{
-          const opt=document.createElement('option');
-          opt.value=g.key; opt.textContent=g.label;
-          grp.appendChild(opt);
-        });
-        bGrade.appendChild(grp);
-      });
-    }
-  }
-}catch(e){ console.warn('loadGrades in CM:',e.message); }
+  });
+}
+
+// ابني من الأساسي أول
+buildCMGradeSelect([]);
+// ثم أضف الجديدة من Firestore
+try{
+  const gradesSnap=await getDocs(collection(db,'grades'));
+  const extra=gradesSnap.docs.map(d=>({id:d.id,...d.data()}));
+  if(extra.length) buildCMGradeSelect(extra);
+}catch(e){ console.warn('loadGrades CM:',e.message); }
+
 
 // ══ BOOKS FUNCTIONS (inside module - has access to db) ══
 

@@ -1006,23 +1006,16 @@ async function loadDynamicGrades(){
   try{
     const snap=await getDocs(collection(db,'grades'));
     if(snap.empty) return;
-    const fromDB={};
     snap.docs.forEach(d=>{
       const g={id:d.id,...d.data()};
-      if(!fromDB[g.stage]) fromDB[g.stage]=[];
-      fromDB[g.stage].push(g);
-    });
-    ['primary','prep','sec','univ'].forEach(s=>{
-      if(fromDB[s]&&fromDB[s].length>0)
-        GRADES[s]=fromDB[s].sort((a,b)=>(a.order||0)-(b.order||0));
-    });
-    // مراحل إضافية
-    Object.keys(fromDB).forEach(s=>{
-      if(!GRADES[s]) GRADES[s]=fromDB[s];
+      if(!g.stage||!g.key) return;
+      if(!GRADES[g.stage]) GRADES[g.stage]=[];
+      // أضف بس لو مش موجود (محافظ على الأساسية)
+      const exists=GRADES[g.stage].some(x=>x.key===g.key);
+      if(!exists) GRADES[g.stage].push(g);
     });
     window._GM={};
     Object.values(GRADES).flat().forEach(g=>{window._GM[g.key]=g;});
-    buildGrades();
   }catch(e){ console.warn('loadDynamicGrades:',e.message); }
 }
 
