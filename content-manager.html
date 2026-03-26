@@ -869,6 +869,69 @@ try{
 window._db = db;
 window._fbReady=true;
 
+// ── تحميل الصفوف الديناميكية من Firestore ──
+try{
+  const gradesSnap = await getDocs(collection(db,'grades'));
+  if(!gradesSnap.empty){
+    const sel = document.getElementById('gSel');
+    // امسح الخيارات الموجودة
+    sel.innerHTML = '<option value="">— اختار الصف —</option>';
+    // نظّم حسب المرحلة
+    const byStage = {};
+    const stageOrder = ['primary','prep','sec','univ'];
+    const stageAR = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
+    gradesSnap.docs.forEach(d=>{
+      const g = {id:d.id,...d.data()};
+      if(!byStage[g.stage]) byStage[g.stage]=[];
+      byStage[g.stage].push(g);
+      // حدّث GRADES_LABEL
+      if(window.GRADES_LABEL) GRADES_LABEL[g.key]=g.label;
+    });
+    // اعرض بترتيب المراحل
+    const orderedStages = [
+      ...stageOrder.filter(s=>byStage[s]),
+      ...Object.keys(byStage).filter(s=>!stageOrder.includes(s))
+    ];
+    orderedStages.forEach(stage=>{
+      const grp = document.createElement('optgroup');
+      grp.label = stageAR[stage]||stage;
+      byStage[stage]
+        .sort((a,b)=>(a.order||0)-(b.order||0))
+        .forEach(g=>{
+          const opt = document.createElement('option');
+          opt.value = g.key;
+          opt.textContent = g.label;
+          grp.appendChild(opt);
+        });
+      sel.appendChild(grp);
+    });
+  }
+  // حدّث bGrade (الكتب)
+  if(!gradesSnap.empty){
+    const bGrade = document.getElementById('bGrade');
+    if(bGrade){
+      bGrade.innerHTML = '<option value="">كل الصفوف</option>';
+      const byStage2 = {};
+      const stageAR2 = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
+      gradesSnap.docs.forEach(d=>{
+        const g=d.data();
+        if(!byStage2[g.stage]) byStage2[g.stage]=[];
+        byStage2[g.stage].push(g);
+      });
+      Object.keys(byStage2).forEach(stage=>{
+        const grp=document.createElement('optgroup');
+        grp.label=stageAR2[stage]||stage;
+        byStage2[stage].sort((a,b)=>(a.order||0)-(b.order||0)).forEach(g=>{
+          const opt=document.createElement('option');
+          opt.value=g.key; opt.textContent=g.label;
+          grp.appendChild(opt);
+        });
+        bGrade.appendChild(grp);
+      });
+    }
+  }
+}catch(e){ console.warn('loadGrades in CM:',e.message); }
+
 // ══ BOOKS FUNCTIONS (inside module - has access to db) ══
 
 window.previewCover = (url) => {
