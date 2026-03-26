@@ -594,14 +594,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
         <span>الكوبونات</span>
       </div>
-      <div class="sb-item" onclick="goPage('grades')" data-perm="content">
+      <div class="sb-item" onclick="goPage('grades')" data-perm="grades">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         <span>المراحل والصفوف</span>
       </div>
       <div class="sb-item" onclick="goPage('content')" data-perm="content">
         <svg><use href="#ic-book"/></svg><span>المحتوى</span>
       </div>
-      <div class="sb-item" onclick="goPage('research')" data-perm="content">
+      <div class="sb-item" onclick="goPage('research')" data-perm="research">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
         <span>الأبحاث</span>
       </div>
@@ -1590,6 +1590,24 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <div><div style="font-size:13px;font-weight:700">حذف وحظر</div><div style="font-size:10px;color:var(--muted)">يقدر يحذف طلاب ويحظرهم</div></div>
           </div>
           <div class="yn-toggle" id="adm-p-delete" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-research')">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">الأبحاث</div><div style="font-size:10px;color:var(--muted)">يضيف ويعدل أبحاث الطلاب</div></div>
+          </div>
+          <div class="yn-toggle" id="adm-p-research" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-grades')" style="border-bottom:none">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(245,158,11,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">إدارة المراحل والصفوف</div><div style="font-size:10px;color:var(--muted)">يضيف ويحذف صفوف ومقررات</div></div>
+          </div>
+          <div class="yn-toggle" id="adm-p-grades" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
         </div>
       </div>
     </div>
@@ -3272,7 +3290,15 @@ function applyPermissions(){
 
   // Navigate to first allowed page
   if(!isSuper){
-    const first = perms.users?'users':perms.content?'content':perms.codes?'codes':perms.broadcast?'broadcast':perms.analytics?'analytics':'overview';
+    const first = perms.users?'users'
+      :perms.content?'content'
+      :perms.codes?'codes'
+      :perms.broadcast?'broadcast'
+      :perms.research?'research'
+      :perms.grades?'grades'
+      :perms.tickets?'tickets'
+      :perms.analytics?'analytics'
+      :'overview';
     setTimeout(()=>goPage(first), 100);
   }
 
@@ -3811,7 +3837,9 @@ window.saveAdmin=async()=>{
     coupons:   document.getElementById('adm-p-coupons').dataset.val==='1',
     analytics: document.getElementById('adm-p-analytics')?.dataset.val==='1',
     tickets:   document.getElementById('adm-p-tickets')?.dataset.val==='1',
-    delete:    document.getElementById('adm-p-delete')?.dataset.val==='1'
+    delete:    document.getElementById('adm-p-delete')?.dataset.val==='1',
+    research:  document.getElementById('adm-p-research')?.dataset.val==='1',
+    grades:    document.getElementById('adm-p-grades')?.dataset.val==='1'
   };
   const active = isEdit ? document.getElementById('adm-p-active').dataset.val==='1' : true;
   try{
@@ -4431,6 +4459,7 @@ window.openStudentDetail = async (id)=>{
               <option value="primary" ${d.stage==='primary'?'selected':''}>ابتدائي</option>
               <option value="prep" ${d.stage==='prep'?'selected':''}>إعدادي</option>
               <option value="sec" ${d.stage==='sec'?'selected':''}>ثانوي</option>
+              <option value="univ" ${d.stage==='univ'?'selected':''}>جامعة</option>
             </select>
             <select id="sd-grade-level" style="flex:1;padding:7px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;appearance:none">
               <option value="">الصف</option>
@@ -4487,19 +4516,41 @@ window.openStudentDetail = async (id)=>{
 // Add pageLabels entry for student
 pageLabels['student'] = 'تفاصيل الطالب';
 
+// الصفوف الأساسية الثابتة في الأدمن
+const SD_BASE_GRADES = {
+  primary:[
+    {key:'primary-4',label:'الرابع الابتدائي'},
+    {key:'primary-5',label:'الخامس الابتدائي'},
+    {key:'primary-6',label:'السادس الابتدائي'},
+  ],
+  prep:[
+    {key:'prep-1',label:'الأول الإعدادي'},
+    {key:'prep-2',label:'الثاني الإعدادي'},
+    {key:'prep-3',label:'الثالث الإعدادي'},
+  ],
+  sec:[
+    {key:'sec-1',label:'الأول الثانوي'},
+    {key:'sec-2',label:'الثاني الثانوي'},
+    {key:'sec-3',label:'الثالث الثانوي'},
+  ],
+  univ:[]
+};
+
 function updateSdGradeOptions(stage, currentGradeKey){
   const s = stage || document.getElementById('sd-grade-stage')?.value;
   const sel = document.getElementById('sd-grade-level');
   if(!sel) return;
-  const opts = {
-    primary:['primary-4|الرابع الابتدائي','primary-5|الخامس الابتدائي','primary-6|السادس الابتدائي'],
-    prep:   ['prep-1|الأول الإعدادي','prep-2|الثاني الإعدادي','prep-3|الثالث الإعدادي'],
-    sec:    ['sec-1|الأول الثانوي','sec-2|الثاني الثانوي','sec-3|الثالث الثانوي']
-  };
+  // ادمج الأساسية مع الديناميكية
+  const baseGrades = SD_BASE_GRADES[s]||[];
+  const dynGrades  = (window._dynamicGrades&&window._dynamicGrades[s])||[];
+  // اجمعهم بدون تكرار
+  const merged = [...baseGrades];
+  dynGrades.forEach(g=>{
+    if(!merged.some(x=>x.key===g.key)) merged.push(g);
+  });
   sel.innerHTML = '<option value="">اختار الصف</option>';
-  (opts[s]||[]).forEach(o=>{
-    const[key,label]=o.split('|');
-    sel.innerHTML+=`<option value="${key}" ${key===currentGradeKey?'selected':''}>${label}</option>`;
+  merged.forEach(g=>{
+    sel.innerHTML+=`<option value="${g.key}" ${g.key===currentGradeKey?'selected':''}>${g.label}</option>`;
   });
 }
 
@@ -6179,23 +6230,28 @@ window._dynamicGrades = {
 const STAGE_LABELS = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
 const STAGE_ICONS  = {primary:'🏫',prep:'📘',sec:'🎓',univ:'🏛️'};
 
-// جيب المراحل من Firestore وحدّث الـ local
+// جيب المراحل من Firestore وأضفها على الأساسية
 async function loadDynamicGrades(){
   try{
     const snap = await db.collection('grades').get();
-    if(snap.empty) return; // استخدم الافتراضي
-    const fromDB = {};
+    if(snap.empty) return;
     snap.docs.forEach(d=>{
       const g = {id:d.id,...d.data()};
-      if(!fromDB[g.stage]) fromDB[g.stage]=[];
-      fromDB[g.stage].push(g);
+      if(!g.stage||!g.key) return;
+      if(!window._dynamicGrades[g.stage]) window._dynamicGrades[g.stage]=[];
+      // أضف بس لو مش موجود — الأساسية ثابتة
+      const exists = window._dynamicGrades[g.stage].some(x=>x.key===g.key);
+      if(!exists) window._dynamicGrades[g.stage].push(g);
     });
-    // ادمج مع الافتراضي
-    ['primary','prep','sec','univ'].forEach(s=>{
-      if(fromDB[s]&&fromDB[s].length>0)
-        window._dynamicGrades[s]=fromDB[s].sort((a,b)=>(a.order||0)-(b.order||0));
+    // مراحل إضافية جديدة (غير primary/prep/sec/univ)
+    snap.docs.forEach(d=>{
+      const g={id:d.id,...d.data()};
+      if(!['primary','prep','sec','univ'].includes(g.stage)){
+        if(!window._dynamicGrades[g.stage]) window._dynamicGrades[g.stage]=[];
+        if(!window._dynamicGrades[g.stage].some(x=>x.key===g.key))
+          window._dynamicGrades[g.stage].push(g);
+      }
     });
-    // حدّث كل الـ selects
     refreshAllGradeSelects();
   }catch(e){ console.warn('loadDynamicGrades:',e); }
 }
