@@ -3210,6 +3210,15 @@ let _uf = 'all', _cf = 'all';
 window._loggedAdmin = null;
 
 // ═══ AUTH ═══
+// تثبيت الجلسة بعد الدخول الناجح
+function saveAdminSession(admin){
+  try{
+    sessionStorage.setItem('pm_admin_session', JSON.stringify({
+      admin, ts: Date.now()
+    }));
+  }catch(e){}
+}
+
 async function tryLogin(){
   const u = document.getElementById('au').value.trim();
   const p = document.getElementById('ap').value;
@@ -3350,31 +3359,26 @@ function tryLogout(){
   window._loggedAdmin = null;
 }
 
-// تثبيت الجلسة بعد الدخول الناجح
-function saveAdminSession(admin){
-  try{
-    sessionStorage.setItem('pm_admin_session', JSON.stringify({
-      admin, ts: Date.now()
-    }));
-  }catch(e){}
-}
 
 // تعييد الدخول تلقائياً لو كان في نفس التب (session)
-(function(){
+// شغلها بعد كد الصفحة يتحمل كامل عشان openDashboard تكون متعرّفة
+window.addEventListener('load', function(){
   const saved = sessionStorage.getItem('pm_admin_session');
   if(!saved) return;
   try{
-    const {admin, ts} = JSON.parse(saved);
-    if(Date.now() - ts > 8*60*60*1000) return; // أكتر من 8 ساعات
+    const parsed = JSON.parse(saved);
+    const admin = parsed.admin, ts = parsed.ts;
+    if(!admin || (Date.now() - ts > 8*60*60*1000)){
+      sessionStorage.removeItem('pm_admin_session'); return;
+    }
     window._loggedAdmin = admin;
-    // تأخر لحد ما Firebase يكون جاهز
-    setTimeout(()=>{
-      if(document.getElementById('loginWrap').style.display !== 'none') return;
-      openDashboard();
-    }, 300);
     document.getElementById('loginWrap').style.display = 'none';
+    // تأخر صغير لحد ما Firebase يتجهز
+    setTimeout(function(){
+      if(typeof openDashboard === 'function') openDashboard();
+    }, 500);
   }catch(e){ sessionStorage.removeItem('pm_admin_session'); }
-})();
+});
 
 document.getElementById('au').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
 document.getElementById('ap').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
