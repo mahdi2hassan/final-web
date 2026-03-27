@@ -374,6 +374,12 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
     <span style="font-size:9px;font-weight:700">خروج</span>
   </button>
+
+  <!-- PWA Install Button -->
+  <button id="installBtn" onclick="installPWA()" title="تثبيت التطبيق" style="display:none;flex-direction:column;align-items:center;gap:3px;background:linear-gradient(135deg,var(--blue),var(--navy));border:none;cursor:pointer;color:#fff;padding:6px 10px;border-radius:10px;font-family:'Tajawal',sans-serif;animation:pulse 2s infinite">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span style="font-size:9px;font-weight:700">تثبيت</span>
+  </button>
 </nav>
 
 <!-- Theme Panel -->
@@ -793,6 +799,11 @@ function renderVideos(videos,done,gradeKey,isMine){
         <div class="video-player-bar">
           ${isMine&&!isDone?`<button class="pbtn ok" onclick="markVDone('${gradeKey}','${v.id}')">انهيت الدرس ✓</button>`:''}
           <button class="pbtn ghost" onclick="closeVid('${v.id}')">إغلاق</button>
+          ${isDone?`<div id="rating-${v.id}" style="display:flex;align-items:center;gap:8px;margin-right:auto">
+            <span style="font-size:11px;color:var(--muted)">قيّم الدرس:</span>
+            <button onclick="rateVideo('${gradeKey}','${v.id}',1)" id="like-${v.id}" style="background:transparent;border:1px solid rgba(0,214,143,0.35);border-radius:8px;padding:3px 10px;cursor:pointer;font-size:15px;transition:all .2s" title="ممتاز">👍</button>
+            <button onclick="rateVideo('${gradeKey}','${v.id}',0)" id="dislike-${v.id}" style="background:transparent;border:1px solid rgba(255,77,109,0.35);border-radius:8px;padding:3px 10px;cursor:pointer;font-size:15px;transition:all .2s" title="يحتاج تحسين">👎</button>
+          </div>`:''}
         </div>
       </div>
       <div class="video-row" style="${isLocked?'cursor:not-allowed;opacity:.55':''}"
@@ -891,7 +902,29 @@ window.openVid=(id,ytId)=>{
   if(w&&f){w.style.display='block';f.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;}
 };
 window.closeVid=(id)=>{const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);if(w)w.style.display='none';if(f)f.src='';};
-window.markVDone=(g,id)=>{markDone(g,'videos',id);closeVid(id);};
+window.markVDone=(g,id)=>{
+  markDone(g,'videos',id);
+  closeVid(id);
+  // اعرض زر التقييم بعد انتهاء الدرس
+  const rDiv=document.getElementById('rating-'+id);
+  if(rDiv) rDiv.style.display='flex';
+};
+
+window.rateVideo=async(gradeKey,videoId,rating)=>{
+  if(!_user) return;
+  try{
+    await setDoc(doc(db,'videoRatings',_user.uid+'_'+videoId),{
+      userId:_user.uid, videoId, gradeKey,
+      rating, // 1=like, 0=dislike
+      ratedAt:serverTimestamp()
+    });
+    const likeBtn=document.getElementById('like-'+videoId);
+    const dislikeBtn=document.getElementById('dislike-'+videoId);
+    if(likeBtn) likeBtn.style.background=rating===1?'rgba(0,214,143,0.25)':'transparent';
+    if(dislikeBtn) dislikeBtn.style.background=rating===0?'rgba(255,77,109,0.25)':'transparent';
+    showToast(rating===1?'شكراً! سعدنا إنك استفدت 🎉':'شكراً على رأيك ، هنعمل على التحسين 💪','ok');
+  }catch(e){ showToast('خطأ في التقييم','err'); }
+};
 
 let _mcq={questions:[],answers:{},gradeKey:'',examId:''};
 function openMcq(examId,gradeKey,title,raw){
@@ -1030,19 +1063,35 @@ let GRADES={
   univ:[]
 };
 
-// جيب المراحل الإضافية من Firestore (لو فيه)
+// جيب المراحل من Firestore وادمجها (بيكتب على القديم)
 async function loadDynamicGrades(){
   try{
     const snap=await getDocs(collection(db,'grades'));
-    if(snap.empty) return;
-    snap.docs.forEach(d=>{
-      const g={id:d.id,...d.data()};
-      if(!g.stage||!g.key) return;
-      if(!GRADES[g.stage]) GRADES[g.stage]=[];
-      // أضف بس لو مش موجود (محافظ على الأساسية)
-      const exists=GRADES[g.stage].some(x=>x.key===g.key);
-      if(!exists) GRADES[g.stage].push(g);
-    });
+    if(!snap.empty){
+      snap.docs.forEach(d=>{
+        const g={id:d.id,...d.data()};
+        if(!g.stage||!g.key) return;
+        if(!GRADES[g.stage]) GRADES[g.stage]=[];
+        const idx=GRADES[g.stage].findIndex(x=>x.key===g.key);
+        if(idx>=0){
+          // حدّث البيانات الموجودة بالجديد من Firestore
+          GRADES[g.stage][idx]={...GRADES[g.stage][idx],...g};
+        } else {
+          // صف/كورس جديد تماماً — أضفه
+          GRADES[g.stage].push(g);
+        }
+      });
+      // مراحل جديدة غير الثابتة
+      snap.docs.forEach(d=>{
+        const g={id:d.id,...d.data()};
+        if(!g.stage||!g.key) return;
+        if(!['primary','prep','sec','univ'].includes(g.stage)){
+          if(!GRADES[g.stage]) GRADES[g.stage]=[];
+          if(!GRADES[g.stage].some(x=>x.key===g.key)) GRADES[g.stage].push(g);
+        }
+      });
+    }
+    // أعد بناء _GM بعد الدمج
     window._GM={};
     Object.values(GRADES).flat().forEach(g=>{window._GM[g.key]=g;});
   }catch(e){ console.warn('loadDynamicGrades:',e.message); }
@@ -1579,21 +1628,42 @@ async function dismissTicketReply(){
 let _allVideos=[], _allExams=[];
 function searchContent(){
   const q=(document.getElementById('cvSearchInp')?.value||'').trim().toLowerCase();
-  const activeTab = document.querySelector('.cv-tab.on')?.textContent?.includes('الشرح') ? 'videos' : 'exams';
+  const isMine=window._openGrade===window._userData?.gradeKey;
+  const gp=_progress?.[window._openGrade]||{};
   if(!q){
-    if(activeTab==='videos') renderVideos(_allVideos, window._progress?.[window._openGrade]?.videos||[], window._openGrade, window._openGrade===window._userData?.gradeKey);
-    else renderExams(_allExams, window._progress?.[window._openGrade]?.exams||[], window._openGrade, window._openGrade===window._userData?.gradeKey);
+    renderVideos(_allVideos, gp.videos||[], window._openGrade, isMine);
+    renderExams(_allExams, gp.exams||[], window._openGrade, isMine);
+    const srch=document.getElementById('srch-count');
+    if(srch) srch.remove();
     return;
   }
-  if(activeTab==='videos'){
-    const filtered = _allVideos.filter(v=>(v.title||'').toLowerCase().includes(q)||(v.description||'').toLowerCase().includes(q));
-    renderVideos(filtered, window._progress?.[window._openGrade]?.videos||[], window._openGrade, window._openGrade===window._userData?.gradeKey);
+  const filteredVids=_allVideos.filter(v=>
+    (v.title||'').toLowerCase().includes(q)||
+    (v.description||'').toLowerCase().includes(q)||
+    (v.duration||'').toLowerCase().includes(q)
+  );
+  const filteredExams=_allExams.filter(e=>
+    (e.title||'').toLowerCase().includes(q)||
+    (e.description||'').toLowerCase().includes(q)
+  );
+  renderVideos(filteredVids, gp.videos||[], window._openGrade, isMine);
+  renderExams(filteredExams, gp.exams||[], window._openGrade, isMine);
+  let countEl=document.getElementById('srch-count');
+  if(!countEl){
+    countEl=document.createElement('div');
+    countEl.id='srch-count';
+    countEl.style.cssText='font-size:11px;padding:6px 16px;text-align:center;font-weight:700';
+    document.getElementById('cvSearch')?.after(countEl);
+  }
+  const total=filteredVids.length+filteredExams.length;
+  if(total){
+    countEl.textContent='🔍 ' + total + ' نتيجة — فيديوهات: ' + filteredVids.length + ' · امتحانات: ' + filteredExams.length;
+    countEl.style.color='var(--muted)';
   } else {
-    const filtered = _allExams.filter(e=>(e.title||'').toLowerCase().includes(q));
-    renderExams(filtered, window._progress?.[window._openGrade]?.exams||[], window._openGrade, window._openGrade===window._userData?.gradeKey);
+    countEl.textContent='لا يوجد نتائج لـ "' + q + '" 😕';
+    countEl.style.color='var(--err)';
   }
 }
-
 // ══════════════════════════════════════
 // ── NIGHT MODE (مراجعة ليلة الامتحان) ──
 // ══════════════════════════════════════
@@ -1807,5 +1877,37 @@ function showToast(msg,type='ok'){
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCourse();});
 </script>
+
+<script>
+// تسجيل Service Worker للتثبيت على الموبايل
+let _deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();
+  _deferredInstall=e;
+  const btn=document.getElementById('installBtn');
+  if(btn) btn.style.display='flex';
+});
+window.installPWA=async()=>{
+  if(!_deferredInstall) return;
+  _deferredInstall.prompt();
+  const res=await _deferredInstall.userChoice;
+  if(res.outcome==='accepted'){
+    document.getElementById('installBtn').style.display='none';
+    showToast('تم تثبيت التطبيق بنجاح! 🎉','ok');
+  }
+  _deferredInstall=null;
+};
+window.addEventListener('appinstalled',()=>{
+  const btn=document.getElementById('installBtn');
+  if(btn) btn.style.display='none';
+  showToast('تم تثبيت Plus Mathematics 🎓','ok');
+});
+</script>
 </body>
 </html>
+  <!-- PWA Install Button -->
+  <button id="installBtn" onclick="installPWA()" style="display:none;flex-direction:column;align-items:center;gap:3px;background:linear-gradient(135deg,var(--blue),var(--navy));border:none;cursor:pointer;color:#fff;padding:6px 10px;border-radius:10px;font-family:'Tajawal',sans-serif">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span style="font-size:9px;font-weight:700">تثبيت</span>
+  </button>
+
