@@ -6460,8 +6460,16 @@ window.saveGrade = async ()=>{
     const data = {key,label,sub,img,stage,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
     if(editKey){
       // تعديل
-      const docId = getAllGradesFlat().find(x=>x.key===editKey)?.id;
-      if(docId) await db.collection('grades').doc(docId).update(data);
+      const foundGrade = getAllGradesFlat().find(x=>x.key===editKey);
+      const docId = foundGrade?.id;
+      if(docId){
+        await db.collection('grades').doc(docId).set(data, {merge:true});
+      } else {
+        // مش موجود في Firestore → اعمله جديد
+        data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+        data.order = (window._dynamicGrades[stage]||[]).length;
+        await db.collection('grades').add(data);
+      }
     } else {
       // إضافة جديد
       const existing = getAllGradesFlat().find(x=>x.key===key);
