@@ -1054,21 +1054,24 @@ function setProg(fId,vId,tot,done){const p=tot?Math.round(done/tot*100):0;const 
 // المراحل الافتراضية — تتحدث من Firestore تلقائياً
 let GRADES={
   primary:[
-    {key:'primary-4',label:'الصف الرابع الابتدائي',sub:'كل محتوى الصف الرابع',img:'https://plusedu.vercel.app/store/1/ye 1.png',stage:'ابتدائي'},
-    {key:'primary-5',label:'الصف الخامس الابتدائي',sub:'كل محتوى الصف الخامس',img:'https://plusedu.vercel.app/store/1/ye-2.jpg',stage:'ابتدائي'},
-    {key:'primary-6',label:'الصف السادس الابتدائي',sub:'كل محتوى الصف السادس',img:'https://plusedu.vercel.app/store/1/ye-3.jpg',stage:'ابتدائي'},
+    {key:'primary-4',label:'الصف الرابع الابتدائي',sub:'كل محتوى الصف الرابع',img:'https://plusedu.vercel.app/store/1/ye 1.png',stage:'primary'},
+    {key:'primary-5',label:'الصف الخامس الابتدائي',sub:'كل محتوى الصف الخامس',img:'https://plusedu.vercel.app/store/1/ye-2.jpg',stage:'primary'},
+    {key:'primary-6',label:'الصف السادس الابتدائي',sub:'كل محتوى الصف السادس',img:'https://plusedu.vercel.app/store/1/ye-3.jpg',stage:'primary'},
   ],
   prep:[
-    {key:'prep-1',label:'الصف الأول الإعدادي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/yer 1.png',stage:'إعدادي'},
-    {key:'prep-2',label:'الصف الثاني الإعدادي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/yer-2.jpg',stage:'إعدادي'},
-    {key:'prep-3',label:'الصف الثالث الإعدادي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/yer-3.jpg',stage:'إعدادي'},
+    {key:'prep-1',label:'الصف الأول الإعدادي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/yer 1.png',stage:'prep'},
+    {key:'prep-2',label:'الصف الثاني الإعدادي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/yer-2.jpg',stage:'prep'},
+    {key:'prep-3',label:'الصف الثالث الإعدادي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/yer-3.jpg',stage:'prep'},
   ],
   sec:[
-    {key:'sec-1',label:'الصف الأول الثانوي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/year 1.png',stage:'ثانوي'},
-    {key:'sec-2',label:'الصف الثاني الثانوي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/year-2.jpg',stage:'ثانوي'},
-    {key:'sec-3',label:'الصف الثالث الثانوي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/year-3.jpg',stage:'ثانوي'},
+    {key:'sec-1',label:'الصف الأول الثانوي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/year 1.png',stage:'sec'},
+    {key:'sec-2',label:'الصف الثاني الثانوي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/year-2.jpg',stage:'sec'},
+    {key:'sec-3',label:'الصف الثالث الثانوي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/year-3.jpg',stage:'sec'},
   ],
-  univ:[],
+  univ:[
+    {key:'univ-1',label:'الفرقة الاولى',sub:'كل محتوى الفرقة الأولى',img:'',stage:'univ'},
+    {key:'univ-2',label:'الفرقة الثانية',sub:'كل محتوى الفرقة الثانية',img:'',stage:'univ'},
+  ],
   pro:[]
 };
 
@@ -1148,22 +1151,21 @@ function buildGrades(){
 
     grid.innerHTML=grades.map(g=>{
       const isMine=ud.gradeKey===g.key;
-      const hasGrade=!!ud.gradeKey;
-      const isLocked=hasGrade && !isMine;
+      const isLocked=!isMine;
       const clickFn=isLocked
-        ?`showToast('هذا الصف مش صفك — اشترك في الصف الصح 🔒','err')`
+        ?`showToast('مش مشترك في الكورس ده — تواصل مع الأستاذ 🔒','err')`
         :`openCourse('${g.key}','${g.label}','${g.stage||stage}')`;
       return `<div id="gcard-${g.key}" class="grade-card"
         onclick="${clickFn}"
-        style="${isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':isLocked?'opacity:.45;cursor:not-allowed':''}">
+        style="${isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':'opacity:.5;cursor:not-allowed'}">
         ${g.img?`<img src="${g.img}" class="gc-img" onerror="this.style.display='none'"/>`:''}
-        ${isMine?'<div class="gc-badge mine">صفك ✓</div>':isLocked?'<div class="gc-badge" style="background:rgba(255,77,109,0.8);color:#fff">🔒</div>':''}
+        ${isMine?'<div class="gc-badge mine">صفك ✓</div>':'<div class="gc-badge" style="background:rgba(255,77,109,0.8);color:#fff">🔒</div>'}
         <div class="gc-body">
           <div class="gc-title">${g.label}</div>
-          <div class="gc-sub">${isMine?'📚 محتواك الأساسي':isLocked?'مش صفك':g.sub||''}</div>
+          <div class="gc-sub">${isMine?'📚 محتواك الأساسي':g.sub||'مش مشترك'}</div>
         </div>
         <div class="gc-foot">
-          <span>${isMine?'فيديوهات · امتحانات · أبحاث':isLocked?'اشترك في صفك':'اضغط للمشاهدة'}</span>
+          <span>${isMine?'فيديوهات · امتحانات · أبحاث':'تواصل مع الأستاذ للاشتراك'}</span>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
         </div>
       </div>`;
