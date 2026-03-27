@@ -3692,9 +3692,9 @@ window.checkAbsence = async ()=>{
   });
   if(!absent.length){ toast('كل الطلاب نشطين ✅ لا يوجد غياب طويل','ok'); return; }
   const todayKey = now.toISOString().split('T')[0];
-  if(!confirm('إرسال تذكيرة عودة لـ '+absent.length+' طالب غائب (+�ه يسماح)?
-'+(absent.slice(0,5).map(u=>'• '+(u.name||u.phone||u.id)).join('
-')))) return;
+  if(!confirm('إرسال تذكيرة عودة لـ '+absent.length+' طالب غائب؟')) return;
+
+
   let sent=0;
   for(const u of absent){
     try{
@@ -3744,8 +3744,8 @@ window.renderAbsentList = ()=>{
         <div style="font-size:12px;font-weight:700">${u.name||'—'}</div>
         <div style="font-size:10px;color:var(--muted)">${u.grade||'—'} · غايب ${days} يوم</div>
       </div>
-      <a href="https://wa.me/20${(u.phone||'').replace(/^0/,'').replace(/\D/g,'')}?text=${encodeURIComponent(''مرحباً '+u.name+' مش بتفتح لي! — قلقتنا عليك Plus"
-        target="_blank" style="padding:4px 8px;border:1px solid rgba(37,211,102,0.4);border-radius:7px;background:rgba(37,211,102,0.07);color:#25D366;font-size:11px;text-decoration:none;white-space:nowrap;flex-shrink:0">📲 واتس</a>
+      <a href="https://wa.me/20${(u.phone||'').replace(/^0/,'').replace(/\\D/g,'')}?text=${encodeURIComponent('مرحباً '+u.name+' — نفتكرك في Plus Mathematics 🎓')}" target="_blank" style="padding:4px 8px;border:1px solid rgba(37,211,102,0.4);border-radius:7px;background:rgba(37,211,102,0.07);color:#25D366;font-size:11px;text-decoration:none">📲 واتساب</a>
+
     </div>`;
   }).join('');
 };
