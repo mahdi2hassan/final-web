@@ -1070,30 +1070,22 @@ async function loadDynamicGrades(){
     if(!snap.empty){
       snap.docs.forEach(d=>{
         const g={id:d.id,...d.data()};
-        if(!g.stage||!g.key) return;
+        if(!g.key) return;
+        // لو مفيش stage أو فاضي → حطه في univ افتراضياً
+        if(!g.stage) g.stage='univ';
         if(!GRADES[g.stage]) GRADES[g.stage]=[];
         const idx=GRADES[g.stage].findIndex(x=>x.key===g.key);
         if(idx>=0){
-          // حدّث البيانات الموجودة بالجديد من Firestore
           GRADES[g.stage][idx]={...GRADES[g.stage][idx],...g};
         } else {
-          // صف/كورس جديد تماماً — أضفه
           GRADES[g.stage].push(g);
-        }
-      });
-      // مراحل جديدة غير الثابتة
-      snap.docs.forEach(d=>{
-        const g={id:d.id,...d.data()};
-        if(!g.stage||!g.key) return;
-        if(!['primary','prep','sec','univ'].includes(g.stage)){
-          if(!GRADES[g.stage]) GRADES[g.stage]=[];
-          if(!GRADES[g.stage].some(x=>x.key===g.key)) GRADES[g.stage].push(g);
         }
       });
     }
     // أعد بناء _GM بعد الدمج
     window._GM={};
     Object.values(GRADES).flat().forEach(g=>{window._GM[g.key]=g;});
+    console.log('grades loaded:', Object.keys(GRADES).map(s=>s+':'+GRADES[s].length).join(', '));
   }catch(e){ console.warn('loadDynamicGrades:',e.message); }
 }
 
@@ -1113,8 +1105,9 @@ function buildGrades(){
     // لو الـ stage جديد ومفيش section ليه — نعمله ديناميكياً
     if(!grid && grades.length>0){
       const main=document.getElementById('mainContent');
-      const div=document.createElement('div');
-      div.innerHTML=`
+      const wrapper=document.createElement('div');
+      wrapper.id='stage-wrap-'+stage;
+      wrapper.innerHTML=`
         <div class="sdiv"></div>
         <div class="section">
           <div class="section-head">
@@ -1123,7 +1116,10 @@ function buildGrades(){
           </div>
           <div class="grades-grid" id="grid-${stage}"></div>
         </div>`;
-      main.appendChild(div);
+      // امسح القديم لو موجود قبل ما تضيف الجديد
+      const old=document.getElementById('stage-wrap-'+stage);
+      if(old) old.remove();
+      main.appendChild(wrapper);
       grid=document.getElementById('grid-'+stage);
     }
 
@@ -1140,9 +1136,13 @@ function buildGrades(){
 
     grid.innerHTML=grades.map(g=>{
       const isMine=ud.gradeKey===g.key;
-      const isLocked=ud.gradeKey && !isMine;
+      const hasGrade=!!ud.gradeKey;
+      const isLocked=hasGrade && !isMine;
+      const clickFn=isLocked
+        ?`showToast('هذا الصف مش صفك — اشترك في الصف الصح 🔒','err')`
+        :`openCourse('${g.key}','${g.label}','${g.stage||stage}')`;
       return `<div id="gcard-${g.key}" class="grade-card"
-        onclick="${isMine?`openCourse('${g.key}','${g.label}','${g.stage||stage}')`:`showToast('هذا الصف مش صفك — اشترك في الصف الصح 🔒','err')`}"
+        onclick="${clickFn}"
         style="${isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':isLocked?'opacity:.45;cursor:not-allowed':''}">
         ${g.img?`<img src="${g.img}" class="gc-img" onerror="this.style.display='none'"/>`:''}
         ${isMine?'<div class="gc-badge mine">صفك ✓</div>':isLocked?'<div class="gc-badge" style="background:rgba(255,77,109,0.8);color:#fff">🔒</div>':''}
