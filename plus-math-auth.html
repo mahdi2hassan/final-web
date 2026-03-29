@@ -1122,7 +1122,22 @@ auth.onAuthStateChanged(function(user){
   loadBanner(); loadPrice();
   if(!user){ showStep('step-auth'); return; }
   db.collection('users').doc(user.uid).get().then(function(ud){
-    if(!ud.exists){ showStep('step-auth'); return; }
+    if(!ud.exists){
+      // ممكن يكون Google user لسه ما اتكتبش الـ document — استنى ثانية وحاول تاني
+      setTimeout(function(){
+        db.collection('users').doc(user.uid).get().then(function(ud2){
+          if(!ud2.exists){ showStep('step-auth'); return; }
+          var data2 = ud2.data();
+          if(!data2.subscriptionActive){
+            if(data2.gradeKey) showCodeStep(data2.gradeKey, data2.grade);
+            else showStep('step-grade');
+            return;
+          }
+          showProfileStep(data2);
+        }).catch(function(){ showStep('step-auth'); });
+      }, 1500);
+      return;
+    }
     var data = ud.data();
     if(!data.subscriptionActive){
       if(data.gradeKey) showCodeStep(data.gradeKey, data.grade);
@@ -1226,15 +1241,32 @@ function doGoogle(msgId){
 function handleGoogleUser(user){
   return db.collection('users').doc(user.uid).get().then(function(ud){
     if(!ud.exists){
+      // مستخدم جديد — اعمل document وودّيه لاختيار الصف
       return db.collection('users').doc(user.uid).set({
         name:user.displayName||'', email:user.email||'', phone:'',
         subscriptionActive:false,
         createdAt:firebase.firestore.FieldValue.serverTimestamp(),
         signInMethod:'google'
+      }).then(function(){
+        showStep('step-grade');
       });
+    } else {
+      // مستخدم موجود — الـ onAuthStateChanged هيتولى الموضوع
+      // مش محتاج نعمل حاجة هنا
     }
   });
 }
+
+// ── HANDLE REDIRECT RESULT (لما الـ popup يتبلوك ويستخدم redirect) ──
+auth.getRedirectResult().then(function(result){
+  if(result && result.user){
+    handleGoogleUser(result.user);
+  }
+}).catch(function(e){
+  if(e.code && e.code !== 'auth/no-auth-event'){
+    console.warn('redirect error:', e.message);
+  }
+});
 
 // ── FORGOT PASSWORD ──
 function forgotPass(e){
