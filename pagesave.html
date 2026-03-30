@@ -1319,13 +1319,13 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
             كوبونات الخصم
           </div>
-          <button class="btn primary sm" onclick="openModal('couponModal')">
+          <button class="btn primary sm" onclick="openNewCouponModal()">
             <svg><use href="#ic-plus"/></svg>كوبون جديد
           </button>
         </div>
         <div class="tw"><div class="tw-scroll">
           <table>
-            <thead><tr><th>الكوبون</th><th>نوع الخصم</th><th>القيمة</th><th>الاستخدام</th><th>ينتهي</th><th>الحالة</th><th>إجراء</th></tr></thead>
+            <thead><tr><th>الكوبون</th><th>نوع الخصم</th><th>القيمة</th><th>الاستخدام</th><th>ينتهي</th><th>الحالة</th><th>من استخدمه</th><th>إجراء</th></tr></thead>
             <tbody id="couponsTbl"><tr><td colspan="7"><div class="empty"><p>لا يوجد كوبونات</p></div></td></tr></tbody>
           </table>
         </div></div>
@@ -1460,14 +1460,22 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
 <!-- Coupon Modal -->
 <div class="mbg" id="couponModal">
-  <div class="modal" style="max-width:420px">
-    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>كوبون خصم جديد</h3>
+  <div class="modal" style="max-width:440px">
+    <h3 id="cp-modal-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      كوبون جديد
+    </h3>
+    <input type="hidden" id="cp-edit-id" value=""/>
+
+    <!-- كود الكوبون -->
     <div class="ff"><label>كود الكوبون</label>
       <div style="display:flex;gap:8px">
         <input type="text" id="cp-code" placeholder="مثال: RAMADAN50" style="flex:1;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/>
         <button onclick="genCouponCode()" style="padding:0 12px;border:1px solid var(--b1);border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px">توليد</button>
       </div>
     </div>
+
+    <!-- نوع الخصم + القيمة -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div class="ff" style="margin:0"><label>نوع الخصم</label>
         <select id="cp-type">
@@ -1476,19 +1484,94 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </select>
       </div>
       <div class="ff" style="margin:0"><label>القيمة</label>
-        <input type="number" id="cp-value" placeholder="مثال: 20"/></div>
+        <input type="number" id="cp-value" placeholder="مثال: 20" min="1"/></div>
+    </div>
+
+    <!-- الحد الأقصى + الاستخدام الحالي -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+      <div class="ff" style="margin:0">
+        <label>الحد الأقصى للاستخدام</label>
+        <input type="number" id="cp-max" placeholder="فارغ = غير محدود" min="1"/>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">الاستخدام الحالي: <strong id="cp-used-display" style="color:var(--gold2)">0</strong></div>
+      </div>
+      <div class="ff" style="margin:0">
+        <label>تاريخ الانتهاء</label>
+        <input type="date" id="cp-exp"/>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">فارغ = بدون تاريخ انتهاء</div>
+      </div>
+    </div>
+
+    <!-- ملاحظة + حالة التفعيل -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:10px;align-items:end">
+      <div class="ff" style="margin:0"><label>ملاحظة (اختياري)</label>
+        <input type="text" id="cp-note" placeholder="مثال: خصم رمضان"/></div>
+      <div style="padding-bottom:2px">
+        <div style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px">الحالة</div>
+        <div id="cp-active-toggle" class="yn-toggle on" onclick="togglePerm('cp-active-toggle')" data-val="1" style="width:76px">
+          <span class="yn-yes">فعال</span><span class="yn-no">موقوف</span>
+          <div class="yn-knob"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mfooter">
+      <button class="btn ghost" onclick="closeModal('couponModal')">إغلاق</button>
+      <button class="btn ok" id="cp-save-btn" onclick="saveCoupon()"><svg><use href="#ic-check"/></svg>حفظ الكوبون</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Coupon Modal -->
+<div class="mbg" id="editCouponModal">
+  <div class="modal" style="max-width:420px">
+    <h3>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      تعديل الكوبون
+    </h3>
+    <input type="hidden" id="ecp-id"/>
+    <div class="ff"><label>كود الكوبون</label>
+      <input type="text" id="ecp-code" style="text-transform:uppercase;font-family:monospace;font-weight:800;letter-spacing:2px" oninput="this.value=this.value.toUpperCase()"/>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="ff" style="margin:0"><label>نوع الخصم</label>
+        <select id="ecp-type">
+          <option value="percent">نسبة مئوية %</option>
+          <option value="fixed">مبلغ ثابت جنيه</option>
+        </select>
+      </div>
+      <div class="ff" style="margin:0"><label>القيمة</label>
+        <input type="number" id="ecp-value" placeholder="مثال: 20"/>
+      </div>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
       <div class="ff" style="margin:0"><label>الحد الأقصى للاستخدام</label>
-        <input type="number" id="cp-max" placeholder="مثال: 50 (فارغ = غير محدود)"/></div>
+        <input type="number" id="ecp-max" placeholder="فارغ = غير محدود"/>
+      </div>
       <div class="ff" style="margin:0"><label>تاريخ الانتهاء</label>
-        <input type="date" id="cp-exp"/></div>
+        <input type="date" id="ecp-exp"/>
+      </div>
     </div>
     <div class="ff" style="margin-top:10px"><label>ملاحظة (اختياري)</label>
-      <input type="text" id="cp-note" placeholder="مثال: خصم رمضان"/></div>
+      <input type="text" id="ecp-note" placeholder="مثال: خصم رمضان"/>
+    </div>
+    <!-- Usage info + reset -->
+    <div style="margin-top:10px;padding:10px 12px;background:rgba(74,127,212,0.05);border:1px solid var(--b2);border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div>
+        <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:3px">عدد مرات الاستخدام الحالي</div>
+        <div style="font-size:18px;font-weight:900;color:var(--gold2)" id="ecp-used-display">0</div>
+      </div>
+      <button onclick="resetCouponCount(document.getElementById('ecp-id').value)" style="padding:7px 13px;border:1px solid rgba(255,77,109,0.4);border-radius:9px;background:rgba(255,77,109,0.07);color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:800;transition:all .2s" onmouseover="this.style.background='rgba(255,77,109,0.14)'" onmouseout="this.style.background='rgba(255,77,109,0.07)'">
+        🔄 صفّر العداد
+      </button>
+    </div>
+    <!-- Active toggle -->
+    <div class="toggle-row" style="margin-top:12px">
+      <label style="font-size:12px;font-weight:700">تفعيل الكوبون</label>
+      <label class="tog"><input type="checkbox" id="ecp-active"/><span class="tog-sl"></span></label>
+    </div>
     <div class="mfooter">
-      <button class="btn ghost" onclick="closeModal('couponModal')">إغلاق</button>
-      <button class="btn ok" onclick="saveCoupon()"><svg><use href="#ic-check"/></svg>حفظ الكوبون</button>
+      <button class="btn ghost" onclick="closeModal('editCouponModal')">إلغاء</button>
+      <button class="btn ok" onclick="updateCoupon()"><svg><use href="#ic-check"/></svg>حفظ التعديلات</button>
     </div>
   </div>
 </div>
@@ -3897,58 +3980,180 @@ window.genCouponCode=()=>{
   document.getElementById('cp-code').value=code;
 };
 
-window.saveCoupon=async()=>{
-  const code=document.getElementById('cp-code').value.trim().toUpperCase();
-  const type=document.getElementById('cp-type').value;
-  const val=parseFloat(document.getElementById('cp-value').value);
-  const max=parseInt(document.getElementById('cp-max').value)||null;
-  const exp=document.getElementById('cp-exp').value;
-  const note=document.getElementById('cp-note').value.trim();
-  if(!code||!val){ toast('ادخل كود وقيمة الخصم','err'); return; }
+// ── reset & open coupon modal for new ──
+window.openNewCouponModal = ()=>{
+  document.getElementById('cp-edit-id').value = '';
+  document.getElementById('cp-modal-title').innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> كوبون جديد`;
+  document.getElementById('cp-code').value = '';
+  document.getElementById('cp-type').value = 'percent';
+  document.getElementById('cp-value').value = '';
+  document.getElementById('cp-max').value = '';
+  document.getElementById('cp-exp').value = '';
+  document.getElementById('cp-note').value = '';
+  document.getElementById('cp-used-display').textContent = '0';
+  const tog = document.getElementById('cp-active-toggle');
+  tog.dataset.val = '1'; tog.classList.add('on');
+  document.getElementById('cp-save-btn').innerHTML = '<svg><use href="#ic-check"/></svg>حفظ الكوبون';
+  openModal('couponModal');
+};
+
+window.editCoupon = async (id)=>{
   try{
-    if(window._fbReady){
-      await db.collection('coupons').add({
-        code, type, value:val, maxUses:max, expiresAt:exp||null,
-        note, usedCount:0, active:true,
-        createdAt:firebase.firestore.FieldValue.serverTimestamp()
-      });
+    const snap = await db.collection('coupons').doc(id).get();
+    if(!snap.exists){ toast('الكوبون مش موجود','err'); return; }
+    const c = snap.data();
+    document.getElementById('cp-edit-id').value = id;
+    document.getElementById('cp-modal-title').innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> تعديل الكوبون`;
+    document.getElementById('cp-code').value = c.code||'';
+    document.getElementById('cp-type').value = c.type||'percent';
+    document.getElementById('cp-value').value = c.value||'';
+    document.getElementById('cp-max').value = c.maxUses||'';
+    document.getElementById('cp-exp').value = c.expiresAt||'';
+    document.getElementById('cp-note').value = c.note||'';
+    document.getElementById('cp-used-display').textContent = c.usedCount||0;
+    const tog = document.getElementById('cp-active-toggle');
+    const isActive = c.active !== false;
+    tog.dataset.val = isActive ? '1' : '0';
+    tog.classList.toggle('on', isActive);
+    document.getElementById('cp-save-btn').innerHTML = '<svg><use href="#ic-check"/></svg>حفظ التعديلات';
+    openModal('couponModal');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.saveCoupon = async ()=>{
+  const editId = document.getElementById('cp-edit-id').value.trim();
+  const code   = document.getElementById('cp-code').value.trim().toUpperCase();
+  const type   = document.getElementById('cp-type').value;
+  const val    = parseFloat(document.getElementById('cp-value').value);
+  const max    = parseInt(document.getElementById('cp-max').value)||null;
+  const exp    = document.getElementById('cp-exp').value;
+  const note   = document.getElementById('cp-note').value.trim();
+  const active = document.getElementById('cp-active-toggle').dataset.val === '1';
+  if(!code || !val){ toast('ادخل كود وقيمة الخصم','err'); return; }
+  if(!window._fbReady){ toast('تعذر الاتصال','err'); return; }
+  try{
+    if(editId){
+      await db.collection('coupons').doc(editId).update({ code, type, value:val, maxUses:max, expiresAt:exp||null, note, active });
+      logActivity('✏️','تعديل كوبون',`${code} — خصم ${val}${type==='percent'?'%':' جنيه'}`);
+      toast('تم حفظ التعديلات ✓','ok');
+    } else {
+      await db.collection('coupons').add({ code, type, value:val, maxUses:max, expiresAt:exp||null, note, active, usedCount:0, usedBy:[], createdAt:firebase.firestore.FieldValue.serverTimestamp() });
+      logActivity('🎫','إضافة كوبون',`${code} — خصم ${val}${type==='percent'?'%':' جنيه'}`);
+      toast('تم حفظ الكوبون ✓','ok');
     }
     closeModal('couponModal');
     loadCoupons();
-    logActivity('🎫','إضافة كوبون',`${code} — خصم ${val}${type==='percent'?'%':' جنيه'}`);
-    toast('تم حفظ الكوبون ✓','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
 async function loadCoupons(){
-  const el=document.getElementById('couponsTbl');
+  const el = document.getElementById('couponsTbl');
   try{
-    if(!window._fbReady){ el.innerHTML='<tr><td colspan="7"><div class="empty"><p>جاري التحميل...</p></div></td></tr>'; return; }
-    const snap=await db.collection('coupons').get();
-    const coupons=snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(!coupons.length){ el.innerHTML='<tr><td colspan="7"><div class="empty"><p>لا يوجد كوبونات</p></div></td></tr>'; return; }
-    el.innerHTML=coupons.map(c=>`<tr>
-      <td><span class="cc" onclick="cpTxt('${c.code}')" style="font-family:monospace;font-weight:800;letter-spacing:2px">${c.code}</span></td>
-      <td>${c.type==='percent'?'نسبة %':'مبلغ ثابت'}</td>
-      <td style="color:var(--ok);font-weight:800">${c.value}${c.type==='percent'?'%':' جنيه'}</td>
-      <td>${c.usedCount||0}${c.maxUses?' / '+c.maxUses:' / ∞'}</td>
-      <td style="font-size:11px">${c.expiresAt||'—'}</td>
-      <td><span class="bd ${c.active?'ok':'pu'}">${c.active?'فعال':'موقوف'}</span></td>
-      <td><div style="display:flex;gap:4px">
-        <button class="btn icon-btn" onclick="toggleCoupon('${c.id}',${!c.active})" title="${c.active?'إيقاف':'تفعيل'}" style="color:${c.active?'var(--warn)':'var(--ok)'}">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><circle cx="12" cy="12" r="10"/>${c.active?'<line x1="8" y1="12" x2="16" y2="12"/>':'<line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>'}</svg>
-        </button>
-        <button class="btn icon-btn del" onclick="deleteCoupon('${c.id}')" title="حذف"><svg><use href="#ic-x"/></svg></button>
-      </div></td>
-    </tr>`).join('');
-  }catch(e){ el.innerHTML='<tr><td colspan="7"><div class="empty"><p>خطأ في التحميل</p></div></td></tr>'; }
+    if(!window._fbReady){ el.innerHTML='<tr><td colspan="8"><div class="empty"><p>جاري التحميل...</p></div></td></tr>'; return; }
+    const snap = await db.collection('coupons').get();
+    const coupons = snap.docs.map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    if(!coupons.length){ el.innerHTML='<tr><td colspan="8"><div class="empty"><p>لا يوجد كوبونات</p></div></td></tr>'; return; }
+    const users = window._users||[];
+    el.innerHTML = coupons.map(c=>{
+      const isExpired = c.expiresAt && new Date(c.expiresAt) < new Date();
+      const isFull    = c.maxUses && (c.usedCount||0) >= c.maxUses;
+      const usedPct   = c.maxUses ? Math.min(Math.round((c.usedCount||0)/c.maxUses*100),100) : null;
+      const usageBar  = usedPct !== null
+        ? `<div style="margin-top:3px;height:4px;background:rgba(74,127,212,0.1);border-radius:2px;overflow:hidden;width:60px"><div style="height:100%;width:${usedPct}%;background:${usedPct>=90?'var(--err)':usedPct>=60?'var(--warn)':'var(--ok)'};border-radius:2px"></div></div>` : '';
+      const usedByNames = (c.usedBy||[]).slice(-3).map(uid=>{
+        const u = users.find(x=>x.id===uid);
+        return u ? `<span style="font-size:9px;padding:1px 5px;background:rgba(74,127,212,0.1);border-radius:4px;color:var(--blue)">${(u.name||'—').split(' ')[0]}</span>` : '';
+      }).filter(Boolean).join('');
+      const statusBadge = isExpired ? '<span class="bd err">منتهي</span>'
+        : isFull ? '<span class="bd pu">نفذ</span>'
+        : c.active ? '<span class="bd ok">فعال</span>' : '<span class="bd pu">موقوف</span>';
+      return `<tr>
+        <td><span class="cc" onclick="cpTxt('${c.code}')" style="font-family:monospace;font-weight:900;letter-spacing:2px">${c.code}</span>${c.note?`<div style="font-size:10px;color:var(--muted);margin-top:1px">${c.note}</div>`:''}</td>
+        <td style="font-size:12px">${c.type==='percent'?'نسبة %':'مبلغ ثابت'}</td>
+        <td style="color:var(--ok);font-weight:900;font-size:14px">${c.value}${c.type==='percent'?'%':' ج'}</td>
+        <td><div style="font-size:12px;font-weight:700">${c.usedCount||0}${c.maxUses?' / '+c.maxUses:' / ∞'}</div>${usageBar}</td>
+        <td style="font-size:11px;color:${isExpired?'var(--err)':'var(--muted)'}">${c.expiresAt||'—'}</td>
+        <td>${statusBadge}</td>
+        <td><div style="display:flex;gap:3px;flex-wrap:wrap;max-width:110px">${usedByNames||'<span style="font-size:10px;color:var(--muted)">—</span>'}</div>${(c.usedBy||[]).length>3?`<div style="font-size:9px;color:var(--muted);margin-top:1px">+${(c.usedBy||[]).length-3} آخرين</div>`:''}</td>
+        <td><div style="display:flex;gap:4px">
+          <button class="btn icon-btn" onclick="editCoupon('${c.id}')" title="تعديل" style="color:var(--blue)"><svg><use href="#ic-edit"/></svg></button>
+          <button class="btn icon-btn" onclick="toggleCoupon('${c.id}',${!c.active})" title="${c.active?'إيقاف':'تفعيل'}" style="color:${c.active?'var(--warn)':'var(--ok)'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><circle cx="12" cy="12" r="10"/>${c.active?'<line x1="8" y1="12" x2="16" y2="12"/>':'<line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>'}</svg></button>
+          <button class="btn icon-btn" onclick="resetCouponUsage('${c.id}','${c.code}')" title="إعادة تعيين الاستخدام" style="color:var(--purple)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg></button>
+          <button class="btn icon-btn del" onclick="deleteCoupon('${c.id}')" title="حذف"><svg><use href="#ic-x"/></svg></button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }catch(e){ el.innerHTML=`<tr><td colspan="8"><div class="empty"><p>خطأ: ${e.message}</p></div></td></tr>`; }
 }
-window.toggleCoupon=async(id,state)=>{
-  try{ await db.collection('coupons').doc(id).update({active:state}); loadCoupons(); toast((state?'تم تفعيل':'تم إيقاف')+' الكوبون','ok'); }catch(e){ toast('خطأ','err'); }
+
+window.toggleCoupon = async (id,state)=>{
+  try{ await db.collection('coupons').doc(id).update({active:state}); loadCoupons(); logActivity(state?'✅':'⏸','كوبون '+(state?'مفعّل':'موقوف'),id); toast((state?'تم تفعيل':'تم إيقاف')+' الكوبون','ok'); }catch(e){ toast('خطأ','err'); }
 };
-window.deleteCoupon=async(id)=>{
-  if(!confirm('حذف الكوبون؟')) return;
+window.resetCouponUsage = async (id,code)=>{
+  if(!confirm(`إعادة تعيين عداد الاستخدام للكوبون "${code}"؟`)) return;
+  try{ await db.collection('coupons').doc(id).update({usedCount:0,usedBy:[]}); loadCoupons(); logActivity('🔄','إعادة تعيين كوبون',code); toast('تم إعادة التعيين ✓','ok'); }catch(e){ toast('خطأ','err'); }
+};
+window.deleteCoupon = async (id)=>{
+  if(!confirm('حذف الكوبون نهائياً؟')) return;
   try{ await db.collection('coupons').doc(id).delete(); loadCoupons(); logActivity('🗑','حذف كوبون',id); toast('تم الحذف','ok'); }catch(e){ toast('خطأ','err'); }
+};
+
+// ── تعديل كوبون ──
+window.editCoupon = async (id) => {
+  try {
+    if(!window._fbReady){ toast('جاري الاتصال...','info'); return; }
+    const snap = await db.collection('coupons').doc(id).get();
+    if(!snap.exists){ toast('الكوبون مش موجود','err'); return; }
+    const c = snap.data();
+    document.getElementById('ecp-id').value        = id;
+    document.getElementById('ecp-code').value      = c.code || '';
+    document.getElementById('ecp-type').value      = c.type || 'percent';
+    document.getElementById('ecp-value').value     = c.value || '';
+    document.getElementById('ecp-max').value       = c.maxUses || '';
+    document.getElementById('ecp-exp').value       = c.expiresAt || '';
+    document.getElementById('ecp-note').value      = c.note || '';
+    document.getElementById('ecp-active').checked  = c.active !== false;
+    document.getElementById('ecp-used-display').textContent =
+      (c.usedCount || 0) + (c.maxUses ? ' / ' + c.maxUses : '');
+    openModal('editCouponModal');
+  } catch(e) { toast('خطأ: ' + e.message, 'err'); }
+};
+
+window.updateCoupon = async () => {
+  const id      = document.getElementById('ecp-id').value;
+  const code    = document.getElementById('ecp-code').value.trim().toUpperCase();
+  const type    = document.getElementById('ecp-type').value;
+  const val     = parseFloat(document.getElementById('ecp-value').value);
+  const maxRaw  = document.getElementById('ecp-max').value;
+  const maxUses = maxRaw ? parseInt(maxRaw) : null;
+  const exp     = document.getElementById('ecp-exp').value;
+  const note    = document.getElementById('ecp-note').value.trim();
+  const active  = document.getElementById('ecp-active').checked;
+
+  if(!id || !code || isNaN(val)){ toast('تأكد من الكود والقيمة','err'); return; }
+
+  try {
+    await db.collection('coupons').doc(id).update({
+      code, type, value: val, maxUses, expiresAt: exp || null, note, active
+    });
+    closeModal('editCouponModal');
+    loadCoupons();
+    logActivity('✏️', 'تعديل كوبون', `${code} — ${val}${type==='percent'?'%':' جنيه'}${maxUses?' (حد: '+maxUses+')':''}`);
+    toast('تم حفظ التعديلات ✓', 'ok');
+  } catch(e) { toast('خطأ: ' + e.message, 'err'); }
+};
+
+window.resetCouponCount = async (id) => {
+  if(!id){ toast('خطأ في معرف الكوبون','err'); return; }
+  if(!confirm('صفّر عداد الاستخدام لهذا الكوبون؟')) return;
+  try {
+    await db.collection('coupons').doc(id).update({ usedCount: 0 });
+    document.getElementById('ecp-used-display').textContent = '0';
+    loadCoupons();
+    logActivity('🔄', 'تصفير عداد كوبون', id);
+    toast('تم تصفير العداد ✓', 'ok');
+  } catch(e) { toast('خطأ: ' + e.message, 'err'); }
 };
 
 // ══════════════════════════════════════════
@@ -4641,7 +4846,22 @@ window.openStudentDetail = async (id)=>{
             </div>
             <button onclick="removeDevice('${id}','${dv.id}')" style="padding:3px 8px;border:1px solid var(--err);border-radius:5px;background:transparent;color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px">حذف</button>
           </div>`).join('')}
-      </div>`;
+      </div>
+
+      <!-- ══ PERFORMANCE CARD ══ -->
+      <div class="card" id="sd-perf-card" style="grid-column:1/-1">
+        <h4>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--gold)"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+          أداء الطالب
+          <button onclick="loadStudentPerformance('${id}','${d.gradeKey||''}')" style="margin-right:auto;padding:3px 9px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px;font-weight:700">🔄 تحديث</button>
+        </h4>
+        <div id="sd-perf-content">
+          <div style="text-align:center;padding:18px;color:var(--muted);font-size:12px">جاري تحميل بيانات الأداء...</div>
+        </div>
+      </div>\`;
+
+    // ══ LOAD PERFORMANCE DATA ══
+    loadStudentPerformance(id, d.gradeKey||'');
 
     // Pre-fill grade options
     updateSdGradeOptions(d.stage, d.gradeKey);
@@ -4650,6 +4870,136 @@ window.openStudentDetail = async (id)=>{
 
 // Add pageLabels entry for student
 pageLabels['student'] = 'تفاصيل الطالب';
+
+// ══════════════════════════════════════════
+// ── STUDENT PERFORMANCE ──
+// ══════════════════════════════════════════
+window.loadStudentPerformance = async (uid, gradeKey) => {
+  const el = document.getElementById('sd-perf-content');
+  if(!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:18px;color:var(--muted);font-size:12px">جاري التحميل...</div>';
+
+  try {
+    // 1. Progress (videos + exams watched)
+    const progressDoc = await db.collection('progress').doc(uid).get();
+    const progress = progressDoc.exists ? progressDoc.data() : {};
+    const gp = gradeKey ? (progress[gradeKey] || {}) : {};
+    const videoDone  = (gp.videos  || []).length;
+    const examsDone  = (gp.exams   || []).length;
+    const hwDone     = (gp.homework|| []).length;
+
+    // Total content counts from Firestore
+    let videoTotal = 0, examsTotal = 0, hwTotal = 0;
+    if(gradeKey && window._fbReady) {
+      try {
+        const [vs, es, hs] = await Promise.all([
+          db.collection('content').doc(gradeKey).collection('videos').get(),
+          db.collection('content').doc(gradeKey).collection('exams').get(),
+          db.collection('content').doc(gradeKey).collection('homework').get(),
+        ]);
+        videoTotal = vs.size;
+        examsTotal = es.size;
+        hwTotal    = hs.size;
+      } catch(e) {}
+    }
+
+    const videoPct  = videoTotal  ? Math.round(videoDone  / videoTotal  * 100) : 0;
+    const examsPct  = examsTotal  ? Math.round(examsDone  / examsTotal  * 100) : 0;
+    const hwPct     = hwTotal     ? Math.round(hwDone     / hwTotal     * 100) : 0;
+
+    // 2. Exam scores from Firestore (exams collection)
+    let examScores = [];
+    try {
+      const scoresSnap = await db.collection('examResults')
+        .where('userId','==',uid)
+        .orderBy('submittedAt','desc')
+        .limit(10)
+        .get();
+      examScores = scoresSnap.docs.map(d => ({id:d.id, ...d.data()}));
+    } catch(e) {
+      // examResults collection might not exist yet — that's fine
+    }
+
+    // 3. Activity — lastSeen + session count
+    const userDoc = await db.collection('users').doc(uid).get();
+    const ud = userDoc.exists ? userDoc.data() : {};
+    const lastSeen = ud.lastSeen ? (ud.lastSeen.toDate ? ud.lastSeen.toDate() : new Date(ud.lastSeen)) : null;
+    const now = new Date();
+    const daysSince = lastSeen ? Math.floor((now - lastSeen) / 86400000) : null;
+    const activityStatus = daysSince === null ? { label:'لا يوجد بيانات', color:'var(--muted)' }
+      : daysSince === 0   ? { label:'دخل اليوم ✅',      color:'var(--ok)' }
+      : daysSince <= 3    ? { label:`منذ ${daysSince} أيام`, color:'var(--gold)' }
+      : daysSince <= 7    ? { label:`منذ ${daysSince} أيام`, color:'var(--warn)' }
+      :                     { label:`غايب ${daysSince} يوم`, color:'var(--err)' };
+
+    // ── Build HTML ──
+    const progBar = (pct, color) =>
+      `<div style="flex:1;height:7px;background:rgba(74,127,212,0.1);border-radius:4px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:${color};border-radius:4px;transition:width .8s"></div>
+      </div>`;
+
+    const scoresHTML = examScores.length
+      ? `<div style="margin-top:14px">
+          <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px">آخر نتائج الامتحانات</div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            ${examScores.map(s => {
+              const pct = s.total ? Math.round(s.score / s.total * 100) : (s.percentage || s.pct || 0);
+              const col = pct >= 80 ? 'var(--ok)' : pct >= 60 ? 'var(--gold)' : 'var(--err)';
+              const dt  = s.submittedAt ? (s.submittedAt.toDate ? s.submittedAt.toDate() : new Date(s.submittedAt)).toLocaleDateString('ar-EG') : '—';
+              return `<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(74,127,212,0.04);border:1px solid var(--b2);border-radius:9px">
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.examTitle || s.title || 'امتحان'}</div>
+                  <div style="font-size:10px;color:var(--muted);margin-top:2px">${dt}</div>
+                </div>
+                <div style="font-size:16px;font-weight:900;color:${col};min-width:44px;text-align:left">${pct}%</div>
+                <div style="width:60px;height:6px;background:rgba(74,127,212,0.1);border-radius:3px;overflow:hidden">
+                  <div style="height:100%;width:${pct}%;background:${col};border-radius:3px"></div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>`
+      : `<div style="margin-top:10px;font-size:11px;color:var(--muted);text-align:center;padding:8px">لا يوجد نتائج امتحانات مسجلة بعد</div>`;
+
+    el.innerHTML = `
+      <!-- Activity status -->
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(74,127,212,0.05);border:1px solid var(--b2);border-radius:10px;margin-bottom:14px">
+        <div style="width:8px;height:8px;border-radius:50%;background:${activityStatus.color};flex-shrink:0;${daysSince===0?'animation:pulse 2s infinite':''}"></div>
+        <span style="font-size:13px;font-weight:700;color:${activityStatus.color}">${activityStatus.label}</span>
+        ${lastSeen ? `<span style="font-size:11px;color:var(--muted);margin-right:auto">${lastSeen.toLocaleString('ar-EG')}</span>` : ''}
+      </div>
+
+      <!-- Progress bars -->
+      <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px">تقدم الفيديوهات والمحتوى</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:4px">
+
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--muted);font-weight:600;min-width:68px">📹 الفيديوهات</span>
+          ${progBar(videoPct, 'linear-gradient(90deg,var(--blue),var(--navy))')}
+          <span style="font-size:12px;font-weight:800;color:var(--text);min-width:54px;text-align:left">${videoDone}/${videoTotal||'?'} (${videoPct}%)</span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--muted);font-weight:600;min-width:68px">📝 الامتحانات</span>
+          ${progBar(examsPct, 'linear-gradient(90deg,var(--gold),#8a5810)')}
+          <span style="font-size:12px;font-weight:800;color:var(--text);min-width:54px;text-align:left">${examsDone}/${examsTotal||'?'} (${examsPct}%)</span>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--muted);font-weight:600;min-width:68px">📚 الواجبات</span>
+          ${progBar(hwPct, 'linear-gradient(90deg,var(--ok),#006040)')}
+          <span style="font-size:12px;font-weight:800;color:var(--text);min-width:54px;text-align:left">${hwDone}/${hwTotal||'?'} (${hwPct}%)</span>
+        </div>
+      </div>
+
+      ${scoresHTML}
+    `;
+
+  } catch(e) {
+    if(el) el.innerHTML = `<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px">تعذر تحميل بيانات الأداء</div>`;
+    console.warn('loadStudentPerformance:', e.message);
+  }
+};
 
 // الصفوف الأساسية الثابتة في الأدمن
 const SD_BASE_GRADES = {
