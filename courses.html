@@ -1154,20 +1154,30 @@ function buildGrades(){
     grid.innerHTML=grades.map(g=>{
       const isMine=ud.gradeKey===g.key;
       const isLocked=!isMine;
+      // ── الكروت المقفولة: حفظ الـ gradeKey وروّح لصفحة التسجيل ──
       const clickFn=isLocked
-        ?`showToast('مش مشترك في الكورس ده — تواصل مع الأستاذ 🔒','err')`
+        ?`sessionStorage.setItem('intended_grade','${g.key}');sessionStorage.setItem('intended_label','${g.label.replace(/'/g,"\\'")}');window.location.href='plus-math-auth.html?from=locked&grade=${encodeURIComponent(g.key)}'`
         :`openCourse('${g.key}','${g.label}','${g.stage||stage}')`;
       return `<div id="gcard-${g.key}" class="grade-card"
         onclick="${clickFn}"
-        style="${isMine?'border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15)':'opacity:.5;cursor:not-allowed'}">
-        ${g.img?`<img src="${g.img}" class="gc-img" onerror="this.style.display='none'"/>`:''}
-        ${isMine?'<div class="gc-badge mine">صفك ✓</div>':'<div class="gc-badge" style="background:rgba(255,77,109,0.8);color:#fff">🔒</div>'}
-        <div class="gc-body">
+        style="${isMine
+          ?"border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15);cursor:pointer"
+          :"cursor:pointer;position:relative;overflow:hidden"}">
+        ${g.img?`<img src="${g.img}" class="gc-img" onerror="this.style.display='none'" style="${isLocked?'filter:brightness(0.45) blur(1px)':''}"/>`:''}
+        ${isLocked?`
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(8,13,28,0.7),rgba(26,50,112,0.5));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:2">
+          <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          </div>
+          <span style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.9)">اشترك للوصول</span>
+        </div>`
+        :'<div class="gc-badge mine">صفك ✓</div>'}
+        <div class="gc-body" style="${isLocked?'opacity:.6':''}">
           <div class="gc-title">${g.label}</div>
           <div class="gc-sub">${isMine?'📚 محتواك الأساسي':g.sub||'مش مشترك'}</div>
         </div>
-        <div class="gc-foot">
-          <span>${isMine?'فيديوهات · امتحانات · أبحاث':'تواصل مع الأستاذ للاشتراك'}</span>
+        <div class="gc-foot" style="${isLocked?'opacity:.5':''}">
+          <span>${isMine?'فيديوهات · امتحانات · أبحاث':isLocked?'🔒 اضغط للاشتراك':'تواصل مع الأستاذ للاشتراك'}</span>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
         </div>
       </div>`;

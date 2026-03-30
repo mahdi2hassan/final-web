@@ -218,6 +218,19 @@ footer{background:var(--navy);padding:18px clamp(14px,5vw,56px);display:flex;ali
 .reveal.visible{opacity:1;transform:none}
 .rd1{transition-delay:.08s}.rd2{transition-delay:.16s}.rd3{transition-delay:.24s}
 
+/* 25502550 LOCKED COURSE CARDS 25502550 */
+.idx-locked-card{border-radius:14px;overflow:hidden;cursor:pointer;border:1px solid var(--border);background:white;box-shadow:var(--shadow);transition:all .25s;position:relative}
+.idx-locked-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);border-color:var(--border2)}
+.idx-locked-card:hover .idx-lc-overlay{opacity:1}
+.idx-locked-card:hover .idx-lc-img{filter:brightness(0.4) blur(2px);transform:scale(1.04)}
+.idx-lc-img{width:100%;height:110px;object-fit:cover;display:block;background:var(--blue-l);transition:all .3s}
+.idx-lc-overlay{position:absolute;top:0;left:0;right:0;height:110px;background:linear-gradient(135deg,rgba(26,50,112,0.85),rgba(58,110,196,0.75));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;opacity:0;transition:opacity .25s}
+.idx-lc-overlay svg{flex-shrink:0}
+.idx-lc-overlay span{font-size:12px;font-weight:800;color:white;font-family:'Tajawal',sans-serif}
+.idx-lc-body{padding:10px 12px;position:relative}
+.idx-lc-title{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:3px}
+.idx-lc-meta{font-size:11px;color:var(--muted)}
+
 section.light{background:white}
 section.gray{background:var(--bg)}
 
@@ -378,13 +391,41 @@ section.gray{background:var(--bg)}
       </div>
       <h2 style="font-size:clamp(20px,4vw,28px);font-weight:900;color:var(--navy);margin-bottom:10px">المحتوى متاح للمشتركين فقط</h2>
       <p style="font-size:clamp(13px,2.5vw,15px);color:var(--muted);line-height:1.7;margin-bottom:28px">سجل حسابك واشترك للوصول لكل محتوى الصفوف الدراسية — شرح ومراجعات وامتحانات</p>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:40px">
         <a href="plus-math-auth.html" style="padding:13px 28px;border:none;border-radius:13px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;background:var(--navy);color:white;text-decoration:none;display:inline-flex;align-items:center;gap:7px;box-shadow:0 6px 20px rgba(26,50,112,0.3)">
           اشترك الآن
         </a>
         <a href="https://wa.me/+201007586279" target="_blank" style="padding:13px 22px;border:none;border-radius:13px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;background:#25D366;color:white;text-decoration:none;display:inline-flex;align-items:center;gap:7px">
           تواصل معنا
         </a>
+      </div>
+      <!-- ══ LOCKED COURSES GRID ══ -->
+      <div style="text-align:right;max-width:860px;margin:0 auto">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;justify-content:center">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          <span style="font-size:13px;font-weight:800;color:var(--navy)">استعرض الكورسات — اضغط على أي كورس للاشتراك</span>
+        </div>
+        <!-- ابتدائي -->
+        <div style="margin-bottom:8px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-align:right">المرحلة الابتدائية</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;margin-bottom:22px">
+          <div onclick="goToAuth('primary-4','الصف الرابع الابتدائي')" class="idx-locked-card"><img src="https://plusedu.vercel.app/store/1/ye 1.png" class="idx-lc-img" onerror="this.style.display='none'"/><div class="idx-lc-overlay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span>اشترك</span></div><div class="idx-lc-body"><div class="idx-lc-title">رابع ابتدائي</div><div class="idx-lc-meta">فيديوهات · امتحانات</div></div></div>
+          <div onclick="goToAuth('primary-5','الصف الخامس الابتدائي')" class="idx-locked-card"><img src="https://plusedu.vercel.app/store/1/ye-2.jpg" class="idx-lc-img" onerror="this.style.display='none'"/><div class="idx-lc-overlay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span>اشترك</span></div><div class="idx-lc-body"><div class="idx-lc-title">خامس ابتدائي</div><div class="idx-lc-meta">فيديوهات · امتحانات</div></div></div>
+          <div onclick="goToAuth('primary-6','الصف السادس الابتدائي')" class="idx-locked-card"><img src="https://plusedu.vercel.app/store/1/ye-3.jpg" class="idx-lc-img" onerror="this.style.display='none'"/><div class="idx-lc-overlay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span>اشترك</span></div><div class="idx-lc-body"><div class="idx-lc-title">سادس ابتدائي</div><div class="idx-lc-meta">فيديوهات · امتحانات</div></div></div>
+        </div>
+        <!-- إعدادي -->
+        <div style="margin-bottom:8px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-align:right">المرحلة الإعدادية</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;margin-bottom:22px">
+          <div onclick="goToAuth('prep-1','الصف الأول الإعدادي')" class="idx-locked-card"><img src="https://plusedu.vercel.app/store/1/yer 1.png" class="idx-lc-img" onerror="this.style.display='none'"/><div class="idx-lc-overlay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span>اشترك</span></div><div class="idx-lc-body"><div class="idx-lc-title">أول إعدادي</div><div class="idx-lc-meta">فيديوهات · امتحانات</div></div></div>
+          <div onclick="goToAuth('prep-2','الصف الثاني الإعدادي')" class="idx-locked-card"><img src="https://plusedu.vercel.app/store/1/yer-2.jpg" class="idx-lc-img" onerror="this.style.display='none'"/><div class="idx-lc-overlay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span>اشترك</span></div><div class="idx-lc-body"><div class="idx-lc-title">ثاني إعدادي</div><div class="idx-lc-meta">فيديوهات · امتحانات</div></div></div>
+          <div onclick="goToAuth('prep-3','الصف الثالث الإعدادي')" class="idx-locked-card"><img src="https://plusedu.vercel.app/store/1/yer-3.jpg" class="idx-lc-img" onerror="this.style.display='none'"/><div class="idx-lc-overlay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span>اشترك</span></div><div class="idx-lc-body"><div class="idx-lc-title">ثالث إعدادي</div><div class="idx-lc-meta">فيديوهات · امتحانات</div></div></div>
+        </div>
+        <!-- ثانوي -->
+        <div style="margin-bottom:8px;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-align:right">المرحلة الثانوية</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px">
+          <div onclick="goToAuth('sec-1','الصف الأول الثانوي')" class="idx-locked-card"><img src="https://plusedu.vercel.app/store/1/year 1.png" class="idx-lc-img" onerror="this.style.display='none'"/><div class="idx-lc-overlay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span>اشترك</span></div><div class="idx-lc-body"><div class="idx-lc-title">أول ثانوي</div><div class="idx-lc-meta">فيديوهات · امتحانات</div></div></div>
+          <div onclick="goToAuth('sec-2','الصف الثاني الثانوي')" class="idx-locked-card"><img src="https://plusedu.vercel.app/store/1/year-2.jpg" class="idx-lc-img" onerror="this.style.display='none'"/><div class="idx-lc-overlay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span>اشترك</span></div><div class="idx-lc-body"><div class="idx-lc-title">ثاني ثانوي</div><div class="idx-lc-meta">فيديوهات · امتحانات</div></div></div>
+          <div onclick="goToAuth('sec-3','الصف الثالث الثانوي')" class="idx-locked-card" style="border-color:rgba(184,146,42,0.4);box-shadow:0 0 0 1px rgba(184,146,42,0.15)"><img src="https://plusedu.vercel.app/store/1/year-3.jpg" class="idx-lc-img" onerror="this.style.display='none'"/><div class="idx-lc-overlay"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg><span>اشترك</span></div><div class="idx-lc-body"><div style="position:absolute;top:-1px;left:6px;padding:2px 8px;border-radius:0 0 6px 6px;background:var(--gold);color:white;font-size:9px;font-weight:800">⭐ ثانوية عامة</div><div class="idx-lc-title">ثالث ثانوي</div><div class="idx-lc-meta">فيديوهات · امتحانات</div></div></div>
+        </div>
       </div>
     </div>
 
@@ -688,6 +729,13 @@ const statsObs = new IntersectionObserver((entries)=>{
 
 const statsStrip = document.querySelector('.stats-strip');
 if(statsStrip) statsObs.observe(statsStrip);
+
+// u2550u2550 LOCKED COURSE CLICK u2192 u062du0641u0638 u0627u0644u0635u0641 u0648u0627u0644u062au0648u062cu064au0647 u0644u0635u0641u062du0629 u0627u0644u062au0633u062cu064au0644 u2550u2550
+window.goToAuth = function(gradeKey, label){
+  sessionStorage.setItem('intended_grade', gradeKey);
+  sessionStorage.setItem('intended_label', label);
+  window.location.href = 'plus-math-auth.html?from=locked&grade=' + encodeURIComponent(gradeKey);
+};
 </script>
 </body>
 </html>
