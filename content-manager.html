@@ -91,7 +91,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:580px){.fgrid{grid-template-columns:1fr}}
 .ff{display:flex;flex-direction:column;gap:5px}
-.ff label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
+.ff>label:first-child:not(.ff-check){font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
+.ff-check{font-size:13px !important;text-transform:none !important;letter-spacing:0 !important;color:var(--text) !important;font-weight:500 !important;display:flex;align-items:center;gap:8px;cursor:pointer}
 .ff input,.ff select,.ff textarea{padding:10px 12px;background:var(--inp);border:1.5px solid var(--b1);
   border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
   outline:none;transition:border-color .2s;appearance:none;width:100%;resize:vertical}
@@ -365,8 +366,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <input type="datetime-local" id="vPublishAt"/>
           </div>
           <div class="ff full">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-              <input type="checkbox" id="vNotify" style="width:16px;height:16px;accent-color:var(--blue)"/>
+            <label class="ff-check">
+              <input type="checkbox" id="vNotify" style="width:17px;height:17px;accent-color:var(--blue);cursor:pointer;flex-shrink:0"/>
               🔔 إرسال إشعار للطلاب عند الحفظ
             </label>
           </div>
@@ -457,8 +458,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <input type="url" id="eLink" placeholder="https://forms.google.com/..."/>
           </div>
           <div class="ff full">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
-              <input type="checkbox" id="eNotify" style="width:16px;height:16px;accent-color:var(--gold)"/>
+            <label class="ff-check">
+              <input type="checkbox" id="eNotify" style="width:17px;height:17px;accent-color:var(--gold);cursor:pointer;flex-shrink:0"/>
               🔔 إرسال إشعار للطلاب عند الحفظ
             </label>
           </div>
@@ -1183,6 +1184,32 @@ window.clearBook = () => {
   document.getElementById('bCoverPreview').style.display='none';
   if(window._editId) delete window._editId.b;
 };
+
+// ══ SEND NOTIFICATION — داخل الـ module عشان يوصل لـ db مباشرة ══
+window.sendContentNotif = async (gradeKey, type, title) => {
+  try{
+    const usersSnap = await getDocs(collection(db,'users'));
+    const students = usersSnap.docs
+      .map(d=>({id:d.id,...d.data()}))
+      .filter(u=>u.gradeKey===gradeKey && u.subscriptionActive && !u.blocked);
+    if(!students.length){
+      toast('لا يوجد طلاب مشتركين في هذا الصف','warn');
+      return;
+    }
+    const icon = type.includes('فيديو')?'🎬':type.includes('امتحان')?'📝':'📚';
+    await Promise.all(students.map(s=>
+      addDoc(collection(db,'notifications',s.id,'items'),{
+        icon, title:type, body:title,
+        read:false, type:'new_content', gradeKey,
+        createdAt:serverTimestamp()
+      })
+    ));
+    toast(`✅ تم إرسال إشعار لـ ${students.length} طالب`,'ok');
+  }catch(e){
+    console.error('sendContentNotif error:',e);
+    toast('خطأ في الإشعار: '+e.message,'err');
+  }
+};
 </script>
 
 <script>
@@ -1682,25 +1709,6 @@ setTimeout(loadDraft, 1500);
 // ══════════════════════════════════════
 // ── SEND CONTENT NOTIFICATION ──
 // ══════════════════════════════════════
-window.sendContentNotif = async (gradeKey, type, title) => {
-  try{
-    const usersSnap = await window._getDocs(window._collection(window._db,'users'));
-    const students = usersSnap.docs
-      .map(d=>({id:d.id,...d.data()}))
-      .filter(u=>u.gradeKey===gradeKey && u.subscriptionActive && !u.blocked);
-    const batch = [];
-    for(const s of students){
-      batch.push(window._addDoc(
-        window._collection(window._db,'notifications',s.id,'items'),
-        { icon:'🎬', title: type, body: title, read:false, type:'new_content',
-          createdAt: window._serverTimestamp() }
-      ));
-    }
-    await Promise.all(batch);
-    toast(`✅ تم إرسال إشعار لـ ${students.length} طالب`,'ok');
-  }catch(e){ console.warn('notify err:',e.message); }
-};
-
 // ══════════════════════════════════════
 // ── RESEARCH TAB ──
 // ══════════════════════════════════════
