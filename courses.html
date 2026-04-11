@@ -2,9 +2,9 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>Plus Mathematics – الكورسات</title>
-<meta name="theme-color" content="#04060f"/>
+<meta name="theme-color" content="#0a0f1a"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Plus Math"/>
@@ -14,626 +14,587 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#04060f;--s1:rgba(8,13,28,0.9);--s2:rgba(12,18,40,0.75);
-  --b1:rgba(74,127,212,0.22);--b2:rgba(74,127,212,0.12);
-  --blue:#4a7fd4;--navy:#1a3270;--gold:#c9a84c;--gold2:#f0d080;
-  --text:#eef2ff;--muted:#6a7a9e;--ok:#00d68f;--err:#ff4d6d;--purple:#a78bfa;
-  --accent:#4a7fd4;--accent2:#1a3270;
+  --bg:#0a0f1a;
+  --s1:rgba(15,23,42,0.98);
+  --s2:rgba(30,41,59,0.9);
+  --s3:rgba(51,65,85,0.7);
+  --b1:rgba(99,102,241,0.3);
+  --b2:rgba(99,102,241,0.15);
+  --b3:rgba(99,102,241,0.08);
+  --primary:#6366f1;
+  --primary-dark:#4f46e5;
+  --secondary:#06b6d4;
+  --gold:#fbbf24;
+  --gold2:#f59e0b;
+  --text:#f8fafc;
+  --text-muted:#94a3b8;
+  --text-dim:#64748b;
+  --ok:#10b981;
+  --err:#ef4444;
+  --warn:#f59e0b;
+  --purple:#a855f7;
+  --rose:#f43f5e;
+  --r:16px;
+  --r2:12px;
+  --sh:0 4px 30px rgba(0,0,0,0.4);
+  --sh-glow:0 0 40px rgba(99,102,241,0.2);
 }
-/* ── الثيمات ── */
-body.theme-purple{--blue:#8b5cf6;--navy:#4c1d95;--accent:#8b5cf6;--accent2:#4c1d95;--b1:rgba(139,92,246,0.22);--b2:rgba(139,92,246,0.12)}
-body.theme-green{--blue:#10b981;--navy:#064e3b;--accent:#10b981;--accent2:#064e3b;--b1:rgba(16,185,129,0.22);--b2:rgba(16,185,129,0.12)}
-body.theme-rose{--blue:#f43f5e;--navy:#881337;--accent:#f43f5e;--accent2:#881337;--b1:rgba(244,63,94,0.22);--b2:rgba(244,63,94,0.12)}
-body.theme-gold{--blue:#f59e0b;--navy:#78350f;--accent:#f59e0b;--accent2:#78350f;--b1:rgba(245,158,11,0.22);--b2:rgba(245,158,11,0.12)}
-/* Theme switcher button */
-.theme-btn{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:border-color .2s;flex-shrink:0}
-.theme-btn.active{border-color:#fff}
+
+/* Theme Variants */
+body.theme-purple{--primary:#8b5cf6;--primary-dark:#7c3aed;--b1:rgba(139,92,246,0.3);--b2:rgba(139,92,246,0.15)}
+body.theme-green{--primary:#10b981;--primary-dark:#059669;--b1:rgba(16,185,129,0.3);--b2:rgba(16,185,129,0.15)}
+body.theme-rose{--primary:#f43f5e;--primary-dark:#e11d48;--b1:rgba(244,63,94,0.3);--b2:rgba(244,63,94,0.15)}
+body.theme-gold{--primary:#f59e0b;--primary-dark:#d97706;--b1:rgba(245,158,11,0.3);--b2:rgba(245,158,11,0.15)}
+
 html,body{min-height:100dvh;overflow-x:hidden}
-body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
 
-/* ══ SCREENSHOT PROTECTION ══ */
-#courseView, .overlay, #playerModal, #mcqModal, #imgModal {
-  -webkit-user-select:none;-moz-user-select:none;user-select:none;
-}
-/* Watermark overlay on video player */
-.player-iframe-wrap{position:relative}
-.player-iframe-wrap::after{
-  content:attr(data-wm);
-  position:absolute;inset:0;pointer-events:none;z-index:5;
-  display:flex;align-items:center;justify-content:center;
-  font-size:clamp(11px,2.5vw,14px);font-weight:700;color:rgba(255,255,255,0.12);
-  transform:rotate(-25deg);letter-spacing:2px;
-  background:repeating-linear-gradient(
-    -45deg,transparent,transparent 60px,
-    rgba(255,255,255,0.015) 60px,rgba(255,255,255,0.015) 61px
-  );
-}
-
-/* ══ BOOKS STYLES ══ */
-.books-grid-inline{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-.book-card-sm{background:var(--s2);border:1px solid var(--b2);border-radius:12px;
-  overflow:hidden;transition:all .2s;cursor:pointer}
-.book-card-sm:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.4);border-color:var(--gold)}
-.bc-cover{width:100%;aspect-ratio:3/4;object-fit:cover;background:linear-gradient(135deg,var(--navy),rgba(201,168,76,.2))}
-.bc-cover-ph{width:100%;aspect-ratio:3/4;background:linear-gradient(135deg,rgba(26,50,112,.5),rgba(12,18,40,.8));
-  display:flex;align-items:center;justify-content:center;font-size:36px}
-.bc-info{padding:10px}
-.bc-title{font-size:12px;font-weight:800;line-height:1.4;margin-bottom:4px;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.bc-price{font-size:14px;font-weight:900;color:var(--gold2)}
-.bc-buy{width:100%;margin-top:6px;padding:7px;border:none;border-radius:7px;
-  background:linear-gradient(135deg,var(--gold),#8a5810);color:#fff;
-  cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:800}
-
-/* Book detail sheet */
-.book-sheet-bg{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.75);
-  backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
-.book-sheet-bg.open{display:flex}
-.book-sheet{background:rgba(8,13,28,.98);border:1px solid var(--b1);
-  border-radius:20px 20px 0 0;width:100%;max-width:520px;
-  max-height:90dvh;overflow-y:auto;
-  animation:slideUp .3s cubic-bezier(.22,1,.36,1)}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
-.bs-head{display:flex;gap:14px;padding:18px 18px 0}
-.bs-cover{width:80px;height:107px;border-radius:8px;object-fit:cover;flex-shrink:0;border:1px solid var(--b2)}
-.bs-cover-ph{width:80px;height:107px;border-radius:8px;flex-shrink:0;border:1px solid var(--b2);
-  background:linear-gradient(135deg,rgba(26,50,112,.5),rgba(12,18,40,.8));
-  display:flex;align-items:center;justify-content:center;font-size:30px}
-.bs-info{flex:1;min-width:0}
-.bs-title{font-size:15px;font-weight:900;line-height:1.4;margin-bottom:4px}
-.bs-grade{font-size:11px;color:var(--blue);font-weight:700;margin-bottom:6px}
-.bs-price{font-size:20px;font-weight:900;color:var(--gold2)}
-.bs-pages{font-size:11px;color:var(--muted);margin-top:2px}
-.bs-body{padding:14px 18px}
-.bs-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px}
-.bs-note{font-size:12px;color:var(--warn);background:rgba(245,166,35,.06);
-  border:1px solid rgba(245,166,35,.2);border-radius:8px;padding:9px 11px;
-  margin-bottom:12px;line-height:1.7}
-.bs-pay{background:rgba(6,10,22,.7);border:1px solid var(--b1);border-radius:12px;padding:14px}
-.bs-pay-title{font-size:12px;font-weight:800;color:var(--gold2);margin-bottom:10px}
-.pay-row{display:flex;align-items:center;gap:10px;padding:9px 10px;
-  background:rgba(74,127,212,.05);border:1px solid var(--b2);border-radius:9px;margin-bottom:8px}
-.pay-row-ico{font-size:18px;flex-shrink:0}
-.pay-row-info{flex:1}
-.pay-row-name{font-size:11px;font-weight:800}
-.pay-row-num{font-size:14px;font-weight:900;color:var(--gold2);direction:ltr;letter-spacing:1px}
-.pay-row-owner{font-size:10px;color:var(--muted)}
-.copy-btn{padding:4px 9px;border:1px solid var(--b2);border-radius:6px;background:transparent;
-  color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px}
-.copy-btn:hover{border-color:var(--gold);color:var(--gold)}
-.bs-steps{font-size:12px;color:var(--muted);line-height:2;margin:10px 0 12px}
-.bs-steps b{color:var(--text)}
-.wa-buy-btn{width:100%;padding:12px;border:none;border-radius:10px;cursor:pointer;
-  background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;
-  font-family:'Tajawal',sans-serif;font-size:13px;font-weight:800;
-  display:flex;align-items:center;justify-content:center;gap:8px}
-.bs-close{position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:50%;
-  border:1px solid var(--b2);background:rgba(8,13,28,.8);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;color:var(--muted)}
-.bs-close svg{width:12px;height:12px}
+/* Animated Background */
+.bg-animated{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-animated::before{content:'';position:absolute;inset:0;background:
+  radial-gradient(ellipse at 20% 20%,rgba(99,102,241,0.08) 0%,transparent 50%),
+  radial-gradient(ellipse at 80% 80%,rgba(6,182,212,0.06) 0%,transparent 50%),
+  radial-gradient(ellipse at 50% 50%,rgba(168,85,247,0.04) 0%,transparent 60%)}
 .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(74,127,212,0.04) 1px,transparent 1px),
-  linear-gradient(90deg,rgba(74,127,212,0.04) 1px,transparent 1px);background-size:44px 44px}
-.orb{position:fixed;border-radius:50%;filter:blur(100px);pointer-events:none;z-index:0}
-.o1{width:400px;height:400px;background:rgba(26,50,112,0.45);top:-100px;left:-100px}
-.o2{width:300px;height:300px;background:rgba(110,75,10,0.3);bottom:-60px;right:-60px}
+  background-image:linear-gradient(rgba(99,102,241,0.03) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(99,102,241,0.03) 1px,transparent 1px);background-size:50px 50px}
+
+/* Floating Orbs */
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:float 20s ease-in-out infinite}
+.o1{width:400px;height:400px;background:rgba(99,102,241,0.12);top:-100px;left:-100px;animation-delay:0s}
+.o2{width:300px;height:300px;background:rgba(6,182,212,0.1);bottom:-80px;right:-80px;animation-delay:-10s}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
+
+/* Glass Effect */
+.glass{background:linear-gradient(135deg,rgba(30,41,59,0.9),rgba(15,23,42,0.95));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--b2)}
+
+/* ═══ LOADING SCREEN ═══ */
+#loadingScreen{position:fixed;inset:0;z-index:500;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+.loader{width:56px;height:56px;border:4px solid rgba(99,102,241,0.2);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.banner-hidden{display:none!important}
-.banner-visible{display:flex!important}
-#loadingScreen{position:fixed;inset:0;z-index:500;background:var(--bg);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
-.loader{width:44px;height:44px;border:3px solid rgba(74,127,212,0.2);
-  border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
-#loadingScreen p{font-size:13px;color:var(--muted)}
-#annBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:190;
-  padding:9px 16px;align-items:center;justify-content:center;gap:10px;
-  font-size:12px;font-weight:600;color:#fff;
-  background:linear-gradient(135deg,var(--navy),var(--blue));box-shadow:0 2px 12px rgba(74,127,212,0.4)}
-#annBanner.show{display:flex}
-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;align-items:center;justify-content:space-around;gap:0;
-  padding:0 8px;background:var(--s1);backdrop-filter:blur(20px);border-top:1px solid var(--b2);safe-area-inset-bottom:env(safe-area-inset-bottom)}
-.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
-.nav-logo img{width:32px;height:32px;object-fit:contain}
-.nav-logo h2{font-size:13px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.nav-mid{flex:1;text-align:center;font-size:13px;color:var(--muted)}
-.nav-mid strong{color:var(--text);font-weight:700}
-.nav-btn{padding:7px 14px;border:1px solid var(--b1);border-radius:9px;background:transparent;
-  color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
-.hero-bar{background:linear-gradient(135deg,var(--navy),rgba(26,50,112,0.6));
-  border-bottom:1px solid var(--b1);padding:clamp(14px,4vw,20px) clamp(14px,4vw,24px);
-  display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.hero-bar h1{font-size:clamp(15px,4vw,20px);font-weight:900}
-.hero-bar p{font-size:clamp(11px,2.5vw,13px);color:rgba(255,255,255,.65);margin-top:3px}
-.hero-stats{display:flex;gap:clamp(14px,4vw,28px);margin-right:auto}
-.hs{text-align:center}
-.hs-v{font-size:clamp(18px,4vw,24px);font-weight:900;color:var(--gold2)}
-.hs-l{font-size:10px;color:rgba(255,255,255,.55);font-weight:600}
-.section{padding:clamp(14px,4vw,24px) clamp(14px,4vw,24px)}
-.section-head{display:flex;align-items:center;gap:10px;margin-bottom:clamp(14px,3vw,18px)}
-.sh-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sh-icon svg{width:17px;height:17px}
-.sh-icon.green{background:rgba(0,214,143,0.12);color:var(--ok)}
-.sh-icon.gold{background:rgba(201,168,76,0.12);color:var(--gold)}
-.sh-icon.blue{background:rgba(74,127,212,0.12);color:var(--blue)}
-.section-head h2{font-size:clamp(15px,3.5vw,17px);font-weight:900}
-.section-head p{font-size:11px;color:var(--muted);margin-top:2px}
-.sdiv{height:1px;background:var(--b2);margin:0 clamp(14px,4vw,24px)}
-.grades-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(145px,28vw,190px),1fr));gap:clamp(10px,2.5vw,14px)}
-.grade-card{background:var(--s2);border:1px solid var(--b2);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s;position:relative}
-.grade-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.4);border-color:var(--b1)}
-.gc-img{width:100%;height:clamp(90px,18vw,120px);object-fit:cover;display:block;background:linear-gradient(135deg,var(--navy),var(--blue))}
-.gc-badge{position:absolute;top:7px;right:7px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700}
-.gc-badge.mine{background:rgba(0,214,143,0.85);color:#000}
-.gc-body{padding:clamp(10px,2.5vw,13px)}
-.gc-title{font-size:clamp(12px,3vw,13px);font-weight:800;margin-bottom:3px}
-.gc-sub{font-size:11px;color:var(--muted)}
-.gc-foot{padding:8px clamp(10px,2.5vw,13px);border-top:1px solid var(--b2);display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted)}
-#courseView{display:none;position:fixed;top:0;left:0;right:0;bottom:58px;z-index:150;background:var(--bg);overflow-y:auto}
-#courseView.open{display:block;animation:fadeUp .25s ease both}
-.cv-hd{position:sticky;top:0;z-index:10;background:var(--s1);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--b2);padding:12px clamp(14px,4vw,20px);display:flex;align-items:center;gap:12px}
-.cv-back{width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.cv-back svg{width:16px;height:16px}
-.cv-hd-info h2{font-size:clamp(13px,3.5vw,16px);font-weight:800}
-.cv-hd-info p{font-size:11px;color:var(--muted)}
-.cv-tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--b2);overflow-x:auto}
+#loadingScreen p{font-size:14px;color:var(--text-muted)}
+
+/* ═══ ANNOUNCEMENT BANNER ═══ */
+#annBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:190;padding:12px 16px;align-items:center;justify-content:center;gap:12px;font-size:13px;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--primary-dark),var(--primary));box-shadow:0 2px 20px rgba(99,102,241,0.4)}
+#annBanner.show{display:flex;animation:slideDown 0.4s ease}
+@keyframes slideDown{from{transform:translateY(-100%)}to{transform:none}}
+#annBanner span{cursor:pointer;opacity:0.8;transition:opacity 0.3s}
+#annBanner span:hover{opacity:1}
+
+/* ═══ NAVIGATION ═══ */
+nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:68px;display:flex;align-items:center;justify-content:space-around;gap:0;padding:0 8px 8px;background:var(--s1);backdrop-filter:blur(20px);border-top:1px solid var(--b2);padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;background:transparent;border:none;cursor:pointer;color:var(--text-muted);padding:8px 12px;border-radius:12px;min-width:56px;transition:all 0.3s;position:relative}
+.nav-btn:hover{color:var(--text);background:var(--b3)}
+.nav-btn svg{width:22px;height:22px}
+.nav-btn span{font-size:10px;font-weight:700}
+.nav-btn .badge{position:absolute;top:2px;right:4px;min-width:18px;height:18px;border-radius:9px;background:var(--err);border:2px solid var(--s1);font-size:9px;font-weight:900;color:#fff;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.nav-btn.active{color:var(--primary);background:var(--b3)}
+
+/* ═══ MAIN CONTENT ═══ */
+#mainContent{display:none;padding-bottom:90px;min-height:100dvh}
+
+/* ═══ HERO SECTION ═══ */
+.hero-bar{background:linear-gradient(135deg,rgba(30,41,59,0.9),rgba(15,23,42,0.85));border-bottom:1px solid var(--b2);padding:clamp(20px,5vw,28px) clamp(16px,5vw,24px);display:flex;align-items:center;gap:20px;flex-wrap:wrap;position:relative;overflow:hidden}
+.hero-bar::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(99,102,241,0.1),transparent);pointer-events:none}
+.hero-content{flex:1;position:relative;z-index:1}
+.hero-bar h1{font-size:clamp(20px,5vw,28px);font-weight:900;background:linear-gradient(135deg,#fff,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.hero-bar p{font-size:clamp(13px,3vw,15px);color:var(--text-muted)}
+.hero-stats{display:flex;gap:clamp(16px,4vw,32px);margin-right:auto}
+.hs{text-align:center;padding:12px 16px;background:var(--b3);border-radius:var(--r2);border:1px solid var(--b2)}
+.hs-v{font-size:clamp(22px,5vw,28px);font-weight:900;color:var(--gold)}
+.hs-l{font-size:11px;color:var(--text-muted);font-weight:600}
+
+/* ═══ SECTIONS ═══ */
+.section{padding:clamp(20px,5vw,28px) clamp(16px,5vw,24px)}
+.section-head{display:flex;align-items:center;gap:12px;margin-bottom:clamp(16px,4vw,20px)}
+.sh-icon{width:44px;height:44px;border-radius:var(--r2);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 16px rgba(0,0,0,0.3)}
+.sh-icon svg{width:22px;height:22px}
+.sh-icon.green{background:rgba(16,185,129,0.15);color:var(--ok)}
+.sh-icon.gold{background:rgba(251,191,36,0.15);color:var(--gold)}
+.sh-icon.blue{background:rgba(99,102,241,0.15);color:var(--primary)}
+.sh-icon.purple{background:rgba(168,85,247,0.15);color:var(--purple)}
+.section-head h2{font-size:clamp(18px,4vw,22px);font-weight:900}
+.section-head p{font-size:13px;color:var(--text-muted);margin-top:3px}
+.sdiv{height:1px;background:linear-gradient(90deg,transparent,var(--b2),transparent);margin:0 clamp(16px,5vw,24px)}
+
+/* ═══ GRADES GRID ═══ */
+.grades-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(160px,35vw,200px),1fr));gap:clamp(12px,3vw,16px)}
+.grade-card{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all 0.4s cubic-bezier(0.22,1,0.36,1);position:relative}
+.grade-card:hover{transform:translateY(-6px);box-shadow:var(--sh-glow);border-color:var(--b1)}
+.grade-card:active{transform:translateY(-2px)}
+.gc-img{width:100%;height:clamp(100px,20vw,130px);object-fit:cover;display:block;background:linear-gradient(135deg,var(--primary-dark),var(--primary))}
+.gc-badge{position:absolute;top:10px;right:10px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:800}
+.gc-badge.mine{background:var(--ok);color:#000}
+.gc-body{padding:clamp(14px,3vw,18px)}
+.gc-title{font-size:clamp(14px,3.5vw,16px);font-weight:800;margin-bottom:5px}
+.gc-sub{font-size:12px;color:var(--text-muted)}
+.gc-foot{padding:10px clamp(14px,3vw,18px);border-top:1px solid var(--b2);display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text-muted)}
+
+/* ═══ COURSE VIEW ═══ */
+#courseView{display:none;position:fixed;top:0;left:0;right:0;bottom:68px;z-index:150;background:var(--bg);overflow-y:auto}
+#courseView.open{display:block;animation:fadeIn 0.3s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.cv-hd{position:sticky;top:0;z-index:10;background:var(--s1);backdrop-filter:blur(20px);border-bottom:1px solid var(--b2);padding:14px clamp(16px,5vw,20px);display:flex;align-items:center;gap:14px}
+.cv-back{width:42px;height:42px;border-radius:var(--r2);border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:all 0.3s}
+.cv-back:hover{background:var(--b3);color:var(--text);border-color:var(--b1)}
+.cv-back svg{width:18px;height:18px}
+.cv-hd-info h2{font-size:clamp(16px,4vw,20px);font-weight:800}
+.cv-hd-info p{font-size:12px;color:var(--text-muted)}
+
+/* Tabs */
+.cv-tabs{display:flex;background:var(--s1);border-bottom:1px solid var(--b2);overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px}
 .cv-tabs::-webkit-scrollbar{display:none}
-.cv-tab{padding:12px 16px;border:none;background:none;color:var(--muted);cursor:pointer;
-  font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;white-space:nowrap;
-  position:relative;transition:color .2s;flex-shrink:0;display:flex;align-items:center;gap:6px}
-.cv-tab svg{width:14px;height:14px}
-.cv-tab.on{color:var(--text)}
-.cv-tab.on::after{content:'';position:absolute;bottom:0;left:15%;right:15%;height:2px;
-  background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:2px 2px 0 0}
-.cv-body{padding:clamp(14px,4vw,20px)}
+.cv-tab{padding:12px 18px;border:none;background:none;color:var(--text-muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;position:relative;transition:all 0.3s;flex-shrink:0;display:flex;align-items:center;gap:8px;border-radius:10px;margin:0 2px}
+.cv-tab svg{width:16px;height:16px}
+.cv-tab:hover{color:var(--text);background:var(--b3)}
+.cv-tab.on{color:var(--primary);background:var(--b3)}
+.cv-tab.on::after{content:'';position:absolute;bottom:4px;left:20%;right:20%;height:3px;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:3px}
+
+/* Search */
+.cv-search{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);padding:10px 16px;margin:16px;transition:all 0.3s}
+.cv-search:focus-within{border-color:var(--primary);box-shadow:0 0 20px rgba(99,102,241,0.15)}
+.cv-search svg{width:18px;height:18px;color:var(--text-muted);flex-shrink:0}
+.cv-search input{background:transparent;border:none;outline:none;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;width:100%}
+.cv-search input::placeholder{color:var(--text-dim)}
+
+/* Tab Content */
+.cv-body{padding:clamp(16px,4vw,20px)}
 .tab-pane{display:none}
-.tab-pane.on{display:block;animation:fadeUp .2s ease}
-.video-list,.exam-list,.hw-list{display:flex;flex-direction:column;gap:10px}
-.video-item{background:var(--s2);border:1px solid var(--b2);border-radius:13px;padding:clamp(10px,3vw,14px)}
-.video-player{display:none;width:100%;margin-bottom:10px;border-radius:10px;overflow:hidden;background:#000}
-.video-player iframe{width:100%;height:clamp(170px,38vw,240px);border:none;display:block}
-.video-player-bar{padding:8px 12px;background:rgba(8,13,28,0.8);display:flex;gap:8px}
-.video-row{display:flex;align-items:center;gap:12px;cursor:pointer}
-.vthumb{width:clamp(58px,14vw,78px);height:clamp(42px,10vw,54px);border-radius:8px;
-  background:linear-gradient(135deg,var(--navy),var(--blue));
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}
+.tab-pane.on{display:block;animation:fadeUp 0.3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* Video List */
+.video-list{display:flex;flex-direction:column;gap:12px}
+.video-item{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:clamp(14px,3vw,18px);transition:all 0.3s}
+.video-item:hover{border-color:var(--b1)}
+.video-player{display:none;width:100%;margin-bottom:14px;border-radius:var(--r2);overflow:hidden;background:#000;box-shadow:var(--sh)}
+.video-player iframe{width:100%;height:clamp(200px,45vw,280px);border:none;display:block}
+.video-player-bar{padding:12px 16px;background:rgba(15,23,42,0.9);display:flex;gap:10px;flex-wrap:wrap}
+.video-row{display:flex;align-items:center;gap:14px;cursor:pointer}
+.vthumb{width:clamp(70px,16vw,90px);height:clamp(50px,12vw,65px);border-radius:var(--r2);background:linear-gradient(135deg,var(--primary-dark),var(--primary));display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;box-shadow:0 4px 16px rgba(99,102,241,0.3)}
 .vthumb img{width:100%;height:100%;object-fit:cover}
-.vthumb svg{width:20px;height:20px}
+.vthumb svg{width:24px;height:24px}
 .vinfo{flex:1;min-width:0}
-.vtitle{font-size:clamp(12px,3vw,14px);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.vmeta{font-size:11px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.exam-item{background:var(--s2);border:1px solid var(--b2);border-radius:13px;
-  padding:clamp(10px,3vw,14px);display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s}
-.exam-item:hover{border-color:var(--b1)}
-.exam-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.exam-ico svg{width:18px;height:18px}
+.vtitle{font-size:clamp(14px,3.5vw,16px);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vmeta{font-size:12px;color:var(--text-muted);margin-top:5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* Exam List */
+.exam-list{display:flex;flex-direction:column;gap:12px}
+.exam-item{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:clamp(14px,3vw,18px);display:flex;align-items:center;gap:14px;cursor:pointer;transition:all 0.3s}
+.exam-item:hover{border-color:var(--b1);transform:translateX(-4px)}
+.exam-ico{width:48px;height:48px;border-radius:var(--r2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.exam-ico svg{width:22px;height:22px}
 .exam-info{flex:1}
-.exam-title{font-size:clamp(12px,3vw,14px);font-weight:700;margin-bottom:3px}
-.exam-meta{font-size:11px;color:var(--muted)}
-.ebadge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
-.ebadge.new{background:rgba(0,214,143,0.1);color:var(--ok);border:1px solid rgba(0,214,143,0.2)}
-.ebadge.done{background:rgba(74,127,212,0.1);color:var(--blue);border:1px solid rgba(74,127,212,0.2)}
-.hw-item{background:var(--s2);border:1px solid var(--b2);border-radius:13px;padding:clamp(10px,3vw,14px);display:flex;align-items:center;gap:12px}
-.hw-ico{width:40px;height:40px;border-radius:10px;background:rgba(167,139,250,0.1);color:var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.hw-ico svg{width:18px;height:18px}
+.exam-title{font-size:clamp(14px,3.5vw,16px);font-weight:700;margin-bottom:5px}
+.exam-meta{font-size:12px;color:var(--text-muted)}
+.ebadge{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700}
+.ebadge.new{background:rgba(16,185,129,0.12);color:var(--ok);border:1px solid rgba(16,185,129,0.25)}
+.ebadge.done{background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.25)}
+
+/* Homework List */
+.hw-list{display:flex;flex-direction:column;gap:12px}
+.hw-item{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:clamp(14px,3vw,18px);display:flex;align-items:center;gap:14px;transition:all 0.3s}
+.hw-item:hover{border-color:var(--b1)}
+.hw-ico{width:48px;height:48px;border-radius:var(--r2);background:rgba(168,85,247,0.15);color:var(--purple);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hw-ico svg{width:22px;height:22px}
 .hw-info{flex:1}
-.hw-title{font-size:clamp(12px,3vw,14px);font-weight:700;margin-bottom:3px}
-.hw-meta{font-size:11px;color:var(--muted)}
-.hw-links{display:flex;gap:7px;margin-top:6px;flex-wrap:wrap}
-.hw-link{font-size:11px;font-weight:700;text-decoration:none;padding:4px 10px;border-radius:7px;cursor:pointer;border:none;font-family:'Tajawal',sans-serif}
-.hw-link.file{color:var(--blue);background:rgba(74,127,212,0.1);border:1px solid rgba(74,127,212,0.2)}
-.prog-card{background:var(--s2);border:1px solid var(--b2);border-radius:13px;padding:16px;margin-bottom:12px}
-.prog-card h4{font-size:13px;font-weight:800;margin-bottom:12px;color:var(--text)}
-.prog-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.prog-lbl{font-size:12px;color:var(--muted);min-width:78px;font-weight:600}
-.prog-bar{flex:1;height:7px;background:rgba(74,127,212,0.1);border-radius:4px;overflow:hidden}
-.prog-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.22,1,.36,1)}
-.prog-fill.blue{background:linear-gradient(90deg,var(--blue),var(--navy))}
-.prog-fill.gold{background:linear-gradient(90deg,var(--gold),#8a6010)}
-.prog-fill.ok{background:linear-gradient(90deg,var(--ok),#006040)}
-.prog-val{font-size:12px;font-weight:800;min-width:32px;text-align:left}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
-  z-index:300;display:none;align-items:center;justify-content:center;padding:16px}
-.overlay.open{display:flex}
-.modal{background:rgba(8,13,28,0.98);border:1px solid var(--b1);border-radius:18px;
-  padding:clamp(16px,4vw,22px);width:100%;max-width:500px;max-height:90dvh;overflow-y:auto;animation:fadeUp .3s ease}
-.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--b2)}
-.modal-head h3{font-size:15px;font-weight:800}
-.mclose{width:32px;height:32px;border-radius:9px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center}
-.mclose svg{width:14px;height:14px}
-.mcq-q{background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:11px;padding:14px;margin-bottom:10px}
-.mcq-q-text{font-size:14px;font-weight:700;margin-bottom:10px;line-height:1.6}
-.mcq-opt{padding:10px 13px;border:1.5px solid var(--b2);border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:6px;transition:all .2s}
-.mcq-opt:hover{border-color:var(--blue);background:rgba(74,127,212,0.06)}
-.mcq-opt.sel{border-color:var(--blue);background:rgba(74,127,212,0.1);color:var(--blue)}
-.mcq-opt.correct{border-color:var(--ok);background:rgba(0,214,143,0.1);color:var(--ok)}
-.mcq-opt.wrong{border-color:var(--err);background:rgba(255,77,109,0.1);color:var(--err)}
-.mcq-progress{font-size:11px;color:var(--muted);margin-bottom:12px}
-.mcq-submit{width:100%;padding:11px;border:none;border-radius:10px;cursor:pointer;
-  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;
-  background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;margin-top:8px}
-.mcq-result{text-align:center;padding:20px 0;display:none}
-.player-iframe-wrap{border-radius:10px;overflow:hidden;background:#000;margin-bottom:14px}
-.player-iframe-wrap iframe{width:100%;height:clamp(180px,45vw,260px);border:none;display:block}
-.player-btns{display:flex;gap:8px;flex-wrap:wrap}
-.pbtn{padding:9px 16px;border:none;border-radius:9px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px}
-.pbtn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff}
-.pbtn.ghost{background:transparent;border:1px solid var(--b1);color:var(--muted)}
-.essay-text{font-size:14px;line-height:1.8;padding:12px;background:rgba(8,13,28,0.4);border-radius:10px;margin-bottom:12px;white-space:pre-wrap}
-.essay-area{width:100%;padding:10px 12px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;resize:vertical;min-height:100px}
-.essay-area:focus{border-color:var(--blue)}
-.btn{padding:9px 16px;border:none;border-radius:9px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:5px}
-.btn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff}
-.btn.ghost{background:transparent;border:1px solid var(--b1);color:var(--muted)}
-.empty{text-align:center;padding:clamp(22px,5vw,36px) 20px;color:var(--muted)}
-.empty p{font-size:13px}
-.toast{position:fixed;bottom:clamp(12px,3vw,18px);left:50%;
-  transform:translateX(-50%) translateY(80px);background:rgba(10,15,34,0.97);
-  backdrop-filter:blur(16px);border:1px solid var(--b1);border-radius:11px;
-  padding:9px 16px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;
-  box-shadow:0 8px 32px rgba(0,0,0,0.5);transition:transform .3s cubic-bezier(.22,1,.36,1);z-index:999;pointer-events:none}
+.hw-title{font-size:clamp(14px,3.5vw,16px);font-weight:700;margin-bottom:5px}
+.hw-meta{font-size:12px;color:var(--text-muted)}
+.hw-links{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.hw-link{font-size:12px;font-weight:700;text-decoration:none;padding:8px 14px;border-radius:var(--r2);cursor:pointer;border:none;font-family:'Tajawal',sans-serif;transition:all 0.3s;display:inline-flex;align-items:center;gap:6px}
+.hw-link.file{color:var(--primary);background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2)}
+.hw-link.file:hover{background:rgba(99,102,241,0.2)}
+.hw-link.wa{color:#25D366;background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.25)}
+.hw-link.wa:hover{background:rgba(37,211,102,0.2)}
+
+/* Progress Card */
+.prog-card{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);padding:20px;margin-bottom:16px}
+.prog-card h4{font-size:15px;font-weight:800;margin-bottom:18px;color:var(--text);display:flex;align-items:center;gap:8px}
+.prog-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.prog-lbl{font-size:13px;color:var(--text-muted);min-width:90px;font-weight:600}
+.prog-bar{flex:1;height:10px;background:var(--b3);border-radius:5px;overflow:hidden}
+.prog-fill{height:100%;border-radius:5px;transition:width 1s cubic-bezier(0.22,1,0.36,1);position:relative;overflow:hidden}
+.prog-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);animation:shimmer 2s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.prog-fill.blue{background:linear-gradient(90deg,var(--primary),var(--primary-dark))}
+.prog-fill.gold{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.prog-fill.ok{background:linear-gradient(90deg,var(--ok),#059669)}
+.prog-val{font-size:13px;font-weight:800;min-width:40px;text-align:left;color:var(--text-muted)}
+
+/* Overlay & Modal */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);z-index:300;display:none;align-items:center;justify-content:center;padding:16px}
+.overlay.open{display:flex;animation:fadeIn 0.3s}
+.modal{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:clamp(20px,5vw,24px);width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;animation:slideUp 0.4s cubic-bezier(0.22,1,0.36,1);box-shadow:var(--sh-glow)}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px) scale(0.95)}to{opacity:1;transform:none}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--b2)}
+.modal-head h3{font-size:18px;font-weight:800}
+.mclose{width:38px;height:38px;border-radius:var(--r2);border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:all 0.3s}
+.mclose:hover{background:var(--b3);color:var(--text);border-color:var(--b1)}
+.mclose svg{width:16px;height:16px}
+
+/* MCQ */
+.mcq-q{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);padding:18px;margin-bottom:14px}
+.mcq-q-text{font-size:15px;font-weight:700;margin-bottom:14px;line-height:1.7}
+.mcq-opt{padding:12px 16px;border:2px solid var(--b2);border-radius:var(--r2);cursor:pointer;font-size:14px;font-weight:600;margin-bottom:8px;transition:all 0.3s}
+.mcq-opt:hover{border-color:var(--primary);background:rgba(99,102,241,0.08)}
+.mcq-opt.sel{border-color:var(--primary);background:rgba(99,102,241,0.12);color:var(--primary)}
+.mcq-opt.correct{border-color:var(--ok);background:rgba(16,185,129,0.12);color:var(--ok)}
+.mcq-opt.wrong{border-color:var(--err);background:rgba(239,68,68,0.12);color:var(--err)}
+.mcq-progress{font-size:12px;color:var(--text-muted);margin-bottom:14px}
+.mcq-submit{width:100%;padding:14px;border:none;border-radius:var(--r2);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;margin-top:12px;transition:all 0.3s;box-shadow:0 4px 20px rgba(99,102,241,0.35)}
+.mcq-submit:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(99,102,241,0.45)}
+.mcq-result{text-align:center;padding:28px 0;display:none}
+
+/* Buttons */
+.pbtn{padding:12px 20px;border:none;border-radius:var(--r2);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all 0.3s}
+.pbtn.ok{background:linear-gradient(135deg,var(--ok),#059669);color:#fff;box-shadow:0 4px 16px rgba(16,185,129,0.3)}
+.pbtn.ghost{background:transparent;border:1px solid var(--b2);color:var(--text-muted)}
+.pbtn.ghost:hover{border-color:var(--primary);color:var(--text);background:var(--b3)}
+.btn{padding:12px 20px;border:none;border-radius:var(--r2);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all 0.3s;text-decoration:none}
+.btn:hover{transform:translateY(-2px)}
+.btn.ok{background:linear-gradient(135deg,var(--ok),#059669);color:#fff}
+.btn.ghost{background:transparent;border:1px solid var(--b2);color:var(--text-muted)}
+.btn.ghost:hover{border-color:var(--primary);color:var(--text)}
+.btn.sm{padding:10px 16px;font-size:13px}
+
+/* Empty State */
+.empty{text-align:center;padding:clamp(40px,8vw,60px) 24px;color:var(--text-muted)}
+.empty-icon{width:72px;height:72px;margin:0 auto 18px;border-radius:var(--r);background:var(--b3);display:flex;align-items:center;justify-content:center}
+.empty-icon svg{width:32px;height:32px;opacity:0.4}
+.empty p{font-size:14px}
+
+/* Toast */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--s1);backdrop-filter:blur(20px);border:1px solid var(--b2);border-radius:var(--r2);padding:14px 22px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:var(--sh);transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);z-index:999;pointer-events:none;max-width:90vw}
 .toast.show{transform:translateX(-50%) translateY(0)}
-.toast.ok{color:var(--ok);border-color:rgba(0,214,143,0.3)}
-.toast.err{color:var(--err);border-color:rgba(255,77,109,0.3)}
+.toast.ok{color:var(--ok);border-color:rgba(16,185,129,0.3);background:rgba(6,78,59,0.95)}
+.toast.err{color:var(--err);border-color:rgba(239,68,68,0.3);background:rgba(127,29,29,0.95)}
+.toast svg{width:18px;height:18px;flex-shrink:0}
 
-/* ══ COUNTDOWN ══ */
-.countdown-wrap{display:flex;align-items:center;gap:5px;padding:5px 10px;
-  border-radius:20px;font-size:11px;font-weight:700;
-  background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.2);color:var(--err)}
-.countdown-wrap.ok{background:rgba(0,214,143,0.06);border-color:rgba(0,214,143,0.2);color:var(--ok)}
-.countdown-wrap.warn{background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.2);color:#f5a623}
-#countdownVal{font-size:12px;font-weight:900}
+/* Theme Panel */
+#themePanel{display:none;position:fixed;bottom:78px;left:16px;right:16px;z-index:301;background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:20px;box-shadow:var(--sh-glow);animation:slideUp 0.3s ease}
+#themePanel.show{display:block}
+.theme-title{font-size:15px;font-weight:800;margin-bottom:16px}
+.theme-swatches{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.theme-swatch{width:52px;height:52px;border-radius:14px;cursor:pointer;border:3px solid transparent;transition:all 0.3s;position:relative;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
+.theme-swatch:hover{transform:scale(1.1)}
+.theme-swatch.active{border-color:#fff;transform:scale(1.15)}
+.theme-swatch::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;opacity:0;transition:opacity 0.3s}
+.theme-swatch.active::after{opacity:1}
 
-/* ══ NOTIFICATION POPUP ══ */
-to{opacity:1;transform:translateX(-50%) translateY(0)}}
+/* Notif Panel */
+#notifPanel{display:none;position:fixed;bottom:78px;left:16px;right:16px;z-index:300;background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:20px;max-height:60vh;overflow-y:auto;box-shadow:var(--sh-glow)}
+#notifPanel.show{display:block;animation:slideUp 0.3s ease}
+.notif-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--b2)}
+.notif-header h4{font-size:16px;font-weight:800}
 
+/* Night Mode Banner */
+.night-mode-banner{margin:16px;padding:18px;border-radius:var(--r);background:linear-gradient(135deg,rgba(30,41,59,0.9),rgba(15,23,42,0.85));border:1px solid var(--b2);display:none}
+.night-mode-banner.show{display:block;animation:fadeIn 0.4s ease}
+.nm-head{font-size:15px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--primary)}
+.nm-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.nm-list li{font-size:13px;color:var(--text-muted);display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--b3);border-radius:var(--r2);border:1px solid var(--b2)}
 
+/* Teacher Note */
+.teacher-note{margin:16px;padding:16px 18px;border-radius:var(--r);background:rgba(251,191,36,0.08);border:1.5px solid rgba(251,191,36,0.3);display:none;align-items:flex-start;gap:12px;font-size:14px;line-height:1.8}
+.teacher-note.show{display:flex;animation:fadeIn 0.4s ease}
+.teacher-note svg{width:20px;height:20px;color:var(--gold);flex-shrink:0;margin-top:2px}
 
-.notif-item-pop{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--b2)}
-.notif-item-pop:last-child{border-bottom:none;padding-bottom:0}
-.notif-ico-pop{font-size:18px;flex-shrink:0}
-.notif-txt-pop{font-size:12px;line-height:1.5;color:var(--muted)}
-.notif-txt-pop strong{color:var(--text);display:block;font-size:13px}
+/* Ticket Reply */
+.ticket-reply{margin:12px 16px;padding:16px 18px;border-radius:var(--r);background:rgba(99,102,241,0.08);border:1.5px solid rgba(99,102,241,0.3);display:none;align-items:flex-start;gap:12px;font-size:14px;line-height:1.8}
+.ticket-reply.show{display:flex;animation:fadeIn 0.4s ease}
 
-/* ══ NOTE BANNER ══ */
-.note-banner{margin:10px 16px;padding:13px 16px;border-radius:13px;
-  background:rgba(201,168,76,0.1);border:1.5px solid rgba(201,168,76,0.35);
-  display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7;
-  color:var(--text);animation:fadeUp .4s ease;box-shadow:0 4px 16px rgba(201,168,76,0.08)}
-.note-banner-ico{font-size:20px;flex-shrink:0;margin-top:2px}
-.note-banner-lbl{font-size:10px;font-weight:800;color:var(--gold2);letter-spacing:.5px;margin-bottom:3px}
+/* Books Grid */
+.books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.book-card{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);overflow:hidden;transition:all 0.3s;cursor:pointer}
+.book-card:hover{transform:translateY(-4px);box-shadow:var(--sh);border-color:var(--gold)}
+.book-cover{width:100%;aspect-ratio:3/4;object-fit:cover;background:linear-gradient(135deg,var(--primary-dark),rgba(251,191,36,0.2))}
+.book-info{padding:14px}
+.book-title{font-size:13px;font-weight:800;line-height:1.5;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.book-price{font-size:16px;font-weight:900;color:var(--gold)}
 
-/* ══ SEARCH IN COURSE ══ */
-.cv-search{display:flex;align-items:center;gap:6px;padding:7px 12px;
-  background:rgba(8,13,28,0.6);border:1px solid var(--b2);border-radius:20px;
-  margin:0 16px 12px;transition:border-color .2s}
-.cv-search:focus-within{border-color:var(--blue)}
-.cv-search svg{width:13px;height:13px;color:var(--muted);flex-shrink:0}
-.cv-search input{background:transparent;border:none;outline:none;color:var(--text);
-  font-family:'Tajawal',sans-serif;font-size:13px;width:100%;min-width:0}
+/* Responsive */
+@media(max-width:768px){
+  .hero-bar{flex-direction:column;text-align:center}
+  .hero-stats{width:100%;justify-content:center;margin-top:16px}
+  .hs{flex:1}
+  .cv-tabs{padding:2px}
+  .cv-tab{padding:10px 14px;font-size:13px}
+  .video-player iframe{height:clamp(180px,50vw,220px)}
+  .modal{margin:16px}
+  .theme-swatch{width:44px;height:44px}
+}
 
-/* ══ EXAM NIGHT MODE ══ */
-.night-mode-banner{margin:12px 16px;padding:14px 16px;border-radius:12px;
-  background:linear-gradient(135deg,rgba(26,50,112,0.5),rgba(74,127,212,0.15));
-  border:1px solid rgba(74,127,212,0.3);display:none}
-.night-mode-banner.show{display:block;animation:fadeUp .4s ease}
-.nm-head{font-size:13px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.nm-list{list-style:none;display:flex;flex-direction:column;gap:6px}
-.nm-list li{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px;padding:6px 10px;
-  background:rgba(74,127,212,0.05);border-radius:8px;border:1px solid var(--b2)}
-.nm-list li .nm-done{color:var(--ok)}
-.nm-list li .nm-not{color:var(--muted);opacity:.5}
+@media(max-width:480px){
+  .grades-grid{grid-template-columns:repeat(2,1fr)}
+  .exam-item,.hw-item{flex-direction:column;align-items:flex-start}
+  .exam-ico,.hw-ico{width:40px;height:40px}
+  .prog-row{flex-direction:column;align-items:flex-start;gap:8px}
+  .prog-bar{width:100%}
+}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--b1)}
+
+/* Selection */
+::selection{background:rgba(99,102,241,0.3);color:var(--text)}
 </style>
 </head>
 <body>
+
+<svg style="display:none">
+  <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-yt" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></symbol>
+  <symbol id="i-message" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+  <symbol id="i-research" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+</svg>
+
+<div class="bg-animated"></div>
 <div class="bg-grid"></div>
 <div class="o1 orb"></div>
 <div class="o2 orb"></div>
 
 <div id="annBanner">
   <span id="annText"></span>
-  <span onclick="this.parentElement.classList.remove('show')" style="cursor:pointer;margin-right:auto;opacity:.7">✕</span>
+  <span onclick="this.parentElement.classList.remove('show')" style="cursor:pointer;margin-right:auto;font-size:18px">×</span>
 </div>
 
 <div id="loadingScreen">
-  <img src="https://plusedu.vercel.app/store/1/fonts/221.png" style="width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 4px 14px rgba(74,127,212,0.5))"/>
+  <img src="https://plusedu.vercel.app/store/1/fonts/221.png" style="width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(99,102,241,0.5))"/>
   <div class="loader"></div>
   <p>جاري التحقق من حسابك...</p>
 </div>
 
 <nav id="navbar" style="display:none">
-  <!-- اسم الطالب والأيام وسط الشريط -->
-  <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
-    <div style="font-size:11px;color:var(--muted)">أهلاً <strong id="userName" style="color:var(--text)">طالب</strong> 👋</div>
-    <div id="countdownWrap" class="countdown-wrap" style="display:none">⏰ <span id="countdownVal">—</span></div>
-  </div>
-  <!-- ثيم -->
-  <button onclick="toggleThemePanel()" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;color:var(--muted);padding:6px 10px;border-radius:10px;min-width:44px;font-family:'Tajawal',sans-serif">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
-    <span style="font-size:9px;font-weight:700">ثيم</span>
+  <button class="nav-btn" onclick="showToast('الرئيسية','ok')">
+    <svg><use href="#i-home"/></svg>
+    <span>الرئيسية</span>
   </button>
-  <!-- إشعارات -->
-  <button id="notifBell" onclick="toggleNotifPanel()" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;color:var(--muted);padding:6px 12px;border-radius:10px;min-width:52px;font-family:'Tajawal',sans-serif;position:relative">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-    <span style="font-size:9px;font-weight:700">إشعارات</span>
-    <span id="notifDot" style="display:none;position:absolute;top:2px;right:6px;min-width:17px;height:17px;border-radius:9px;background:var(--err);border:2px solid var(--bg);font-size:9px;font-weight:900;color:#fff;align-items:center;justify-content:center;padding:0 3px">0</span>
+  <button class="nav-btn" onclick="toggleThemePanel()">
+    <svg><use href="#i-sun"/></svg>
+    <span>الثيم</span>
   </button>
-  <!-- بروفايل -->
-  <a href="plus-math-auth.html" style="display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--muted);padding:6px 12px;border-radius:10px;min-width:52px">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    <span style="font-size:9px;font-weight:700">بروفايلي</span>
-  </a>
-  <!-- شكوى -->
-  <button onclick="openTicketModal()" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;color:var(--muted);padding:6px 12px;border-radius:10px;min-width:52px;font-family:'Tajawal',sans-serif">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-    <span style="font-size:9px;font-weight:700">شكوى</span>
+  <button class="nav-btn" id="notifBell" onclick="toggleNotifPanel()">
+    <svg><use href="#i-bell"/></svg>
+    <span>إشعارات</span>
+    <span class="badge" id="notifDot" style="display:none">0</span>
   </button>
-  <!-- خروج -->
-  <button onclick="doSignOut()" style="display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;color:var(--muted);padding:6px 12px;border-radius:10px;min-width:52px;font-family:'Tajawal',sans-serif">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-    <span style="font-size:9px;font-weight:700">خروج</span>
+  <button class="nav-btn" onclick="location.href='plus-math-auth.html'">
+    <svg><use href="#i-user"/></svg>
+    <span>بروفايلي</span>
   </button>
-
-  <!-- PWA Install Button -->
-  <button id="installBtn" onclick="installPWA()" title="تثبيت التطبيق" style="display:none;flex-direction:column;align-items:center;gap:3px;background:linear-gradient(135deg,var(--blue),var(--navy));border:none;cursor:pointer;color:#fff;padding:6px 10px;border-radius:10px;font-family:'Tajawal',sans-serif;animation:pulse 2s infinite">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    <span style="font-size:9px;font-weight:700">تثبيت</span>
+  <button class="nav-btn" onclick="openTicketModal()">
+    <svg><use href="#i-message"/></svg>
+    <span>شكوى</span>
   </button>
 </nav>
 
-<!-- Theme Panel -->
-<div id="themePanel" style="display:none;position:fixed;bottom:58px;left:0;right:0;z-index:301;
-  background:rgba(8,13,28,0.98);border-top:1px solid var(--b1);padding:14px 16px">
-  <div style="font-size:13px;font-weight:800;margin-bottom:12px">🎨 اختار الثيم</div>
-  <div style="display:flex;gap:10px;flex-wrap:wrap">
-    <button onclick="setTheme('')" class="theme-btn active" id="theme-default" style="background:linear-gradient(135deg,#4a7fd4,#1a3270)" title="أزرق (افتراضي)"></button>
-    <button onclick="setTheme('theme-purple')" class="theme-btn" id="theme-purple" style="background:linear-gradient(135deg,#8b5cf6,#4c1d95)" title="بنفسجي"></button>
-    <button onclick="setTheme('theme-green')" class="theme-btn" id="theme-green" style="background:linear-gradient(135deg,#10b981,#064e3b)" title="أخضر"></button>
-    <button onclick="setTheme('theme-rose')" class="theme-btn" id="theme-rose" style="background:linear-gradient(135deg,#f43f5e,#881337)" title="وردي"></button>
-    <button onclick="setTheme('theme-gold')" class="theme-btn" id="theme-gold" style="background:linear-gradient(135deg,#f59e0b,#78350f)" title="ذهبي"></button>
-    <button onclick="toggleThemePanel()" style="margin-right:auto;padding:6px 14px;border:1px solid var(--b2);border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px">إغلاق</button>
+<div id="themePanel">
+  <div class="theme-title">🎨 اختار الثيم</div>
+  <div class="theme-swatches">
+    <div class="theme-swatch active" id="theme-default" onclick="setTheme('')" style="background:linear-gradient(135deg,#6366f1,#4f46e5)" title="أزرق (افتراضي)"></div>
+    <div class="theme-swatch" id="theme-purple" onclick="setTheme('theme-purple')" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed)" title="بنفسجي"></div>
+    <div class="theme-swatch" id="theme-green" onclick="setTheme('theme-green')" style="background:linear-gradient(135deg,#10b981,#059669)" title="أخضر"></div>
+    <div class="theme-swatch" id="theme-rose" onclick="setTheme('theme-rose')" style="background:linear-gradient(135deg,#f43f5e,#e11d48)" title="وردي"></div>
+    <div class="theme-swatch" id="theme-gold" onclick="setTheme('theme-gold')" style="background:linear-gradient(135deg,#f59e0b,#d97706)" title="ذهبي"></div>
   </div>
 </div>
 
-<!-- Notifications Panel -->
-<div id="notifPanel" style="display:none;position:fixed;bottom:58px;left:0;right:0;z-index:300;
-  background:rgba(8,13,28,0.98);border-top:1px solid var(--b1);padding:14px 16px;
-  max-height:60vh;overflow-y:auto">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-    <h4 style="font-size:14px;font-weight:800">🔔 الإشعارات</h4>
-    <button onclick="toggleNotifPanel()" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;padding:0">×</button>
+<div id="notifPanel">
+  <div class="notif-header">
+    <h4>🔔 الإشعارات</h4>
+    <button onclick="toggleNotifPanel()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:24px">×</button>
   </div>
-  <div id="notifList"><div style="text-align:center;font-size:12px;color:var(--muted);padding:16px">لا يوجد إشعارات</div></div>
+  <div id="notifList">
+    <div style="text-align:center;font-size:13px;color:var(--text-muted);padding:24px">لا يوجد إشعارات</div>
+  </div>
 </div>
-<main id="mainContent" style="display:none;padding-bottom:68px">
 
+<main id="mainContent">
   <div class="hero-bar">
-    <div><h1>مرحباً في Plus Mathematics 🎓</h1><p>اضغط على صفك لتبدأ</p></div>
+    <div class="hero-content">
+      <h1>مرحباً في Plus Mathematics 🎓</h1>
+      <p>اضغط على صفك لتبدأ رحلتك التعليمية</p>
+    </div>
     <div class="hero-stats">
       <div class="hs"><div class="hs-v" id="statGrade">—</div><div class="hs-l">صفك</div></div>
       <div class="hs"><div class="hs-v" id="statStage">—</div><div class="hs-l">مرحلتك</div></div>
     </div>
   </div>
+
   <div class="section">
     <div class="section-head">
-      <div class="sh-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+      <div class="sh-icon green"><svg><use href="#i-home"/></svg></div>
       <div><h2>المرحلة الابتدائية</h2><p>الصفوف 4 – 6</p></div>
     </div>
     <div class="grades-grid" id="grid-primary"></div>
   </div>
+
   <div class="sdiv"></div>
+
   <div class="section">
     <div class="section-head">
-      <div class="sh-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+      <div class="sh-icon gold"><svg><use href="#i-book"/></svg></div>
       <div><h2>المرحلة الإعدادية</h2><p>الصفوف 1 – 3</p></div>
     </div>
     <div class="grades-grid" id="grid-prep"></div>
   </div>
+
   <div class="sdiv"></div>
+
   <div class="section">
     <div class="section-head">
-      <div class="sh-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+      <div class="sh-icon blue"><svg><use href="#i-yt"/></svg></div>
       <div><h2>المرحلة الثانوية</h2><p>الصفوف 1 – 3</p></div>
     </div>
     <div class="grades-grid" id="grid-sec"></div>
   </div>
+
   <div class="sdiv"></div>
+
   <div class="section">
     <div class="section-head">
-      <div class="sh-icon" style="background:rgba(168,85,247,0.12);color:#a855f7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+      <div class="sh-icon purple"><svg><use href="#i-research"/></svg></div>
       <div><h2>الجامعات والكورسات</h2><p>كورسات جامعية وتخصصية</p></div>
     </div>
     <div class="grades-grid" id="grid-univ"></div>
   </div>
-  <div class="sdiv" id="sdiv-pro" style="display:none"></div>
-  <div class="section" id="section-pro" style="display:none">
-    <div class="section-head">
-      <div class="sh-icon" style="background:rgba(245,158,11,0.12);color:#f59e0b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
-      <div><h2>كورسات إضافية</h2><p>كورسات تخصصية متنوعة</p></div>
-    </div>
-    <div class="grades-grid" id="grid-pro"></div>
-  </div>
 </main>
-
 
 <div id="courseView">
   <div class="cv-hd">
     <button class="cv-back" onclick="closeCourse()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+      <svg><use href="#i-x"/></svg>
     </button>
     <div class="cv-hd-info"><h2 id="cvTitle"></h2><p id="cvSub"></p></div>
   </div>
   <div class="cv-tabs">
     <button class="cv-tab on" onclick="switchTab('videos',this)">
-      <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>الشرح
+      <svg><use href="#i-yt"/></svg>الشرح
     </button>
     <button class="cv-tab" onclick="switchTab('exams',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>الامتحانات
+      <svg><use href="#i-check"/></svg>الامتحانات
     </button>
     <button class="cv-tab" onclick="switchTab('homework',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>الواجبات
+      <svg><use href="#i-file"/></svg>الواجبات
     </button>
     <button class="cv-tab" onclick="switchTab('books',this)">
-      📚 الكتب
+      <svg><use href="#i-book"/></svg>الكتب
     </button>
     <button class="cv-tab" onclick="switchTab('progress',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>تقدمك
-    </button>
-    <button class="cv-tab" onclick="switchTab('research',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>أبحاث
+      <svg><use href="#i-chart"/></svg>تقدمك
     </button>
   </div>
 
-  <!-- Search bar -->
-  <div class="cv-search" id="cvSearch" style="display:none">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input id="cvSearchInp" placeholder="ابحث في الفيديوهات والامتحانات..." oninput="searchContent()"/>
+  <div class="cv-search" id="cvSearch">
+    <svg><use href="#i-search"/></svg>
+    <input id="cvSearchInp" placeholder="ابحث في المحتوى..." oninput="searchContent()"/>
   </div>
 
-  <!-- Night before exam banner -->
   <div class="night-mode-banner" id="nightBanner">
-    <div class="nm-head">🌙 وضع ليلة الامتحان — مراجعة سريعة</div>
+    <div class="nm-head">🌙 وضع ليلة الامتحان</div>
     <ul class="nm-list" id="nightList"></ul>
   </div>
-  <!-- ملاحظة الأستاذ — تظهر في كل التابات -->
-  <div id="teacherNote" class="banner-hidden" style="margin:10px 16px 0;padding:12px 14px;border-radius:12px;
-    background:rgba(201,168,76,0.08);border:1.5px solid rgba(201,168,76,0.3);
-    display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7">
-    <span id="teacherNoteIcon" style="font-size:18px;flex-shrink:0">📌</span>
-    <div style="flex:1">
-      <div style="font-size:10px;font-weight:800;margin-bottom:3px"><span class="note-banner-lbl-text" style="color:rgba(201,168,76,1)">ملاحظة من الأستاذ</span></div>
+
+  <div class="teacher-note" id="teacherNote">
+    <svg><use href="#i-file"/></svg>
+    <div>
+      <div style="font-size:12px;font-weight:800;color:var(--gold);margin-bottom:4px">ملاحظة من الأستاذ</div>
       <div id="teacherNoteText"></div>
     </div>
   </div>
-  <!-- رد على الشكوى — تظهر في كل التابات -->
-  <div id="ticketReplyBanner" class="banner-hidden" style="margin:8px 16px 0;padding:12px 14px;border-radius:12px;
-    background:rgba(74,127,212,0.08);border:1.5px solid rgba(74,127,212,0.3);
-    display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:1.7">
-    <span style="font-size:18px;flex-shrink:0">📬</span>
-    <div style="flex:1">
-      <div style="font-size:10px;font-weight:800;color:var(--blue);margin-bottom:3px">رد على شكواك</div>
-      <div id="ticketReplySubject" style="font-size:11px;color:var(--muted);margin-bottom:2px"></div>
-      <div id="ticketReplyText"></div>
-    </div>
-    <button onclick="dismissTicketReply()"
-      style="background:transparent;border:none;color:rgba(74,127,212,0.4);cursor:pointer;font-size:18px;flex-shrink:0;padding:0;line-height:1">×</button>
-  </div>
 
   <div class="cv-body">
-    <div class="tab-pane on" id="tp-videos"><div class="video-list" id="videoList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
-    <div class="tab-pane" id="tp-exams"><div class="exam-list" id="examList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
-    <div class="tab-pane" id="tp-homework"><div class="hw-list" id="hwList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
-    <div class="tab-pane" id="tp-books"><div id="booksList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
+    <div class="tab-pane on" id="tp-videos">
+      <div class="video-list" id="videoList">
+        <div class="empty">
+          <div class="empty-icon"><svg><use href="#i-yt"/></svg></div>
+          <p>جاري التحميل...</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="tp-exams">
+      <div class="exam-list" id="examList">
+        <div class="empty">
+          <div class="empty-icon"><svg><use href="#i-check"/></svg></div>
+          <p>جاري التحميل...</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="tp-homework">
+      <div class="hw-list" id="hwList">
+        <div class="empty">
+          <div class="empty-icon"><svg><use href="#i-file"/></svg></div>
+          <p>جاري التحميل...</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="tp-books">
+      <div class="books-grid" id="booksList">
+        <div class="empty">
+          <div class="empty-icon"><svg><use href="#i-book"/></svg></div>
+          <p>جاري التحميل...</p>
+        </div>
+      </div>
+    </div>
     <div class="tab-pane" id="tp-progress">
       <div class="prog-card">
         <h4>📊 تقدمك الدراسي</h4>
-        <div class="prog-row"><div class="prog-lbl">الفيديوهات</div><div class="prog-bar"><div class="prog-fill blue" id="pv" style="width:0%"></div></div><div class="prog-val" id="pvt">0%</div></div>
-        <div class="prog-row"><div class="prog-lbl">الامتحانات</div><div class="prog-bar"><div class="prog-fill gold" id="pe" style="width:0%"></div></div><div class="prog-val" id="pet">0%</div></div>
-        <div class="prog-row"><div class="prog-lbl">الواجبات</div><div class="prog-bar"><div class="prog-fill ok" id="ph" style="width:0%"></div></div><div class="prog-val" id="pht">0%</div></div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
-        <a href="plus-math-auth.html" style="flex:1;padding:10px 14px;background:rgba(74,127,212,0.08);border:1px solid var(--b1);border-radius:11px;text-decoration:none;color:var(--text);font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;justify-content:center">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>بروفايلي
-        </a>
-        <a href="plus-math-auth.html" style="flex:1;padding:10px 14px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:11px;text-decoration:none;color:var(--gold2);font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;justify-content:center">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>تجديد الاشتراك
-        </a>
-      </div>
-    </div>
-
-    <!-- تاب الأبحاث -->
-    <div class="tab-pane" id="tp-research">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-        <div style="font-size:14px;font-weight:800">📝 أبحاثي</div>
-        <button onclick="openNewResearch()" class="btn primary sm">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          بحث جديد
-        </button>
-      </div>
-      <div id="myResearchList">
-        <div class="empty"><p>لا يوجد أبحاث — أضف بحثك الأول</p></div>
+        <div class="prog-row">
+          <div class="prog-lbl">الفيديوهات</div>
+          <div class="prog-bar"><div class="prog-fill blue" id="pv" style="width:0%"></div></div>
+          <div class="prog-val" id="pvt">0%</div>
+        </div>
+        <div class="prog-row">
+          <div class="prog-lbl">الامتحانات</div>
+          <div class="prog-bar"><div class="prog-fill gold" id="pe" style="width:0%"></div></div>
+          <div class="prog-val" id="pet">0%</div>
+        </div>
+        <div class="prog-row">
+          <div class="prog-lbl">الواجبات</div>
+          <div class="prog-bar"><div class="prog-fill ok" id="ph" style="width:0%"></div></div>
+          <div class="prog-val" id="pht">0%</div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- Research Form Modal -->
-<div class="overlay" id="researchModal">
-  <div class="modal">
-    <div class="modal-head">
-      <h3>📝 <span id="resModalTitle">بحث جديد</span></h3>
-      <button class="mclose" onclick="closeResearchModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <input type="hidden" id="res-edit-id"/>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">موضوع البحث</label>
-        <input id="res-topic" type="text" placeholder="عنوان البحث..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/></div>
-      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">اسم الطالب</label>
-        <input id="res-student-name" type="text" placeholder="الاسم الكامل..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">المقرر</label>
-        <input id="res-subject" type="text" placeholder="مثال: تربية مقارنة..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/></div>
-      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">الفرقة / الصف</label>
-        <input id="res-grade-text" type="text" placeholder="مثال: الثالثة - أدبي..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">القسم</label>
-        <input id="res-dept" type="text" placeholder="مثال: رياضيات، عام رياضة..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/></div>
-      <div><label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">الكود</label>
-        <input id="res-code" type="text" placeholder="كودك..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;font-family:monospace;letter-spacing:2px" oninput="this.value=this.value.toUpperCase()"/></div>
-    </div>
-    <div style="margin-bottom:12px">
-      <label style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;display:block">محتوى البحث / التفاصيل</label>
-      <textarea id="res-details" rows="6" placeholder="اكتب محتوى البحث هنا..." style="width:100%;padding:10px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;resize:vertical;line-height:1.8"></textarea>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button onclick="saveStudentResearch()" style="flex:1;padding:12px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
-        حفظ البحث
-      </button>
-      <button onclick="printStudentResearch()" style="padding:12px 16px;border:1px solid var(--b1);border-radius:11px;background:transparent;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px">
-        🖨️ طباعة
-      </button>
-    </div>
-  </div>
-</div>
-<div class="overlay" id="ticketModal">
-  <div class="modal">
-    <div class="modal-head">
-      <h3>💬 إرسال شكوى أو مشكلة</h3>
-      <button class="mclose" onclick="document.getElementById('ticketModal').classList.remove('open')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <select id="tk-cat" style="width:100%;padding:10px 12px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;margin-bottom:10px;appearance:none">
-      <option value="technical">🔧 مشكلة تقنية</option>
-      <option value="content">📚 مشكلة في المحتوى</option>
-      <option value="payment">💳 مشكلة في الدفع</option>
-      <option value="subscription">🔑 مشكلة في الاشتراك</option>
-      <option value="other">💬 أخرى</option>
-    </select>
-    <input id="tk-subject" type="text" placeholder="الموضوع..." style="width:100%;padding:10px 12px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;margin-bottom:10px"/>
-    <textarea id="tk-message" rows="4" placeholder="اشرح المشكلة بالتفصيل..." style="width:100%;padding:10px 12px;background:rgba(8,13,28,0.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;resize:vertical;margin-bottom:10px"></textarea>
-    <div id="tk-msg" style="font-size:12px;margin-bottom:8px;display:none"></div>
-    <button onclick="submitTicket()" style="width:100%;padding:12px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
-      إرسال
-    </button>
   </div>
 </div>
 
 <div class="overlay" id="playerModal">
   <div class="modal">
-    <div class="modal-head"><h3 id="playerTitle">الفيديو</h3>
-      <button class="mclose" onclick="closePlayer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="modal-head">
+      <h3 id="playerTitle">الفيديو</h3>
+      <button class="mclose" onclick="closePlayer()">
+        <svg><use href="#i-x"/></svg>
+      </button>
     </div>
-    <div class="player-iframe-wrap"><iframe id="playerFrame" src="" allowfullscreen allow="autoplay"></iframe></div>
-    <div class="player-btns">
-      <button class="pbtn ok" onclick="playerDone()">انهيت الدرس ✓</button>
+    <div style="border-radius:var(--r2);overflow:hidden;background:#000;margin-bottom:16px">
+      <iframe id="playerFrame" src="" allowfullscreen style="width:100%;height:clamp(200px,50vw,300px);border:none;display:block"></iframe>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="pbtn ok" onclick="playerDone()">✓ انهيت الدرس</button>
       <button class="pbtn ghost" onclick="closePlayer()">إغلاق</button>
     </div>
   </div>
@@ -641,8 +602,11 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
 <div class="overlay" id="mcqModal">
   <div class="modal">
-    <div class="modal-head"><h3 id="mcqTitle">امتحان</h3>
-      <button class="mclose" onclick="closeMcq()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="modal-head">
+      <h3 id="mcqTitle">امتحان</h3>
+      <button class="mclose" onclick="closeMcq()">
+        <svg><use href="#i-x"/></svg>
+      </button>
     </div>
     <div class="mcq-progress" id="mcqProg"></div>
     <div id="mcqBody"></div>
@@ -651,48 +615,44 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
   </div>
 </div>
 
-<div class="overlay" id="imgModal">
-  <div class="modal" style="max-width:700px;padding:12px">
-    <div class="modal-head"><h3 id="imgTitle">الامتحان</h3>
-      <button class="mclose" onclick="closeImg()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+<div class="overlay" id="ticketModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>💬 إرسال شكوى</h3>
+      <button class="mclose" onclick="closeTicketModal()">
+        <svg><use href="#i-x"/></svg>
+      </button>
     </div>
-    <div id="imgBody"></div>
-    <div style="margin-top:12px;display:flex;gap:8px">
-      <button class="btn ok" id="imgDoneBtn" onclick="imgDone()" style="display:none">تم المشاهدة ✓</button>
-      <button class="btn ghost" onclick="closeImg()">إغلاق</button>
-    </div>
+    <select id="tk-cat" style="width:100%;padding:12px 14px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;margin-bottom:12px;appearance:none">
+      <option value="technical">🔧 مشكلة تقنية</option>
+      <option value="content">📚 مشكلة في المحتوى</option>
+      <option value="payment">💳 مشكلة في الدفع</option>
+      <option value="subscription">🔑 مشكلة في الاشتراك</option>
+      <option value="other">💬 أخرى</option>
+    </select>
+    <input id="tk-subject" type="text" placeholder="الموضوع..." style="width:100%;padding:12px 14px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;margin-bottom:12px"/>
+    <textarea id="tk-message" rows="4" placeholder="اشرح المشكلة بالتفصيل..." style="width:100%;padding:12px 14px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;resize:vertical;margin-bottom:14px"></textarea>
+    <button onclick="submitTicket()" class="btn ok" style="width:100%;justify-content:center">
+      <svg><use href="#i-check"/></svg>إرسال
+    </button>
   </div>
 </div>
 
-<div class="toast" id="toast"><span id="tMsg"></span></div>
-
-<!-- Book Detail Sheet -->
-<div class="book-sheet-bg" id="bookSheet" onclick="handleSheetClick(event)">
-  <div class="book-sheet" id="bookSheetContent" style="position:relative">
-    <button class="bs-close" onclick="closeBookSheet()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div id="bsHead" class="bs-head"></div>
-    <div id="bsBody" class="bs-body"></div>
-  </div>
+<div class="toast" id="toast">
+  <svg id="tIc"><use href="#i-check"/></svg>
+  <span id="tMsg"></span>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, collection, setDoc, addDoc, updateDoc, increment, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, getDocs, collection, setDoc, updateDoc, increment, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const app  = initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
+const app = initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
 const auth = getAuth(app);
-const db   = getFirestore(app);
-window._db = db;
-window._getDocs = getDocs;
-window._collection = collection;
-window._doc = doc;
-window._getDoc = getDoc;
-window._updateDoc = updateDoc;
-window._increment = increment;
-let _user,_userData,_progress={},_playerData=null,_imgData=null;
+const db = getFirestore(app);
+
+let _user,_userData,_progress={};
 
 onAuthStateChanged(auth,async(user)=>{
   if(!user){window.location.href='plus-math-auth.html';return;}
@@ -704,53 +664,22 @@ onAuthStateChanged(auth,async(user)=>{
     if(_userData.expiresAt){
       const exp=_userData.expiresAt.toDate?_userData.expiresAt.toDate():new Date(_userData.expiresAt);
       if(new Date()>exp){
-        // ── انتهى الاشتراك: امسح الكود والاشتراك، الحساب والصف يفضل ──
-        setDoc(doc(db,'users',user.uid),{
-          subscriptionActive:false,
-          subscriptionCode:'',
-          expiresAt:null,
-          activatedAt:null
-        },{merge:true}).catch(()=>{});
-        window.location.href='plus-math-auth.html';
-        return;
+        setDoc(doc(db,'users',user.uid),{subscriptionActive:false,subscriptionCode:'',expiresAt:null,activatedAt:null},{merge:true}).catch(()=>{});
+        window.location.href='plus-math-auth.html';return;
       }
     }
     document.getElementById('loadingScreen').style.display='none';
     document.getElementById('navbar').style.display='flex';
     document.getElementById('mainContent').style.display='block';
-    document.getElementById('userName').textContent=_userData.name?.split(' ')[0]||'طالب';
     document.getElementById('statGrade').textContent=_userData.grade||'—';
     document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
-    window._userData = _userData;
-    // ── آخر وقت دخول ──
-    updateDoc(doc(db,'users',user.uid),{
-      lastSeen: serverTimestamp(),
-      lastSeenDate: new Date().toLocaleDateString('ar-EG')
-    }).catch(()=>{});
-    // Countdown
-    if(_userData.expiresAt) startCountdown(_userData.expiresAt);
-    // ── إشعار تلقائي قرب انتهاء الاشتراك ──
-    checkSubscriptionExpiry(_userData, user.uid);
-    sendWelcomeNotif(_userData, user.uid);
-    // Teacher note
-    if(_userData.notes) showTeacherNote(_userData.notes, _userData.noteColor);
-    // ── رد على الشكاوى ──
-    loadTicketReply(user.uid);
-    // ── نقطة الإشعارات ──
-    checkNotifDot();
-    // Set video watermark with student info
-    setTimeout(()=>{ if(window.setWatermark) window.setWatermark(_userData.name||'طالب', _userData.phone||''); }, 500);
+    window._userData=_userData;
+    updateDoc(doc(db,'users',user.uid),{lastSeen:serverTimestamp(),lastSeenDate:new Date().toLocaleDateString('ar-EG')}).catch(()=>{});
     try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
-    try{const pr=await getDoc(doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={};}
-    // ── تحميل المراحل الديناميكية ──
-    await loadDynamicGrades();
+    try{const pr=await getDoc(doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={}}
     buildGrades();
-    // ── تحميل أبحاث الطالب ──
-    loadMyResearches();
-    // ── AUTO-OPEN صف الطالب ──
     if(_userData.gradeKey){
-      const g=window._GM[_userData.gradeKey];
-      if(g) setTimeout(()=>openCourse(_userData.gradeKey,g.label,g.stage),600);
+      setTimeout(()=>openCourse(_userData.gradeKey,_userData.grade,_userData.stage),800);
     }
   }catch(e){
     console.error(e);
@@ -761,147 +690,142 @@ onAuthStateChanged(auth,async(user)=>{
   }
 });
 
+const gradesData={
+  primary:[{key:'primary-4',label:'الصف الرابع الابتدائي',img:'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400'},{key:'primary-5',label:'الصف الخامس الابتدائي',img:'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400'},{key:'primary-6',label:'الصف السادس الابتدائي',img:'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400'}],
+  prep:[{key:'prep-1',label:'الصف الأول الإعدادي',img:'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=400'},{key:'prep-2',label:'الصف الثاني الإعدادي',img:'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=400'},{key:'prep-3',label:'الصف الثالث الإعدادي',img:'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400'}],
+  sec:[{key:'sec-1',label:'الصف الأول الثانوي',img:'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=400'},{key:'sec-2',label:'الصف الثاني الثانوي',img:'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=400'},{key:'sec-3',label:'الصف الثالث الثانوي',img:'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=400'}],
+  univ:[{key:'univ-math',label:'رياضيات جامعية',img:'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400'},{key:'univ-cs',label:'حاسبات ومعلومات',img:'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400'}]
+};
+
+function buildGrades(){
+  ['primary','prep','sec','univ'].forEach(stage=>{
+    const el=document.getElementById('grid-'+stage);
+    if(!el)return;
+    el.innerHTML=gradesData[stage].map(g=>`
+      <div class="grade-card" onclick="openCourse('${g.key}','${g.label}','${stage}')">
+        <img class="gc-img" src="${g.img}" alt="${g.label}" loading="lazy"/>
+        ${window._userData?.gradeKey===g.key?'<span class="gc-badge mine">صفك</span>':''}
+        <div class="gc-body">
+          <div class="gc-title">${g.label}</div>
+          <div class="gc-sub">اضغط للمشاهدة</div>
+        </div>
+        <div class="gc-foot">
+          <span>📚 محتوى تفاعلي</span>
+          <span>←</span>
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
 window.openCourse=async(gradeKey,label,stage)=>{
   document.getElementById('cvTitle').textContent=label;
-  document.getElementById('cvSub').textContent=stage;
+  document.getElementById('cvSub').textContent={primary:'المرحلة الابتدائية',prep:'المرحلة الإعدادية',sec:'المرحلة الثانوية',univ:'الجامعة'}[stage]||stage;
   document.getElementById('courseView').style.display='block';
   document.getElementById('courseView').classList.add('open');
-  // لا نحجب الـ body scroll — الـ courseView عنده overflow-y:auto
   switchTab('videos',document.querySelector('.cv-tab'));
   window._openGrade=gradeKey;
-  const isMine=gradeKey===_userData?.gradeKey;
   const gp=_progress[gradeKey]||{};
   const dV=gp.videos||[],dE=gp.exams||[],dH=gp.homework||[];
-  ['videoList','examList','hwList'].forEach(id=>document.getElementById(id).innerHTML='<div class="empty"><p>جاري التحميل...</p></div>');
+  ['videoList','examList','hwList'].forEach(id=>document.getElementById(id).innerHTML='<div class="empty"><div class="spin" style="width:40px;height:40px;margin:20px auto;border:3px solid var(--b2);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite"></div><p>جاري التحميل...</p></div>');
   const[vids,exams,hw]=await Promise.all([loadList(gradeKey,'videos'),loadList(gradeKey,'exams'),loadList(gradeKey,'homework')]);
-  // Store for search
-  _allVideos = vids; _allExams = exams;
-  renderVideos(vids,dV,gradeKey,isMine);
-  renderExams(exams,dE,gradeKey,isMine);
-  renderHw(hw,dH,gradeKey,isMine);
+  window._allVideos=vids;window._allExams=exams;
+  renderVideos(vids,dV,gradeKey);
+  renderExams(exams,dE,gradeKey);
+  renderHw(hw,dH,gradeKey);
   setTimeout(()=>{setProg('pv','pvt',vids.length,dV.length);setProg('pe','pet',exams.length,dE.length);setProg('ph','pht',hw.length,dH.length);},400);
-  // Night mode
-  if(isMine) buildNightMode(vids, dV);
-  // ── اعرض الملاحظة والرد عند فتح الصف ──
-  if(isMine){
-    if(_userData?.notes) showTeacherNote(_userData.notes, _userData.noteColor);
-    if(_user) loadTicketReply(_user.uid);
-  }
 };
 
 async function loadList(grade,tab){
   try{const s=await getDocs(collection(db,'content',grade,tab));return s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));}catch(e){return[];}
 }
 
-function renderVideos(videos,done,gradeKey,isMine){
+function renderVideos(videos,done,gradeKey){
   const el=document.getElementById('videoList');
-  if(!videos.length){el.innerHTML='<div class="empty"><p>لا يوجد فيديوهات بعد</p></div>';return;}
+  if(!videos.length){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-yt"/></svg></div><p>لا يوجد فيديوهات بعد</p></div>';return;}
   el.innerHTML=videos.map((v,i)=>{
     const isDone=done.includes(v.id);
-    const isLocked=isMine&&i>0&&!done.includes(videos[i-1].id)&&!isDone;
     const ytId=getYtId(v.url||'');
     const thumb=ytId?`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`:'';
-    return `<div class="video-item">
-      <div id="vp-${v.id}" class="video-player">
-        <iframe id="vf-${v.id}" src="" allowfullscreen allow="autoplay"></iframe>
-        <div class="video-player-bar">
-          ${isMine&&!isDone?`<button class="pbtn ok" onclick="markVDone('${gradeKey}','${v.id}')">انهيت الدرس ✓</button>`:''}
-          <button class="pbtn ghost" onclick="closeVid('${v.id}')">إغلاق</button>
-          ${isDone?`<div id="rating-${v.id}" style="display:flex;align-items:center;gap:8px;margin-right:auto">
-            <span style="font-size:11px;color:var(--muted)">قيّم الدرس:</span>
-            <button onclick="rateVideo('${gradeKey}','${v.id}',1)" id="like-${v.id}" style="background:transparent;border:1px solid rgba(0,214,143,0.35);border-radius:8px;padding:3px 10px;cursor:pointer;font-size:15px;transition:all .2s" title="ممتاز">👍</button>
-            <button onclick="rateVideo('${gradeKey}','${v.id}',0)" id="dislike-${v.id}" style="background:transparent;border:1px solid rgba(255,77,109,0.35);border-radius:8px;padding:3px 10px;cursor:pointer;font-size:15px;transition:all .2s" title="يحتاج تحسين">👎</button>
-          </div>`:''}
+    return `
+      <div class="video-item">
+        <div id="vp-${v.id}" class="video-player">
+          <iframe id="vf-${v.id}" src="" allowfullscreen></iframe>
+          <div class="video-player-bar">
+            ${!isDone?`<button class="pbtn ok" onclick="markVDone('${gradeKey}','${v.id}')">✓ انهيت الدرس</button>`:''}
+            <button class="pbtn ghost" onclick="closeVid('${v.id}')">إغلاق</button>
+          </div>
+        </div>
+        <div class="video-row" onclick="${ytId?`openVid('${v.id}','${ytId}')`:v.url?`window.open('${v.url}','_blank')`:''}">
+          <div class="vthumb">
+            ${thumb?`<img src="${thumb}" loading="lazy"/>`:''}
+            ${isDone?`<svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>`:`<svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)"><polygon points="5,3 19,12 5,21"/></svg>`}
+          </div>
+          <div class="vinfo">
+            <div class="vtitle">${v.order?v.order+'. ':''}${v.title||'درس'}</div>
+            <div class="vmeta">
+              ${v.duration?`⏱ ${v.duration}`:''}
+              ${isDone?'<span style="color:var(--ok)">✅ تمت المشاهدة</span>':'<span style="color:var(--primary)">▶ اضغط للتشغيل</span>'}
+            </div>
+          </div>
+          ${isDone?'<span style="color:var(--ok);font-size:20px">✅</span>':''}
         </div>
       </div>
-      <div class="video-row" style="${isLocked?'cursor:not-allowed;opacity:.55':''}"
-        ${!isLocked&&ytId?`onclick="openVid('${v.id}','${ytId}')"`:''}
-        ${!isLocked&&!ytId&&v.url?`onclick="window.open('${v.url}','_blank')"`:''}
-      >
-        <div class="vthumb">
-          ${thumb?`<img src="${thumb}" onerror="this.style.display='none'"/>`:''}
-          ${isLocked?`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`:isDone?`<svg viewBox="0 0 24 24" fill="none" stroke="#00d68f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>`:`<svg viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)"><polygon points="5,3 19,12 5,21"/></svg>`}
-        </div>
-        <div class="vinfo">
-          <div class="vtitle">${v.order?v.order+'. ':''}${v.title||'درس'}</div>
-          <div class="vmeta">${v.duration?`⏱ ${v.duration}`:''}${isLocked?'<span style="color:var(--err)">🔒 أكمل الدرس السابق</span>':isDone?'<span style="color:var(--ok)">✅ تمت المشاهدة</span>':'<span style="color:var(--blue)">▶ اضغط للتشغيل</span>'}</div>
-        </div>
-        ${isDone?'<span style="color:var(--ok);font-size:15px;flex-shrink:0">✅</span>':''}
-      </div>
-    </div>`;
+    `;
   }).join('');
 }
 
-// ── RENDER EXAMS — uses data-eidx to avoid onclick string issues ──
-function renderExams(exams,done,gradeKey,isMine){
+function renderExams(exams,done,gradeKey){
   const el=document.getElementById('examList');
-  window._CE={exams,done,gradeKey,isMine}; // store for click handler
-  if(!exams.length){el.innerHTML='<div class="empty"><p>لا يوجد امتحانات بعد</p></div>';return;}
-  const tL={mcq:'اختيار متعدد',essay:'مقالي',images:'صور امتحان',link:'Google Form',pdf:'PDF'};
-  const tC={mcq:'var(--gold)',essay:'var(--blue)',images:'var(--purple)',link:'var(--ok)',pdf:'var(--err)'};
+  window._CE={exams,done,gradeKey};
+  if(!exams.length){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-check"/></svg></div><p>لا يوجد امتحانات بعد</p></div>';return;}
+  const tL={mcq:'اختيار متعدد',essay:'مقالي',images:'صور',link:'Google Form'};
+  const tC={mcq:'var(--gold)',essay:'var(--primary)',images:'var(--purple)',link:'var(--ok)'};
   el.innerHTML=exams.map((e,i)=>{
     const isDone=done.includes(e.id);
-    const isLocked=isMine&&i>0&&!done.includes(exams[i-1].id)&&!isDone;
     const tl=tL[e.type]||'امتحان',tc=tC[e.type]||'var(--gold)';
-    const hasAction=e.mcqRaw||e.essayText||e.imageUrls?.length||e.fileUrl||e.externalUrl||e.url;
-    return `<div class="exam-item" style="${isLocked?'opacity:.55;cursor:not-allowed':''}"
-      ${!isLocked&&hasAction?`data-eidx="${i}" onclick="handleExam(this)"`:''}
-    >
-      <div class="exam-ico" style="background:${tc}18;color:${tc}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+    return `
+      <div class="exam-item" data-eidx="${i}" onclick="handleExam(this)">
+        <div class="exam-ico" style="background:${tc}18;color:${tc}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
+        </div>
+        <div class="exam-info">
+          <div class="exam-title">${e.order?e.order+'. ':''}${e.title||'امتحان'}</div>
+          <div class="exam-meta"><span style="color:${tc};font-weight:700">${tl}</span>${e.duration?' · ⏱ '+e.duration:''}</div>
+        </div>
+        <span class="ebadge ${isDone?'done':'new'}">${isDone?'تم ✓':'ابدأ'}</span>
       </div>
-      <div class="exam-info">
-        <div class="exam-title">${e.order?e.order+'. ':''}${e.title||'امتحان'}</div>
-        <div class="exam-meta"><span style="color:${tc};font-weight:700">${tl}</span>${e.duration?' · ⏱ '+e.duration:''} ${isLocked?'· 🔒':''}</div>
-      </div>
-      <span class="ebadge ${isDone?'done':'new'}">${isDone?'تم ✓':'ابدأ'}</span>
-    </div>`;
+    `;
   }).join('');
 }
 
-window.handleExam=(el)=>{
-  const i=parseInt(el.getAttribute('data-eidx'));
-  const{exams,gradeKey}=window._CE||{};
-  if(!exams||isNaN(i)) return;
-  const e=exams[i];
-  if(e.type==='mcq'&&e.mcqRaw) openMcq(e.id,gradeKey,e.title||'',e.mcqRaw);
-  else if(e.type==='essay'&&e.essayText) openEssay(e.id,gradeKey,e.title||'',e.essayText);
-  else if((e.type==='images'||e.type==='pdf')&&(e.imageUrls?.length||e.fileUrl||e.externalUrl)){
-    const urls=e.imageUrls?.length?e.imageUrls:(e.fileUrl?[e.fileUrl]:[e.externalUrl]);
-    openImgs(e.id,gradeKey,e.title||'',urls);
-  } else if(e.externalUrl||e.url) window.open(e.externalUrl||e.url,'_blank');
-};
-
-function renderHw(hw,done,gradeKey,isMine){
+function renderHw(hw,done,gradeKey){
   const el=document.getElementById('hwList');
-  if(!hw.length){el.innerHTML='<div class="empty"><p>لا يوجد واجبات بعد</p></div>';return;}
+  if(!hw.length){el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-file"/></svg></div><p>لا يوجد واجبات بعد</p></div>';return;}
   const ud=window._userData||{};
   el.innerHTML=hw.map(h=>{
     const isDone=done.includes(h.id);
-    // WhatsApp message with student info + homework details
-    const waMsg=encodeURIComponent(
-      'مرحباً أستاذ مهدي 👋\n'+
-      'اسمي: '+(ud.name||'—')+'\n'+
-      'صفي: '+(ud.grade||'—')+'\n'+
-      'رقم هاتفي: '+(ud.phone||'—')+'\n\n'+
-      '📝 تسليم واجب: '+(h.title||'واجب')+'\n'+
-      (h.description?'التفاصيل: '+h.description+'\n':'')+
-      (h.deadline?'موعد التسليم: '+h.deadline+'\n':'')
-    );
-    return `<div class="hw-item">
-      <div class="hw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
-      <div class="hw-info">
-        <div class="hw-title">${h.order?h.order+'. ':''}${h.title||'واجب'}</div>
-        <div class="hw-meta">${h.description||''}${h.deadline?' · 📅 '+h.deadline:''}</div>
-        <div class="hw-links">
-          ${h.fileUrl?`<a href="${h.fileUrl}" target="_blank" class="hw-link file">📎 فتح الملف</a>`:''}
-          ${h.url&&!h.fileUrl?`<a href="${h.url}" target="_blank" class="hw-link file">🔗 رابط</a>`:''}
-          ${isMine?`<a href="https://wa.me/201007586279?text=${waMsg}" target="_blank" class="hw-link" style="background:rgba(37,211,102,0.12);color:#25D366;border:1px solid rgba(37,211,102,0.25)">📲 تسليم على واتساب</a>`:''}
+    const waMsg=encodeURIComponent('مرحباً أستاذ مهدي 👋\nاسمي: '+(ud.name||'—')+'\nصفي: '+(ud.grade||'—')+'\nرقم هاتفي: '+(ud.phone||'—')+'\n\n📝 تسليم واجب: '+(h.title||'واجب'));
+    return `
+      <div class="hw-item">
+        <div class="hw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
+        <div class="hw-info">
+          <div class="hw-title">${h.order?h.order+'. ':''}${h.title||'واجب'}</div>
+          <div class="hw-meta">${h.description||''}${h.deadline?' · 📅 '+h.deadline:''}</div>
+          <div class="hw-links">
+            ${h.fileUrl?`<a href="${h.fileUrl}" target="_blank" class="hw-link file">📎 فتح الملف</a>`:''}
+            <a href="https://wa.me/201007586279?text=${waMsg}" target="_blank" class="hw-link wa">📲 تسليم واتساب</a>
+          </div>
         </div>
+        ${!isDone?`<button onclick="event.stopPropagation();markDone('${gradeKey}','homework','${h.id}')" style="padding:8px 14px;border:1px solid var(--ok);border-radius:var(--r2);background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap">✓ سلّمت</button>`:'<span style="color:var(--ok);font-size:20px">✅</span>'}
       </div>
-      ${isMine&&!isDone?`<button onclick="markDone('${gradeKey}','homework','${h.id}')" style="padding:6px 11px;border:1px solid var(--ok);border-radius:8px;background:transparent;color:var(--ok);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0">سلّمت ✓</button>`:isDone?'<span style="color:var(--ok);font-size:14px;flex-shrink:0">✅</span>':''}
-    </div>`;
+    `;
   }).join('');
+}
+
+function getYtId(url){
+  const m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+  return m?m[1]:null;
 }
 
 window.openVid=(id,ytId)=>{
@@ -910,28 +834,16 @@ window.openVid=(id,ytId)=>{
   if(w&&f){w.style.display='block';f.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;}
 };
 window.closeVid=(id)=>{const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);if(w)w.style.display='none';if(f)f.src='';};
-window.markVDone=(g,id)=>{
-  markDone(g,'videos',id);
-  closeVid(id);
-  // اعرض زر التقييم بعد انتهاء الدرس
-  const rDiv=document.getElementById('rating-'+id);
-  if(rDiv) rDiv.style.display='flex';
-};
+window.markVDone=(g,id)=>{markDone(g,'videos',id);closeVid(id);};
 
-window.rateVideo=async(gradeKey,videoId,rating)=>{
-  if(!_user) return;
-  try{
-    await setDoc(doc(db,'videoRatings',_user.uid+'_'+videoId),{
-      userId:_user.uid, videoId, gradeKey,
-      rating, // 1=like, 0=dislike
-      ratedAt:serverTimestamp()
-    });
-    const likeBtn=document.getElementById('like-'+videoId);
-    const dislikeBtn=document.getElementById('dislike-'+videoId);
-    if(likeBtn) likeBtn.style.background=rating===1?'rgba(0,214,143,0.25)':'transparent';
-    if(dislikeBtn) dislikeBtn.style.background=rating===0?'rgba(255,77,109,0.25)':'transparent';
-    showToast(rating===1?'شكراً! سعدنا إنك استفدت 🎉':'شكراً على رأيك ، هنعمل على التحسين 💪','ok');
-  }catch(e){ showToast('خطأ في التقييم','err'); }
+window.handleExam=(el)=>{
+  const i=parseInt(el.getAttribute('data-eidx'));
+  const{exams,gradeKey}=window._CE||{};
+  if(!exams||isNaN(i))return;
+  const e=exams[i];
+  if(e.type==='mcq'&&e.mcqRaw)openMcq(e.id,gradeKey,e.title||'',e.mcqRaw);
+  else if(e.type==='essay'&&e.essayText)openEssay(e.id,gradeKey,e.title||'',e.essayText);
+  else if(e.externalUrl||e.url)window.open(e.externalUrl||e.url,'_blank');
 };
 
 let _mcq={questions:[],answers:{},gradeKey:'',examId:''};
@@ -942,7 +854,7 @@ function openMcq(examId,gradeKey,title,raw){
   const btn=document.getElementById('mcqBtn');
   btn.textContent='تسليم الإجابات';btn.style.display='block';btn.onclick=submitMcq;
   renderMcq();
-  document.getElementById('mcqModal').classList.add('open');document.body.style.overflow='hidden';
+  document.getElementById('mcqModal').classList.add('open');
 }
 function parseMcq(raw){
   return raw.split(/\n?---\n?/).filter(Boolean).map(b=>{
@@ -956,7 +868,8 @@ function renderMcq(){
     <div class="mcq-q">
       <div class="mcq-q-text">${qi+1}. ${q.q}</div>
       ${q.opts.map((o,oi)=>`<div class="mcq-opt" id="opt-${qi}-${oi}" onclick="pickOpt(${qi},${oi})">${o.text}</div>`).join('')}
-    </div>`).join('');
+    </div>
+  `).join('');
 }
 window.pickOpt=(qi,oi)=>{_mcq.answers[qi]=oi;document.querySelectorAll(`[id^="opt-${qi}-"]`).forEach(e=>e.classList.remove('sel'));document.getElementById(`opt-${qi}-${oi}`)?.classList.add('sel');};
 function submitMcq(){
@@ -968,972 +881,134 @@ function submitMcq(){
   });
   const pct=Math.round(sc/_mcq.questions.length*100);
   document.getElementById('mcqResult').style.display='block';
-  document.getElementById('mcqResult').innerHTML=`<div style="font-size:36px">${pct>=60?'🎉':'💪'}</div><div style="font-size:18px;font-weight:900;margin:8px 0">${sc}/${_mcq.questions.length} صح</div><div style="font-size:14px;color:var(--muted)">${pct}% — ${pct>=80?'ممتاز':pct>=60?'جيد':'حاول تاني 💪'}</div>`;
+  document.getElementById('mcqResult').innerHTML=`<div style="font-size:48px">${pct>=60?'🎉':'💪'}</div><div style="font-size:22px;font-weight:900;margin:10px 0">${sc}/${_mcq.questions.length} صح</div><div style="font-size:15px;color:var(--text-muted)">${pct}% — ${pct>=80?'ممتاز':pct>=60?'جيد':'حاول تاني 💪'}</div>`;
   document.getElementById('mcqBtn').style.display='none';
   if(pct>=50)markDone(_mcq.gradeKey,'exams',_mcq.examId);
 }
-window.closeMcq=()=>{document.getElementById('mcqModal').classList.remove('open');document.body.style.overflow='';};
+window.closeMcq=()=>{document.getElementById('mcqModal').classList.remove('open');};
 
 function openEssay(examId,gradeKey,title,text){
   document.getElementById('mcqTitle').textContent=title;
   document.getElementById('mcqProg').textContent='امتحان مقالي';
   document.getElementById('mcqResult').style.display='none';
-  document.getElementById('mcqBody').innerHTML=`<div class="essay-text">${text}</div><textarea class="essay-area" placeholder="اكتب إجابتك هنا..."></textarea>`;
-  const btn=document.getElementById('mcqBtn');btn.textContent='تسليم ✓';btn.style.display='block';
-  btn.onclick=()=>{markDone(gradeKey,'exams',examId);document.getElementById('mcqResult').style.display='block';document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin-top:8px">تم التسليم!</div>';btn.style.display='none';};
-  document.getElementById('mcqModal').classList.add('open');document.body.style.overflow='hidden';
+  document.getElementById('mcqBody').innerHTML=`<div style="font-size:15px;line-height:1.9;padding:16px;background:var(--s2);border-radius:var(--r2);margin-bottom:14px;white-space:pre-wrap">${text}</div><textarea placeholder="اكتب إجابتك هنا..." style="width:100%;padding:14px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;resize:vertical;min-height:120px"></textarea>`;
+  const btn=document.getElementById('mcqBtn');btn.textContent='✓ تسليم';btn.style.display='block';
+  btn.onclick=()=>{markDone(gradeKey,'exams',examId);document.getElementById('mcqResult').style.display='block';document.getElementById('mcqResult').innerHTML='<div style="font-size:48px">✅</div><div style="font-size:18px;font-weight:800;margin-top:10px">تم التسليم!</div>';btn.style.display='none';};
+  document.getElementById('mcqModal').classList.add('open');
 }
 
-function openImgs(examId,gradeKey,title,urls){
-  _imgData={examId,gradeKey};
-  document.getElementById('imgTitle').textContent=title;
-  document.getElementById('imgBody').innerHTML=urls.map((u,i)=>`
-    <div style="margin-bottom:10px">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">صفحة ${i+1}</div>
-      ${u.toLowerCase().includes('.pdf')?`<a href="${u}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(74,127,212,0.07);border:1px solid var(--b1);border-radius:10px;color:var(--blue);text-decoration:none;font-weight:700">📄 فتح الصفحة ${i+1}</a>`:`<img src="${u}" style="width:100%;border-radius:10px;display:block;cursor:pointer" onclick="window.open('${u}','_blank')"/>`}
-    </div>`).join('');
-  document.getElementById('imgDoneBtn').style.display='flex';
-  document.getElementById('imgModal').classList.add('open');document.body.style.overflow='hidden';
-}
-window.imgDone=()=>{if(_imgData)markDone(_imgData.gradeKey,'exams',_imgData.examId);closeImg();};
-window.closeImg=()=>{document.getElementById('imgModal').classList.remove('open');document.body.style.overflow='';};
-window.closePlayer=()=>{document.getElementById('playerFrame').src='';document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';};
-window.playerDone=()=>{if(_playerData)markDone(_playerData.gradeKey,'videos',_playerData.id);closePlayer();};
-
-window.markDone=async(gradeKey,type,itemId)=>{
+async function markDone(gradeKey,type,id){
+  if(!_user)return;
   try{
-    const gp=_progress[gradeKey]||{};
-    const list=[...(gp[type]||[])];
-    if(list.includes(itemId)){showToast('تم التسجيل مسبقاً','ok');return;}
-    list.push(itemId);_progress[gradeKey]={...gp,[type]:list};
-    await setDoc(doc(db,'progress',_user.uid),_progress,{merge:true});
-    const gk=window._openGrade;
-    if(gk)openCourse(gk,document.getElementById('cvTitle').textContent,document.getElementById('cvSub').textContent);
-    showToast('تم التسجيل ✓','ok');
-  }catch(e){showToast('خطأ: '+e.message,'err');}
-};
-window.doSignOut=async()=>{await signOut(auth);window.location.href='index.html';};
+    const ref=doc(db,'progress',_user.uid);
+    const path=`${gradeKey}.${type}`;
+    await setDoc(ref,{[gradeKey]:{[type]:[id]}},{merge:true});
+    _progress[gradeKey]=_progress[gradeKey]||{};
+    _progress[gradeKey][type]=_progress[gradeKey][type]||[];
+    if(!_progress[gradeKey][type].includes(id))_progress[gradeKey][type].push(id);
+    toast('تم التسجيل! 🎉','ok');
+    openCourse(gradeKey,document.getElementById('cvTitle').textContent,'');
+  }catch(e){toast('خطأ في التسجيل','err');}
+}
 
-// ── TICKETS ──
+function setProg(barId,textId,total,done){
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById(barId).style.width=pct+'%';
+  document.getElementById(textId).textContent=pct+'%';
+}
+
+window.switchTab=(t,el)=>{
+  document.querySelectorAll('.cv-tab').forEach(b=>b.classList.remove('on'));
+  if(el)el.classList.add('on');
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
+  document.getElementById('tp-'+t).classList.add('on');
+};
+
+window.closeCourse=()=>{
+  document.getElementById('courseView').classList.remove('open');
+  setTimeout(()=>{document.getElementById('courseView').style.display='none';},300);
+};
+
+window.closePlayer=()=>{
+  document.getElementById('playerFrame').src='';
+  document.getElementById('playerModal').classList.remove('open');
+};
+
+window.playerDone=()=>{
+  toast('أحسنت! استمر في التقدم 🎉','ok');
+  closePlayer();
+};
+
+window.toggleThemePanel=()=>{
+  const p=document.getElementById('themePanel');
+  p.classList.toggle('show');
+  document.getElementById('notifPanel').classList.remove('show');
+};
+
+window.toggleNotifPanel=()=>{
+  const p=document.getElementById('notifPanel');
+  p.classList.toggle('show');
+  document.getElementById('themePanel').classList.remove('show');
+};
+
+window.setTheme=(theme)=>{
+  document.body.className=theme;
+  document.querySelectorAll('.theme-swatch').forEach(s=>s.classList.remove('active'));
+  if(theme)document.getElementById(theme)?.classList.add('active');
+  else document.getElementById('theme-default')?.classList.add('active');
+  localStorage.setItem('theme',theme);
+};
+
+const savedTheme=localStorage.getItem('theme');
+if(savedTheme)setTheme(savedTheme);
+
 window.openTicketModal=()=>{
-  document.getElementById('tk-subject').value='';
-  document.getElementById('tk-message').value='';
-  document.getElementById('tk-msg').style.display='none';
   document.getElementById('ticketModal').classList.add('open');
 };
+
+window.closeTicketModal=()=>{
+  document.getElementById('ticketModal').classList.remove('open');
+};
+
 window.submitTicket=async()=>{
+  const cat=document.getElementById('tk-cat').value;
   const subject=document.getElementById('tk-subject').value.trim();
   const message=document.getElementById('tk-message').value.trim();
-  const category=document.getElementById('tk-cat').value;
-  const msgEl=document.getElementById('tk-msg');
-  if(!subject||!message){
-    msgEl.style.display='block';msgEl.style.color='var(--err)';msgEl.textContent='⚠️ ادخل الموضوع والتفاصيل';return;
-  }
+  if(!subject||!message){toast('اكمل جميع الحقول','err');return;}
   try{
     await addDoc(collection(db,'tickets'),{
       userId:_user.uid,
-      userName:_userData?.name||'—',
-      userPhone:_userData?.phone||'',
-      userGrade:_userData?.grade||'',
-      subject,message,category,
+      userName:_userData.name||'—',
+      userPhone:_userData.phone||'—',
+      category:cat,
+      subject,
+      message,
       status:'open',
       createdAt:serverTimestamp()
     });
-    msgEl.style.display='block';msgEl.style.color='var(--ok)';msgEl.textContent='✅ تم الإرسال — سيتم الرد قريباً';
-    notifyAdmin('🎫','شكوى جديدة من '+(_userData?.name||'طالب'), subject);
-    setTimeout(()=>document.getElementById('ticketModal').classList.remove('open'),2000);
-  }catch(e){
-    msgEl.style.display='block';msgEl.style.color='var(--err)';msgEl.textContent='خطأ: '+e.message;
-  }
-};
-function getYtId(url){const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);return m?m[1]:'';}
-function setProg(fId,vId,tot,done){const p=tot?Math.round(done/tot*100):0;const f=document.getElementById(fId),v=document.getElementById(vId);if(f)f.style.width=p+'%';if(v)v.textContent=p+'%';}
-</script>
-
-<script>
-// المراحل الافتراضية — تتحدث من Firestore تلقائياً
-let GRADES={
-  primary:[
-    {key:'primary-4',label:'الصف الرابع الابتدائي',sub:'كل محتوى الصف الرابع',img:'https://plusedu.vercel.app/store/1/ye 1.png',stage:'primary'},
-    {key:'primary-5',label:'الصف الخامس الابتدائي',sub:'كل محتوى الصف الخامس',img:'https://plusedu.vercel.app/store/1/ye-2.jpg',stage:'primary'},
-    {key:'primary-6',label:'الصف السادس الابتدائي',sub:'كل محتوى الصف السادس',img:'https://plusedu.vercel.app/store/1/ye-3.jpg',stage:'primary'},
-  ],
-  prep:[
-    {key:'prep-1',label:'الصف الأول الإعدادي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/yer 1.png',stage:'prep'},
-    {key:'prep-2',label:'الصف الثاني الإعدادي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/yer-2.jpg',stage:'prep'},
-    {key:'prep-3',label:'الصف الثالث الإعدادي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/yer-3.jpg',stage:'prep'},
-  ],
-  sec:[
-    {key:'sec-1',label:'الصف الأول الثانوي',sub:'كل محتوى الصف الأول',img:'https://plusedu.vercel.app/store/1/year 1.png',stage:'sec'},
-    {key:'sec-2',label:'الصف الثاني الثانوي',sub:'كل محتوى الصف الثاني',img:'https://plusedu.vercel.app/store/1/year-2.jpg',stage:'sec'},
-    {key:'sec-3',label:'الصف الثالث الثانوي',sub:'كل محتوى الصف الثالث',img:'https://plusedu.vercel.app/store/1/year-3.jpg',stage:'sec'},
-  ],
-  univ:[
-    {key:'univ-1',label:'الفرقة الأولى',sub:'كل محتوى الفرقة الأولى',img:'',stage:'univ'},
-    {key:'univ-2',label:'الفرقة الثانية',sub:'كل محتوى الفرقة الثانية',img:'',stage:'univ'},
-    {key:'univ-3',label:'الفرقة الثالثة',sub:'كل محتوى الفرقة الثالثة',img:'',stage:'univ'},
-    {key:'univ-4',label:'الفرقة الرابعة',sub:'كل محتوى الفرقة الرابعة',img:'',stage:'univ'},
-  ],
-  pro:[]
+    toast('تم إرسال الشكوى بنجاح','ok');
+    closeTicketModal();
+    document.getElementById('tk-subject').value='';
+    document.getElementById('tk-message').value='';
+  }catch(e){toast('خطأ في الإرسال','err');}
 };
 
-// جيب المراحل من Firestore وادمجها (بيكتب على القديم)
-async function loadDynamicGrades(){
-  try{
-    const snap=await getDocs(collection(db,'grades'));
-    if(!snap.empty){
-      snap.docs.forEach(d=>{
-        const g={id:d.id,...d.data()};
-        if(!g.key) return;
-        // لو مفيش stage أو فاضي → حطه في univ افتراضياً
-        if(!g.stage) g.stage='univ';
-        if(!GRADES[g.stage]) GRADES[g.stage]=[];
-        const idx=GRADES[g.stage].findIndex(x=>x.key===g.key);
-        if(idx>=0){
-          GRADES[g.stage][idx]={...GRADES[g.stage][idx],...g};
-        } else {
-          GRADES[g.stage].push(g);
-        }
-      });
-    }
-    // أعد بناء _GM بعد الدمج
-    window._GM={};
-    Object.values(GRADES).flat().forEach(g=>{window._GM[g.key]=g;});
-    console.log('grades loaded:', Object.keys(GRADES).map(s=>s+':'+GRADES[s].length).join(', '));
-  }catch(e){ console.warn('loadDynamicGrades:',e.message); }
-}
-
-// Grade map for auto-open
-window._GM={};
-Object.values(GRADES).flat().forEach(g=>{window._GM[g.key]=g;});
-
-function buildGrades(){
-  const ud=window._userData||{};
-  const STAGE_LABELS_AR={primary:'المرحلة الابتدائية',prep:'المرحلة الإعدادية',sec:'المرحلة الثانوية',univ:'الجامعات والكورسات',pro:'كورسات إضافية'};
-  const allStages = Object.keys(GRADES);
-
-  allStages.forEach(stage=>{
-    const grades=GRADES[stage]||[];
-    let grid=document.getElementById('grid-'+stage);
-
-    // لو الـ stage جديد ومفيش section ليه — نعمله ديناميكياً
-    if(!grid && grades.length>0){
-      const main=document.getElementById('mainContent');
-      const wrapper=document.createElement('div');
-      wrapper.id='stage-wrap-'+stage;
-      wrapper.innerHTML=`
-        <div class="sdiv"></div>
-        <div class="section">
-          <div class="section-head">
-            <div class="sh-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg></div>
-            <div><h2>${STAGE_LABELS_AR[stage]||stage}</h2><p>${grades.length} صف / كورس</p></div>
-          </div>
-          <div class="grades-grid" id="grid-${stage}"></div>
-        </div>`;
-      // امسح القديم لو موجود قبل ما تضيف الجديد
-      const old=document.getElementById('stage-wrap-'+stage);
-      if(old) old.remove();
-      main.appendChild(wrapper);
-      grid=document.getElementById('grid-'+stage);
-    }
-
-    if(!grid) return;
-
-    // إخفاء الـ section لو فاضي
-    const section=grid.closest('.section');
-    const sdiv=document.getElementById('sdiv-'+stage);
-    if(!grades.length){
-      grid.innerHTML='';
-      if(section) section.style.display='none';
-      if(sdiv) sdiv.style.display='none';
-      return;
-    }
-    if(section) section.style.display='';
-    if(sdiv) sdiv.style.display='';
-
-    grid.innerHTML=grades.map(g=>{
-      const isMine=ud.gradeKey===g.key;
-      const isLocked=!isMine;
-      // ── الكروت المقفولة: حفظ الـ gradeKey وروّح لصفحة التسجيل ──
-      const clickFn=isLocked
-        ?`sessionStorage.setItem('intended_grade','${g.key}');sessionStorage.setItem('intended_label','${g.label.replace(/'/g,"\\'")}');window.location.href='plus-math-auth.html?from=locked&grade=${encodeURIComponent(g.key)}'`
-        :`openCourse('${g.key}','${g.label}','${g.stage||stage}')`;
-      return `<div id="gcard-${g.key}" class="grade-card"
-        onclick="${clickFn}"
-        style="${isMine
-          ?"border-color:rgba(0,214,143,0.4);box-shadow:0 4px 20px rgba(0,214,143,0.15);cursor:pointer"
-          :"cursor:pointer;position:relative;overflow:hidden"}">
-        ${g.img?`<img src="${g.img}" class="gc-img" onerror="this.style.display='none'" style="${isLocked?'filter:brightness(0.45) blur(1px)':''}"/>`:''}
-        ${isLocked?`
-        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(8,13,28,0.7),rgba(26,50,112,0.5));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;z-index:2">
-          <div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-          </div>
-          <span style="font-size:11px;font-weight:800;color:rgba(255,255,255,0.9)">اشترك للوصول</span>
-        </div>`
-        :'<div class="gc-badge mine">صفك ✓</div>'}
-        <div class="gc-body" style="${isLocked?'opacity:.6':''}">
-          <div class="gc-title">${g.label}</div>
-          <div class="gc-sub">${isMine?'📚 محتواك الأساسي':g.sub||'مش مشترك'}</div>
-        </div>
-        <div class="gc-foot" style="${isLocked?'opacity:.5':''}">
-          <span>${isMine?'فيديوهات · امتحانات · أبحاث':isLocked?'🔒 اضغط للاشتراك':'تواصل مع الأستاذ للاشتراك'}</span>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
-        </div>
-      </div>`;
-    }).join('');
+window.searchContent=()=>{
+  const q=document.getElementById('cvSearchInp').value.toLowerCase();
+  document.querySelectorAll('.video-item,.exam-item,.hw-item').forEach(el=>{
+    const text=el.textContent.toLowerCase();
+    el.style.display=text.includes(q)?'':'none';
   });
-}
-
-function closeCourse(){
-  document.getElementById('courseView').classList.remove('open');
-  document.getElementById('courseView').style.display='none';
-  document.querySelectorAll('[id^="vp-"]').forEach(w=>{w.style.display='none';const f=w.querySelector('iframe');if(f)f.src='';});
-}
-function switchTab(name,btn){
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.cv-tab').forEach(b=>b.classList.remove('on'));
-  document.getElementById('tp-'+name)?.classList.add('on');
-  if(btn)btn.classList.add('on');
-  if(name==='books') loadBooksTab();
-  if(name==='research') loadMyResearches();
-  // Show/hide search bar (only for videos/exams)
-  const srch = document.getElementById('cvSearch');
-  if(srch) srch.style.display = (name==='videos'||name==='exams') ? 'flex' : 'none';
-  if(name!=='videos'&&name!=='exams') document.getElementById('cvSearchInp').value='';
-}
-
-// ══════════════════════════════════════
-// ── SCREENSHOT PROTECTION (enhanced) ──
-// ══════════════════════════════════════
-document.getElementById('courseView').addEventListener('contextmenu',e=>e.preventDefault());
-document.addEventListener('keydown',e=>{
-  if(e.key==='PrintScreen'||e.keyCode===44){
-    e.preventDefault();
-    const cover=document.createElement('div');
-    cover.style.cssText='position:fixed;inset:0;background:#000;z-index:9999';
-    document.body.appendChild(cover);
-    setTimeout(()=>cover.remove(),1500);
-    showToast('التصوير غير مسموح 🚫','err');
-    return false;
-  }
-  if((e.ctrlKey||e.metaKey)&&(e.key==='p'||e.key==='s'||e.key==='u')){e.preventDefault();return false;}
-  if((e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||(e.key==='F12')){e.preventDefault();return false;}
-  if(e.key==='Escape') closeCourse();
-});
-document.getElementById('courseView').addEventListener('selectstart',e=>e.preventDefault());
-// Visibility change - blur video when tab switches
-document.addEventListener('visibilitychange',()=>{
-  if(document.hidden){
-    document.querySelectorAll('[id^="vf-"]').forEach(f=>{ if(f.src) f.style.filter='blur(20px)'; });
-  } else {
-    document.querySelectorAll('[id^="vf-"]').forEach(f=>f.style.filter='');
-  }
-});
-function setWatermark(name,phone){
-  const wrap=document.querySelector('.player-iframe-wrap');
-  if(wrap) wrap.setAttribute('data-wm',name+' · '+phone);
-}
-
-// ══════════════════════════════════════
-// ── COUNTDOWN ──
-// ══════════════════════════════════════
-function startCountdown(expiresAt){
-  const wrap = document.getElementById('countdownWrap');
-  const val  = document.getElementById('countdownVal');
-  if(!wrap||!val||!expiresAt) return;
-  const exp = expiresAt.toDate ? expiresAt.toDate() : new Date(expiresAt);
-  function tick(){
-    const diff = exp - new Date();
-    if(diff <= 0){ val.textContent='انتهى'; wrap.className='countdown-wrap'; wrap.style.display='flex'; return; }
-    const days = Math.floor(diff/86400000);
-    if(days > 30){ wrap.style.display='none'; return; }
-    wrap.style.display='flex';
-    if(days <= 3) wrap.className='countdown-wrap';
-    else if(days <= 7) wrap.className='countdown-wrap warn';
-    else wrap.className='countdown-wrap ok';
-    val.textContent = days > 0 ? `${days} يوم` : `${Math.floor((diff%86400000)/3600000)} ساعة`;
-  }
-  tick();
-  setInterval(tick, 60000);
-}
-
-// ══════════════════════════════════════
-// ══════════════════════════════════════
-// ── RESEARCH SYSTEM ──
-// ══════════════════════════════════════
-window._myResearches=[];
-
-window.openNewResearch=()=>{
-  document.getElementById('res-edit-id').value='';
-  document.getElementById('resModalTitle').textContent='بحث جديد';
-  ['res-topic','res-student-name','res-subject','res-grade-text','res-dept','res-code','res-details'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.value='';
-  });
-  // ملء البيانات تلقائياً من بيانات الطالب
-  if(_userData){
-    const nameEl=document.getElementById('res-student-name');
-    if(nameEl && _userData.name) nameEl.value=_userData.name;
-    const codeEl=document.getElementById('res-code');
-    if(codeEl && _userData.subscriptionCode) codeEl.value=_userData.subscriptionCode;
-    const gradeEl=document.getElementById('res-grade-text');
-    if(gradeEl && _userData.grade) gradeEl.value=_userData.grade;
-  }
-  document.getElementById('researchModal').classList.add('open');
 };
 
-window.closeResearchModal=()=>{
-  document.getElementById('researchModal').classList.remove('open');
-};
-
-window.saveStudentResearch=async()=>{
-  const topic=document.getElementById('res-topic').value.trim();
-  const studentName=document.getElementById('res-student-name').value.trim();
-  if(!topic||!studentName){showToast('ادخل موضوع البحث واسم الطالب','err');return;}
-  const editId=document.getElementById('res-edit-id').value;
-  const data={
-    topic,
-    studentName,
-    subject:document.getElementById('res-subject').value.trim(),
-    gradeText:document.getElementById('res-grade-text').value.trim(),
-    dept:document.getElementById('res-dept').value.trim(),
-    code:document.getElementById('res-code').value.trim().toUpperCase(),
-    details:document.getElementById('res-details').value.trim(),
-    userId:_user?.uid||'',
-    gradeKey:_userData?.gradeKey||'',
-    stage:_userData?.stage||'',
-    updatedAt:serverTimestamp()
-  };
-  try{
-    if(editId){
-      await updateDoc(doc(db,'research',editId),data);
-    } else {
-      data.createdAt=serverTimestamp();
-      await addDoc(collection(db,'research'),data);
-    }
-    showToast('✅ تم حفظ البحث','ok');
-    notifyAdmin('📝','بحث جديد من '+(_userData?.name||'طالب'), topic);
-    closeResearchModal();
-    loadMyResearches();
-  }catch(e){showToast('خطأ: '+e.message,'err');}
-};
-
-window.loadMyResearches=async()=>{
-  if(!_user) return;
-  try{
-    const snap=await getDocs(query(collection(db,'research'),where('userId','==',_user.uid)));
-    window._myResearches=snap.docs.map(d=>({id:d.id,...d.data()}))
-      .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-    renderMyResearches();
-  }catch(e){console.warn('loadMyResearches:',e.message);}
-};
-
-window.renderMyResearches=()=>{
-  const el=document.getElementById('myResearchList');
-  if(!el) return;
-  if(!window._myResearches.length){
-    el.innerHTML='<div class="empty"><p>لا يوجد أبحاث — أضف بحثك الأول</p></div>';
-    return;
-  }
-  el.innerHTML=window._myResearches.map(r=>`
-    <div style="background:var(--s2);border:1px solid var(--b2);border-radius:13px;padding:14px;margin-bottom:10px">
-      <div style="display:flex;align-items:flex-start;gap:10px">
-        <div style="width:40px;height:40px;border-radius:10px;background:rgba(199,100,40,0.12);border:1px solid rgba(199,100,40,0.3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📝</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:14px;font-weight:800;margin-bottom:3px">${r.topic||'—'}</div>
-          <div style="font-size:11px;color:var(--muted)">${r.subject||''} ${r.gradeText?'· '+r.gradeText:''} ${r.dept?'· '+r.dept:''}</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px">${r.createdAt?.toDate?.().toLocaleDateString('ar-EG')||'—'}</div>
-        </div>
-        <div style="display:flex;gap:6px;flex-shrink:0">
-          <button onclick="editMyResearch('${r.id}')" style="padding:5px 8px;border:1px solid var(--b2);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-size:12px">✏️</button>
-          <button onclick="printMyResearch('${r.id}')" style="padding:5px 8px;border:1px solid var(--b2);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-size:12px">🖨️</button>
-        </div>
-      </div>
-    </div>`).join('');
-};
-
-window.editMyResearch=(id)=>{
-  const r=window._myResearches.find(x=>x.id===id);
-  if(!r) return;
-  document.getElementById('res-edit-id').value=id;
-  document.getElementById('resModalTitle').textContent='تعديل البحث';
-  document.getElementById('res-topic').value=r.topic||'';
-  document.getElementById('res-student-name').value=r.studentName||'';
-  document.getElementById('res-subject').value=r.subject||'';
-  document.getElementById('res-grade-text').value=r.gradeText||'';
-  document.getElementById('res-dept').value=r.dept||'';
-  document.getElementById('res-code').value=r.code||'';
-  document.getElementById('res-details').value=r.details||'';
-  document.getElementById('researchModal').classList.add('open');
-};
-
-window.printStudentResearch=()=>{
-  // طباعة البحث الحالي المفتوح في المودال
-  const topic=document.getElementById('res-topic').value.trim();
-  const studentName=document.getElementById('res-student-name').value.trim();
-  const subject=document.getElementById('res-subject').value.trim();
-  const gradeText=document.getElementById('res-grade-text').value.trim();
-  const dept=document.getElementById('res-dept').value.trim();
-  const code=document.getElementById('res-code').value.trim();
-  const details=document.getElementById('res-details').value.trim();
-  _printResearch({topic,studentName,subject,gradeText,dept,code,details});
-};
-
-window.printMyResearch=(id)=>{
-  const r=window._myResearches.find(x=>x.id===id);
-  if(r) _printResearch(r);
-};
-
-function _printResearch(r){
-  const html=`<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8"/>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet"/>
-<style>
-body{font-family:'Tajawal',"Traditional Arabic","Arial",sans-serif;font-size:16px;line-height:2;max-width:900px;margin:auto;direction:rtl;text-align:right}
-.cover{text-align:center;min-height:100vh;display:flex;flex-direction:column;justify-content:center;page-break-after:always}
-.cover h1{font-size:2.6em;color:#c62828}
-.info{font-size:1.1em;line-height:2.8;margin-top:30px}
-h2{color:#c62828;margin:60px 0 20px;border-right:8px solid #c62828;padding-right:15px}
-.box{background:#f9fbfc;border-right:6px solid #c62828;padding:30px 40px;margin:40px 0;border-radius:10px;white-space:pre-wrap;text-align:right;line-height:2}
-.print-btn{display:block;margin:60px auto;padding:12px 36px;font-size:18px;background:#c62828;color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Tajawal',sans-serif}
-@page{size:A4;margin:20mm;@top-center{content:"${r.studentName||''} – ${r.subject||''} – ${r.code||''} – ${r.gradeText||''}";font-family:'Tajawal',sans-serif;font-size:11pt;color:#c62828;border-bottom:1px solid #ccc}@bottom-center{content:"صفحة " counter(page);font-size:11pt}}
-@page :first{@bottom-center{content:""}}
-@media print{.print-btn{display:none}body{font-size:13pt}h1,h2{text-align:center;border:none}.box{background:none;border:none}}
-</style>
-</head>
-<body>
-<div class="cover">
-  <h1>${r.topic||'—'}</h1>
-  <div class="info">
-    إعداد الطالب<br/><br/>
-    <strong>${r.studentName||'—'}</strong><br/><br/>
-    ${r.gradeText||''}${r.dept?' – '+r.dept:''}<br/>
-    ${r.subject?'المادة: '+r.subject+'<br/>':''}
-    ${r.code?'الكود: '+r.code:''}
-  </div>
-</div>
-<h2>${r.topic||'—'}</h2>
-<div class="box">${(r.details||'لا يوجد محتوى').replace(/\n/g,'<br/>')}</div>
-<button class="print-btn" onclick="window.print()">🖨️ طباعة البحث</button>
-</body></html>`;
-  const w=window.open('','_blank');
-  w.document.write(html);
-  w.document.close();
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  const txt=document.getElementById('tMsg');
+  txt.textContent=msg;
+  t.className='toast '+type+' show';
+  setTimeout(()=>t.classList.remove('show'),3000);
 }
-
-// ── TEACHER NOTE ──
-// ══════════════════════════════════════
-function showTeacherNote(notes, color){
-  if(!notes||!notes.trim()) return;
-  var banner = document.getElementById('teacherNote');
-  if(!banner) return;
-  document.getElementById('teacherNoteText').textContent = notes;
-  // تطبيق اللون
-  var colors = {
-    gold: {bg:'rgba(201,168,76,0.1)', border:'rgba(201,168,76,0.4)', icon:'📌', label:'rgba(201,168,76,1)'},
-    blue: {bg:'rgba(74,127,212,0.1)', border:'rgba(74,127,212,0.4)', icon:'📘', label:'var(--blue)'},
-    err:  {bg:'rgba(255,77,109,0.1)', border:'rgba(255,77,109,0.4)', icon:'⚠️', label:'var(--err)'},
-    ok:   {bg:'rgba(0,214,143,0.1)',  border:'rgba(0,214,143,0.4)',  icon:'✅', label:'var(--ok)'}
-  };
-  var col = colors[color||'gold'] || colors.gold;
-  banner.style.background = col.bg;
-  banner.style.borderBottom = '2px solid '+col.border;
-  var ico = banner.querySelector('span');
-  if(ico) ico.textContent = col.icon;
-  var lbl = banner.querySelector('.note-banner-lbl-text');
-  if(lbl) lbl.style.color = col.label;
-  banner.classList.remove('banner-hidden');
-  banner.classList.add('banner-visible');
-}
-
-// ── NOTIFICATIONS PANEL ──
-var _notifOpen = false;
-function toggleNotifPanel(){
-  _notifOpen = !_notifOpen;
-  var panel = document.getElementById('notifPanel');
-  panel.style.display = _notifOpen ? 'block' : 'none';
-  if(_notifOpen){
-    document.getElementById('notifDot').style.display = 'none';
-    loadNotifications();
-  }
-}
-document.addEventListener('click', function(e){
-  if(!e.target.closest('#notifBell') && !e.target.closest('#notifPanel')){
-    _notifOpen = false;
-    var p = document.getElementById('notifPanel');
-    if(p) p.style.display = 'none';
-  }
-});
-async function loadNotifications(){
-  if(!_user) return;
-  var list = document.getElementById('notifList');
-  list.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">جاري التحميل...</div>';
-  try{
-    var snap = await getDocs(query(collection(db,'notifications',_user.uid,'items'), where('read','==',false)));
-    var notifs = snap.docs.map(function(d){return {id:d.id,...d.data()};})
-      .sort(function(a,b){return (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)});
-    if(!notifs.length){
-      list.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted);padding:16px">لا يوجد إشعارات جديدة ✓</div>';
-      return;
-    }
-    list.innerHTML = notifs.map(function(n){return `
-      <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--b2)">
-        <span style="font-size:18px;flex-shrink:0">${n.icon||'📬'}</span>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:700;margin-bottom:2px">${n.title||'إشعار جديد'}</div>
-          ${n.body?`<div style="font-size:12px;color:var(--muted);white-space:pre-wrap">${n.body}</div>`:''}
-        </div>
-        <button onclick="markNotifRead('${n.id}')" style="background:transparent;border:none;color:var(--blue);cursor:pointer;font-size:11px;flex-shrink:0;font-family:'Tajawal',sans-serif;padding:0">✓ قرأت</button>
-      </div>`;}).join('');
-    var dot = document.getElementById('notifDot');
-    dot.textContent = notifs.length > 9 ? '9+' : notifs.length;
-    dot.style.display = 'flex';
-  }catch(e){ list.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--err);padding:8px">خطأ في التحميل</div>'; }
-}
-async function markNotifRead(notifId){
-  if(!_user) return;
-  try{
-    await updateDoc(doc(db,'notifications',_user.uid,'items',notifId),{read:true});
-    loadNotifications();
-    checkNotifDot();
-  }catch(e){}
-}
-// ── إشعار تلقائي قرب انتهاء الاشتراك ──
-async function sendWelcomeNotif(userData, uid){
-  // إشعار ترحيب مرة واحدة بس
-  var key = 'welcome_notif_' + uid;
-  if(localStorage.getItem(key)) return;
-  try{
-    await addDoc(collection(db,'notifications',uid,'items'),{
-      icon: '🎉',
-      title: 'أهلاً ' + (userData.name?.split(' ')[0]||'بيك') + ' في Plus Mathematics!',
-      body: 'يسعدنا انضمامك — اضغط على صفك وابدأ رحلتك الدراسية 🚀',
-      read: false,
-      type: 'welcome',
-      createdAt: serverTimestamp()
-    });
-    localStorage.setItem(key,'1');
-    checkNotifDot();
-  }catch(e){}
-}
-
-async function checkSubscriptionExpiry(userData, uid){
-  if(!userData.expiresAt) return;
-  var exp = userData.expiresAt.toDate ? userData.expiresAt.toDate() : new Date(userData.expiresAt);
-  var days = Math.ceil((exp - new Date()) / 86400000);
-  // بعت إشعار بس لو 1، 2، أو 3 أيام متبقية
-  if(days > 3 || days <= 0) return;
-  // تحقق لو بعتنا إشعار النهارده قبل كده
-  var sentKey = 'expiry_notif_sent_' + uid + '_' + days;
-  if(localStorage.getItem(sentKey)) return;
-  try{
-    await addDoc(collection(db,'notifications',uid,'items'),{
-      icon: days <= 1 ? '🚨' : '⏰',
-      title: days === 1 ? 'اشتراكك ينتهي النهارده! 🚨' : 'اشتراكك ينتهي خلال ' + days + ' أيام ⏰',
-      body: 'جدد اشتراكك عشان تفضل تذاكر مع Plus Mathematics 📚',
-      read: false,
-      type: 'expiry_warning',
-      createdAt: serverTimestamp()
-    });
-    localStorage.setItem(sentKey, '1');
-    checkNotifDot();
-  }catch(e){}
-}
-
-async function checkNotifDot(){
-  if(!_user) return;
-  try{
-    var snap = await getDocs(query(collection(db,'notifications',_user.uid,'items'), where('read','==',false)));
-    var count = snap.docs.length;
-    var dot = document.getElementById('notifDot');
-    if(count > 0){
-      dot.textContent = count > 9 ? '9+' : count;
-      dot.style.display = 'flex';
-    } else {
-      dot.style.display = 'none';
-    }
-  }catch(e){}
-}
-// ══════════════════════════════════════
-async function loadTicketReply(uid){
-  try{
-    const snap = await getDocs(
-      query(
-        collection(db,'tickets'),
-        where('userId','==',uid),
-        where('status','==','closed')
-      )
-    );
-    const replied = snap.docs
-      .map(d=>({id:d.id,...d.data()}))
-      .filter(t=> t.adminReply && !t.replyRead)
-      .sort((a,b)=>(b.repliedAt?.seconds||0)-(a.repliedAt?.seconds||0));
-
-    if(replied.length > 0){
-      const latest = replied[0];
-      document.getElementById('ticketReplySubject').textContent = latest.subject||'';
-      document.getElementById('ticketReplyText').textContent = latest.adminReply;
-      var trb=document.getElementById('ticketReplyBanner'); if(trb){ trb.classList.remove('banner-hidden'); trb.classList.add('banner-visible'); }
-      window._latestTicketReplyId = latest.id;
-    }
-  }catch(e){ console.warn('loadTicketReply:', e.message); }
-}
-
-// ══════════════════════════════════════
-// ── THEME SYSTEM ──
-// ══════════════════════════════════════
-const THEMES=['','theme-purple','theme-green','theme-rose','theme-gold'];
-var _themePanelOpen=false;
-
-function setTheme(theme){
-  THEMES.forEach(t=>{ if(t) document.body.classList.remove(t); });
-  if(theme) document.body.classList.add(theme);
-  localStorage.setItem('plus_theme',theme);
-  // حدّث الأزرار
-  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
-  const activeId = 'theme-'+(theme||'default');
-  const activeBtn = document.getElementById(activeId);
-  if(activeBtn) activeBtn.classList.add('active');
-  toggleThemePanel();
-}
-
-function toggleThemePanel(){
-  _themePanelOpen=!_themePanelOpen;
-  document.getElementById('themePanel').style.display=_themePanelOpen?'block':'none';
-  if(_notifOpen){ _notifOpen=false; document.getElementById('notifPanel').style.display='none'; }
-}
-
-// تطبيق الثيم المحفوظ عند التحميل
-(function(){
-  var saved=localStorage.getItem('plus_theme')||'';
-  if(saved){ document.body.classList.add(saved); }
-  document.addEventListener('click',function(e){
-    if(!e.target.closest('#themePanel')&&!e.target.closest('button[onclick*="toggleThemePanel"]')){
-      _themePanelOpen=false;
-      var p=document.getElementById('themePanel');
-      if(p) p.style.display='none';
-    }
-  });
-})();
-
-// ══════════════════════════════════════
-// ── ACTION NOTIFICATIONS TO ADMIN ──
-// إشعار للأدمن لما الطالب يعمل حاجة مهمة
-// ══════════════════════════════════════
-async function notifyAdmin(icon, title, body){
-  if(!_user) return;
-  try{
-    await addDoc(collection(db,'adminNotifications'),{
-      icon, title, body,
-      userId:_user.uid,
-      userName:_userData?.name||'طالب',
-      userPhone:_userData?.phone||'',
-      gradeKey:_userData?.gradeKey||'',
-      read:false,
-      createdAt:serverTimestamp()
-    });
-  }catch(e){}
-}
-
-async function dismissTicketReply(){
-  var trb=document.getElementById('ticketReplyBanner');
-  if(trb){ trb.classList.remove('banner-visible'); trb.classList.add('banner-hidden'); }
-  // علّم الرد كـ "تم القراءة" في Firestore
-  if(window._latestTicketReplyId){
-    try{
-      await updateDoc(doc(db,'tickets',window._latestTicketReplyId),{replyRead:true});
-    }catch(e){}
-  }
-}
-
-// ══════════════════════════════════════
-// ── CONTENT SEARCH ──
-// ══════════════════════════════════════
-let _allVideos=[], _allExams=[];
-function searchContent(){
-  const q=(document.getElementById('cvSearchInp')?.value||'').trim().toLowerCase();
-  const isMine=window._openGrade===window._userData?.gradeKey;
-  const gp=_progress?.[window._openGrade]||{};
-  if(!q){
-    renderVideos(_allVideos, gp.videos||[], window._openGrade, isMine);
-    renderExams(_allExams, gp.exams||[], window._openGrade, isMine);
-    const srch=document.getElementById('srch-count');
-    if(srch) srch.remove();
-    return;
-  }
-  const filteredVids=_allVideos.filter(v=>
-    (v.title||'').toLowerCase().includes(q)||
-    (v.description||'').toLowerCase().includes(q)||
-    (v.duration||'').toLowerCase().includes(q)
-  );
-  const filteredExams=_allExams.filter(e=>
-    (e.title||'').toLowerCase().includes(q)||
-    (e.description||'').toLowerCase().includes(q)
-  );
-  renderVideos(filteredVids, gp.videos||[], window._openGrade, isMine);
-  renderExams(filteredExams, gp.exams||[], window._openGrade, isMine);
-  let countEl=document.getElementById('srch-count');
-  if(!countEl){
-    countEl=document.createElement('div');
-    countEl.id='srch-count';
-    countEl.style.cssText='font-size:11px;padding:6px 16px;text-align:center;font-weight:700';
-    document.getElementById('cvSearch')?.after(countEl);
-  }
-  const total=filteredVids.length+filteredExams.length;
-  if(total){
-    countEl.textContent='🔍 ' + total + ' نتيجة — فيديوهات: ' + filteredVids.length + ' · امتحانات: ' + filteredExams.length;
-    countEl.style.color='var(--muted)';
-  } else {
-    countEl.textContent='لا يوجد نتائج لـ "' + q + '" 😕';
-    countEl.style.color='var(--err)';
-  }
-}
-// ══════════════════════════════════════
-// ── NIGHT MODE (مراجعة ليلة الامتحان) ──
-// ══════════════════════════════════════
-function buildNightMode(videos, done){
-  const banner = document.getElementById('nightBanner');
-  const list   = document.getElementById('nightList');
-  if(!videos||!videos.length){ banner.classList.remove('show'); return; }
-  // Show if it's after 9pm
-  const hour = new Date().getHours();
-  if(hour < 21 && hour > 4){ banner.classList.remove('show'); return; }
-  banner.classList.add('show');
-  list.innerHTML = videos.slice(0,8).map(v=>{
-    const isDone = done.includes(v.id);
-    return `<li>
-      <span class="${isDone?'nm-done':'nm-not'}">${isDone?'✅':'○'}</span>
-      <span style="flex:1;${isDone?'opacity:.6':''}">${v.title||'—'}</span>
-      ${!isDone?`<span style="font-size:10px;color:var(--err);font-weight:700">لم تراجعه</span>`:`<span style="font-size:10px;color:var(--ok);font-weight:700">تمت المراجعة</span>`}
-    </li>`;
-  }).join('');
-}
-
-// ══════════════════════════════════════
-// ── BOOKS TAB ──
-// ══════════════════════════════════════
-let _books=[], _paySettings={};
-
-async function loadBooksTab(){
-  const el = document.getElementById('booksList');
-  if(_books.length){ renderBooksTab(); return; }
-  el.innerHTML='<div class="empty"><p>جاري التحميل...</p></div>';
-  // Wait for Firebase db to be ready (max 5 seconds)
-  let waited = 0;
-  while(!window._db && waited < 5000){
-    await new Promise(r=>setTimeout(r,200));
-    waited += 200;
-  }
-  if(!window._db){ el.innerHTML='<div class="empty"><p>تعذر الاتصال بالإنترنت — حاول تاني</p></div>'; return; }
-  try{
-    const [bSnap, payDoc] = await Promise.all([
-      window._getDocs(window._collection(window._db,'books')),
-      window._getDoc(window._doc(window._db,'settings','payment'))
-    ]);
-    _books = bSnap.docs.map(d=>({id:d.id,...d.data()}))
-      .filter(b=>b.available!==false)
-      .sort((a,b)=>(a.order||0)-(b.order||0));
-    if(payDoc.exists()) _paySettings = payDoc.data();
-    renderBooksTab();
-  }catch(e){ el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`; }
-}
-
-const GL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};
-
-function renderBooksTab(){
-  const el = document.getElementById('booksList');
-  if(!_books.length){ el.innerHTML='<div class="empty"><p>لا يوجد كتب متاحة حالياً</p></div>'; return; }
-  el.innerHTML=`<div class="books-grid-inline">${_books.map(b=>`
-    <div class="book-card-sm" onclick="openBookSheet('${b.id}')">
-      ${b.coverUrl
-        ?`<img class="bc-cover" src="${b.coverUrl}" alt="${b.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="bc-cover-ph" style="display:none">📚</div>`
-        :`<div class="bc-cover-ph">📚</div>`}
-      <div class="bc-info">
-        <div class="bc-title">${b.title}</div>
-        <div class="bc-price">${b.price} جنيه</div>
-        <button class="bc-buy" onclick="event.stopPropagation();openBookSheet('${b.id}')">اشتري الآن</button>
-      </div>
-    </div>`).join('')}</div>`;
-}
-
-function openBookSheet(id){
-  const b = _books.find(x=>x.id===id);
-  if(!b) return;
-  const pay = _paySettings;
-  const ud  = window._userData||{};
-
-  document.getElementById('bsHead').innerHTML=`
-    ${b.coverUrl
-      ?`<img class="bs-cover" src="${b.coverUrl}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="bs-cover-ph" style="display:none">📚</div>`
-      :`<div class="bs-cover-ph">📚</div>`}
-    <div class="bs-info">
-      <div class="bs-title">${b.title}</div>
-      <div class="bs-grade">${b.gradeKey?GL[b.gradeKey]:'مناسب لكل الصفوف'}</div>
-      <div class="bs-price">${b.price} جنيه</div>
-      ${b.pages?`<div class="bs-pages">📄 ${b.pages} صفحة</div>`:''}
-    </div>`;
-
-  const methods=[];
-  if(pay.vodafone) methods.push({ico:'🔴',name:'Vodafone Cash',num:pay.vodafone,owner:pay.ownerName||''});
-  if(pay.instapay) methods.push({ico:'💙',name:'InstaPay / Orange Cash',num:pay.instapay,owner:pay.ownerName||''});
-  const methodsHtml = methods.map(m=>`
-    <div class="pay-row">
-      <div class="pay-row-ico">${m.ico}</div>
-      <div class="pay-row-info">
-        <div class="pay-row-name">${m.name}</div>
-        <div class="pay-row-num">${m.num}</div>
-        ${m.owner?`<div class="pay-row-owner">${m.owner}</div>`:''}
-      </div>
-      <button class="copy-btn" onclick="copyNum('${m.num}')">نسخ</button>
-    </div>`).join('');
-
-  const waNum = pay.whatsapp?'20'+(pay.whatsapp||'').replace(/^0/,'').replace(/\D/g,''):'';
-  // waMsg will be built dynamically after coupon applied
-  window._currentBook = b;
-  window._bookOrigPrice = b.price;
-  window._bookFinalPrice = b.price;
-
-  document.getElementById('bsBody').innerHTML=`
-    ${b.description?`<div class="bs-desc">${b.description}</div>`:''}
-    ${b.note?`<div class="bs-note">📌 ${b.note}</div>`:''}
-    <div class="bs-pay">
-      <div class="bs-pay-title">💳 طريقة الشراء</div>
-      ${methodsHtml||'<div style="font-size:12px;color:var(--muted)">سيتم إضافة طرق الدفع قريباً</div>'}
-      <div class="bs-steps">${pay.note||`<b>الخطوات:</b><br>1️⃣ حوّل <b><span id="bs-final-price">${b.price}</span> جنيه</b><br>2️⃣ صوّر الإيصال<br>3️⃣ ابعته على واتساب 📦`}</div>
-
-      <!-- ── BOOK COUPON ── -->
-      <div style="margin-bottom:12px;padding:10px 12px;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.15);border-radius:10px">
-        <div style="font-size:11px;font-weight:700;color:var(--gold2);margin-bottom:7px">🎟️ كوبون خصم على الكتاب</div>
-        <div style="display:flex;gap:6px">
-          <input id="book-coupon-inp" type="text" placeholder="كود الكوبون"
-            style="flex:1;padding:8px 10px;background:rgba(6,10,22,.8);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;text-transform:uppercase"
-            oninput="this.value=this.value.toUpperCase()"/>
-          <button onclick="applyBookCoupon()" style="padding:8px 12px;border:1px solid var(--gold);background:rgba(201,168,76,.1);color:var(--gold2);border-radius:8px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">تطبيق</button>
-        </div>
-        <div id="book-coupon-msg" style="font-size:11px;margin-top:5px;display:none"></div>
-        <div id="book-price-display" style="display:none;margin-top:7px;font-size:12px">
-          <span style="color:var(--muted)">الأصلي: </span><span id="book-orig-pr" style="text-decoration:line-through;color:var(--muted)"></span>
-          <span style="color:var(--ok);font-weight:800"> ← </span><span id="book-disc-pr" style="color:var(--ok);font-weight:900;font-size:13px"></span>
-        </div>
-      </div>
-
-      ${waNum?`<button class="wa-buy-btn" onclick="confirmBookOnWA('${waNum}')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        تأكيد الشراء على واتساب
-      </button>`:''}
-    </div>`;
-
-  document.getElementById('bookSheet').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-
-function closeBookSheet(){
-  document.getElementById('bookSheet').classList.remove('open');
-  document.body.style.overflow='';
-}
-function handleSheetClick(e){ if(e.target===document.getElementById('bookSheet')) closeBookSheet(); }
-
-function copyNum(num){
-  if(navigator.clipboard) navigator.clipboard.writeText(num);
-  else{const t=document.createElement('textarea');t.value=num;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);}
-  showToast('تم نسخ الرقم ✓','ok');
-}
-
-// ── BOOK COUPON ──
-async function applyBookCoupon(){
-  const code = document.getElementById('book-coupon-inp')?.value.trim().toUpperCase();
-  if(!code){ return; }
-  const msgEl = document.getElementById('book-coupon-msg');
-  msgEl.textContent='...'; msgEl.style.display='block'; msgEl.style.color='var(--muted)';
-  if(!window._db){ msgEl.textContent='مش متصل — حاول تاني'; msgEl.style.color='var(--err)'; return; }
-  try{
-    // ESM Firestore - get all coupons and filter client-side
-    const snap = await window._getDocs(window._collection(window._db,'coupons'));
-    const couponDoc = snap.docs.find(d=>{
-      const data=d.data();
-      return data.code===code && data.active===true;
-    });
-    if(!couponDoc){ msgEl.textContent='الكوبون غلط أو منتهي ❌'; msgEl.style.color='var(--err)'; return; }
-    const d = couponDoc.data();
-    if(d.expiresAt && new Date(d.expiresAt)<new Date()){ msgEl.textContent='الكوبون انتهت صلاحيته ❌'; msgEl.style.color='var(--err)'; return; }
-    if(d.maxUses && (d.usedCount||0)>=d.maxUses){ msgEl.textContent='الكوبون استُنفد ❌'; msgEl.style.color='var(--err)'; return; }
-    const orig = window._bookOrigPrice||0;
-    const discounted = d.type==='percent'
-      ? Math.max(0, orig - orig*(d.value/100))
-      : Math.max(0, orig - d.value);
-    window._bookFinalPrice = Math.round(discounted);
-    window._bookCouponId = couponDoc.id;
-    const label = d.type==='percent'?d.value+'% خصم':d.value+' جنيه خصم';
-    msgEl.textContent='✅ تم تطبيق كوبون '+label; msgEl.style.color='var(--ok)';
-    document.getElementById('book-orig-pr').textContent = orig+' جنيه';
-    document.getElementById('book-disc-pr').textContent = discounted===0?'مجاناً 🎉':Math.round(discounted)+' جنيه';
-    document.getElementById('book-price-display').style.display='block';
-    const prEl = document.getElementById('bs-final-price');
-    if(prEl) prEl.textContent = discounted===0?'مجاناً':Math.round(discounted);
-  }catch(e){ msgEl.textContent='خطأ في التحقق'; msgEl.style.color='var(--err)'; }
-}
-
-function confirmBookOnWA(waNum){
-  const b = window._currentBook||{};
-  const ud = window._userData||{};
-  const finalPrice = window._bookFinalPrice??b.price;
-  const couponNote = window._bookCouponId ? '\nكوبون الخصم: '+document.getElementById('book-coupon-inp').value : '';
-  const msg = encodeURIComponent(
-    `مرحباً، عايز أشتري كتاب "${b.title}"\nالسعر: ${finalPrice===0?'مجاناً':finalPrice+' جنيه'}${couponNote}\nاسمي: ${ud.name||''}\nالصف: ${ud.grade||''}`
-  );
-  // Increment coupon using ESM updateDoc
-  if(window._bookCouponId && window._updateDoc && window._doc && window._increment){
-    window._updateDoc(window._doc(window._db,'coupons',window._bookCouponId),{
-      usedCount: window._increment(1)
-    }).catch(()=>{});
-  }
-  window.open(`https://wa.me/${waNum}?text=${msg}`,'_blank');
-}
-let tTimer;
-function showToast(msg,type='ok'){
-  const t=document.getElementById('toast');t.className='toast '+type;
-  document.getElementById('tMsg').textContent=msg;
-  t.classList.add('show');clearTimeout(tTimer);tTimer=setTimeout(()=>t.classList.remove('show'),3000);
-}
-['playerModal','mcqModal','imgModal'].forEach(id=>{
-  const el=document.getElementById(id);
-  if(el)el.addEventListener('click',function(e){if(e.target===this){if(id==='playerModal')closePlayer();else if(id==='mcqModal')closeMcq();else closeImg();}});
-});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCourse();});
-</script>
-
-<script>
-// تسجيل Service Worker للتثبيت على الموبايل
-let _deferredInstall=null;
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();
-  _deferredInstall=e;
-  const btn=document.getElementById('installBtn');
-  if(btn) btn.style.display='flex';
-});
-window.installPWA=async()=>{
-  if(!_deferredInstall) return;
-  _deferredInstall.prompt();
-  const res=await _deferredInstall.userChoice;
-  if(res.outcome==='accepted'){
-    document.getElementById('installBtn').style.display='none';
-    showToast('تم تثبيت التطبيق بنجاح! 🎉','ok');
-  }
-  _deferredInstall=null;
-};
-window.addEventListener('appinstalled',()=>{
-  const btn=document.getElementById('installBtn');
-  if(btn) btn.style.display='none';
-  showToast('تم تثبيت Plus Mathematics 🎓','ok');
-});
+window.showToast=toast;
 </script>
 </body>
 </html>
-  <!-- PWA Install Button -->
-  <button id="installBtn" onclick="installPWA()" style="display:none;flex-direction:column;align-items:center;gap:3px;background:linear-gradient(135deg,var(--blue),var(--navy));border:none;cursor:pointer;color:#fff;padding:6px 10px;border-radius:10px;font-family:'Tajawal',sans-serif">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-    <span style="font-size:9px;font-weight:700">تثبيت</span>
-  </button>
-

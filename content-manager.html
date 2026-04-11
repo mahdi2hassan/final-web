@@ -2,217 +2,308 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <title>Plus Mathematics – إدارة المحتوى</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#04060f;--s1:rgba(8,13,28,0.95);--s2:rgba(12,18,40,0.8);--s3:rgba(16,24,52,0.6);
-  --b1:rgba(74,127,212,0.22);--b2:rgba(74,127,212,0.12);--b3:rgba(74,127,212,0.06);
-  --blue:#4a7fd4;--navy:#1a3270;--gold:#c9a84c;--gold2:#f0d080;
-  --text:#eef2ff;--muted:#6a7a9e;--muted2:#4a5a7e;
-  --ok:#00d68f;--err:#ff4d6d;--warn:#f5a623;--purple:#a78bfa;
-  --inp:rgba(6,10,22,0.8);
-  --r:14px;--r2:10px;
-  --sh:0 4px 24px rgba(0,0,0,0.4);
+  --bg:#0a0f1a;
+  --s1:rgba(15,23,42,0.98);
+  --s2:rgba(30,41,59,0.9);
+  --s3:rgba(51,65,85,0.7);
+  --b1:rgba(99,102,241,0.3);
+  --b2:rgba(99,102,241,0.15);
+  --b3:rgba(99,102,241,0.08);
+  --primary:#6366f1;
+  --primary-dark:#4f46e5;
+  --secondary:#06b6d4;
+  --gold:#fbbf24;
+  --gold2:#f59e0b;
+  --text:#f8fafc;
+  --text-muted:#94a3b8;
+  --text-dim:#64748b;
+  --ok:#10b981;
+  --err:#ef4444;
+  --warn:#f59e0b;
+  --purple:#a855f7;
+  --rose:#f43f5e;
+  --inp:rgba(15,23,42,0.9);
+  --r:16px;
+  --r2:12px;
+  --sh:0 4px 30px rgba(0,0,0,0.4);
+  --sh-glow:0 0 40px rgba(99,102,241,0.2);
 }
+
 html,body{min-height:100dvh;overflow-x:hidden}
-body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+/* Animated Background */
+.bg-animated{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-animated::before{content:'';position:absolute;inset:0;background:
+  radial-gradient(ellipse at 20% 20%,rgba(99,102,241,0.08) 0%,transparent 50%),
+  radial-gradient(ellipse at 80% 80%,rgba(6,182,212,0.06) 0%,transparent 50%),
+  radial-gradient(ellipse at 50% 50%,rgba(168,85,247,0.04) 0%,transparent 60%)}
 .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:linear-gradient(rgba(74,127,212,0.03) 1px,transparent 1px),
-  linear-gradient(90deg,rgba(74,127,212,0.03) 1px,transparent 1px);background-size:44px 44px}
-.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
-.o1{width:500px;height:500px;background:rgba(26,50,112,0.35);top:-150px;right:-150px}
-.o2{width:350px;height:350px;background:rgba(110,75,10,0.2);bottom:-80px;left:-80px}
+  background-image:linear-gradient(rgba(99,102,241,0.03) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(99,102,241,0.03) 1px,transparent 1px);background-size:50px 50px}
 
-/* ── LOGIN ── */
-#loginWrap{position:fixed;inset:0;z-index:200;background:var(--bg);
-  display:flex;align-items:center;justify-content:center;padding:16px}
-.lcard{background:var(--s2);backdrop-filter:blur(24px);border:1px solid var(--b1);
-  border-radius:24px;padding:36px 32px;width:100%;max-width:360px;text-align:center;
-  box-shadow:0 40px 100px rgba(0,0,0,0.7);animation:popIn .5s ease both}
-@keyframes popIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-.lcard img{width:58px;height:58px;object-fit:contain;margin-bottom:12px;filter:drop-shadow(0 4px 16px rgba(74,127,212,0.5))}
-.lcard h2{font-size:17px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:2px}
-.lcard p{font-size:11px;color:var(--muted);margin-bottom:22px}
-.lf{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;text-align:right}
-.lf label{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.8px;text-transform:uppercase}
-.lf input{padding:12px 14px;background:var(--inp);border:1.5px solid var(--b1);border-radius:11px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
-.lf input:focus{border-color:var(--blue)}
-.lbtn{width:100%;padding:13px;border:none;border-radius:11px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;transition:all .2s;margin-top:6px;box-shadow:0 6px 20px rgba(74,127,212,0.3)}
-.lbtn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(74,127,212,0.4)}
-.lerr{font-size:12px;color:var(--err);margin-top:8px;display:none}
+/* Floating Orbs */
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;animation:float 20s ease-in-out infinite}
+.o1{width:400px;height:400px;background:rgba(99,102,241,0.15);top:-100px;right:-100px;animation-delay:0s}
+.o2{width:300px;height:300px;background:rgba(6,182,212,0.12);bottom:-80px;left:-80px;animation-delay:-10s}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
 
-/* ── TOPBAR ── */
-.topbar{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center;gap:12px;
-  padding:0 clamp(14px,4vw,26px);background:var(--s1);backdrop-filter:blur(24px);
-  border-bottom:1px solid var(--b2);box-shadow:0 2px 20px rgba(0,0,0,0.3)}
-.tb-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
-.tb-logo img{width:32px;height:32px;object-fit:contain}
-.tb-logo h2{font-size:14px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.tb-title{font-size:13px;font-weight:700;color:var(--muted);padding:0 8px;border-right:1px solid var(--b2);margin-right:4px}
-.tb-acts{display:flex;gap:7px;margin-right:auto}
-.tbtn{padding:7px 13px;border:1px solid var(--b1);border-radius:10px;background:transparent;
-  color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
-  transition:all .2s;display:flex;align-items:center;gap:5px;text-decoration:none}
-.tbtn:hover{border-color:var(--blue);color:var(--text);background:var(--b3)}
-.tbtn svg{width:13px;height:13px}
-.tbtn.on{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(74,127,212,0.35)}
+/* Glass Card Effect */
+.glass{background:linear-gradient(135deg,rgba(30,41,59,0.9),rgba(15,23,42,0.95));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--b2)}
 
-/* ── MAIN ── */
-.main{position:relative;z-index:1;padding:clamp(14px,3vw,20px) clamp(14px,4vw,24px);max-width:920px;margin:0 auto}
+/* ═══ LOGIN ═══ */
+#loginWrap{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;background:linear-gradient(135deg,var(--bg),rgba(99,102,241,0.05))}
+.lcard{position:relative;width:100%;max-width:400px;padding:40px 32px;text-align:center;border-radius:var(--r);overflow:hidden}
+.lcard::before{content:'';position:absolute;inset:0;border-radius:var(--r);padding:1px;background:linear-gradient(135deg,var(--primary),var(--gold),var(--secondary));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.l-logo{width:70px;height:70px;margin:0 auto 20px;border-radius:20px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(99,102,241,0.4);animation:pulse-glow 2s ease-in-out infinite}
+@keyframes pulse-glow{0%,100%{box-shadow:0 8px 32px rgba(99,102,241,0.4)}50%{box-shadow:0 8px 40px rgba(99,102,241,0.6)}}
+.l-logo img{width:45px;height:45px;object-fit:contain;filter:drop-shadow(0 2px 8px rgba(0,0,0,0.3))}
+.lcard h2{font-size:22px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.lcard>p{font-size:13px;color:var(--text-muted);margin-bottom:28px}
+.lf{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;text-align:right}
+.lf label{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px}
+.lf input{padding:14px 16px;background:var(--inp);border:2px solid var(--b2);border-radius:var(--r2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:15px;outline:none;transition:all 0.3s}
+.lf input:focus{border-color:var(--primary);box-shadow:0 0 20px rgba(99,102,241,0.2)}
+.lf input::placeholder{color:var(--text-dim)}
+.lbtn{width:100%;padding:14px;border:none;border-radius:var(--r2);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;transition:all 0.3s;margin-top:8px;box-shadow:0 4px 20px rgba(99,102,241,0.4);position:relative;overflow:hidden}
+.lbtn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:translateX(-100%);transition:transform 0.5s}
+.lbtn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(99,102,241,0.5)}
+.lbtn:hover::before{transform:translateX(100%)}
+.lerr{font-size:13px;color:var(--err);margin-top:12px;padding:10px 16px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:var(--r2);display:none;animation:shake 0.5s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 
-/* ── GRADE BAR ── */
-.grade-bar{background:linear-gradient(135deg,rgba(12,18,40,0.9),rgba(16,24,52,0.7));border:1px solid var(--b1);
-  border-radius:var(--r);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-  box-shadow:var(--sh)}
-.grade-bar label{font-size:12px;font-weight:800;color:var(--muted);white-space:nowrap}
-.gsel{padding:9px 14px;background:var(--inp);border:1.5px solid var(--b1);border-radius:10px;
-  color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;
-  appearance:none;cursor:pointer;min-width:200px;transition:border-color .2s}
-.gsel:focus{border-color:var(--blue)}
-.grade-info{font-size:12px;color:var(--ok);font-weight:700;display:none}
+/* ═══ TOPBAR ═══ */
+.topbar{position:sticky;top:0;z-index:50;height:64px;display:flex;align-items:center;gap:12px;padding:0 clamp(12px,4vw,24px);background:var(--s1);backdrop-filter:blur(20px);border-bottom:1px solid var(--b2);box-shadow:0 2px 20px rgba(0,0,0,0.3)}
+.tb-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.tb-logo img{width:36px;height:36px;object-fit:contain;border-radius:10px}
+.tb-logo h2{font-size:15px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tb-title{font-size:13px;font-weight:700;color:var(--text-muted);padding:0 10px;border-right:1px solid var(--b2);margin-right:4px}
+.tb-acts{display:flex;gap:8px;margin-right:auto;align-items:center}
+.tbtn{padding:8px 14px;border:1px solid var(--b2);border-radius:var(--r2);background:transparent;color:var(--text-muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:6px;text-decoration:none}
+.tbtn:hover{border-color:var(--primary);color:var(--text);background:var(--b3);transform:translateY(-1px)}
+.tbtn svg{width:14px;height:14px}
+.tbtn.on{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border-color:transparent;box-shadow:0 4px 16px rgba(99,102,241,0.35)}
 
-/* ── STATS BADGES ── */
-#gStats span{transition:all .3s}
+/* Mobile Menu Button */
+.mobile-menu-btn{display:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+.mobile-menu-btn span{display:block;width:18px;height:2px;background:var(--text-muted);border-radius:2px;transition:all 0.3s}
 
-/* ── TABS ── */
-.tabs{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap;padding:4px 0}
+/* ═══ MAIN ═══ */
+.main{position:relative;z-index:1;padding:clamp(16px,4vw,24px);max-width:1200px;margin:0 auto}
 
-/* ── CARD ── */
-.card{background:linear-gradient(135deg,rgba(12,18,40,0.85),rgba(8,13,28,0.7));border:1px solid var(--b2);
-  border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--sh);backdrop-filter:blur(12px)}
-.card-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--b2)}
-.card-head h3{font-size:14px;font-weight:800;flex:1;display:flex;align-items:center;gap:7px}
-.card-head h3 svg{width:14px;height:14px;color:var(--blue)}
+/* ═══ GRADE BAR ═══ */
+.grade-bar{background:linear-gradient(135deg,rgba(30,41,59,0.9),rgba(15,23,42,0.85));border:1px solid var(--b2);border-radius:var(--r);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;box-shadow:var(--sh)}
+.grade-bar label{font-size:13px;font-weight:800;color:var(--text-muted);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.gsel{padding:12px 16px;background:var(--inp);border:2px solid var(--b2);border-radius:var(--r2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;appearance:none;cursor:pointer;min-width:220px;transition:all 0.3s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:left 12px center;padding-left:40px}
+.gsel:focus{border-color:var(--primary);box-shadow:0 0 20px rgba(99,102,241,0.15)}
+.grade-info{font-size:12px;color:var(--ok);font-weight:700;display:none;padding:6px 12px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:20px}
 
-/* ── FORM ── */
-.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:580px){.fgrid{grid-template-columns:1fr}}
-.ff{display:flex;flex-direction:column;gap:5px}
-.ff>label:first-child:not(.ff-check){font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
-.ff-check{font-size:13px !important;text-transform:none !important;letter-spacing:0 !important;color:var(--text) !important;font-weight:500 !important;display:flex;align-items:center;gap:8px;cursor:pointer}
-.ff input,.ff select,.ff textarea{padding:10px 12px;background:var(--inp);border:1.5px solid var(--b1);
-  border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
-  outline:none;transition:border-color .2s;appearance:none;width:100%;resize:vertical}
-.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--blue)}
+/* Stats Badges */
+#gStats{display:none;gap:10px;margin-right:auto;flex-wrap:wrap}
+.stat-badge{font-size:11px;font-weight:800;padding:6px 12px;border-radius:20px;display:flex;align-items:center;gap:5px;animation:fadeIn 0.5s}
+.stat-badge.v{background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.25)}
+.stat-badge.e{background:rgba(251,191,36,0.12);color:var(--gold);border:1px solid rgba(251,191,36,0.25)}
+.stat-badge.h{background:rgba(168,85,247,0.12);color:var(--purple);border:1px solid rgba(168,85,247,0.25)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+
+/* ═══ TABS ═══ */
+.tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;padding:4px;background:var(--s1);border-radius:var(--r2);border:1px solid var(--b2);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{padding:10px 16px;border:none;border-radius:10px;background:transparent;color:var(--text-muted);font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0}
+.tab-btn:hover{color:var(--text);background:var(--b3)}
+.tab-btn.on{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 4px 16px rgba(99,102,241,0.35)}
+.tab-btn svg{width:14px;height:14px}
+.tab-btn .count{font-size:10px;padding:2px 6px;background:rgba(255,255,255,0.2);border-radius:10px}
+.tab-btn.special-books{background:linear-gradient(135deg,rgba(251,191,36,0.15),rgba(251,191,36,0.05));border:1px solid rgba(251,191,36,0.3);color:var(--gold)}
+.tab-btn.special-research{background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04));border:1px solid rgba(16,185,129,0.3);color:var(--ok)}
+.tab-btn.special-copy{margin-right:auto;border-color:rgba(139,92,246,0.3);color:var(--purple)}
+
+/* ═══ CARD ═══ */
+.card{background:linear-gradient(135deg,rgba(30,41,59,0.85),rgba(15,23,42,0.8));border:1px solid var(--b2);border-radius:var(--r);padding:20px;margin-bottom:20px;box-shadow:var(--sh);backdrop-filter:blur(12px);animation:slideUp 0.4s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+.card-head{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--b2);flex-wrap:wrap}
+.card-head h3{font-size:16px;font-weight:800;flex:1;display:flex;align-items:center;gap:8px}
+.card-head h3 svg{width:18px;height:18px;color:var(--primary)}
+.card-actions{display:flex;gap:8px}
+
+/* ═══ FORM ═══ */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.ff{display:flex;flex-direction:column;gap:6px}
+.ff>label:first-child{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase}
+.ff-check{font-size:14px !important;text-transform:none !important;letter-spacing:0 !important;color:var(--text) !important;font-weight:500 !important;display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px;background:var(--b3);border-radius:var(--r2);border:1px solid var(--b2)}
+.ff input,.ff select,.ff textarea{padding:12px 14px;background:var(--inp);border:2px solid var(--b2);border-radius:var(--r2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:all 0.3s;appearance:none;width:100%;resize:vertical}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--primary);box-shadow:0 0 20px rgba(99,102,241,0.15)}
+.ff input::placeholder,.ff textarea::placeholder{color:var(--text-dim)}
 .ff.full{grid-column:1/-1}
 
-/* ── UPLOAD ZONE ── */
-.upload-zone{border:2px dashed var(--b1);border-radius:12px;padding:clamp(18px,4vw,28px) 16px;
-  text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
-.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:rgba(74,127,212,0.05)}
+/* Custom Checkbox */
+.ff-check input[type="checkbox"]{width:20px;height:20px;accent-color:var(--primary);cursor:pointer;flex-shrink:0}
+
+/* ═══ UPLOAD ZONE ═══ */
+.upload-zone{border:2px dashed var(--b2);border-radius:var(--r2);padding:clamp(24px,5vw,36px) 20px;text-align:center;cursor:pointer;transition:all 0.3s;position:relative;overflow:hidden;background:var(--b3)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--primary);background:rgba(99,102,241,0.08);transform:scale(1.01)}
 .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-zone-ico{width:44px;height:44px;border-radius:12px;background:rgba(74,127,212,0.1);
-  display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
-.upload-zone-ico svg{width:22px;height:22px;color:var(--blue)}
-.upload-zone h4{font-size:14px;font-weight:700;margin-bottom:4px}
-.upload-zone p{font-size:12px;color:var(--muted)}
-.upload-zone .accept{font-size:11px;color:var(--muted);margin-top:6px;
-  padding:3px 10px;background:rgba(74,127,212,0.08);border-radius:20px;display:inline-block}
+.upload-zone-ico{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 8px 24px rgba(99,102,241,0.3);animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.upload-zone-ico svg{width:26px;height:26px;color:#fff}
+.upload-zone h4{font-size:16px;font-weight:700;margin-bottom:6px}
+.upload-zone p{font-size:13px;color:var(--text-muted)}
+.upload-zone .accept{font-size:11px;color:var(--text-muted);margin-top:10px;padding:5px 14px;background:var(--b3);border-radius:20px;display:inline-block;border:1px solid var(--b2)}
 
-/* ── UPLOAD PROGRESS ── */
-.upload-progress{display:none;margin-top:10px}
-.upload-progress.show{display:block}
-.up-bar{height:6px;background:rgba(74,127,212,0.15);border-radius:3px;overflow:hidden;margin-bottom:4px}
-.up-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--ok));border-radius:3px;
-  transition:width .2s;width:0%}
-.up-txt{font-size:11px;color:var(--muted);display:flex;justify-content:space-between}
+/* ═══ UPLOAD PROGRESS ═══ */
+.upload-progress{display:none;margin-top:14px}
+.upload-progress.show{display:block;animation:fadeIn 0.3s}
+.up-bar{height:8px;background:var(--b3);border-radius:4px;overflow:hidden;margin-bottom:6px}
+.up-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:4px;transition:width 0.3s ease;position:relative;overflow:hidden}
+.up-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.up-txt{font-size:12px;color:var(--text-muted);display:flex;justify-content:space-between}
 
-/* ── FILE PREVIEW ── */
-.file-preview{margin-top:10px;display:none}
-.file-preview.show{display:flex;align-items:center;gap:10px;
-  background:rgba(74,127,212,0.06);border:1px solid var(--b2);border-radius:10px;padding:10px}
-.fp-ico{width:36px;height:36px;border-radius:9px;background:rgba(74,127,212,0.12);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.fp-ico svg{width:18px;height:18px;color:var(--blue)}
+/* ═══ FILE PREVIEW ═══ */
+.file-preview{margin-top:14px;display:none;align-items:center;gap:12px;background:var(--b3);border:1px solid var(--b2);border-radius:var(--r2);padding:12px 14px}
+.file-preview.show{display:flex;animation:fadeIn 0.3s}
+.fp-ico{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fp-ico svg{width:22px;height:22px;color:#fff}
 .fp-info{flex:1;min-width:0}
-.fp-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fp-size{font-size:11px;color:var(--muted)}
-.fp-del{background:transparent;border:none;cursor:pointer;color:var(--err);padding:4px}
+.fp-name{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fp-size{font-size:12px;color:var(--text-muted)}
+.fp-del{width:36px;height:36px;border-radius:10px;background:transparent;border:1px solid var(--b2);cursor:pointer;color:var(--err);display:flex;align-items:center;justify-content:center;transition:all 0.3s}
+.fp-del:hover{background:rgba(239,68,68,0.1);border-color:var(--err)}
 
-/* ── IMAGE PREVIEW ── */
-.img-preview{display:none;margin-top:10px;border-radius:10px;overflow:hidden;max-height:200px}
-.img-preview img{width:100%;object-fit:cover;display:block}
+/* ═══ YT PREVIEW ═══ */
+.yt-wrap{display:none;margin-top:12px;border-radius:var(--r2);overflow:hidden;background:#000;box-shadow:var(--sh)}
+.yt-wrap iframe{width:100%;height:clamp(180px,40vw,280px);border:none;display:block}
 
-/* ── YT PREVIEW ── */
-.yt-wrap{display:none;margin-top:8px;border-radius:10px;overflow:hidden;background:#000}
-.yt-wrap iframe{width:100%;height:clamp(160px,35vw,220px);border:none;display:block}
+/* ═══ NOTE ═══ */
+.note{font-size:13px;color:var(--text-muted);background:var(--b3);border:1px solid var(--b2);border-radius:var(--r2);padding:14px 16px;margin-bottom:16px;line-height:1.8;display:flex;align-items:flex-start;gap:10px}
+.note svg{width:18px;height:18px;color:var(--primary);flex-shrink:0;margin-top:2px}
+.note strong{color:var(--primary)}
 
-/* ── NOTE ── */
-.note{font-size:11px;color:var(--muted);background:rgba(74,127,212,0.06);
-  border:1px solid var(--b2);border-radius:8px;padding:8px 12px;margin-bottom:12px;line-height:1.8}
-.note strong{color:var(--blue)}
-
-/* ── EXAM TYPE ── */
-.etype-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
-@media(max-width:500px){.etype-grid{grid-template-columns:repeat(2,1fr)}}
-.etype-card{border:1.5px solid var(--b2);border-radius:10px;padding:10px 8px;text-align:center;
-  cursor:pointer;transition:all .2s;font-size:12px;font-weight:700;color:var(--muted)}
-.etype-card:hover{border-color:var(--b1);color:var(--text)}
-.etype-card.sel{border-color:var(--blue);background:rgba(74,127,212,0.1);color:var(--blue)}
-.etype-card svg{width:20px;height:20px;display:block;margin:0 auto 5px}
+/* ═══ EXAM TYPE ═══ */
+.etype-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:18px}
+.etype-card{border:2px solid var(--b2);border-radius:var(--r2);padding:16px 12px;text-align:center;cursor:pointer;transition:all 0.3s;font-size:13px;font-weight:700;color:var(--text-muted);background:var(--s2)}
+.etype-card:hover{border-color:var(--b1);color:var(--text);transform:translateY(-2px)}
+.etype-card.sel{border-color:var(--primary);background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(99,102,241,0.05));color:var(--primary);box-shadow:0 4px 20px rgba(99,102,241,0.2)}
+.etype-card svg{width:24px;height:24px;display:block;margin:0 auto 8px}
 .etype-fields{display:none}
-.etype-fields.show{display:block;animation:fadeIn .2s ease}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.etype-fields.show{display:block;animation:fadeIn 0.3s ease}
 
-/* ── ITEMS LIST ── */
-.items{display:flex;flex-direction:column;gap:8px}
-.item{background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;
-  padding:12px 14px;display:flex;align-items:center;gap:10px;transition:all .2s}
-.item:hover{border-color:var(--b1)}
-.item-num{width:26px;height:26px;border-radius:7px;
-  background:linear-gradient(135deg,var(--blue),var(--navy));
-  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+/* ═══ ITEMS LIST ═══ */
+.items{display:flex;flex-direction:column;gap:10px}
+.item{background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);padding:14px 16px;display:flex;align-items:center;gap:12px;transition:all 0.3s}
+.item:hover{border-color:var(--b1);transform:translateX(-4px);box-shadow:var(--sh)}
+.item-num{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 12px rgba(99,102,241,0.3)}
 .item-info{flex:1;min-width:0}
-.item-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.item-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.item-acts{display:flex;gap:5px;flex-shrink:0}
-.ia{width:28px;height:28px;border-radius:8px;border:1px solid var(--b2);background:transparent;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--muted)}
-.ia:hover{border-color:var(--blue);background:rgba(74,127,212,0.1);color:var(--text)}
-.ia.del:hover{border-color:var(--err);background:rgba(255,77,109,0.1);color:var(--err)}
-.ia svg{width:12px;height:12px}
-.tag{display:inline-flex;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
-.tag.v{background:rgba(74,127,212,0.1);color:var(--blue)}
-.tag.e{background:rgba(201,168,76,0.1);color:var(--gold)}
-.tag.h{background:rgba(167,139,250,0.1);color:var(--purple)}
-.tag.ok{background:rgba(0,214,143,0.1);color:var(--ok)}
+.item-title{font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:12px;color:var(--text-muted);margin-top:4px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.item-acts{display:flex;gap:6px;flex-shrink:0}
+.ia{width:34px;height:34px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s;color:var(--text-muted)}
+.ia:hover{border-color:var(--primary);background:rgba(99,102,241,0.1);color:var(--text);transform:scale(1.05)}
+.ia.del:hover{border-color:var(--err);background:rgba(239,68,68,0.1);color:var(--err)}
+.ia svg{width:14px;height:14px}
+.tag{display:inline-flex;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.tag.v{background:rgba(99,102,241,0.12);color:var(--primary);border:1px solid rgba(99,102,241,0.2)}
+.tag.e{background:rgba(251,191,36,0.12);color:var(--gold);border:1px solid rgba(251,191,36,0.2)}
+.tag.h{background:rgba(168,85,247,0.12);color:var(--purple);border:1px solid rgba(168,85,247,0.2)}
+.tag.ok{background:rgba(16,185,129,0.12);color:var(--ok);border:1px solid rgba(16,185,129,0.2)}
 
-/* ── BTNS ── */
-.btn{padding:9px 16px;border:none;border-radius:10px;cursor:pointer;font-family:'Tajawal',sans-serif;
-  font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
-.btn:hover{transform:translateY(-1px)}
+/* ═══ BUTTONS ═══ */
+.btn{padding:10px 18px;border:none;border-radius:var(--r2);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:8px;transition:all 0.3s;position:relative;overflow:hidden}
+.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);transform:translateX(-100%);transition:transform 0.5s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.btn:hover::before{transform:translateX(100%)}
 .btn:active{transform:translateY(0)}
-.btn svg{width:13px;height:13px}
-.btn.primary{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;box-shadow:0 4px 14px rgba(74,127,212,0.25)}
-.btn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff;box-shadow:0 4px 14px rgba(0,214,143,0.2)}
-.btn.gold{background:linear-gradient(135deg,var(--gold),#7a5810);color:#fff}
-.btn.purple{background:linear-gradient(135deg,var(--purple),#5b21b6);color:#fff}
-.btn.ghost{background:transparent;border:1px solid var(--b1);color:var(--muted)}
-.btn.ghost:hover{border-color:var(--blue);color:var(--text)}
-.btn.sm{padding:7px 12px;font-size:12px}
+.btn svg{width:14px;height:14px}
+.btn.primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;box-shadow:0 4px 16px rgba(99,102,241,0.35)}
+.btn.ok{background:linear-gradient(135deg,var(--ok),#059669);color:#fff;box-shadow:0 4px 16px rgba(16,185,129,0.3)}
+.btn.gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1a1a;box-shadow:0 4px 16px rgba(251,191,36,0.3)}
+.btn.purple{background:linear-gradient(135deg,var(--purple),#7c3aed);color:#fff;box-shadow:0 4px 16px rgba(168,85,247,0.3)}
+.btn.ghost{background:transparent;border:1px solid var(--b2);color:var(--text-muted);box-shadow:none}
+.btn.ghost:hover{border-color:var(--primary);color:var(--text);background:var(--b3)}
+.btn.sm{padding:8px 14px;font-size:12px}
 .btn.w100{width:100%;justify-content:center}
 
-/* ── EMPTY ── */
-.empty{text-align:center;padding:28px 20px;color:var(--muted)}
-.empty svg{width:30px;height:30px;opacity:.2;display:block;margin:0 auto 10px}
+/* ═══ EMPTY STATE ═══ */
+.empty{text-align:center;padding:clamp(32px,6vw,48px) 24px;color:var(--text-muted)}
+.empty-icon{width:64px;height:64px;margin:0 auto 16px;border-radius:20px;background:var(--b3);display:flex;align-items:center;justify-content:center}
+.empty-icon svg{width:28px;height:28px;opacity:0.5}
+.empty p{font-size:14px}
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(80px);
-  background:rgba(10,15,34,0.97);backdrop-filter:blur(16px);border:1px solid var(--b1);
-  border-radius:11px;padding:10px 18px;font-size:13px;font-weight:600;
-  display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,0.5);
-  transition:transform .3s cubic-bezier(.22,1,.36,1);z-index:999;pointer-events:none}
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--s1);backdrop-filter:blur(20px);border:1px solid var(--b2);border-radius:var(--r2);padding:14px 22px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:10px;box-shadow:var(--sh2);transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);z-index:999;pointer-events:none;max-width:90vw}
 .toast.show{transform:translateX(-50%) translateY(0)}
-.toast.ok{color:var(--ok);border-color:rgba(0,214,143,0.3)}
-.toast.err{color:var(--err);border-color:rgba(255,77,109,0.3)}
-.toast.info{color:var(--blue);border-color:rgba(74,127,212,0.3)}
-.toast svg{width:14px;height:14px}
+.toast.ok{color:var(--ok);border-color:rgba(16,185,129,0.3);background:rgba(6,78,59,0.95)}
+.toast.err{color:var(--err);border-color:rgba(239,68,68,0.3);background:rgba(127,29,29,0.95)}
+.toast.info{color:var(--primary);border-color:rgba(99,102,241,0.3);background:rgba(30,27,75,0.95)}
+.toast svg{width:18px;height:18px;flex-shrink:0}
 
+/* ═══ SPINNER ═══ */
 @keyframes spin{to{transform:rotate(360deg)}}
-.spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+.spin{width:20px;height:20px;border:3px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block}
+
+/* ═══ SEARCH BAR ═══ */
+.search-bar{display:none;margin-bottom:16px}
+.search-bar.show{display:block;animation:fadeIn 0.3s}
+.search-input-wrap{display:flex;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r2);padding:10px 14px;transition:all 0.3s}
+.search-input-wrap:focus-within{border-color:var(--primary);box-shadow:0 0 20px rgba(99,102,241,0.15)}
+.search-input-wrap svg{width:18px;height:18px;color:var(--text-muted);flex-shrink:0}
+.search-input-wrap input{background:transparent;border:none;outline:none;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;width:100%}
+.search-input-wrap button{background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:20px;padding:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all 0.3s}
+.search-input-wrap button:hover{background:var(--b3);color:var(--text)}
+
+/* ═══ MODAL ═══ */
+.modal-bg{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px}
+.modal-bg.show{display:flex;animation:fadeIn 0.3s}
+.modal{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r);padding:24px;width:100%;max-width:450px;max-height:90dvh;overflow-y:auto;animation:slideUp 0.4s cubic-bezier(0.22,1,0.36,1)}
+.modal h3{font-size:18px;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.modal h3 svg{width:20px;height:20px;color:var(--primary)}
+.modal-footer{display:flex;gap:10px;margin-top:20px}
+.modal-footer button{flex:1}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:768px){
+  .topbar{height:60px;padding:0 12px}
+  .tb-title{display:none}
+  .tb-acts .tbtn span{display:none}
+  .tb-acts .tbtn{padding:8px}
+  .mobile-menu-btn{display:flex}
+  .grade-bar{flex-direction:column;align-items:stretch}
+  .grade-bar label{align-self:flex-start}
+  .gsel{width:100%}
+  #gStats{width:100%;justify-content:center;margin:8px 0 0}
+  .tabs{padding:3px}
+  .tab-btn{padding:8px 12px;font-size:12px}
+  .fgrid{grid-template-columns:1fr}
+  .card{padding:16px}
+  .card-head{flex-direction:column;align-items:flex-start;gap:10px}
+  .card-actions{width:100%;justify-content:flex-end}
+  .etype-grid{grid-template-columns:repeat(2,1fr)}
+  .item{flex-wrap:wrap}
+  .item-acts{width:100%;justify-content:flex-end;margin-top:8px}
+  .modal{padding:20px}
+}
+
+@media(max-width:480px){
+  .lcard{padding:28px 20px}
+  .lcard h2{font-size:18px}
+  .etype-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--b1)}
+
+/* ═══ SELECTION ═══ */
+::selection{background:rgba(99,102,241,0.3);color:var(--text)}
 </style>
 </head>
 <body>
@@ -236,20 +327,28 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
   <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></symbol>
+  <symbol id="i-research" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
 </svg>
 
+<div class="bg-animated"></div>
 <div class="bg-grid"></div>
 <div class="o1 orb"></div>
 <div class="o2 orb"></div>
 
 <!-- LOGIN -->
 <div id="loginWrap">
-  <div class="lcard">
-    <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.opacity='.5'"/>
+  <div class="lcard glass">
+    <div class="l-logo">
+      <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.opacity='.5'"/>
+    </div>
     <h2>إدارة المحتوى</h2>
     <p>Plus Mathematics · 2026</p>
-    <div class="lf"><label>كلمة المرور</label>
-      <input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="lf">
+      <label>كلمة المرور</label>
+      <input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
     <button class="lbtn" onclick="doLogin()">دخول</button>
     <div class="lerr" id="lerr">كلمة المرور غلط</div>
   </div>
@@ -257,21 +356,28 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
 <!-- APP -->
 <div id="app" style="display:none">
-
   <div class="topbar">
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
     <a href="index.html" class="tb-logo">
       <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.display='none'"/>
       <h2>Plus Math</h2>
     </a>
     <div class="tb-title">إدارة المحتوى</div>
     <div class="tb-acts">
-      <a href="plus-math-admin.html" class="tbtn"><svg><use href="#i-home"/></svg>الداشبورد</a>
-      <button class="tbtn" onclick="doLogout()"><svg><use href="#i-out"/></svg>خروج</button>
+      <a href="plus-math-admin.html" class="tbtn">
+        <svg><use href="#i-home"/></svg>
+        <span>الداشبورد</span>
+      </a>
+      <button class="tbtn" onclick="doLogout()">
+        <svg><use href="#i-out"/></svg>
+        <span>خروج</span>
+      </button>
     </div>
   </div>
 
   <div class="main">
-
     <!-- Grade selector -->
     <div class="grade-bar">
       <label>📚 الصف:</label>
@@ -294,51 +400,71 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </optgroup>
       </select>
       <span class="grade-info" id="gInfo"></span>
-      <!-- Quick stats -->
-      <div id="gStats" style="display:none;display:flex;gap:10px;margin-right:auto;flex-wrap:wrap">
-        <span id="gst-v" style="font-size:11px;color:var(--blue);font-weight:700;padding:3px 8px;background:rgba(74,127,212,0.1);border-radius:6px">—</span>
-        <span id="gst-e" style="font-size:11px;color:var(--gold);font-weight:700;padding:3px 8px;background:rgba(201,168,76,0.1);border-radius:6px">—</span>
-        <span id="gst-h" style="font-size:11px;color:var(--purple);font-weight:700;padding:3px 8px;background:rgba(167,139,250,0.1);border-radius:6px">—</span>
+      <div id="gStats">
+        <span class="stat-badge v" id="gst-v">—</span>
+        <span class="stat-badge e" id="gst-e">—</span>
+        <span class="stat-badge h" id="gst-h">—</span>
       </div>
     </div>
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="tbtn on" id="tv" onclick="switchTab('v')"><svg><use href="#i-yt"/></svg>الفيديوهات <span id="cnt-v" style="font-size:10px;opacity:.7"></span></button>
-      <button class="tbtn" id="te" onclick="switchTab('e')"><svg><use href="#i-check"/></svg>الامتحانات <span id="cnt-e" style="font-size:10px;opacity:.7"></span></button>
-      <button class="tbtn" id="th" onclick="switchTab('h')"><svg><use href="#i-file"/></svg>الواجبات <span id="cnt-h" style="font-size:10px;opacity:.7"></span></button>
-      <button class="tbtn" id="tb" onclick="switchTab('b')" style="background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border-color:rgba(201,168,76,0.3);color:var(--gold)">📚 الكتب <span id="cnt-b" style="font-size:10px;opacity:.7"></span></button>
-      <button class="tbtn" id="tr" onclick="switchTab('r')" style="background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04));border-color:rgba(16,185,129,0.3);color:#10b981">📝 الأبحاث <span id="cnt-r" style="font-size:10px;opacity:.7"></span></button>
-      <button class="tbtn" onclick="openCopyModal()" style="margin-right:auto;border-color:rgba(139,92,246,0.3);color:#a78bfa" title="نسخ محتوى من صف لصف">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      <button class="tab-btn on" id="tv" onclick="switchTab('v')">
+        <svg><use href="#i-yt"/></svg>
+        الفيديوهات
+        <span class="count" id="cnt-v"></span>
+      </button>
+      <button class="tab-btn" id="te" onclick="switchTab('e')">
+        <svg><use href="#i-check"/></svg>
+        الامتحانات
+        <span class="count" id="cnt-e"></span>
+      </button>
+      <button class="tab-btn" id="th" onclick="switchTab('h')">
+        <svg><use href="#i-file"/></svg>
+        الواجبات
+        <span class="count" id="cnt-h"></span>
+      </button>
+      <button class="tab-btn special-books" id="tb" onclick="switchTab('b')">
+        <svg><use href="#i-book"/></svg>
+        الكتب
+        <span class="count" id="cnt-b"></span>
+      </button>
+      <button class="tab-btn special-research" id="tr" onclick="switchTab('r')">
+        <svg><use href="#i-research"/></svg>
+        الأبحاث
+        <span class="count" id="cnt-r"></span>
+      </button>
+      <button class="tab-btn special-copy" onclick="openCopyModal()">
+        <svg><use href="#i-copy"/></svg>
         نسخ صف
       </button>
     </div>
 
-    <!-- Search bar (shown when grade selected) -->
-    <div id="searchBar" style="display:none;padding:0 clamp(14px,4vw,24px);margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:8px;background:rgba(6,10,22,0.6);border:1px solid var(--b2);border-radius:10px;padding:8px 12px">
-        <svg width="14" height="14" style="color:var(--muted);flex-shrink:0"><use href="#i-search"/></svg>
-        <input id="contentSearchInput" placeholder="بحث في المحتوى..." oninput="filterItems()"
-          style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;width:100%"/>
-        <button onclick="document.getElementById('contentSearchInput').value='';filterItems()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0">×</button>
+    <!-- Search bar -->
+    <div class="search-bar" id="searchBar">
+      <div class="search-input-wrap">
+        <svg><use href="#i-search"/></svg>
+        <input id="contentSearchInput" placeholder="بحث في المحتوى..." oninput="filterItems()"/>
+        <button onclick="clearSearch()">×</button>
       </div>
     </div>
 
-    <!-- ══════════════════ VIDEOS ══════════════════ -->
+    <!-- VIDEOS -->
     <div id="sv">
-
       <div class="card">
         <div class="card-head">
           <h3><svg><use href="#i-yt"/></svg>إضافة فيديو</h3>
-          <button class="btn sm ghost" onclick="clearV()">مسح</button>
-          <button class="btn sm primary" id="vSaveBtn" onclick="saveVideo()"><svg><use href="#i-save"/></svg>حفظ</button>
+          <div class="card-actions">
+            <button class="btn ghost sm" onclick="clearV()">مسح</button>
+            <button class="btn primary sm" id="vSaveBtn" onclick="saveVideo()">
+              <svg><use href="#i-save"/></svg>حفظ
+            </button>
+          </div>
         </div>
-
         <div class="note">
-          ارفع الفيديو على <strong>يوتيوب</strong> كـ <strong>Unlisted</strong> (غير مدرج — لن يظهر في البحث) ثم الصق الرابط — الفيديو هيشتغل جوّا المنصة مباشرة 🎬
+          <svg><use href="#i-info"/></svg>
+          <span>ارفع الفيديو على <strong>يوتيوب</strong> كـ <strong>Unlisted</strong> (غير مدرج — لن يظهر في البحث) ثم الصق الرابط — الفيديو هيشتغل جوّا المنصة مباشرة 🎬</span>
         </div>
-
         <div class="fgrid">
           <div class="ff full">
             <label>رابط يوتيوب</label>
@@ -367,7 +493,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
           <div class="ff full">
             <label class="ff-check">
-              <input type="checkbox" id="vNotify" style="width:17px;height:17px;accent-color:var(--blue);cursor:pointer;flex-shrink:0"/>
+              <input type="checkbox" id="vNotify"/>
               🔔 إرسال إشعار للطلاب عند الحفظ
             </label>
           </div>
@@ -377,30 +503,37 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="card">
         <div class="card-head">
           <h3><svg><use href="#i-play"/></svg>الفيديوهات المضافة</h3>
-          <button class="btn sm ghost" onclick="loadList('videos','vList')"><svg><use href="#i-refresh"/></svg></button>
+          <button class="btn ghost sm" onclick="loadList('videos','vList')">
+            <svg><use href="#i-refresh"/></svg>
+          </button>
         </div>
-        <div id="vList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
+        <div id="vList">
+          <div class="empty">
+            <div class="empty-icon"><svg><use href="#i-yt"/></svg></div>
+            <p>اختار صفاً أولاً</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ══════════════════ EXAMS ══════════════════ -->
+    <!-- EXAMS -->
     <div id="se" style="display:none">
-
       <div class="card">
         <div class="card-head">
           <h3><svg><use href="#i-check"/></svg>إضافة امتحان</h3>
-          <button class="btn sm ghost" onclick="clearE()">مسح</button>
-          <button class="btn sm gold" id="eSaveBtn" onclick="saveExam()"><svg><use href="#i-save"/></svg>حفظ</button>
+          <div class="card-actions">
+            <button class="btn ghost sm" onclick="clearE()">مسح</button>
+            <button class="btn gold sm" id="eSaveBtn" onclick="saveExam()">
+              <svg><use href="#i-save"/></svg>حفظ
+            </button>
+          </div>
         </div>
-
-        <!-- Exam type selector -->
         <div class="etype-grid">
           <div class="etype-card sel" id="et-mcq" onclick="setEType('mcq')">
             <svg><use href="#i-check"/></svg>اختيار متعدد
           </div>
           <div class="etype-card" id="et-essay" onclick="setEType('essay')">
-            <svg><use href="#i-edit" xlink:href="#i-edit"/></svg>مقالي
-            <svg width="20" height="20"><use href="#i-file"/></svg>
+            <svg><use href="#i-file"/></svg>مقالي
           </div>
           <div class="etype-card" id="et-images" onclick="setEType('images')">
             <svg><use href="#i-img"/></svg>صور امتحان
@@ -409,7 +542,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <svg><use href="#i-link"/></svg>Google Form
           </div>
         </div>
-
         <div class="fgrid">
           <div class="ff full">
             <label>عنوان الامتحان</label>
@@ -423,20 +555,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <label>الترتيب</label>
             <input type="number" id="eOrder" placeholder="1" min="1"/>
           </div>
-
-          <!-- MCQ -->
           <div class="ff full etype-fields show" id="ef-mcq">
             <label>الأسئلة — * قبل الإجابة الصح — فصل بـ ---</label>
             <textarea id="eMcq" rows="7" placeholder="ما هو حل 2x+4=10؟&#10;* x=3&#10;x=2&#10;x=7&#10;x=5&#10;---&#10;سؤال ثانٍ؟&#10;* الإجابة الصح&#10;إجابة خاطئة&#10;إجابة خاطئة"></textarea>
           </div>
-
-          <!-- Essay -->
           <div class="ff full etype-fields" id="ef-essay">
             <label>نص الامتحان المقالي</label>
             <textarea id="eEssay" rows="6" placeholder="اكتب أسئلة الامتحان هنا..."></textarea>
           </div>
-
-          <!-- Images upload -->
           <div class="ff full etype-fields" id="ef-images">
             <label>صور الامتحان (JPG/PNG/PDF)</label>
             <div class="upload-zone" id="eImgZone">
@@ -449,17 +575,15 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
               <div class="up-bar"><div class="up-fill" id="eImgFill"></div></div>
               <div class="up-txt"><span id="eImgTxt">جاري الرفع...</span><span id="eImgPct">0%</span></div>
             </div>
-            <div id="eImgPreviews" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+            <div id="eImgPreviews" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
           </div>
-
-          <!-- Link -->
           <div class="ff full etype-fields" id="ef-link">
             <label>رابط Google Form</label>
             <input type="url" id="eLink" placeholder="https://forms.google.com/..."/>
           </div>
           <div class="ff full">
             <label class="ff-check">
-              <input type="checkbox" id="eNotify" style="width:17px;height:17px;accent-color:var(--gold);cursor:pointer;flex-shrink:0"/>
+              <input type="checkbox" id="eNotify"/>
               🔔 إرسال إشعار للطلاب عند الحفظ
             </label>
           </div>
@@ -469,22 +593,31 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="card">
         <div class="card-head">
           <h3><svg><use href="#i-check"/></svg>الامتحانات المضافة</h3>
-          <button class="btn sm ghost" onclick="loadList('exams','eList')"><svg><use href="#i-refresh"/></svg></button>
+          <button class="btn ghost sm" onclick="loadList('exams','eList')">
+            <svg><use href="#i-refresh"/></svg>
+          </button>
         </div>
-        <div id="eList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
+        <div id="eList">
+          <div class="empty">
+            <div class="empty-icon"><svg><use href="#i-check"/></svg></div>
+            <p>اختار صفاً أولاً</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ══════════════════ HOMEWORK ══════════════════ -->
+    <!-- HOMEWORK -->
     <div id="sh" style="display:none">
-
       <div class="card">
         <div class="card-head">
           <h3><svg><use href="#i-file"/></svg>إضافة واجب</h3>
-          <button class="btn sm ghost" onclick="clearH()">مسح</button>
-          <button class="btn sm purple" id="hSaveBtn" onclick="saveHomework()"><svg><use href="#i-save"/></svg>حفظ</button>
+          <div class="card-actions">
+            <button class="btn ghost sm" onclick="clearH()">مسح</button>
+            <button class="btn purple sm" id="hSaveBtn" onclick="saveHomework()">
+              <svg><use href="#i-save"/></svg>حفظ
+            </button>
+          </div>
         </div>
-
         <div class="fgrid">
           <div class="ff full">
             <label>عنوان الواجب</label>
@@ -502,8 +635,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <label>الترتيب</label>
             <input type="number" id="hOrder" placeholder="1" min="1"/>
           </div>
-
-          <!-- PDF Upload -->
           <div class="ff full">
             <label>ملف PDF / صورة (اختياري)</label>
             <div class="upload-zone" id="hFileZone">
@@ -530,23 +661,31 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="card">
         <div class="card-head">
           <h3><svg><use href="#i-file"/></svg>الواجبات المضافة</h3>
-          <button class="btn sm ghost" onclick="loadList('homework','hList')"><svg><use href="#i-refresh"/></svg></button>
+          <button class="btn ghost sm" onclick="loadList('homework','hList')">
+            <svg><use href="#i-refresh"/></svg>
+          </button>
         </div>
-        <div id="hList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
+        <div id="hList">
+          <div class="empty">
+            <div class="empty-icon"><svg><use href="#i-file"/></svg></div>
+            <p>اختار صفاً أولاً</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- ══════════════════ BOOKS ══════════════════ -->
+    <!-- BOOKS -->
     <div id="sb" style="display:none">
-
-      <!-- Add Book -->
       <div class="card">
         <div class="card-head">
           <h3>📚 إضافة كتاب</h3>
-          <button class="btn sm ghost" onclick="clearBook()">مسح</button>
-          <button class="btn sm gold" id="bSaveBtn" onclick="saveBook()"><svg><use href="#i-save"/></svg>حفظ</button>
+          <div class="card-actions">
+            <button class="btn ghost sm" onclick="clearBook()">مسح</button>
+            <button class="btn gold sm" id="bSaveBtn" onclick="saveBook()">
+              <svg><use href="#i-save"/></svg>حفظ
+            </button>
+          </div>
         </div>
-
         <div class="fgrid">
           <div class="ff full">
             <label>عنوان الكتاب</label>
@@ -589,12 +728,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <label>الترتيب</label>
             <input type="number" id="bOrder" placeholder="1" min="1"/>
           </div>
-          <!-- Cover image URL -->
           <div class="ff full">
             <label>رابط صورة الغلاف (اختياري)</label>
             <input type="url" id="bCover" placeholder="https://..." oninput="previewCover(this.value)"/>
-            <div id="bCoverPreview" style="display:none;margin-top:8px">
-              <img id="bCoverImg" style="width:80px;height:110px;object-fit:cover;border-radius:8px;border:1px solid var(--b2)"/>
+            <div id="bCoverPreview" style="display:none;margin-top:10px">
+              <img id="bCoverImg" style="width:100px;height:133px;object-fit:cover;border-radius:10px;border:1px solid var(--b2);box-shadow:var(--sh)"/>
             </div>
           </div>
           <div class="ff full">
@@ -604,96 +742,109 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </div>
       </div>
 
-      <!-- Books List -->
       <div class="card">
         <div class="card-head">
           <h3>📚 الكتب المضافة</h3>
-          <button class="btn sm ghost" onclick="loadBooks()"><svg><use href="#i-refresh"/></svg></button>
+          <button class="btn ghost sm" onclick="loadBooks()">
+            <svg><use href="#i-refresh"/></svg>
+          </button>
         </div>
-        <div id="bList"><div class="empty"><p>لا يوجد كتب بعد</p></div></div>
+        <div id="bList">
+          <div class="empty">
+            <div class="empty-icon"><svg><use href="#i-book"/></svg></div>
+            <p>لا يوجد كتب بعد</p>
+          </div>
+        </div>
       </div>
-
     </div>
 
-    <!-- ══════════════════ RESEARCH ══════════════════ -->
+    <!-- RESEARCH -->
     <div id="sr" style="display:none">
-
       <div class="card">
         <div class="card-head">
           <h3>📝 أبحاث الطلاب</h3>
-          <div style="display:flex;gap:6px;margin-right:auto">
-            <select id="r-stage-filter" onchange="loadResearchCM()" style="padding:6px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
+          <div style="display:flex;gap:8px;margin-right:auto">
+            <select id="r-stage-filter" onchange="loadResearchCM()" style="padding:8px 12px;background:var(--inp);border:2px solid var(--b2);border-radius:var(--r2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
               <option value="">كل المراحل</option>
               <option value="primary">ابتدائي</option>
               <option value="prep">إعدادي</option>
               <option value="sec">ثانوي</option>
               <option value="univ">جامعة</option>
             </select>
-            <button class="btn sm ghost" onclick="loadResearchCM()"><svg><use href="#i-refresh"/></svg></button>
+            <button class="btn ghost sm" onclick="loadResearchCM()">
+              <svg><use href="#i-refresh"/></svg>
+            </button>
           </div>
         </div>
         <input id="r-search" placeholder="🔍 ابحث في الأبحاث..." oninput="filterResearchCM()"
-          style="width:100%;padding:9px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;margin-bottom:12px"/>
-        <div id="rList"><div class="empty"><p>لا يوجد أبحاث</p></div></div>
+          style="width:100%;padding:12px 14px;background:var(--inp);border:2px solid var(--b2);border-radius:var(--r2);color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;margin-bottom:14px;transition:all 0.3s"/>
+        <div id="rList">
+          <div class="empty">
+            <div class="empty-icon"><svg><use href="#i-research"/></svg></div>
+            <p>لا يوجد أبحاث</p>
+          </div>
+        </div>
       </div>
-
     </div>
 
   </div><!-- /main -->
 </div><!-- /app -->
 
 <!-- Copy Grade Modal -->
-<div id="copyModal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px">
-  <div style="background:#0c1228;border:1px solid var(--b1);border-radius:18px;padding:24px;max-width:400px;width:100%">
-    <h3 style="font-size:16px;font-weight:800;margin-bottom:16px">📋 نسخ محتوى من صف لصف</h3>
-    <div class="ff" style="margin-bottom:10px">
+<div class="modal-bg" id="copyModal">
+  <div class="modal">
+    <h3><svg><use href="#i-copy"/></svg>نسخ محتوى من صف لصف</h3>
+    <div class="ff" style="margin-bottom:12px">
       <label>من الصف</label>
       <select id="copy-from" class="gsel" style="width:100%">
         <option value="">— اختار —</option>
       </select>
     </div>
-    <div class="ff" style="margin-bottom:10px">
+    <div class="ff" style="margin-bottom:12px">
       <label>إلى الصف</label>
       <select id="copy-to" class="gsel" style="width:100%">
         <option value="">— اختار —</option>
       </select>
     </div>
-    <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:14px">
-      <label style="font-size:12px;color:var(--muted);font-weight:700">ما تنسخه:</label>
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
-        <input type="checkbox" id="copy-videos" checked style="accent-color:var(--blue)"/> فيديوهات
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+      <label style="font-size:13px;color:var(--text-muted);font-weight:700">ما تنسخه:</label>
+      <label class="ff-check" style="margin:0">
+        <input type="checkbox" id="copy-videos" checked/> فيديوهات
       </label>
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
-        <input type="checkbox" id="copy-exams" checked style="accent-color:var(--blue)"/> امتحانات
+      <label class="ff-check" style="margin:0">
+        <input type="checkbox" id="copy-exams" checked/> امتحانات
       </label>
-      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px">
-        <input type="checkbox" id="copy-homework" checked style="accent-color:var(--blue)"/> واجبات
+      <label class="ff-check" style="margin:0">
+        <input type="checkbox" id="copy-homework" checked/> واجبات
       </label>
     </div>
-    <div style="background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.2);border-radius:10px;padding:10px 12px;font-size:11px;color:var(--gold);margin-bottom:14px">
+    <div style="background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.25);border-radius:var(--r2);padding:12px 14px;font-size:12px;color:var(--warn);margin-bottom:16px;line-height:1.7">
       ⚠️ هيُضاف المحتوى فوق المحتوى الموجود — مش هيمسح أي حاجة
     </div>
-    <div id="copy-progress" style="display:none;margin-bottom:10px">
-      <div style="height:6px;background:rgba(74,127,212,0.1);border-radius:3px;overflow:hidden">
-        <div id="copy-fill" style="height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:3px;width:0%;transition:width .3s"></div>
+    <div id="copy-progress" style="display:none;margin-bottom:14px">
+      <div style="height:8px;background:var(--b3);border-radius:4px;overflow:hidden">
+        <div id="copy-fill" style="height:100%;background:linear-gradient(90deg,var(--primary),var(--purple));border-radius:4px;width:0%;transition:width 0.3s"></div>
       </div>
-      <div id="copy-status" style="font-size:11px;color:var(--muted);margin-top:6px;text-align:center"></div>
+      <div id="copy-status" style="font-size:12px;color:var(--text-muted);margin-top:8px;text-align:center"></div>
     </div>
-    <div style="display:flex;gap:8px">
-      <button onclick="closeCopyModal()" style="flex:1;padding:10px;border:1px solid var(--b2);border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px">إلغاء</button>
-      <button onclick="executeCopy()" id="copy-btn" style="flex:2;padding:10px;border:none;border-radius:10px;background:linear-gradient(135deg,#8b5cf6,#4c1d95);color:#fff;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:800">📋 ابدأ النسخ</button>
+    <div class="modal-footer">
+      <button onclick="closeCopyModal()" class="btn ghost">إلغاء</button>
+      <button onclick="executeCopy()" id="copy-btn" class="btn purple">
+        <svg><use href="#i-copy"/></svg>ابدأ النسخ
+      </button>
     </div>
   </div>
 </div>
-<div class="toast" id="toast"><svg id="tIc"><use href="#i-check"/></svg><span id="tMsg"></span></div>
 
-<!-- Firebase -->
+<div class="toast" id="toast">
+  <svg id="tIc"><use href="#i-check"/></svg>
+  <span id="tMsg"></span>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
 const cfg = {
   apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
@@ -703,11 +854,10 @@ const cfg = {
   messagingSenderId:"444492731461",
   appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
 };
-const app  = initializeApp(cfg);
-const db   = getFirestore(app);
+const app = initializeApp(cfg);
+const db = getFirestore(app);
 const stor = getStorage(app);
 
-// ── Upload file to Firebase Storage ──
 window.uploadFile = (file, path, onProgress) => {
   return new Promise((res, rej) => {
     const storRef = ref(stor, path);
@@ -720,30 +870,27 @@ window.uploadFile = (file, path, onProgress) => {
   });
 };
 
-// ── Load list ──
 window.loadList = async (tab, elId) => {
   const grade = document.getElementById('gSel').value;
   if(!grade){ toast('اختار صف أولاً','err'); return; }
   const el = document.getElementById(elId);
-  el.innerHTML = '<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
+  el.innerHTML = '<div class="empty"><div class="spin" style="margin:20px auto"></div><p>جاري التحميل...</p></div>';
   try {
     const snap = await getDocs(collection(db,'content',grade,tab));
     const items = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
     window._cache = window._cache||{};
     window._cache[tab] = items;
     renderItems(tab, items, elId);
-    // update grade info
     const gi = document.getElementById('gInfo');
     gi.style.display='inline';
     gi.textContent = (window._cache.videos?.length||0)+' فيديو · '+(window._cache.exams?.length||0)+' امتحان · '+(window._cache.homework?.length||0)+' واجب';
   } catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
-// ── Save Video ──
 window.saveVideo = async () => {
   const grade = document.getElementById('gSel').value;
   if(!grade){ toast('اختار صف','err'); return; }
-  const url   = document.getElementById('vUrl').value.trim();
+  const url = document.getElementById('vUrl').value.trim();
   const title = document.getElementById('vTitle').value.trim();
   if(!url || !title){ toast('ادخل الرابط والعنوان','err'); return; }
   const btn = document.getElementById('vSaveBtn');
@@ -769,16 +916,14 @@ window.saveVideo = async () => {
       await addDoc(collection(db,'content',grade,'videos'), data);
       toast('تم حفظ الفيديو ✓','ok');
     }
-    // إرسال إشعار للطلاب
     if(isNew && document.getElementById('vNotify')?.checked){
       await sendContentNotif(grade,'فيديو جديد 🎬',title);
     }
     clearV(); loadList('videos','vList');
   } catch(e){ toast('خطأ: '+e.message,'err'); }
-  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
+  btn.innerHTML='<svg width="14" height="14"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
 };
 
-// ── Save Exam ──
 window.saveExam = async () => {
   const grade = document.getElementById('gSel').value;
   if(!grade){ toast('اختار صف','err'); return; }
@@ -810,10 +955,9 @@ window.saveExam = async () => {
     }
     clearE(); loadList('exams','eList');
   } catch(e){ toast('خطأ: '+e.message,'err'); }
-  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
+  btn.innerHTML='<svg width="14" height="14"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
 };
 
-// ── Save Homework ──
 window.saveHomework = async () => {
   const grade = document.getElementById('gSel').value;
   if(!grade){ toast('اختار صف','err'); return; }
@@ -841,17 +985,16 @@ window.saveHomework = async () => {
     }
     clearH(); loadList('homework','hList');
   } catch(e){ toast('خطأ: '+e.message,'err'); }
-  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
+  btn.innerHTML='<svg width="14" height="14"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
 };
 
-// ── Handle HW file upload ──
 window.handleHwFile = async (file) => {
   if(!file) return;
   const grade = document.getElementById('gSel').value||'general';
   const prog = document.getElementById('hProgress');
   const fill = document.getElementById('hFill');
-  const txt  = document.getElementById('hTxt');
-  const pct  = document.getElementById('hPct');
+  const txt = document.getElementById('hTxt');
+  const pct = document.getElementById('hPct');
   prog.classList.add('show');
   try {
     const path = `homework/${grade}/${Date.now()}_${file.name}`;
@@ -868,15 +1011,14 @@ window.handleHwFile = async (file) => {
   setTimeout(()=>prog.classList.remove('show'),2000);
 };
 
-// ── Handle Exam images upload ──
 window._examImgUrls = [];
 window.handleExamFiles = async (files) => {
   const grade = document.getElementById('gSel').value||'general';
   const prevDiv = document.getElementById('eImgPreviews');
-  const prog  = document.getElementById('eImgProgress');
-  const fill  = document.getElementById('eImgFill');
-  const txt   = document.getElementById('eImgTxt');
-  const pct   = document.getElementById('eImgPct');
+  const prog = document.getElementById('eImgProgress');
+  const fill = document.getElementById('eImgFill');
+  const txt = document.getElementById('eImgTxt');
+  const pct = document.getElementById('eImgPct');
   prog.classList.add('show');
   window._examImgUrls = [];
   prevDiv.innerHTML = '';
@@ -891,13 +1033,12 @@ window.handleExamFiles = async (files) => {
         fill.style.width=overall+'%'; pct.textContent=Math.round(overall)+'%';
       });
       window._examImgUrls.push(url);
-      // Preview
       const div = document.createElement('div');
-      div.style.cssText='position:relative;width:80px;height:80px;border-radius:8px;overflow:hidden;flex-shrink:0';
+      div.style.cssText='position:relative;width:80px;height:80px;border-radius:10px;overflow:hidden;flex-shrink:0;box-shadow:var(--sh)';
       if(file.type.startsWith('image')){
         div.innerHTML=`<img src="${url}" style="width:100%;height:100%;object-fit:cover"/>`;
       } else {
-        div.innerHTML=`<div style="width:100%;height:100%;background:rgba(74,127,212,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--blue);font-weight:700;text-align:center">PDF<br/>${(file.size/1024).toFixed(0)}KB</div>`;
+        div.innerHTML=`<div style="width:100%;height:100%;background:var(--b3);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--primary);font-weight:700;text-align:center">PDF<br/>${(file.size/1024).toFixed(0)}KB</div>`;
       }
       prevDiv.appendChild(div);
     } catch(e){ toast('خطأ رفع '+file.name,'err'); }
@@ -907,7 +1048,6 @@ window.handleExamFiles = async (files) => {
   toast('تم رفع '+arr.length+' ملف ✓','ok');
 };
 
-// ── Delete item ──
 window.deleteItem = async (tab, id, title) => {
   if(!confirm('حذف "'+title+'"؟')) return;
   const grade = document.getElementById('gSel').value;
@@ -919,7 +1059,6 @@ window.deleteItem = async (tab, id, title) => {
   } catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
-// ── Edit item ──
 window.editItem = (tab, id) => {
   const items = window._cache?.[tab]||[];
   const item = items.find(i=>i.id===id);
@@ -928,28 +1067,28 @@ window.editItem = (tab, id) => {
   const key = tab==='videos'?'v':tab==='exams'?'e':'h';
   window._editId[key] = id;
   if(tab==='videos'){
-    document.getElementById('vUrl').value   = item.url||'';
+    document.getElementById('vUrl').value = item.url||'';
     document.getElementById('vTitle').value = item.title||'';
-    document.getElementById('vDesc').value  = item.description||'';
-    document.getElementById('vDur').value   = item.duration||'';
+    document.getElementById('vDesc').value = item.description||'';
+    document.getElementById('vDur').value = item.duration||'';
     document.getElementById('vOrder').value = item.order||'';
     previewYt(item.url||'');
     window.scrollTo({top:0,behavior:'smooth'});
   } else if(tab==='exams'){
     document.getElementById('eTitle').value = item.title||'';
-    document.getElementById('eDur').value   = item.duration||'';
+    document.getElementById('eDur').value = item.duration||'';
     document.getElementById('eOrder').value = item.order||'';
-    document.getElementById('eMcq').value   = item.mcqRaw||'';
+    document.getElementById('eMcq').value = item.mcqRaw||'';
     document.getElementById('eEssay').value = item.essayText||'';
-    document.getElementById('eLink').value  = item.externalUrl||'';
+    document.getElementById('eLink').value = item.externalUrl||'';
     setEType(item.type||'mcq');
     window.scrollTo({top:0,behavior:'smooth'});
   } else {
-    document.getElementById('hTitle').value    = item.title||'';
-    document.getElementById('hDesc').value     = item.description||'';
+    document.getElementById('hTitle').value = item.title||'';
+    document.getElementById('hDesc').value = item.description||'';
     document.getElementById('hDeadline').value = item.deadline||'';
-    document.getElementById('hOrder').value    = item.order||'';
-    document.getElementById('hFileUrl').value  = item.fileUrl||'';
+    document.getElementById('hOrder').value = item.order||'';
+    document.getElementById('hFileUrl').value = item.fileUrl||'';
     if(item.fileUrl){
       document.getElementById('hFileName').textContent = item.fileUrl.split('%2F').pop().split('?')[0];
       document.getElementById('hFileSize').textContent = '';
@@ -960,27 +1099,24 @@ window.editItem = (tab, id) => {
   toast('جاهز للتعديل ✏️','ok');
 };
 
-// Load content manager pass
 try{
   const cm = await getDoc(doc(db,'settings','content-manager'));
   if(cm.exists() && cm.data().pass) window._adminPass = cm.data().pass;
   else {
-    // fallback لـ admin pass
     const ad = await getDoc(doc(db,'settings','admin'));
     if(ad.exists()) window._adminPass = ad.data().pass;
   }
 }catch(e){}
-// ── Expose Firebase to window for books functions ──
+
 window._db = db;
 window._fbReady=true;
-// Expose Firestore methods for new features
 window._getDocs = getDocs;
 window._addDoc = addDoc;
 window._deleteDoc = deleteDoc;
 window._collection = collection;
 window._doc = doc;
 window._serverTimestamp = serverTimestamp;
-// Build grades list for copy modal
+
 window._cmGradesList = [];
 (async()=>{
   try{
@@ -999,893 +1135,358 @@ window._cmGradesList = [];
     });
   }catch(e){}
 })();
-
-// ── الصفوف الأساسية — ثابتة دايماً ──
-const BASE_GRADES_CM = {
-  primary:[
-    {key:'primary-4',label:'الصف الرابع الابتدائي'},
-    {key:'primary-5',label:'الصف الخامس الابتدائي'},
-    {key:'primary-6',label:'الصف السادس الابتدائي'},
-  ],
-  prep:[
-    {key:'prep-1',label:'الصف الأول الإعدادي'},
-    {key:'prep-2',label:'الصف الثاني الإعدادي'},
-    {key:'prep-3',label:'الصف الثالث الإعدادي'},
-  ],
-  sec:[
-    {key:'sec-1',label:'الصف الأول الثانوي'},
-    {key:'sec-2',label:'الصف الثاني الثانوي'},
-    {key:'sec-3',label:'الصف الثالث الثانوي'},
-  ],
-  univ:[]
-};
-const STAGE_AR_CM={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
-
-function buildCMGradeSelect(extra){
-  const merged = JSON.parse(JSON.stringify(BASE_GRADES_CM));
-  // أضف الجديدة بدون تكرار
-  (extra||[]).forEach(g=>{
-    if(!merged[g.stage]) merged[g.stage]=[];
-    if(!merged[g.stage].some(x=>x.key===g.key)){
-      merged[g.stage].push(g);
-    }
-    if(window.GRADES_LABEL) GRADES_LABEL[g.key]=g.label;
-  });
-  const stageOrder=['primary','prep','sec','univ'];
-  const allStages=[...stageOrder,...Object.keys(merged).filter(s=>!stageOrder.includes(s))];
-  ['gSel','bGrade'].forEach(selId=>{
-    const sel=document.getElementById(selId);
-    if(!sel) return;
-    sel.innerHTML=`<option value="">${selId==='gSel'?'— اختار الصف —':'كل الصفوف'}</option>`;
-    allStages.forEach(stage=>{
-      const grades=merged[stage]||[];
-      if(!grades.length) return;
-      const grp=document.createElement('optgroup');
-      grp.label=STAGE_AR_CM[stage]||stage;
-      grades.sort((a,b)=>(a.order||0)-(b.order||0)).forEach(g=>{
-        const opt=document.createElement('option');
-        opt.value=g.key; opt.textContent=g.label;
-        grp.appendChild(opt);
-      });
-      sel.appendChild(grp);
-    });
-  });
-}
-
-// ابني من الأساسي أول
-buildCMGradeSelect([]);
-// ثم أضف الجديدة من Firestore
-try{
-  const gradesSnap=await getDocs(collection(db,'grades'));
-  const extra=gradesSnap.docs.map(d=>({id:d.id,...d.data()}));
-  if(extra.length) buildCMGradeSelect(extra);
-}catch(e){ console.warn('loadGrades CM:',e.message); }
-
-
-// ══ BOOKS FUNCTIONS (inside module - has access to db) ══
-
-window.previewCover = (url) => {
-  const wrap = document.getElementById('bCoverPreview');
-  const img  = document.getElementById('bCoverImg');
-  if(url){ img.src=url; wrap.style.display='block'; }
-  else wrap.style.display='none';
-};
-
-window.saveBook = async () => {
-  const title = document.getElementById('bTitle').value.trim();
-  const price = document.getElementById('bPrice').value;
-  if(!title || !price){ window.toast('ادخل العنوان والسعر','err'); return; }
-  const btn = document.getElementById('bSaveBtn');
-  btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
-  try{
-    const data = {
-      title,
-      description: document.getElementById('bDesc').value.trim(),
-      price: parseFloat(price)||0,
-      gradeKey: document.getElementById('bGrade').value,
-      pages: parseInt(document.getElementById('bPages').value)||0,
-      order: parseInt(document.getElementById('bOrder').value)||1,
-      coverUrl: document.getElementById('bCover').value.trim(),
-      note: document.getElementById('bNote').value.trim(),
-      available: true,
-      updatedAt: serverTimestamp()
-    };
-    if(window._editId?.b){
-      await updateDoc(doc(db,'books',window._editId.b), data);
-      delete window._editId.b;
-      window.toast('تم تعديل الكتاب ✓','ok');
-    } else {
-      data.createdAt = serverTimestamp();
-      await addDoc(collection(db,'books'), data);
-      window.toast('تم إضافة الكتاب ✓','ok');
-    }
-    window.clearBook(); window.loadBooks();
-  }catch(e){ window.toast('خطأ: '+e.message,'err'); }
-  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ'; btn.disabled=false;
-};
-
-window.loadBooks = async () => {
-  const el = document.getElementById('bList');
-  el.innerHTML='<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
-  try{
-    const snap = await getDocs(collection(db,'books'));
-    const books = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
-    const cnt = document.getElementById('cnt-b');
-    if(cnt) cnt.textContent = books.length ? '('+books.length+')':'';
-    if(!books.length){ el.innerHTML='<div class="empty"><p>لا يوجد كتب — ابدأ بالإضافة ⬆️</p></div>'; return; }
-    const GL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};
-    el.innerHTML=`<div class="items">${books.map((b,i)=>`
-      <div class="item" style="align-items:flex-start;gap:12px">
-        ${b.coverUrl?`<img src="${b.coverUrl}" style="width:48px;height:64px;object-fit:cover;border-radius:6px;flex-shrink:0;border:1px solid var(--b2)"/>`:`<div style="width:48px;height:64px;border-radius:6px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">📚</div>`}
-        <div class="item-info" style="flex:1">
-          <div class="item-title">${b.title}</div>
-          <div class="item-meta">
-            <span style="color:var(--gold);font-weight:800">${b.price} جنيه</span>
-            ${b.gradeKey?`<span class="tag e">${GL[b.gradeKey]||b.gradeKey}</span>`:'<span class="tag v">كل الصفوف</span>'}
-            ${b.pages?`<span>📄 ${b.pages} صفحة</span>`:''}
-            <span class="tag ${b.available?'ok':'h'}">${b.available?'متاح':'غير متاح'}</span>
-          </div>
-          ${b.description?`<div style="font-size:11px;color:var(--muted);margin-top:3px">${b.description}</div>`:''}
-        </div>
-        <div class="item-acts">
-          <button class="ia" onclick="editBook('${b.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
-          <button class="ia" onclick="toggleBookAvail('${b.id}',${!b.available})" style="color:${b.available?'var(--warn)':'var(--ok)'}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px">${b.available?'<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>':'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>'}</svg>
-          </button>
-          <button class="ia del" onclick="deleteBook('${b.id}','${(b.title||'').replace(/'/g,"\\'")}')"><svg><use href="#i-trash"/></svg></button>
-        </div>
-      </div>`).join('')}</div>`;
-  }catch(e){ el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`; }
-};
-
-window.editBook = async (id) => {
-  try{
-    const d = await getDoc(doc(db,'books',id));
-    if(!d.exists()) return;
-    const b = d.data();
-    window._editId = window._editId||{};
-    window._editId.b = id;
-    document.getElementById('bTitle').value = b.title||'';
-    document.getElementById('bDesc').value  = b.description||'';
-    document.getElementById('bPrice').value = b.price||'';
-    document.getElementById('bGrade').value = b.gradeKey||'';
-    document.getElementById('bPages').value = b.pages||'';
-    document.getElementById('bOrder').value = b.order||'';
-    document.getElementById('bCover').value = b.coverUrl||'';
-    document.getElementById('bNote').value  = b.note||'';
-    window.previewCover(b.coverUrl||'');
-    window.scrollTo({top:0,behavior:'smooth'});
-    window.toast('جاهز للتعديل ✏️','ok');
-  }catch(e){ window.toast('خطأ: '+e.message,'err'); }
-};
-
-window.toggleBookAvail = async (id, state) => {
-  try{
-    await updateDoc(doc(db,'books',id),{available:state});
-    window.loadBooks();
-    window.toast(state?'الكتاب متاح الآن ✓':'تم إخفاء الكتاب','ok');
-  }catch(e){ window.toast('خطأ','err'); }
-};
-
-window.deleteBook = async (id, title) => {
-  if(!confirm('حذف "'+title+'"؟')) return;
-  try{
-    await deleteDoc(doc(db,'books',id));
-    window.loadBooks();
-    window.toast('تم الحذف','ok');
-  }catch(e){ window.toast('خطأ: '+e.message,'err'); }
-};
-
-window.clearBook = () => {
-  ['bTitle','bDesc','bPrice','bPages','bOrder','bCover','bNote'].forEach(id=>{
-    document.getElementById(id).value='';
-  });
-  document.getElementById('bGrade').value='';
-  document.getElementById('bCoverPreview').style.display='none';
-  if(window._editId) delete window._editId.b;
-};
-
-// ══ SEND NOTIFICATION — داخل الـ module عشان يوصل لـ db مباشرة ══
-window.sendContentNotif = async (gradeKey, type, title) => {
-  try{
-    const usersSnap = await getDocs(collection(db,'users'));
-    const students = usersSnap.docs
-      .map(d=>({id:d.id,...d.data()}))
-      .filter(u=>u.gradeKey===gradeKey && u.subscriptionActive && !u.blocked);
-    if(!students.length){
-      toast('لا يوجد طلاب مشتركين في هذا الصف','warn');
-      return;
-    }
-    const icon = type.includes('فيديو')?'🎬':type.includes('امتحان')?'📝':'📚';
-    await Promise.all(students.map(s=>
-      addDoc(collection(db,'notifications',s.id,'items'),{
-        icon, title:type, body:title,
-        read:false, type:'new_content', gradeKey,
-        createdAt:serverTimestamp()
-      })
-    ));
-    toast(`✅ تم إرسال إشعار لـ ${students.length} طالب`,'ok');
-  }catch(e){
-    console.error('sendContentNotif error:',e);
-    toast('خطأ في الإشعار: '+e.message,'err');
-  }
-};
 </script>
 
 <script>
-const DEFAULT='plus2026';
+// UI Functions
 function doLogin(){
   const p=document.getElementById('lp').value;
-  if(p===DEFAULT||(window._adminPass&&p===window._adminPass)){
+  if(p===window._adminPass||p==='plus2026'){
     document.getElementById('loginWrap').style.display='none';
     document.getElementById('app').style.display='block';
-    toast('أهلاً بك 👋','ok');
+    toast('تم الدخول بنجاح','ok');
   } else {
     document.getElementById('lerr').style.display='block';
-    setTimeout(()=>document.getElementById('lerr').style.display='none',3000);
   }
 }
-function doLogout(){
-  document.getElementById('app').style.display='none';
-  document.getElementById('loginWrap').style.display='flex';
-  document.getElementById('lp').value='';
-}
-document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
-
-let _curTab='v';
-const GRADES_LABEL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};
-
+function doLogout(){location.reload();}
 function onGrade(){
-  const g = document.getElementById('gSel').value;
-  if(!g) return;
-  const gi=document.getElementById('gInfo');
-  gi.style.display='inline';gi.textContent=GRADES_LABEL[g]||g;
-  const tab = _curTab==='v'?'videos':_curTab==='e'?'exams':'homework';
-  const elId = _curTab==='v'?'vList':_curTab==='e'?'eList':'hList';
-  loadList(tab, elId);
+  const g=document.getElementById('gSel').value;
+  document.getElementById('searchBar').style.display=g?'block':'none';
+  if(g){
+    document.getElementById('gStats').style.display='flex';
+    loadList('videos','vList');
+    loadList('exams','eList');
+    loadList('homework','hList');
+  }
 }
-
 function switchTab(t){
-  _curTab=t;
-  ['v','e','h','b'].forEach(x=>document.getElementById('t'+x)?.classList.toggle('on',x===t));
-  ['sv','se','sh','sb'].forEach(x=>document.getElementById('s'+x.slice(1)).style.display=x.slice(1)===t?'block':'none');
-  const grade=document.getElementById('gSel').value;
-  if(t==='b'){ loadBooks(); return; }
-  if(grade){
-    const tab=t==='v'?'videos':t==='e'?'exams':'homework';
-    const el=t==='v'?'vList':t==='e'?'eList':'hList';
-    loadList(tab,el);
-  }
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('t'+t).classList.add('on');
+  document.getElementById('sv').style.display='none';
+  document.getElementById('se').style.display='none';
+  document.getElementById('sh').style.display='none';
+  document.getElementById('sb').style.display='none';
+  document.getElementById('sr').style.display='none';
+  document.getElementById('s'+t).style.display='block';
 }
-
-// ── YouTube preview ──
-function previewYt(url){
-  const m=(url||'').match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);
-  const wrap=document.getElementById('ytWrap');
-  if(m){document.getElementById('ytFrame').src=`https://www.youtube.com/embed/${m[1]}`;wrap.style.display='block';}
-  else wrap.style.display='none';
-}
-
-// ── Exam type ──
-window._eType='mcq';
-function setEType(t){
-  window._eType=t;
-  ['mcq','essay','images','link'].forEach(x=>{
-    document.getElementById('et-'+x).classList.toggle('sel',x===t);
-    const f=document.getElementById('ef-'+x);
-    if(f) f.classList.toggle('show',x===t);
-  });
-}
-
-// ── Render items ──
-function renderItems(tab, items, elId){
-  const el=document.getElementById(elId);
-  if(!items.length){
-    el.innerHTML='<div class="empty"><p>لا يوجد محتوى بعد — ابدأ بالإضافة ⬆️</p></div>';return;
-  }
-  const typeLabel={mcq:'MCQ',essay:'مقالي',images:'صور',link:'Google Form',video:'يوتيوب',homework:'واجب'};
-  const tagCls=tab==='videos'?'v':tab==='exams'?'e':'h';
-  el.innerHTML=`<div class="items">${items.map((item,i)=>`
-    <div class="item">
-      <div class="item-num">${item.order||i+1}</div>
-      <div class="item-info">
-        <div class="item-title">${item.title||'—'}</div>
-        <div class="item-meta">
-          ${item.type?`<span class="tag ${tagCls}">${typeLabel[item.type]||item.type}</span>`:''}
-          ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
-          ${item.deadline?`<span>📅 ${item.deadline}</span>`:''}
-          ${item.url||item.externalUrl?`<a href="${item.url||item.externalUrl}" target="_blank" style="color:var(--blue);font-size:11px;text-decoration:none">🔗 رابط</a>`:''}
-          ${item.imageUrls?.length?`<span class="tag ok">📷 ${item.imageUrls.length} صورة</span>`:''}
-          ${item.fileUrl?`<a href="${item.fileUrl}" target="_blank" style="color:var(--purple);font-size:11px;text-decoration:none">📎 ملف</a>`:''}
-        </div>
-      </div>
-      <div class="item-acts">
-        <button class="ia" onclick="editItem('${tab}','${item.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
-        <button class="ia del" onclick="deleteItem('${tab}','${item.id}','${(item.title||'').replace(/'/g,"\\'")}')"><svg><use href="#i-trash"/></svg></button>
-        ${item.url?`<a class="ia" href="${item.url}" target="_blank" title="فتح"><svg><use href="#i-eye"/></svg></a>`:''}
-      </div>
-    </div>`).join('')}</div>`;
-}
-
-// ── Clear forms ──
 function clearV(){
-  ['vUrl','vTitle','vDesc','vDur','vOrder'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('vUrl').value='';
+  document.getElementById('vTitle').value='';
+  document.getElementById('vDesc').value='';
+  document.getElementById('vDur').value='';
+  document.getElementById('vOrder').value='';
+  document.getElementById('vPublishAt').value='';
   document.getElementById('ytWrap').style.display='none';
-  if(window._editId) delete window._editId.v;
+  delete window._editId?.v;
 }
 function clearE(){
-  ['eTitle','eDur','eOrder','eMcq','eEssay','eLink'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('eTitle').value='';
+  document.getElementById('eDur').value='';
+  document.getElementById('eOrder').value='';
+  document.getElementById('eMcq').value='';
+  document.getElementById('eEssay').value='';
+  document.getElementById('eLink').value='';
   document.getElementById('eImgPreviews').innerHTML='';
   window._examImgUrls=[];
   setEType('mcq');
-  if(window._editId) delete window._editId.e;
+  delete window._editId?.e;
 }
 function clearH(){
-  ['hTitle','hDesc','hDeadline','hOrder','hFileUrl'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('hTitle').value='';
+  document.getElementById('hDesc').value='';
+  document.getElementById('hDeadline').value='';
+  document.getElementById('hOrder').value='';
+  document.getElementById('hFileUrl').value='';
   document.getElementById('hPreview').classList.remove('show');
-  document.getElementById('hFile').value='';
-  if(window._editId) delete window._editId.h;
+  delete window._editId?.h;
 }
 function clearHFile(){
   document.getElementById('hFileUrl').value='';
   document.getElementById('hPreview').classList.remove('show');
-  document.getElementById('hFile').value='';
 }
-
-// ── Toast ──
-let tTimer;
-function toast(msg,type='ok'){
-  const t=document.getElementById('toast');
-  t.className='toast '+type;
-  document.getElementById('tMsg').textContent=msg;
-  document.getElementById('tIc').innerHTML=type==='err'?'<use href="#i-x"/>':'<use href="#i-check"/>';
-  t.classList.add('show');clearTimeout(tTimer);
-  tTimer=setTimeout(()=>t.classList.remove('show'),3200);
+function setEType(t){
+  window._eType=t;
+  document.querySelectorAll('.etype-card').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('et-'+t).classList.add('sel');
+  document.querySelectorAll('.etype-fields').forEach(f=>f.classList.remove('show'));
+  document.getElementById('ef-'+t).classList.add('show');
 }
-
-// ── Drag & drop styling ──
-document.querySelectorAll('.upload-zone').forEach(z=>{
-  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag')});
-  z.addEventListener('dragleave',()=>z.classList.remove('drag'));
-  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag')});
-});
-</script>
-
-<script>
-// ══════════════════════════════════════════════════════
-// ── ENHANCED CONTENT MANAGER FEATURES ──
-// ══════════════════════════════════════════════════════
-
-// ── 1. AUTOSAVE DRAFT ──
-const DRAFT_KEY = 'cm_draft';
-function autosaveDraft(){
-  const grade = document.getElementById('gSel')?.value||'';
-  const tab = window._curTab||'v';
-  const fields = {
-    v: ['vUrl','vTitle','vDesc','vDur','vOrder'],
-    e: ['eTitle','eDur','eOrder','eMcq','eEssay','eLink'],
-    h: ['hTitle','hDesc','hDeadline','hOrder']
-  };
-  const data = {grade, tab, ts: Date.now()};
-  (fields[tab]||[]).forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) data[id]=el.value;
-  });
-  // Only save if there's actual content
-  const hasContent = (fields[tab]||[]).some(id=>data[id]&&data[id].trim());
-  if(hasContent) localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
-}
-
-function loadDraft(){
-  try{
-    const raw = localStorage.getItem(DRAFT_KEY);
-    if(!raw) return;
-    const d = JSON.parse(raw);
-    // Only restore if within 24h
-    if(Date.now()-d.ts > 86400000){ localStorage.removeItem(DRAFT_KEY); return; }
-    // Show restore prompt
-    const banner = document.createElement('div');
-    banner.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:rgba(8,13,28,.97);border:1px solid rgba(201,168,76,.3);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;z-index:999;box-shadow:0 8px 32px rgba(0,0,0,.5);font-family:Tajawal,sans-serif;font-size:13px;color:#eef2ff;white-space:nowrap';
-    banner.innerHTML = [
-    '<span style="color:#f0d080;font-weight:700">📝 عندك مسودة محفوظة</span>',
-    '<button onclick="restoreDraft()" style="padding:5px 12px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);border-radius:7px;color:#f0d080;cursor:pointer;font-family:Tajawal,sans-serif;font-size:12px;font-weight:700">استعادة</button>',
-    '<button onclick="localStorage.removeItem(DRAFT_KEY);this.parentElement.remove()" style="padding:5px 10px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#6a7a9e;cursor:pointer;font-size:12px">تجاهل</button>'
-  ].join('');
-    document.body.appendChild(banner);
-    setTimeout(()=>banner.remove(), 8000);
-  }catch(e){}
-}
-
-function restoreDraft(){
-  try{
-    const d = JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}');
-    // Switch to correct tab
-    if(d.tab && window.switchTab) window.switchTab(d.tab);
-    if(d.grade){
-      const gs=document.getElementById('gSel');
-      if(gs) gs.value=d.grade;
-    }
-    const fields=['vUrl','vTitle','vDesc','vDur','vOrder','eTitle','eDur','eOrder','eMcq','eEssay','eLink','hTitle','hDesc','hDeadline','hOrder'];
-    fields.forEach(id=>{ if(d[id]!==undefined){const el=document.getElementById(id);if(el)el.value=d[id];} });
-    toast('تم استعادة المسودة ✓','ok');
-    document.querySelector('[style*="مسودة"]')?.remove();
-    localStorage.removeItem(DRAFT_KEY);
-  }catch(e){}
-}
-
-// Auto-save every 10 seconds
-setInterval(autosaveDraft, 10000);
-// Clear draft on successful save
-['saveVideo','saveExam','saveHomework'].forEach(fn=>{
-  const orig = window[fn];
-  if(!orig) return;
-  window[fn] = async function(){
-    const r = await orig.apply(this, arguments);
-    localStorage.removeItem(DRAFT_KEY);
-    return r;
-  };
-});
-
-// ── 2. DUPLICATE ITEM ──
-window.duplicateItem = async (tab, id) => {
-  const grade = document.getElementById('gSel')?.value;
-  if(!grade){ toast('اختار صف','err'); return; }
-  try{
-    const { getFirestore, doc, getDoc, addDoc, collection, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js').catch(()=>({}));
-    // Use window._db if available
-    const db = window._db;
-    if(!db){ toast('Firebase مش جاهز','err'); return; }
-    const snap = await window._getDoc(window._doc(db,'content',grade,tab,id));
-    if(!snap.exists()){ toast('العنصر مش موجود','err'); return; }
-    const data = {...snap.data()};
-    data.title = (data.title||'') + ' (نسخة)';
-    data.order = (data.order||1) + 1;
-    data.createdAt = new Date();
-    data.updatedAt = new Date();
-    delete data.id;
-    await window._addDoc(window._collection(db,'content',grade,tab), data);
-    toast('تم التكرار ✓','ok');
-    // Reload the list
-    const tabMap={videos:'vList',exams:'eList',homework:'hList'};
-    if(window.loadList) window.loadList(tab, tabMap[tab]||tab+'List');
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-};
-
-// ── 3. DRAG & DROP REORDER ──
-let _dragId=null, _dragTab=null, _dragItems=[];
-function enableDragDrop(tab, items, elId){
-  _dragItems = items; _dragTab = tab;
-  const container = document.getElementById(elId)?.querySelector('.items');
-  if(!container) return;
-  container.querySelectorAll('.item').forEach((row,i)=>{
-    row.draggable=true;
-    row.style.cursor='grab';
-    row.dataset.idx=i;
-    row.addEventListener('dragstart',e=>{
-      _dragId=i;
-      row.style.opacity='.4';
-      e.dataTransfer.effectAllowed='move';
-    });
-    row.addEventListener('dragend',()=>{ row.style.opacity='1'; });
-    row.addEventListener('dragover',e=>{
-      e.preventDefault();
-      const target=e.currentTarget;
-      const over=parseInt(target.dataset.idx);
-      container.querySelectorAll('.item').forEach(r=>r.style.borderTop='');
-      if(over!==_dragId) target.style.borderTop='2px solid var(--blue)';
-    });
-    row.addEventListener('drop',e=>{
-      e.preventDefault();
-      const over=parseInt(e.currentTarget.dataset.idx);
-      container.querySelectorAll('.item').forEach(r=>r.style.borderTop='');
-      if(over===_dragId) return;
-      const arr=[..._dragItems];
-      const moved=arr.splice(_dragId,1)[0];
-      arr.splice(over,0,moved);
-      // Update order in Firestore
-      saveNewOrder(tab, arr);
-      _dragItems=arr;
-      renderItemsWithDrag(tab, arr, elId);
-    });
-  });
-}
-
-async function saveNewOrder(tab, items){
-  const grade = document.getElementById('gSel')?.value;
-  if(!grade||!window._db) return;
-  try{
-    await Promise.all(items.map((item,i)=>
-      window._updateDoc(window._doc(window._db,'content',grade,tab,item.id),{order:i+1})
-    ));
-    toast('تم ترتيب العناصر ✓','ok');
-  }catch(e){ toast('خطأ في الحفظ','err'); }
-}
-
-function renderItemsWithDrag(tab, items, elId){
-  // Re-render with drag enabled
-  renderItemsEnhanced(tab, items, elId);
-  enableDragDrop(tab, items, elId);
-}
-
-// ── 4. PREVIEW BEFORE SAVE ──
-window.previewVideo = () => {
-  const url = document.getElementById('vUrl')?.value.trim();
-  if(!url){ toast('ادخل رابط الفيديو','err'); return; }
-  const m = url.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
-  if(!m){ window.open(url,'_blank'); return; }
-  const ytId = m[1];
-  const modal = document.createElement('div');
-  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
-  modal.innerHTML=`<div style="width:100%;max-width:560px"><div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden"><iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none" allowfullscreen allow="autoplay"></iframe></div><button onclick="this.closest('[style*=fixed]').remove()" style="margin-top:12px;padding:9px 20px;border:none;border-radius:9px;background:rgba(255,77,109,.2);border:1px solid rgba(255,77,109,.3);color:#ff4d6d;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;font-weight:700;width:100%">✕ إغلاق</button></div>`;
-  document.body.appendChild(modal);
-  modal.addEventListener('click',e=>{ if(e.target===modal) modal.remove(); });
-};
-
-// ── 5. BULK DELETE ──
-let _bulkMode = false;
-let _bulkSelected = new Set();
-
-window.toggleBulkMode = (tab, elId) => {
-  _bulkMode = !_bulkMode;
-  _bulkSelected.clear();
-  const items = window._cache?.[tab]||[];
-  renderItemsEnhanced(tab, items, elId);
-  toast(_bulkMode?'وضع الحذف الجماعي — اختار العناصر':'تم إلغاء وضع الحذف','ok');
-};
-
-window.bulkDelete = async (tab, elId) => {
-  if(!_bulkSelected.size){ toast('اختار عناصر أولاً','err'); return; }
-  const grade = document.getElementById('gSel')?.value;
-  if(!grade||!window._db) return;
-  if(!confirm(`حذف ${_bulkSelected.size} عنصر؟`)) return;
-  try{
-    await Promise.all([..._bulkSelected].map(id=>
-      window._deleteDoc(window._doc(window._db,'content',grade,tab,id))
-    ));
-    toast(`تم حذف ${_bulkSelected.size} عناصر ✓`,'ok');
-    _bulkMode=false; _bulkSelected.clear();
-    window.loadList(tab, elId);
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-};
-
-// ── 6. KEYBOARD SHORTCUTS ──
-document.addEventListener('keydown', e=>{
-  // Ctrl+S → Save current tab
-  if((e.ctrlKey||e.metaKey) && e.key==='s'){
-    e.preventDefault();
-    const tab = window._curTab||'v';
-    if(tab==='v' && window.saveVideo) window.saveVideo();
-    else if(tab==='e' && window.saveExam) window.saveExam();
-    else if(tab==='h' && window.saveHomework) window.saveHomework();
-    else if(tab==='b' && window.saveBook) window.saveBook();
-    return;
+function previewYt(url){
+  const m=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+  if(m){
+    document.getElementById('ytFrame').src=`https://www.youtube.com/embed/${m[1]}`;
+    document.getElementById('ytWrap').style.display='block';
+  } else {
+    document.getElementById('ytWrap').style.display='none';
   }
-  // Escape → Clear form
-  if(e.key==='Escape'){
-    const tab=window._curTab||'v';
-    if(tab==='v' && window.clearV) window.clearV();
-    else if(tab==='e' && window.clearE) window.clearE();
-    else if(tab==='h' && window.clearH) window.clearH();
-    toast('تم مسح الفورم','ok');
-  }
-});
-
-// Show shortcuts hint
-const shortcutsHint = document.createElement('div');
-shortcutsHint.style.cssText='position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:rgba(8,13,28,.8);border:1px solid rgba(74,127,212,.2);border-radius:8px;padding:6px 14px;font-size:11px;color:#6a7a9e;font-family:Tajawal,sans-serif;z-index:10;pointer-events:none';
-shortcutsHint.textContent='Ctrl+S حفظ · Esc مسح';
-document.body.appendChild(shortcutsHint);
-
-// ── 7. COPY VIDEO URL ──
-window.copyItemUrl = (url) => {
-  if(!url){ toast('لا يوجد رابط','err'); return; }
-  if(navigator.clipboard) navigator.clipboard.writeText(url);
-  else{ const t=document.createElement('textarea');t.value=url;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t); }
-  toast('تم نسخ الرابط ✓','ok');
-};
-
-// ── 8. ENHANCED RENDER WITH DUPLICATE + DRAG + BULK + LAST MODIFIED + COPY ──
-function renderItemsEnhanced(tab, items, elId){
+}
+function renderItems(tab,items,elId){
   const el=document.getElementById(elId);
   if(!items.length){
-    el.innerHTML='<div class="empty"><p>لا يوجد محتوى بعد — ابدأ بالإضافة ⬆️</p></div>'; return;
+    el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-file"/></svg></div><p>لا يوجد محتوى</p></div>';
+    return;
   }
-  const typeLabel={mcq:'MCQ',essay:'مقالي',images:'صور',link:'Google Form',video:'يوتيوب',homework:'واجب'};
-  const tagCls=tab==='videos'?'v':tab==='exams'?'e':'h';
-  const tabMap={videos:'vList',exams:'eList',homework:'hList'};
-
-  // Bulk delete bar
-  const bulkBar = _bulkMode ? `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,77,109,.08);border-bottom:1px solid rgba(255,77,109,.2);font-size:12px;color:#ff8099">
-    <span>تم تحديد <strong id="bulkCount">0</strong> عنصر</span>
-    <button onclick="bulkDelete('${tab}','${elId}')" style="padding:4px 12px;border:1px solid rgba(255,77,109,.3);border-radius:6px;background:rgba(255,77,109,.1);color:#ff4d6d;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">حذف المحدد</button>
-    <button onclick="toggleBulkMode('${tab}','${elId}')" style="padding:4px 10px;border:1px solid rgba(255,255,255,.1);border-radius:6px;background:transparent;color:#6a7a9e;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px">إلغاء</button>
-  </div>` : '';
-
-  el.innerHTML = bulkBar + `<div class="items" id="drag-${tab}">${items.map((item,i)=>{
-    const url = item.url||item.externalUrl||'';
-    const relTime = item.updatedAt?.toDate ? timeAgo(item.updatedAt.toDate()) : '';
-    return `<div class="item" data-idx="${i}" style="${_bulkMode?'cursor:default':'cursor:grab'}">
-      ${_bulkMode?`<input type="checkbox" onchange="toggleBulkItem('${item.id}',this.checked)" style="width:15px;height:15px;accent-color:var(--blue);flex-shrink:0;margin-left:4px"/>`:`<div class="item-num" style="cursor:grab;color:var(--muted)" title="اسحب لإعادة الترتيب">⠿ ${item.order||i+1}</div>`}
+  const typeLabels={videos:'فيديو',exams:'امتحان',homework:'واجب'};
+  el.innerHTML='<div class="items">'+items.map((it,idx)=>`
+    <div class="item">
+      <div class="item-num">${it.order||idx+1}</div>
       <div class="item-info">
-        <div class="item-title">${item.title||'—'}</div>
+        <div class="item-title">${it.title||'—'}</div>
         <div class="item-meta">
-          ${item.type?`<span class="tag ${tagCls}">${typeLabel[item.type]||item.type}</span>`:''}
-          ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
-          ${item.deadline?`<span>📅 ${item.deadline}</span>`:''}
-          ${url?`<a href="${url}" target="_blank" style="color:var(--blue);font-size:11px;text-decoration:none">🔗 رابط</a>`:''}
-          ${item.imageUrls?.length?`<span class="tag ok">📷 ${item.imageUrls.length} صورة</span>`:''}
-          ${item.fileUrl?`<a href="${item.fileUrl}" target="_blank" style="color:var(--purple);font-size:11px;text-decoration:none">📎 ملف</a>`:''}
-          ${relTime?`<span style="color:var(--muted);font-size:10px">🕐 ${relTime}</span>`:''}
+          <span class="tag ${tab==='videos'?'v':tab==='exams'?'e':'h'}">${typeLabels[tab]}</span>
+          ${it.duration?`<span>⏱ ${it.duration}</span>`:''}
+          ${it.description?`<span>${it.description.substring(0,30)}...</span>`:''}
         </div>
       </div>
       <div class="item-acts">
-        <button class="ia" onclick="editItem('${tab}','${item.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
-        <button class="ia" onclick="duplicateItem('${tab}','${item.id}')" title="تكرار" style="color:var(--blue)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-        </button>
-        ${url?`<button class="ia" onclick="copyItemUrl('${url}')" title="نسخ الرابط"><svg><use href="#i-copy"/></svg></button>`:''}
-        ${url?`<a class="ia" href="${url}" target="_blank" title="فتح"><svg><use href="#i-eye"/></svg></a>`:''}
-        <button class="ia del" onclick="deleteItem('${tab}','${item.id}','${(item.title||'').replace(/'/g,"\'")}')"><svg><use href="#i-trash"/></svg></button>
+        <button class="ia" onclick="editItem('${tab}','${it.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
+        <button class="ia del" onclick="deleteItem('${tab}','${it.id}','${it.title?.replace(/'/g,"\\'")||''}')" title="حذف"><svg><use href="#i-trash"/></svg></button>
       </div>
-    </div>`;
-  }).join('')}</div>`;
-
-  if(!_bulkMode) enableDragDrop(tab, items, elId);
+    </div>
+  `).join('')+'</div>';
+  document.getElementById('cnt-'+{videos:'v',exams:'e',homework:'h'}[tab]).textContent=items.length||'';
 }
-
-window.toggleBulkItem = (id, checked) => {
-  if(checked) _bulkSelected.add(id); else _bulkSelected.delete(id);
-  const cnt = document.getElementById('bulkCount');
-  if(cnt) cnt.textContent = _bulkSelected.size;
-};
-
-// ── 9. IMPORT FROM CSV ──
-window.importFromCSV = (tab) => {
-  const input = document.createElement('input');
-  input.type='file'; input.accept='.csv,.txt';
-  input.onchange = async (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
-    const grade = document.getElementById('gSel')?.value;
-    if(!grade){ toast('اختار صف أولاً','err'); return; }
-    const text = await file.text();
-    const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
-    if(lines.length<2){ toast('الملف فارغ أو خطأ في التنسيق','err'); return; }
-    // Skip header row, format: title,url,description,duration,order
-    const items = lines.slice(1).map((line,i)=>{
-      const cols = line.split(',');
-      return { title:cols[0]||'', url:cols[1]||'', description:cols[2]||'', duration:cols[3]||'', order:parseInt(cols[4])||i+1, type:'video', updatedAt:new Date(), createdAt:new Date() };
-    }).filter(item=>item.title);
-    if(!items.length){ toast('لا يوجد بيانات صالحة','err'); return; }
-    if(!confirm(`استيراد ${items.length} عنصر للصف "${grade}"؟`)) return;
-    try{
-      let count=0;
-      for(const item of items){
-        await window._addDoc(window._collection(window._db,'content',grade,tab),item);
-        count++;
-      }
-      toast(`تم استيراد ${count} عنصر ✓`,'ok');
-      const tabMap={videos:'vList',exams:'eList',homework:'hList'};
-      window.loadList(tab, tabMap[tab]||tab+'List');
-    }catch(e){ toast('خطأ في الاستيراد: '+e.message,'err'); }
-  };
-  input.click();
-};
-
-// ── TIME AGO HELPER ──
-function timeAgo(date){
-  const diff = Date.now()-date;
-  const m=Math.floor(diff/60000), h=Math.floor(diff/3600000), d=Math.floor(diff/86400000);
-  if(m<1) return 'الآن';
-  if(m<60) return `من ${m} دقيقة`;
-  if(h<24) return `من ${h} ساعة`;
-  return `من ${d} يوم`;
+function filterItems(){
+  const q=document.getElementById('contentSearchInput').value.toLowerCase();
+  const t={v:'videos',e:'exams',h:'homework'}[window._currentTab||'v'];
+  const items=window._cache?.[t]||[];
+  const filtered=items.filter(i=>(i.title||'').toLowerCase().includes(q));
+  renderItems(t,filtered,t==='videos'?'vList':t==='exams'?'eList':'hList');
 }
-
-// ── OVERRIDE renderItems with enhanced version ──
-const _origRenderItems = window.renderItems;
-window.renderItems = function(tab, items, elId){
-  // Store for drag/bulk use
-  if(window._cache) window._cache[tab]=items;
-  renderItemsEnhanced(tab, items, elId);
-  enableDragDrop(tab, items, elId);
-};
-
-// ── ADD BULK + IMPORT BUTTONS TO TABS ──
-document.addEventListener('DOMContentLoaded', ()=>{
-  // Add preview button to video URL field
-  const vSave = document.getElementById('vSaveBtn');
-  if(vSave){
-    const prev = document.createElement('button');
-    prev.className='btn sm ghost'; prev.style.cssText='font-size:11px;margin-right:6px';
-    prev.innerHTML='👁 معاينة'; prev.onclick = window.previewVideo;
-    vSave.parentElement.insertBefore(prev, vSave);
-  }
-});
-
-// Load draft on startup
-setTimeout(loadDraft, 1500);
-
-// ══════════════════════════════════════
-// ── SEND CONTENT NOTIFICATION ──
-// ══════════════════════════════════════
-// ══════════════════════════════════════
-// ── RESEARCH TAB ──
-// ══════════════════════════════════════
-window._allResearch = [];
-
-window.loadResearchCM = async () => {
-  const el = document.getElementById('rList');
-  if(!el) return;
-  el.innerHTML = '<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:#10b981;border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
-  try{
-    const stage = document.getElementById('r-stage-filter')?.value||'';
-    let q = window._collection(window._db,'research');
-    const snap = await window._getDocs(q);
-    let items = snap.docs.map(d=>({id:d.id,...d.data()}));
-    if(stage) items = items.filter(r=>r.stage===stage);
-    items.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-    window._allResearch = items;
-    const cnt = document.getElementById('cnt-r');
-    if(cnt) cnt.textContent = items.length ? `(${items.length})` : '';
-    renderResearchCM(items);
-  }catch(e){ el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`; }
-};
-
-window.filterResearchCM = () => {
-  const q = (document.getElementById('r-search')?.value||'').toLowerCase();
-  const filtered = q
-    ? window._allResearch.filter(r=>(r.topic+r.studentName+r.dept+r.subject+r.code).toLowerCase().includes(q))
-    : window._allResearch;
-  renderResearchCM(filtered);
-};
-
-function renderResearchCM(items){
-  const el = document.getElementById('rList');
-  if(!el) return;
-  if(!items.length){ el.innerHTML='<div class="empty"><p>لا يوجد أبحاث</p></div>'; return; }
-  const stageAR = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
-  el.innerHTML = items.map(r=>`
-    <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(16,185,129,0.04);border:1px solid rgba(16,185,129,0.15);border-radius:12px;margin-bottom:8px">
-      <div style="width:36px;height:36px;border-radius:10px;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📝</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:800;margin-bottom:3px">${r.topic||'—'}</div>
-        <div style="font-size:11px;color:var(--muted)">${r.studentName||'—'} · ${stageAR[r.stage]||r.stage||'—'} · ${r.subject||'—'}</div>
-        ${r.code?`<div style="font-size:10px;color:#10b981;font-family:monospace;margin-top:2px">كود: ${r.code}</div>`:''}
-        ${r.details?`<div style="font-size:11px;color:var(--muted);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:300px">${r.details.slice(0,100)}...</div>`:''}
-      </div>
-      <div style="display:flex;gap:4px;flex-shrink:0">
-        <button onclick="printResearchAdmin('${r.id}')" title="طباعة" style="padding:5px 8px;border:1px solid var(--b2);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-size:12px">🖨️</button>
-        <button onclick="deleteResearchAdmin('${r.id}')" title="حذف" style="padding:5px 8px;border:1px solid rgba(255,77,109,0.3);border-radius:7px;background:rgba(255,77,109,0.06);color:var(--err);cursor:pointer;font-size:12px">🗑️</button>
-      </div>
-    </div>`).join('');
+function clearSearch(){
+  document.getElementById('contentSearchInput').value='';
+  filterItems();
 }
-
-window.deleteResearchAdmin = async (id) => {
-  if(!confirm('حذف هذا البحث؟')) return;
-  try{
-    await window._deleteDoc(window._doc(window._db,'research',id));
-    window._allResearch = window._allResearch.filter(r=>r.id!==id);
-    renderResearchCM(window._allResearch);
-    toast('تم الحذف','ok');
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-};
-
-window.printResearchAdmin = (id) => {
-  const r = window._allResearch.find(x=>x.id===id);
-  if(!r) return;
-  const w = window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"/>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet"/>
-  <style>body{font-family:'Tajawal',sans-serif;max-width:900px;margin:auto;padding:20px;direction:rtl}
-  h1{color:#c62828;font-size:2em} .box{background:#f9f9f9;border-right:6px solid #c62828;padding:24px;border-radius:8px;white-space:pre-wrap;line-height:2}
-  @page{@top-center{content:"${r.studentName||''} – ${r.subject||''} – ${r.code||''}";font-size:11pt;color:#c62828}}
-  @media print{button{display:none}}</style></head><body>
-  <h1>${r.topic||'—'}</h1><p><strong>${r.studentName||'—'}</strong> · ${r.subject||''} · ${r.code||''}</p>
-  <div class="box">${(r.details||'لا يوجد محتوى').replace(/\n/g,'<br>')}</div>
-  <button onclick="window.print()" style="margin-top:20px;padding:10px 24px;background:#c62828;color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:15px">🖨️ طباعة</button>
-  </body></html>`);
-  w.document.close();
-};
-
-// ══════════════════════════════════════
-// ── COPY GRADE CONTENT ──
-// ══════════════════════════════════════
-window.openCopyModal = () => {
-  // Populate selects from GRADES_LABEL
-  ['copy-from','copy-to'].forEach(id=>{
-    const sel=document.getElementById(id);
-    sel.innerHTML='<option value="">— اختار —</option>';
-    const cm_grades = window._cmGradesList||[];
-    cm_grades.forEach(g=>{
-      const opt=document.createElement('option');
-      opt.value=g.key; opt.textContent=g.label;
-      sel.appendChild(opt);
-    });
+function openCopyModal(){
+  const from=document.getElementById('copy-from');
+  const to=document.getElementById('copy-to');
+  from.innerHTML='<option value="">— اختار —</option>';
+  to.innerHTML='<option value="">— اختار —</option>';
+  (window._cmGradesList||[]).forEach(g=>{
+    from.innerHTML+=`<option value="${g.key}">${g.label}</option>`;
+    to.innerHTML+=`<option value="${g.key}">${g.label}</option>`;
   });
-  document.getElementById('copyModal').style.display='flex';
-};
-
-window.closeCopyModal = () => {
-  document.getElementById('copyModal').style.display='none';
-  document.getElementById('copy-progress').style.display='none';
-};
-
-window.executeCopy = async () => {
-  const from = document.getElementById('copy-from').value;
-  const to   = document.getElementById('copy-to').value;
-  if(!from||!to){ toast('اختار الصفين','err'); return; }
-  if(from===to){ toast('الصف المصدر والهدف نفس الشيء!','err'); return; }
-  const copyV = document.getElementById('copy-videos')?.checked;
-  const copyE = document.getElementById('copy-exams')?.checked;
-  const copyH = document.getElementById('copy-homework')?.checked;
-  if(!copyV&&!copyE&&!copyH){ toast('اختار نوع المحتوى للنسخ','err'); return; }
-
+  document.getElementById('copyModal').classList.add('show');
+}
+function closeCopyModal(){
+  document.getElementById('copyModal').classList.remove('show');
+}
+async function executeCopy(){
+  const from=document.getElementById('copy-from').value;
+  const to=document.getElementById('copy-to').value;
+  if(!from||!to){toast('اختار الصفين','err');return;}
+  if(from===to){toast('اختار صفين مختلفين','err');return;}
+  const copyVideos=document.getElementById('copy-videos').checked;
+  const copyExams=document.getElementById('copy-exams').checked;
+  const copyHomework=document.getElementById('copy-homework').checked;
+  if(!copyVideos&&!copyExams&&!copyHomework){toast('اختار حاجة تنقلها','err');return;}
   const btn=document.getElementById('copy-btn');
-  btn.disabled=true; btn.textContent='جاري النسخ...';
-  document.getElementById('copy-progress').style.display='block';
+  const prog=document.getElementById('copy-progress');
   const fill=document.getElementById('copy-fill');
   const status=document.getElementById('copy-status');
-
-  const tabs=[];
-  if(copyV) tabs.push('videos');
-  if(copyE) tabs.push('exams');
-  if(copyH) tabs.push('homework');
-  let done=0, total=0;
-
+  btn.disabled=true;prog.style.display='block';fill.style.width='0%';
   try{
-    // Count first
-    for(const tab of tabs){
-      const snap=await window._getDocs(window._collection(window._db,'content',from,tab));
-      total+=snap.docs.length;
-    }
-    if(!total){ toast('مفيش محتوى في الصف المصدر','err'); btn.disabled=false; btn.textContent='📋 ابدأ النسخ'; return; }
-
-    for(const tab of tabs){
-      status.textContent=`نسخ ${tab}...`;
-      const snap=await window._getDocs(window._collection(window._db,'content',from,tab));
-      for(const d of snap.docs){
-        const data={...d.data()};
-        delete data.id;
-        data.updatedAt=window._serverTimestamp();
-        data.createdAt=window._serverTimestamp();
-        await window._addDoc(window._collection(window._db,'content',to,tab), data);
-        done++;
-        const pct=Math.round(done/total*100);
-        fill.style.width=pct+'%';
-        status.textContent=`تم نسخ ${done} من ${total}`;
+    let total=0,done=0;
+    const tasks=[];
+    if(copyVideos)tasks.push('videos');
+    if(copyExams)tasks.push('exams');
+    if(copyHomework)tasks.push('homework');
+    total=tasks.length;
+    for(const task of tasks){
+      status.textContent=`جاري نسخ ${task==='videos'?'الفيديوهات':task==='exams'?'الامتحانات':'الواجبات'}...`;
+      const snap=await window._getDocs(window._collection(window._db,'content',from,task));
+      const items=snap.docs.map(d=>d.data());
+      for(const it of items){
+        await window._addDoc(window._collection(window._db,'content',to,task),{...it,order:it.order||1,createdAt:window._serverTimestamp()});
       }
+      done++;
+      fill.style.width=(done/total*100)+'%';
     }
-    toast(`✅ تم نسخ ${done} عنصر من ${from} إلى ${to}`,'ok');
-    setTimeout(closeCopyModal, 1500);
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-  btn.disabled=false; btn.textContent='📋 ابدأ النسخ';
-};
-
-// ══════════════════════════════════════
-// ── SWITCH TAB (updated for research) ──
-// ══════════════════════════════════════
-const _origSwitchTab = window.switchTab;
-window.switchTab = (t) => {
-  _curTab=t;
-  ['v','e','h','b','r'].forEach(x=>{
-    document.getElementById('t'+x)?.classList.toggle('on',x===t);
-    document.getElementById('s'+x) && (document.getElementById('s'+x).style.display=x===t?'block':'none');
-  });
-  const grade=document.getElementById('gSel').value;
-  if(t==='b'){ loadBooks(); return; }
-  if(t==='r'){ loadResearchCM(); return; }
-  if(grade){
-    const tab=t==='v'?'videos':t==='e'?'exams':'homework';
-    const el=t==='v'?'vList':t==='e'?'eList':'hList';
-    loadList(tab,el);
+    status.textContent='تم النسخ بنجاح ✓';
+    toast('تم نسخ المحتوى بنجاح','ok');
+    setTimeout(closeCopyModal,1500);
+  }catch(e){
+    status.textContent='خطأ: '+e.message;
+    toast('خطأ في النسخ','err');
   }
-};
-
-document.addEventListener('fbready', ()=>{
-  // expose Firestore methods for use in new functions
-  console.log('CM enhanced features ready');
-});
+  btn.disabled=false;
+}
+function toast(msg,type='ok'){
+  const t=document.getElementById('toast');
+  const ic=document.getElementById('tIc');
+  const txt=document.getElementById('tMsg');
+  txt.textContent=msg;
+  t.className='toast '+type+' show';
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+function previewCover(url){
+  if(url){
+    document.getElementById('bCoverImg').src=url;
+    document.getElementById('bCoverPreview').style.display='block';
+  } else {
+    document.getElementById('bCoverPreview').style.display='none';
+  }
+}
+async function saveBook(){
+  const title=document.getElementById('bTitle').value.trim();
+  if(!title){toast('ادخل عنوان الكتاب','err');return;}
+  const btn=document.getElementById('bSaveBtn');
+  btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
+  try{
+    const data={
+      title,
+      description:document.getElementById('bDesc').value.trim(),
+      price:parseInt(document.getElementById('bPrice').value)||0,
+      grade:document.getElementById('bGrade').value,
+      pages:parseInt(document.getElementById('bPages').value)||0,
+      order:parseInt(document.getElementById('bOrder').value)||1,
+      coverUrl:document.getElementById('bCover').value.trim(),
+      note:document.getElementById('bNote').value.trim(),
+      updatedAt:window._serverTimestamp?window._serverTimestamp():new Date()
+    };
+    if(window._editId?.b){
+      await updateDoc(doc(window._db,'books',window._editId.b),data);
+      delete window._editId.b;
+      toast('تم التعديل ✓','ok');
+    } else {
+      data.createdAt=window._serverTimestamp?window._serverTimestamp():new Date();
+      await addDoc(collection(window._db,'books'),data);
+      toast('تم حفظ الكتاب ✓','ok');
+    }
+    clearBook();loadBooks();
+  }catch(e){toast('خطأ: '+e.message,'err');}
+  btn.innerHTML='<svg width="14" height="14"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
+}
+function clearBook(){
+  document.getElementById('bTitle').value='';
+  document.getElementById('bDesc').value='';
+  document.getElementById('bPrice').value='';
+  document.getElementById('bGrade').value='';
+  document.getElementById('bPages').value='';
+  document.getElementById('bOrder').value='';
+  document.getElementById('bCover').value='';
+  document.getElementById('bNote').value='';
+  document.getElementById('bCoverPreview').style.display='none';
+  delete window._editId?.b;
+}
+async function loadBooks(){
+  const el=document.getElementById('bList');
+  el.innerHTML='<div class="empty"><div class="spin" style="margin:20px auto"></div><p>جاري التحميل...</p></div>';
+  try{
+    const snap=await window._getDocs(window._collection(window._db,'books'));
+    const books=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+    window._booksCache=books;
+    renderBooks(books);
+    document.getElementById('cnt-b').textContent=books.length||'';
+  }catch(e){toast('خطأ تحميل الكتب','err');}
+}
+function renderBooks(books){
+  const el=document.getElementById('bList');
+  if(!books.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-book"/></svg></div><p>لا يوجد كتب</p></div>';
+    return;
+  }
+  el.innerHTML='<div class="items">'+books.map(b=>`
+    <div class="item">
+      <div class="item-num">${b.order||'—'}</div>
+      <div class="item-info">
+        <div class="item-title">${b.title}</div>
+        <div class="item-meta">
+          <span class="tag e">${b.price||0} ج.م</span>
+          ${b.grade?`<span>${b.grade}</span>`:''}
+          ${b.pages?`<span>${b.pages} صفحة</span>`:''}
+        </div>
+      </div>
+      <div class="item-acts">
+        <button class="ia" onclick="editBook('${b.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
+        <button class="ia del" onclick="deleteBook('${b.id}','${b.title?.replace(/'/g,"\\'")||''}')" title="حذف"><svg><use href="#i-trash"/></svg></button>
+      </div>
+    </div>
+  `).join('')+'</div>';
+}
+async function editBook(id){
+  const b=window._booksCache?.find(x=>x.id===id);
+  if(!b)return;
+  window._editId=window._editId||{};
+  window._editId.b=id;
+  document.getElementById('bTitle').value=b.title||'';
+  document.getElementById('bDesc').value=b.description||'';
+  document.getElementById('bPrice').value=b.price||'';
+  document.getElementById('bGrade').value=b.grade||'';
+  document.getElementById('bPages').value=b.pages||'';
+  document.getElementById('bOrder').value=b.order||'';
+  document.getElementById('bCover').value=b.coverUrl||'';
+  document.getElementById('bNote').value=b.note||'';
+  previewCover(b.coverUrl||'');
+  toast('جاهز للتعديل ✏️','ok');
+}
+async function deleteBook(id,title){
+  if(!confirm('حذف "'+title+'"؟'))return;
+  try{
+    await window._deleteDoc(doc(window._db,'books',id));
+    loadBooks();
+    toast('تم الحذف','ok');
+  }catch(e){toast('خطأ: '+e.message,'err');}
+}
+async function loadResearchCM(){
+  const el=document.getElementById('rList');
+  el.innerHTML='<div class="empty"><div class="spin" style="margin:20px auto"></div><p>جاري التحميل...</p></div>';
+  try{
+    const snap=await window._getDocs(window._collection(window._db,'research'));
+    const items=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>new Date(b.createdAt?.toDate?b.createdAt.toDate():b.createdAt)-new Date(a.createdAt?.toDate?a.createdAt.toDate():a.createdAt));
+    window._researchCache=items;
+    renderResearchCM(items);
+    document.getElementById('cnt-r').textContent=items.length||'';
+  }catch(e){toast('خطأ تحميل الأبحاث','err');}
+}
+function renderResearchCM(items){
+  const stage=document.getElementById('r-stage-filter').value;
+  const q=document.getElementById('r-search').value.toLowerCase();
+  let filtered=items;
+  if(stage)filtered=filtered.filter(r=>r.stage===stage);
+  if(q)filtered=filtered.filter(r=>(r.topic||'').toLowerCase().includes(q)||(r.studentName||'').toLowerCase().includes(q));
+  const el=document.getElementById('rList');
+  if(!filtered.length){
+    el.innerHTML='<div class="empty"><div class="empty-icon"><svg><use href="#i-research"/></svg></div><p>لا يوجد أبحاث</p></div>';
+    return;
+  }
+  el.innerHTML='<div class="items">'+filtered.map(r=>`
+    <div class="item">
+      <div class="item-num">📝</div>
+      <div class="item-info">
+        <div class="item-title">${r.topic||'—'}</div>
+        <div class="item-meta">
+          <span class="tag pu">${r.studentName||'—'}</span>
+          <span>${r.stage||'—'}</span>
+          ${r.gradeText?`<span>${r.gradeText}</span>`:''}
+          ${r.dept?`<span>${r.dept}</span>`:''}
+        </div>
+      </div>
+      <div class="item-acts">
+        <button class="ia" onclick="viewResearch('${r.id}')" title="عرض"><svg><use href="#i-eye"/></svg></button>
+        <button class="ia del" onclick="deleteResearch('${r.id}')" title="حذف"><svg><use href="#i-trash"/></svg></button>
+      </div>
+    </div>
+  `).join('')+'</div>';
+}
+function filterResearchCM(){renderResearchCM(window._researchCache||[]);}
+async function viewResearch(id){
+  const r=window._researchCache?.find(x=>x.id===id);
+  if(!r)return;
+  alert(`موضوع: ${r.topic||'—'}\nالطالب: ${r.studentName||'—'}\nالمقرر: ${r.subject||'—'}\nالفرقة: ${r.gradeText||'—'}\nالقسم: ${r.dept||'—'}\nالكود: ${r.code||'—'}\n\nالتفاصيل:\n${r.details||'—'}`);
+}
+async function deleteResearch(id){
+  if(!confirm('حذف هذا البحث؟'))return;
+  try{
+    await window._deleteDoc(doc(window._db,'research',id));
+    loadResearchCM();
+    toast('تم الحذف','ok');
+  }catch(e){toast('خطأ: '+e.message,'err');}
+}
+function toggleMobileMenu(){
+  // Mobile menu toggle functionality
+}
 </script>
 </body>
 </html>
