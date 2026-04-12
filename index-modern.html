@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plus | مستر مهدي حسن</title>
+    <title>Plus Mathematics | مستر مهدي حسن</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -263,6 +263,7 @@
             gap: 5px;
             cursor: pointer;
             padding: 0.5rem;
+            z-index: 1001;
         }
 
         .mobile-menu-btn span {
@@ -272,6 +273,203 @@
             border-radius: 2px;
             transition: var(--transition-smooth);
         }
+
+        .mobile-menu-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+
+        .mobile-menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 350px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            box-shadow: var(--shadow-lg);
+            padding: 5rem 2rem 2rem;
+            transition: var(--transition-smooth);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-smooth);
+            z-index: 999;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .mobile-menu .nav-links a {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--glass-border);
+            font-size: 1.1rem;
+        }
+
+        .mobile-menu .mobile-cta {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Modals */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-smooth);
+            padding: 1rem;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.9);
+            transition: var(--transition-bounce);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: var(--transition-smooth);
+        }
+
+        .modal-close:hover {
+            background: var(--gradient-hero);
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal h2 {
+            font-family: 'Cairo', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border-radius: 12px;
+            border: 2px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            transition: var(--transition-smooth);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: var(--bg-primary);
+        }
+
+        .btn-full {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            position: relative;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: var(--glass-border);
+        }
+
+        .divider::before { right: 0; }
+        .divider::after { left: 0; }
 
         /* Hero Section */
         .hero {
@@ -479,8 +677,10 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            min-height: 180px;
         }
 
+        /* صور خلفية للكورسات */
         .course-card::before {
             content: '';
             position: absolute;
@@ -491,7 +691,58 @@
             background: var(--gradient-card);
             opacity: 0;
             transition: var(--transition-smooth);
-            z-index: -1;
+            z-index: 0;
+        }
+
+        .course-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
+            z-index: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .course-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* خلفيات مختلفة لكل مرحلة */
+        .stage-group:nth-child(1) .course-card:nth-child(1)::before {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .stage-group:nth-child(1) .course-card:nth-child(2)::before {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .stage-group:nth-child(1) .course-card:nth-child(3)::before {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .stage-group:nth-child(2) .course-card:nth-child(1)::before {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        .stage-group:nth-child(2) .course-card:nth-child(2)::before {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+        .stage-group:nth-child(2) .course-card:nth-child(3)::before {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .stage-group:nth-child(3) .course-card:nth-child(1)::before {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
+        }
+        .stage-group:nth-child(3) .course-card:nth-child(2)::before {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+        .stage-group:nth-child(3) .course-card:nth-child(3)::before {
+            background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%);
         }
 
         .course-card:hover {
@@ -752,6 +1003,22 @@
     <!-- Animated Background -->
     <div class="bg-animated"></div>
 
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="nav-links">
+            <li><a href="#courses">الكورسات</a></li>
+            <li><a href="#features">المميزات</a></li>
+            <li><a href="#contact">تواصل معنا</a></li>
+        </ul>
+        <div class="mobile-cta">
+            <a href="#" class="btn btn-outline" data-modal="loginModal">تسجيل الدخول</a>
+            <a href="#" class="btn btn-primary" data-modal="subscribeModal">اشترك الآن</a>
+        </div>
+    </div>
+
     <!-- Header -->
     <header id="header">
         <nav>
@@ -766,8 +1033,8 @@
             <div style="display: flex; align-items: center; gap: 1rem;">
                 <div class="theme-toggle" id="themeToggle"></div>
                 <div class="cta-buttons">
-                    <a href="#login" class="btn btn-outline">تسجيل الدخول</a>
-                    <a href="#subscribe" class="btn btn-primary">اشترك الآن</a>
+                    <a href="#" class="btn btn-outline" data-modal="loginModal">تسجيل الدخول</a>
+                    <a href="#" class="btn btn-primary" data-modal="subscribeModal">اشترك الآن</a>
                 </div>
                 <div class="mobile-menu-btn">
                     <span></span>
@@ -795,7 +1062,7 @@
             </p>
 
             <div class="hero-buttons">
-                <a href="#subscribe" class="btn btn-primary">🚀 يلا سجل حسابك</a>
+                <a href="#" class="btn btn-primary" data-modal="subscribeModal">🚀 يلا سجل حسابك</a>
                 <a href="https://wa.me/201007586279" class="btn btn-outline">💬 تواصل على واتساب</a>
             </div>
         </div>
@@ -964,7 +1231,7 @@
             <h2>مستعد تبدأ مع <span class="gradient-text">Plus</span>؟</h2>
             <p>سجل دلوقتي وابدأ مذاكرتك بشكل صح مع مستر مهدي حسن</p>
             <div class="hero-buttons">
-                <a href="#signup" class="btn btn-primary">🎯 إنشاء حساب مجاناً</a>
+                <a href="#" class="btn btn-primary" data-modal="subscribeModal">🎯 إنشاء حساب مجاناً</a>
                 <a href="https://wa.me/201007586279" class="btn btn-outline">💬 تواصل على واتساب</a>
             </div>
         </div>
@@ -1004,6 +1271,104 @@
         </div>
     </footer>
 
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-close" data-close="loginModal">✕</div>
+            <h2>🔐 تسجيل الدخول</h2>
+            
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label>رقم الهاتف أو الإيميل</label>
+                    <input type="text" placeholder="01xxxxxxxxx أو email@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>كلمة المرور</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">
+                    دخول
+                </button>
+            </form>
+
+            <div class="divider">أو</div>
+
+            <p style="text-align: center; color: var(--text-secondary);">
+                مش عندك حساب؟ 
+                <a href="#" style="color: #667eea; font-weight: 700;" data-modal="subscribeModal" data-close="loginModal">
+                    سجّل الآن
+                </a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Subscribe Modal -->
+    <div class="modal" id="subscribeModal">
+        <div class="modal-content">
+            <div class="modal-close" data-close="subscribeModal">✕</div>
+            <h2>🎓 اشترك الآن</h2>
+            
+            <form onsubmit="handleSubscribe(event)">
+                <div class="form-group">
+                    <label>الاسم كامل</label>
+                    <input type="text" placeholder="اسمك الكامل" required>
+                </div>
+
+                <div class="form-group">
+                    <label>رقم الهاتف</label>
+                    <input type="tel" placeholder="01xxxxxxxxx" pattern="[0-9]{11}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>الإيميل (اختياري)</label>
+                    <input type="email" placeholder="email@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>الصف الدراسي</label>
+                    <select required>
+                        <option value="">اختر الصف</option>
+                        <optgroup label="المرحلة الابتدائية">
+                            <option>الصف الرابع الابتدائي</option>
+                            <option>الصف الخامس الابتدائي</option>
+                            <option>الصف السادس الابتدائي</option>
+                        </optgroup>
+                        <optgroup label="المرحلة الإعدادية">
+                            <option>الصف الأول الإعدادي</option>
+                            <option>الصف الثاني الإعدادي</option>
+                            <option>الصف الثالث الإعدادي</option>
+                        </optgroup>
+                        <optgroup label="المرحلة الثانوية">
+                            <option>الصف الأول الثانوي</option>
+                            <option>الصف الثاني الثانوي</option>
+                            <option>الصف الثالث الثانوي</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>كود الاشتراك (إذا كان عندك)</label>
+                    <input type="text" placeholder="PLUS-XXXX-XXXX">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-full">
+                    📲 تواصل للاشتراك عبر واتساب
+                </button>
+            </form>
+
+            <div class="divider">أو</div>
+
+            <p style="text-align: center; color: var(--text-secondary);">
+                عندك حساب؟ 
+                <a href="#" style="color: #667eea; font-weight: 700;" data-modal="loginModal" data-close="subscribeModal">
+                    سجّل الدخول
+                </a>
+            </p>
+        </div>
+    </div>
+
     <script>
         // Theme Toggle
         const themeToggle = document.getElementById('themeToggle');
@@ -1020,6 +1385,120 @@
             htmlElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
         });
+
+        // Mobile Menu
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+        function toggleMobileMenu() {
+            mobileMenuBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            mobileMenuOverlay.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        mobileMenuOverlay.addEventListener('click', toggleMobileMenu);
+
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a[href^="#"]').forEach(link => {
+            link.addEventListener('click', () => {
+                if (!link.hasAttribute('data-modal')) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+
+        // Modal Functions
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Modal triggers
+        document.querySelectorAll('[data-modal]').forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                const modalId = trigger.getAttribute('data-modal');
+                const closeModalId = trigger.getAttribute('data-close');
+                
+                if (closeModalId) {
+                    closeModal(closeModalId);
+                }
+                
+                openModal(modalId);
+                
+                // Close mobile menu if open
+                if (mobileMenu.classList.contains('active')) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+
+        // Modal close buttons
+        document.querySelectorAll('[data-close]').forEach(closeBtn => {
+            closeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const modalId = closeBtn.getAttribute('data-close');
+                closeModal(modalId);
+            });
+        });
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal.active').forEach(modal => {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            }
+        });
+
+        // Form Handlers
+        function handleLogin(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            // Here you would normally send to backend
+            alert('🔐 تسجيل الدخول قيد التطوير...\nسيتم توصيلك بالنظام قريباً!');
+            closeModal('loginModal');
+        }
+
+        function handleSubscribe(e) {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const phone = formData.get('tel') || '01007586279';
+            const name = e.target.querySelector('[placeholder*="اسمك"]').value;
+            const grade = e.target.querySelector('select').value;
+            
+            // Create WhatsApp message
+            const message = `مرحباً! أنا ${name} وعايز أشترك في ${grade}`;
+            const whatsappURL = `https://wa.me/201007586279?text=${encodeURIComponent(message)}`;
+            
+            window.open(whatsappURL, '_blank');
+            closeModal('subscribeModal');
+        }
 
         // Header Scroll Effect
         const header = document.getElementById('header');
@@ -1054,14 +1533,23 @@
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                if (!this.hasAttribute('data-modal')) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
                 }
+            });
+        });
+
+        // Course card click handler
+        document.querySelectorAll('.course-card').forEach(card => {
+            card.addEventListener('click', () => {
+                openModal('subscribeModal');
             });
         });
     </script>
