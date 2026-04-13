@@ -1,12 +1,3 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <metaHere is the updated HTML file. I have translated the Cover Page and Student List into English, kept the main content in English as requested initially, maintained the font size of 22px for the student names, included the logo placeholder, and added the print button.
-
-You can save this code as `image.html`.
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +17,108 @@ You can save this code as `image.html`.
             background-color: #f9f9f9;
         }
 
-        /* General Headings */
+        /* --- Styles for the Decorative Border (Matching the Image) --- */
+        .decorated-page {
+            border: 8px double #d35400; /* Orange double border like the image */
+            outline: 2px solid #e67e22;
+            outline-offset: -12px;
+            padding: 40px;
+            background-color: #fff;
+            text-align: center;
+            page-break-after: always;
+            position: relative;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* Header Section in Decorated Page */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            direction: rtl; /* For Arabic text alignment in header */
+        }
+
+        .ministry-text {
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+            color: #2c3e50;
+            text-align: right;            line-height: 1.4;
+        }
+
+        .school-logo-img {
+            width: 120px;
+            height: auto;
+        }
+
+        /* Content of Cover Page */
+        .cover-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .research-title-eng {
+            font-size: 42px;
+            font-weight: bold;
+            color: #c0392b; /* Dark Red like "Peptic Ulcer Disease" in image */
+            margin: 20px 0;
+            text-transform: uppercase;
+        }
+
+        .research-image {
+            max-width: 300px;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+
+        .supervisor-section {
+            margin-top: 40px;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .supervisor-label {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            text-decoration: underline;
+        }
+
+        .supervisor-name {
+            font-size: 22px;
+            color: #16a085;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        /* Student List Page Specifics */
+        .students-list-container {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl; /* Arabic names right-to-left */
+        }
+
+        .students-title-ar {
+            font-size: 32px;
+            font-weight: bold;
+            color: #c0392b;
+            text-decoration: underline;
+            margin-bottom: 30px;
+        }
+
+        .student-name-ar {
+            font-size: 22px !important; /* Requested size 22 */
+            font-weight: bold;
+            color: #333;
+            margin: 15px 0;
+            list-style: none;
+        }
+
+        /* --- General Content Styles (English) --- */
         h1 {
             text-align: center;
             color: #2c3e50;
@@ -53,13 +145,10 @@ You can save this code as `image.html`.
         li {
             margin-bottom: 8px;
         }
-
-        /* Images */
-        .image-container {
-            text-align: center;
+        .image-container {            text-align: center;
             margin: 20px 0;
         }
-        img {
+        img.content-img {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
@@ -71,8 +160,6 @@ You can save this code as `image.html`.
             margin-top: 5px;
             font-style: italic;
         }
-
-        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -90,8 +177,6 @@ You can save this code as `image.html`.
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-
-        /* References */
         .reference-list {
             background-color: #fff;
             padding: 20px;
@@ -105,102 +190,13 @@ You can save this code as `image.html`.
             text-indent: -20px;
         }
 
-        /* --- Cover Page & Student Page Styles --- */
-        .cover-page, .students-page {
-            text-align: center;
-            padding: 60px 20px;
-            background-color: #fff;
-            border: 2px solid #2980b9;
-            border-radius: 15px;
-            margin-bottom: 40px;
-            page-break-after: always; /* Ensures new page when printing */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 80vh; /* Takes up most of the screen/page */
-        }
-
-        .school-logo {
-            width: 150px;
-            height: auto;
-            margin-bottom: 25px;
-        }
-
-        .school-name {
-            font-size: 32px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-        }
-
-        .project-title {
-            font-size: 42px;
-            color: #e74c3c;
-            margin: 40px 0;
-            font-weight: bold;
-        }
-
-        .supervisor-section {
-            margin-top: 30px;
-            font-size: 24px;
-            color: #555;
-        }
-
-        .supervisor-name {
-            font-size: 26px;
-            color: #16a085;
-            font-weight: bold;
-            display: block;
-            margin-top: 10px;
-        }
-
-        /* Student List Styling */
-        .students-title {
-            font-size: 28px;
-            color: #2c3e50;
-            margin-bottom: 40px;
-            text-decoration: underline;
-        }
-
-        .students-list {
-            list-style: none;
-            padding: 0;
-            display: inline-block;
-            text-align: left; /* Align names to left for English */
-            width: 100%;
-            max-width: 600px;
-        }
-
-        .student-item {
-            font-size: 22px !important; /* Requested Font Size 22 */
-            font-weight: bold;
-            color: #333;
-            margin: 12px 0;
-            padding: 12px 20px;
-            background-color: #f0f8ff;
-            border-radius: 8px;
-            border-left: 5px solid #2980b9; /* Left border for English layout */
-            transition: transform 0.2s;
-            display: flex;
-            align-items: center;
-        }
-        
-        .student-item:hover {
-            transform: scale(1.02);
-            background-color: #e6f2ff;
-        }
-
         /* Print Button */
         .print-btn-container {
             text-align: center;
             margin: 20px 0;
-            position: sticky;
-            top: 10px;
+            position: sticky;            top: 10px;
             z-index: 1000;
         }
-
         .print-btn {
             background-color: #2c3e50;
             color: white;
@@ -212,31 +208,21 @@ You can save this code as `image.html`.
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transition: background-color 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
         }
-
         .print-btn:hover {
             background-color: #e74c3c;
         }
 
-        /* Print Media Query */
         @media print {
             .print-btn-container {
                 display: none;
             }
             body {
                 background-color: white;
-                max-width: 100%;
             }
-            .cover-page, .students-page {
-                border: none;
-                min-height: 100vh;
-            }
-            a {
-                text-decoration: none;
-                color: black;
+            .decorated-page {
+                border: 8px double #d35400; /* Ensure border prints */
+                -webkit-print-color-adjust: exact;
             }
         }
     </style>
@@ -245,52 +231,68 @@ You can save this code as `image.html`.
 
     <!-- Print Button -->
     <div class="print-btn-container">
-        <button class="print-btn" onclick="window.print()">
-            <span>🖨️</span> Print / Save as PDF
-        </button>
+        <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
     </div>
 
-    <!-- Page 1: Cover Page -->
-    <div class="cover-page">
-        <!-- School Logo Placeholder -->
-        <img src="https://cdn-icons-png.flaticon.com/512/3063/3063822.png" alt="Al-Agyad School Logo" class="school-logo">
-        
-        <div class="school-name">Al-Agyad Secondary Technical School for Nursing</div>
-        
-        <div class="project-title">Comprehensive Research on Cancer</div>
-        
-        <div class="supervisor-section">
-            Under the Supervision of:<br>
-            <span class="supervisor-name">Dr. Sara Mahmoud</span>
+    <!-- PAGE 1: COVER PAGE (Designed like the provided image) -->
+    <div class="decorated-page">
+        <!-- Header: Ministry/School Name & Logo -->
+        <div class="header-section">
+            <div class="ministry-text">
+                وزارة الصحة والسكان<br>
+                مدرسة الأجياد الثانوية الفنية للتمريض ببيبا
+            </div>
+            <!-- Using a placeholder for the logo. Replace src with actual logo URL if available -->
+            <img src="https://cdn-icons-png.flaticon.com/512/3063/3063822.png" alt="Al-Agyad School Logo" class="school-logo-img">        </div>
+
+        <!-- Main Content -->
+        <div class="cover-content">
+            <!-- Research Title in English -->
+            <div class="research-title-eng">Cancer Disease</div>
+            
+            <!-- Image related to Cancer (Stomach image replaced with Cancer cell/tumor image for relevance) -->
+            <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/05a1b460b-3c27-4b29-92be-0b92b53656f95605.png" alt="Cancer Cells" class="research-image">
+
+            <!-- Supervisor Section -->
+            <div class="supervisor-section">
+                <div class="supervisor-label">Under the Supervision of</div>
+                <div class="supervisor-name">Dr. Sara Mahmoud</div>
+            </div>
         </div>
     </div>
 
-    <!-- Page 2: Student Preparation -->
-    <div class="students-page">
-        <h2 class="students-title">Prepared by the Students:</h2>
+    <!-- PAGE 2: STUDENT LIST (Designed like the provided image) -->
+    <div class="decorated-page">
+        <!-- Empty header spacer to maintain layout consistency or repeat header if needed -->
+        <div style="height: 150px;"></div> 
+
+        <div class="students-list-container">
+            <div class="students-title-ar">إعداد :</div>
+            <ul style="padding-right: 0;">
+                <li class="student-name-ar">حلميه عبدالرحمن</li>
+                <li class="student-name-ar">حنين أحمد رجب</li>
+                <li class="student-name-ar">حوريه حسن</li>
+                <li class="student-name-ar">رحاب السيد خميس</li>
+                <li class="student-name-ar">روضه شعبان</li>
+                <li class="student-name-ar">ساره عمار</li>
+                <li class="student-name-ar">سلسبيل ربيع حسن</li>
+                <li class="student-name-ar">شهد حسن عبدالعظيم</li>
+                <li class="student-name-ar">فرحه علي رمضان</li>
+                <li class="student-name-ar">ليديا فرج</li>
+            </ul>
+        </div>
         
-        <ul class="students-list">
-            <li class="student-item">Helmya Abdelrahman</li>
-            <li class="student-item">Hanin Ahmed Ragab</li>
-            <li class="student-item">Houria Hassan</li>
-            <li class="student-item">Rehab El-Sayed Khamis</li>
-            <li class="student-item">Rawda Shaaban</li>
-            <li class="student-item">Sara Ammar</li>
-            <li class="student-item">Salsabil Rabie Hassan</li>
-            <li class="student-item">Shahd Hassan Abdalazim</li>
-            <li class="student-item">Farha Ali Ramadan</li>
-            <li class="student-item">Lidia Farag</li>
-        </ul>
+        <!-- Footer spacer -->
+        <div style="height: 50px;"></div>
     </div>
 
-    <!-- Research Content Starts Here -->
+    <!-- RESEARCH CONTENT (In English) -->
     <h1>Research Content: Cancer</h1>
 
     <h2>1. Introduction to Cancer</h2>
     <p>Cancer is not a single disease but a large group of diseases characterized by the uncontrolled growth and spread of abnormal cells. It is one of the leading causes of death worldwide. In 2020, there were an estimated 19.3 million new cases and nearly 10 million deaths globally. Understanding cancer involves examining its biological mechanisms, types, risk factors, clinical manifestations, diagnostic methods, treatments, and preventive strategies.</p>
 
-    <div class="image-container">
-        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/05a1b460b-3c27-4b29-92be-0b92b53656f95605.png" alt="Diagram showing normal cell development vs abnormal cancer cell growth">
+    <div class="image-container">        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/05a1b460b-3c27-4b29-92be-0b92b53656f95605.png" alt="Diagram showing normal cell development vs abnormal cancer cell growth" class="content-img">
         <div class="caption">Figure 1: Comparison of normal cell division and abnormal cancer cell growth leading to a malignant tumor.</div>
     </div>
 
@@ -310,7 +312,7 @@ You can save this code as `image.html`.
     </ul>
 
     <div class="image-container">
-        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/25a1b460b-3c27-4b29-92be-0b92b53656f98216.png" alt="Infographic showing the most common types of cancer globally">
+        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/25a1b460b-3c27-4b29-92be-0b92b53656f98216.png" alt="Infographic showing the most common types of cancer globally" class="content-img">
         <div class="caption">Figure 2: Global distribution of the most common types of cancer, including breast, lung, colorectal, and prostate cancer.</div>
     </div>
 
@@ -337,10 +339,9 @@ You can save this code as `image.html`.
     </ul>
 
     <div class="image-container">
-        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/25a1b460b-3c27-4b29-92be-0b92b53656f98599.png" alt="List of common cancer risk factors">
+        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/25a1b460b-3c27-4b29-92be-0b92b53656f98599.png" alt="List of common cancer risk factors" class="content-img">
         <div class="caption">Figure 3: Common modifiable and non-modifiable risk factors for cancer.</div>
     </div>
-
     <h2>5. Clinical Manifestations and Symptoms</h2>
     <p>Symptoms vary widely depending on the type, location, and stage of cancer. Early-stage cancer may have no symptoms. General signs include:</p>
     
@@ -389,8 +390,7 @@ You can save this code as `image.html`.
                 <td>Checking for lumps, swelling, or other abnormalities.</td>
                 <td>Palpation of breasts, lymph nodes, abdomen.</td>
             </tr>
-            <tr>
-                <td><strong>Laboratory Tests</strong></td>
+            <tr>                <td><strong>Laboratory Tests</strong></td>
                 <td>Blood, urine, or other body fluid tests.</td>
                 <td>Complete Blood Count (CBC), Tumor Markers (PSA, CA-125, CEA).</td>
             </tr>
@@ -418,7 +418,7 @@ You can save this code as `image.html`.
     </table>
 
     <div class="image-container">
-        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/35a1b460b-3c27-4b29-92be-0b92b53656f93032.png" alt="Various cancer imaging tests including CT, MRI, and PET scans">
+        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/35a1b460b-3c27-4b29-92be-0b92b53656f93032.png" alt="Various cancer imaging tests including CT, MRI, and PET scans" class="content-img">
         <div class="caption">Figure 4: Examples of imaging techniques used in cancer diagnosis, such as CT, MRI, and PET scans.</div>
     </div>
 
@@ -439,8 +439,7 @@ You can save this code as `image.html`.
         <li><strong>Emotional and Psychological Support:</strong> Active listening, providing counseling resources, supporting family members, addressing anxiety and depression.</li>
         <li><strong>Educational Support:</strong> Teaching about the disease, treatment plan, self-care, warning signs, and follow-up care.</li>
         <li><strong>Promoting Activity and Rest:</strong> Balancing activity to prevent fatigue with adequate rest periods.</li>
-        <li><strong>Skin Care:</strong> Managing radiation dermatitis, preventing pressure ulcers in immobile patients.</li>
-        <li><strong>End-of-Life Care:</strong> Providing palliative care, ensuring comfort, dignity, and support for patients and families during terminal stages.</li>
+        <li><strong>Skin Care:</strong> Managing radiation dermatitis, preventing pressure ulcers in immobile patients.</li>        <li><strong>End-of-Life Care:</strong> Providing palliative care, ensuring comfort, dignity, and support for patients and families during terminal stages.</li>
     </ul>
 
     <h2>9. Surgical Management Procedures</h2>
@@ -483,13 +482,12 @@ You can save this code as `image.html`.
     </ul>
 
     <div class="image-container">
-        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/15a1b460b-3c27-4b29-92be-0b92b53656f99132.png" alt="Infographic on healthy lifestyle practices for cancer prevention">
+        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/15a1b460b-3c27-4b29-92be-0b92b53656f99132.png" alt="Infographic on healthy lifestyle practices for cancer prevention" class="content-img">
         <div class="caption">Figure 5: Key lifestyle recommendations for reducing cancer risk, including diet, exercise, and avoiding tobacco/alcohol.</div>
     </div>
 
     <h2>11. Conclusion</h2>
     <p>Cancer remains a major global health challenge, but advancements in understanding its biology, early detection, and treatment have significantly improved outcomes for many patients. It is a complex group of diseases with diverse causes, manifestations, and treatments. A multidisciplinary approach involving oncologists, surgeons, nurses, dietitians, and mental health professionals is essential for comprehensive care. Prevention through lifestyle modifications and adherence to screening guidelines is the most effective strategy to reduce the burden of cancer. Continued research into personalized medicine, immunotherapy, and early detection technologies offers hope for even better outcomes in the future.</p>
-
     <h2>12. References</h2>
     <ul class="reference-list">
         <li>[1] Healthdirect Australia. (n.d.). <em>Cancer - symptoms, causes, diagnosis and treatments</em>. Retrieved from https://www.healthdirect.gov.au/cancer</li>
