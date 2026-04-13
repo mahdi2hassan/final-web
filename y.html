@@ -1,4 +1,10 @@
-Here is the comprehensive research on cancer, formatted as an HTML file with embedded images and structured according to your guidelines. You can save the code below as `image.html` and open it in any web browser.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <metaHere is the updated HTML file. I have translated the Cover Page and Student List into English, kept the main content in English as requested initially, maintained the font size of 22px for the student names, included the logo placeholder, and added the print button.
+
+You can save this code as `image.html`.
 
 ```html
 <!DOCTYPE html>
@@ -6,10 +12,12 @@ Here is the comprehensive research on cancer, formatted as an HTML file with emb
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comprehensive Research on Cancer</title>
+    <title>Cancer Research - Al-Agyad School</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Roboto:wght@400;700&display=swap');
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
             max-width: 900px;
@@ -17,6 +25,8 @@ Here is the comprehensive research on cancer, formatted as an HTML file with emb
             padding: 20px;
             background-color: #f9f9f9;
         }
+
+        /* General Headings */
         h1 {
             text-align: center;
             color: #2c3e50;
@@ -43,6 +53,8 @@ Here is the comprehensive research on cancer, formatted as an HTML file with emb
         li {
             margin-bottom: 8px;
         }
+
+        /* Images */
         .image-container {
             text-align: center;
             margin: 20px 0;
@@ -59,18 +71,8 @@ Here is the comprehensive research on cancer, formatted as an HTML file with emb
             margin-top: 5px;
             font-style: italic;
         }
-        .reference-list {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-        .reference-list li {
-            list-style-type: none;
-            margin-bottom: 10px;
-            padding-left: 20px;
-            text-indent: -20px;
-        }
+
+        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -88,14 +90,204 @@ Here is the comprehensive research on cancer, formatted as an HTML file with emb
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+
+        /* References */
+        .reference-list {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        .reference-list li {
+            list-style-type: none;
+            margin-bottom: 10px;
+            padding-left: 20px;
+            text-indent: -20px;
+        }
+
+        /* --- Cover Page & Student Page Styles --- */
+        .cover-page, .students-page {
+            text-align: center;
+            padding: 60px 20px;
+            background-color: #fff;
+            border: 2px solid #2980b9;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            page-break-after: always; /* Ensures new page when printing */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh; /* Takes up most of the screen/page */
+        }
+
+        .school-logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 25px;
+        }
+
+        .school-name {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .project-title {
+            font-size: 42px;
+            color: #e74c3c;
+            margin: 40px 0;
+            font-weight: bold;
+        }
+
+        .supervisor-section {
+            margin-top: 30px;
+            font-size: 24px;
+            color: #555;
+        }
+
+        .supervisor-name {
+            font-size: 26px;
+            color: #16a085;
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+
+        /* Student List Styling */
+        .students-title {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            text-decoration: underline;
+        }
+
+        .students-list {
+            list-style: none;
+            padding: 0;
+            display: inline-block;
+            text-align: left; /* Align names to left for English */
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .student-item {
+            font-size: 22px !important; /* Requested Font Size 22 */
+            font-weight: bold;
+            color: #333;
+            margin: 12px 0;
+            padding: 12px 20px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            border-left: 5px solid #2980b9; /* Left border for English layout */
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .student-item:hover {
+            transform: scale(1.02);
+            background-color: #e6f2ff;
+        }
+
+        /* Print Button */
+        .print-btn-container {
+            text-align: center;
+            margin: 20px 0;
+            position: sticky;
+            top: 10px;
+            z-index: 1000;
+        }
+
+        .print-btn {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-family: 'Roboto', sans-serif;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: background-color 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .print-btn:hover {
+            background-color: #e74c3c;
+        }
+
+        /* Print Media Query */
+        @media print {
+            .print-btn-container {
+                display: none;
+            }
+            body {
+                background-color: white;
+                max-width: 100%;
+            }
+            .cover-page, .students-page {
+                border: none;
+                min-height: 100vh;
+            }
+            a {
+                text-decoration: none;
+                color: black;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <h1>Comprehensive Research on Cancer</h1>
+    <!-- Print Button -->
+    <div class="print-btn-container">
+        <button class="print-btn" onclick="window.print()">
+            <span>🖨️</span> Print / Save as PDF
+        </button>
+    </div>
+
+    <!-- Page 1: Cover Page -->
+    <div class="cover-page">
+        <!-- School Logo Placeholder -->
+        <img src="https://cdn-icons-png.flaticon.com/512/3063/3063822.png" alt="Al-Agyad School Logo" class="school-logo">
+        
+        <div class="school-name">Al-Agyad Secondary Technical School for Nursing</div>
+        
+        <div class="project-title">Comprehensive Research on Cancer</div>
+        
+        <div class="supervisor-section">
+            Under the Supervision of:<br>
+            <span class="supervisor-name">Dr. Sara Mahmoud</span>
+        </div>
+    </div>
+
+    <!-- Page 2: Student Preparation -->
+    <div class="students-page">
+        <h2 class="students-title">Prepared by the Students:</h2>
+        
+        <ul class="students-list">
+            <li class="student-item">Helmya Abdelrahman</li>
+            <li class="student-item">Hanin Ahmed Ragab</li>
+            <li class="student-item">Houria Hassan</li>
+            <li class="student-item">Rehab El-Sayed Khamis</li>
+            <li class="student-item">Rawda Shaaban</li>
+            <li class="student-item">Sara Ammar</li>
+            <li class="student-item">Salsabil Rabie Hassan</li>
+            <li class="student-item">Shahd Hassan Abdalazim</li>
+            <li class="student-item">Farha Ali Ramadan</li>
+            <li class="student-item">Lidia Farag</li>
+        </ul>
+    </div>
+
+    <!-- Research Content Starts Here -->
+    <h1>Research Content: Cancer</h1>
 
     <h2>1. Introduction to Cancer</h2>
-    <p>Cancer is not a single disease but a large group of diseases characterized by the uncontrolled growth and spread of abnormal cells. It is one of the leading causes of death worldwide. In 2020, there were an estimated 19.3 million new cases and nearly 10 million deaths globally [[7]]. Understanding cancer involves examining its biological mechanisms, types, risk factors, clinical manifestations, diagnostic methods, treatments, and preventive strategies.</p>
+    <p>Cancer is not a single disease but a large group of diseases characterized by the uncontrolled growth and spread of abnormal cells. It is one of the leading causes of death worldwide. In 2020, there were an estimated 19.3 million new cases and nearly 10 million deaths globally. Understanding cancer involves examining its biological mechanisms, types, risk factors, clinical manifestations, diagnostic methods, treatments, and preventive strategies.</p>
 
     <div class="image-container">
         <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/05a1b460b-3c27-4b29-92be-0b92b53656f95605.png" alt="Diagram showing normal cell development vs abnormal cancer cell growth">
@@ -103,14 +295,14 @@ Here is the comprehensive research on cancer, formatted as an HTML file with emb
     </div>
 
     <h2>2. Definition of Cancer</h2>
-    <p>Cancer is defined as a condition where cells grow and multiply uncontrollably due to genetic mutations that disrupt normal cell cycle regulation [[1]]. Normally, cells grow, divide, and die in an orderly manner. In cancer, this process breaks down. Old or damaged cells survive when they should die, and new cells form when they are not needed. These extra cells can divide without stopping and may form growths called tumors [[2]].</p>
-    <p>Not all cancers form tumors. For example, leukemias are cancers of the blood-forming tissues and do not usually form solid tumors [[5]]. Cancer cells can also invade nearby tissues and spread to other parts of the body through the blood and lymph systems, a process known as metastasis [[6]].</p>
+    <p>Cancer is defined as a condition where cells grow and multiply uncontrollably due to genetic mutations that disrupt normal cell cycle regulation. Normally, cells grow, divide, and die in an orderly manner. In cancer, this process breaks down. Old or damaged cells survive when they should die, and new cells form when they are not needed. These extra cells can divide without stopping and may form growths called tumors.</p>
+    <p>Not all cancers form tumors. For example, leukemias are cancers of the blood-forming tissues and do not usually form solid tumors. Cancer cells can also invade nearby tissues and spread to other parts of the body through the blood and lymph systems, a process known as metastasis.</p>
 
     <h2>3. Types of Cancer</h2>
     <p>Cancers are named for the organs or tissues where they begin. There are more than 100 types of cancer. The main categories include:</p>
     
     <ul>
-        <li><strong>Carcinomas:</strong> Begin in the skin or tissues lining internal organs (epithelial cells). Examples include breast, lung, prostate, and colorectal cancer. This is the most common type [[8]].</li>
+        <li><strong>Carcinomas:</strong> Begin in the skin or tissues lining internal organs (epithelial cells). Examples include breast, lung, prostate, and colorectal cancer. This is the most common type.</li>
         <li><strong>Sarcomas:</strong> Develop in bone, cartilage, fat, muscle, blood vessels, or other connective or supportive tissue.</li>
         <li><strong>Leukemias:</strong> Cancers of the blood-forming tissues, such as bone marrow, leading to large numbers of abnormal blood cells that enter the blood.</li>
         <li><strong>Lymphomas and Myelomas:</strong> Begin in the cells of the immune system.</li>
@@ -122,17 +314,8 @@ Here is the comprehensive research on cancer, formatted as an HTML file with emb
         <div class="caption">Figure 2: Global distribution of the most common types of cancer, including breast, lung, colorectal, and prostate cancer.</div>
     </div>
 
-    <p>Common specific types include:</p>
-    <ul>
-        <li><strong>Breast Cancer:</strong> Most common in women, originating in breast ducts or lobules.</li>
-        <li><strong>Lung Cancer:</strong> Leading cause of cancer death, strongly linked to smoking.</li>
-        <li><strong>Prostate Cancer:</strong> Common in men, often slow-growing.</li>
-        <li><strong>Colorectal Cancer:</strong> Affects the colon or rectum.</li>
-        <li><strong>Melanoma:</strong> A serious form of skin cancer.</li>
-    </ul>
-
     <h2>4. Causes and Risk Factors</h2>
-    <p>Cancer is caused by changes (mutations) to the DNA within cells. DNA is organized into genes that contain instructions for cellular functions. Mutations can allow cells to grow uncontrollably and prevent them from dying at the right time [[5]].</p>
+    <p>Cancer is caused by changes (mutations) to the DNA within cells. DNA is organized into genes that contain instructions for cellular functions. Mutations can allow cells to grow uncontrollably and prevent them from dying at the right time.</p>
     
     <h3>Internal Factors:</h3>
     <ul>
