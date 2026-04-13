@@ -7,39 +7,50 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Roboto:wght@400;700&display=swap');
 
+        /* إعدادات الصفحة العامة لتنسيق A4 */
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
         body {
             font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 900px;
+            width: 21cm; /* عرض A4 */
+            min-height: 29.7cm; /* طول A4 */
             margin: 0 auto;
-            padding: 20px;
-            background-color: #f9f9f9;
+            padding: 2cm;
+            background-color: #fff;
+            box-sizing: border-box;
         }
 
         /* --- Styles for the Decorative Border (Matching the Image) --- */
         .decorated-page {
-            border: 8px double #d35400; /* Orange double border like the image */
+            border: 5px double #d35400; /* Orange double border like the image */
             outline: 2px solid #e67e22;
-            outline-offset: -12px;
-            padding: 40px;
+            outline-offset: -10px;
+            padding: 30px;
             background-color: #fff;
             text-align: center;
-            page-break-after: always;
+            page-break-after: always; /* فاصل صفحات للطباعة */
             position: relative;
-            min-height: 90vh;
+            height: 25.7cm; /* ارتفاع المحتوى داخل الهوامش */
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* ظل خفيف للعرض على الشاشة */
+            margin-bottom: 20px;
         }
 
         /* Header Section in Decorated Page */
         .header-section {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 30px;
+            align-items: flex-start;            margin-bottom: 30px;
             direction: rtl; /* For Arabic text alignment in header */
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
         }
 
         .ministry-text {
@@ -47,12 +58,8 @@
             font-weight: bold;
             font-size: 16px;
             color: #2c3e50;
-            text-align: right;            line-height: 1.4;
-        }
-
-        .school-logo-img {
-            width: 120px;
-            height: auto;
+            text-align: right;
+            line-height: 1.4;
         }
 
         /* Content of Cover Page */
@@ -65,17 +72,19 @@
         }
 
         .research-title-eng {
-            font-size: 42px;
+            font-size: 36px;
             font-weight: bold;
-            color: #c0392b; /* Dark Red like "Peptic Ulcer Disease" in image */
+            color: #c0392b; /* Dark Red */
             margin: 20px 0;
             text-transform: uppercase;
+            font-family: 'Roboto', sans-serif;
         }
 
         .research-image {
-            max-width: 300px;
+            max-width: 250px;
             margin: 20px auto;
             border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         .supervisor-section {
@@ -84,11 +93,10 @@
         }
 
         .supervisor-label {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             color: #2c3e50;
-            text-decoration: underline;
-        }
+            text-decoration: underline;        }
 
         .supervisor-name {
             font-size: 22px;
@@ -96,14 +104,16 @@
             font-weight: bold;
             margin-top: 10px;
         }
+
         /* Student List Page Specifics */
         .students-list-container {
             font-family: 'Cairo', sans-serif;
             direction: rtl; /* Arabic names right-to-left */
+            margin-top: 50px;
         }
 
         .students-title-ar {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             color: #c0392b;
             text-decoration: underline;
@@ -114,8 +124,14 @@
             font-size: 22px !important; /* Requested size 22 */
             font-weight: bold;
             color: #333;
-            margin: 15px 0;
+            margin: 12px 0;
             list-style: none;
+            padding: 5px 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            display: inline-block;
+            width: 80%;
+            text-align: center;
         }
 
         /* --- General Content Styles (English) --- */
@@ -124,38 +140,46 @@
             color: #2c3e50;
             border-bottom: 3px solid #e74c3c;
             padding-bottom: 10px;
+            font-size: 24px;
         }
         h2 {
             color: #2980b9;
-            margin-top: 30px;
-            border-left: 5px solid #e74c3c;
-            padding-left: 10px;
+            margin-top: 25px;
+            border-left: 5px solid #e74c3c;            padding-left: 10px;
+            font-size: 20px;
+            page-break-after: avoid;
         }
         h3 {
             color: #16a085;
+            font-size: 18px;
         }
         p {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             text-align: justify;
+            font-size: 14px;
         }
         ul, ol {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             padding-left: 20px;
+            font-size: 14px;
         }
         li {
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
-        .image-container {            text-align: center;
-            margin: 20px 0;
+        .image-container {
+            text-align: center;
+            margin: 15px 0;
+            page-break-inside: avoid;
         }
         img.content-img {
             max-width: 100%;
             height: auto;
+            max-height: 300px;
             border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         .caption {
-            font-size: 0.9em;
+            font-size: 12px;
             color: #666;
             margin-top: 5px;
             font-style: italic;
@@ -163,13 +187,14 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 15px 0;
+            font-size: 13px;
+            page-break-inside: avoid;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
+            padding: 8px;
+            text-align: left;        }
         th {
             background-color: #2980b9;
             color: white;
@@ -179,35 +204,36 @@
         }
         .reference-list {
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 15px;
             border: 1px solid #ddd;
+            font-size: 12px;
         }
         .reference-list li {
             list-style-type: none;
-            margin-bottom: 10px;
-            padding-left: 20px;
-            text-indent: -20px;
+            margin-bottom: 8px;
+            padding-left: 15px;
+            text-indent: -15px;
         }
 
         /* Print Button */
         .print-btn-container {
             text-align: center;
             margin: 20px 0;
-            position: sticky;            top: 10px;
+            position: fixed;
+            top: 10px;
+            right: 10px;
             z-index: 1000;
         }
         .print-btn {
             background-color: #2c3e50;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
+            padding: 10px 20px;
+            font-size: 16px;
             font-family: 'Roboto', sans-serif;
-            border-radius: 50px;
+            border-radius: 5px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: background-color 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .print-btn:hover {
             background-color: #e74c3c;
@@ -217,12 +243,22 @@
             .print-btn-container {
                 display: none;
             }
-            body {
+            body {                width: 100%;
+                margin: 0;
+                padding: 0;
                 background-color: white;
             }
             .decorated-page {
-                border: 8px double #d35400; /* Ensure border prints */
-                -webkit-print-color-adjust: exact;
+                border: 5px double #d35400;
+                box-shadow: none;
+                margin: 0;
+                height: 25.7cm; /* Force height for print */
+                page-break-after: always;
+            }
+            /* Ensure backgrounds and borders print */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
         }
     </style>
@@ -234,52 +270,55 @@
         <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
     </div>
 
-    <!-- PAGE 1: COVER PAGE (Designed like the provided image) -->
+    <!-- PAGE 1: COVER PAGE (Designed like the provided image, No Logo) -->
     <div class="decorated-page">
-        <!-- Header: Ministry/School Name & Logo -->
+        <!-- Header: Ministry/School Name Only (Logo Removed) -->
         <div class="header-section">
             <div class="ministry-text">
                 وزارة الصحة والسكان<br>
                 مدرسة الأجياد الثانوية الفنية للتمريض ببيبا
             </div>
-            <!-- Using a placeholder for the logo. Replace src with actual logo URL if available -->
-            <img src="https://cdn-icons-png.flaticon.com/512/3063/3063822.png" alt="Al-Agyad School Logo" class="school-logo-img">        </div>
+            <!-- Logo Removed as requested -->
+            <div></div> 
+        </div>
 
         <!-- Main Content -->
         <div class="cover-content">
             <!-- Research Title in English -->
             <div class="research-title-eng">Cancer Disease</div>
             
-            <!-- Image related to Cancer (Stomach image replaced with Cancer cell/tumor image for relevance) -->
+            <!-- Image related to Cancer -->
             <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/05a1b460b-3c27-4b29-92be-0b92b53656f95605.png" alt="Cancer Cells" class="research-image">
 
             <!-- Supervisor Section -->
             <div class="supervisor-section">
-                <div class="supervisor-label">Under the Supervision of</div>
-                <div class="supervisor-name">Dr. Sara Mahmoud</div>
+                <div class="supervisor-label">Under the Supervision of</div>                <div class="supervisor-name">Dr. Sara Mahmoud</div>
             </div>
         </div>
+        
+        <!-- Footer Spacer -->
+        <div style="height: 20px;"></div>
     </div>
 
     <!-- PAGE 2: STUDENT LIST (Designed like the provided image) -->
     <div class="decorated-page">
-        <!-- Empty header spacer to maintain layout consistency or repeat header if needed -->
-        <div style="height: 150px;"></div> 
+        <!-- Header Spacer -->
+        <div style="height: 60px;"></div> 
 
         <div class="students-list-container">
             <div class="students-title-ar">إعداد :</div>
-            <ul style="padding-right: 0;">
-                <li class="student-name-ar">حلميه عبدالرحمن</li>
-                <li class="student-name-ar">حنين أحمد رجب</li>
-                <li class="student-name-ar">حوريه حسن</li>
-                <li class="student-name-ar">رحاب السيد خميس</li>
-                <li class="student-name-ar">روضه شعبان</li>
-                <li class="student-name-ar">ساره عمار</li>
-                <li class="student-name-ar">سلسبيل ربيع حسن</li>
-                <li class="student-name-ar">شهد حسن عبدالعظيم</li>
-                <li class="student-name-ar">فرحه علي رمضان</li>
-                <li class="student-name-ar">ليديا فرج</li>
-            </ul>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <span class="student-name-ar">حلميه عبدالرحمن</span>
+                <span class="student-name-ar">حنين أحمد رجب</span>
+                <span class="student-name-ar">حوريه حسن</span>
+                <span class="student-name-ar">رحاب السيد خميس</span>
+                <span class="student-name-ar">روضه شعبان</span>
+                <span class="student-name-ar">ساره عمار</span>
+                <span class="student-name-ar">سلسبيل ربيع حسن</span>
+                <span class="student-name-ar">شهد حسن عبدالعظيم</span>
+                <span class="student-name-ar">فرحه علي رمضان</span>
+                <span class="student-name-ar">ليديا فرج</span>
+            </div>
         </div>
         
         <!-- Footer spacer -->
@@ -292,7 +331,8 @@
     <h2>1. Introduction to Cancer</h2>
     <p>Cancer is not a single disease but a large group of diseases characterized by the uncontrolled growth and spread of abnormal cells. It is one of the leading causes of death worldwide. In 2020, there were an estimated 19.3 million new cases and nearly 10 million deaths globally. Understanding cancer involves examining its biological mechanisms, types, risk factors, clinical manifestations, diagnostic methods, treatments, and preventive strategies.</p>
 
-    <div class="image-container">        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/05a1b460b-3c27-4b29-92be-0b92b53656f95605.png" alt="Diagram showing normal cell development vs abnormal cancer cell growth" class="content-img">
+    <div class="image-container">
+        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/05a1b460b-3c27-4b29-92be-0b92b53656f95605.png" alt="Diagram showing normal cell development vs abnormal cancer cell growth" class="content-img">
         <div class="caption">Figure 1: Comparison of normal cell division and abnormal cancer cell growth leading to a malignant tumor.</div>
     </div>
 
@@ -301,8 +341,7 @@
     <p>Not all cancers form tumors. For example, leukemias are cancers of the blood-forming tissues and do not usually form solid tumors. Cancer cells can also invade nearby tissues and spread to other parts of the body through the blood and lymph systems, a process known as metastasis.</p>
 
     <h2>3. Types of Cancer</h2>
-    <p>Cancers are named for the organs or tissues where they begin. There are more than 100 types of cancer. The main categories include:</p>
-    
+    <p>Cancers are named for the organs or tissues where they begin. There are more than 100 types of cancer. The main categories include:</p>    
     <ul>
         <li><strong>Carcinomas:</strong> Begin in the skin or tissues lining internal organs (epithelial cells). Examples include breast, lung, prostate, and colorectal cancer. This is the most common type.</li>
         <li><strong>Sarcomas:</strong> Develop in bone, cartilage, fat, muscle, blood vessels, or other connective or supportive tissue.</li>
@@ -342,6 +381,7 @@
         <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/25a1b460b-3c27-4b29-92be-0b92b53656f98599.png" alt="List of common cancer risk factors" class="content-img">
         <div class="caption">Figure 3: Common modifiable and non-modifiable risk factors for cancer.</div>
     </div>
+
     <h2>5. Clinical Manifestations and Symptoms</h2>
     <p>Symptoms vary widely depending on the type, location, and stage of cancer. Early-stage cancer may have no symptoms. General signs include:</p>
     
@@ -350,8 +390,7 @@
         <li><strong>Weight Changes:</strong> Unintentional weight loss or gain.</li>
         <li><strong>Skin Changes:</strong> Yellowing (jaundice), darkening, redness, sores that don’t heal, or changes in moles.</li>
         <li><strong>Lumps or Thickening:</strong> Any new lump or area of thickening under the skin.</li>
-        <li><strong>Pain:</strong> Persistent pain, especially if new and unexplained.</li>
-        <li><strong>Bowel or Bladder Changes:</strong> Constipation, diarrhea, blood in stool/urine, or changes in frequency.</li>
+        <li><strong>Pain:</strong> Persistent pain, especially if new and unexplained.</li>        <li><strong>Bowel or Bladder Changes:</strong> Constipation, diarrhea, blood in stool/urine, or changes in frequency.</li>
         <li><strong>Persistent Cough or Hoarseness:</strong> Especially if accompanied by blood.</li>
         <li><strong>Difficulty Swallowing:</strong> Or indigestion after eating.</li>
         <li><strong>Unusual Bleeding or Discharge:</strong> Such as blood in sputum, stool, urine, or vaginal bleeding between periods.</li>
@@ -390,7 +429,8 @@
                 <td>Checking for lumps, swelling, or other abnormalities.</td>
                 <td>Palpation of breasts, lymph nodes, abdomen.</td>
             </tr>
-            <tr>                <td><strong>Laboratory Tests</strong></td>
+            <tr>
+                <td><strong>Laboratory Tests</strong></td>
                 <td>Blood, urine, or other body fluid tests.</td>
                 <td>Complete Blood Count (CBC), Tumor Markers (PSA, CA-125, CEA).</td>
             </tr>
@@ -399,8 +439,7 @@
                 <td>Visualizing internal structures to locate tumors.</td>
                 <td>X-ray, CT Scan, MRI, Ultrasound, PET Scan, Mammography.</td>
             </tr>
-            <tr>
-                <td><strong>Biopsy</strong></td>
+            <tr>                <td><strong>Biopsy</strong></td>
                 <td>Removal of a sample of tissue for microscopic examination. This is the only definitive way to diagnose cancer.</td>
                 <td>Needle biopsy, endoscopic biopsy, surgical biopsy.</td>
             </tr>
@@ -439,7 +478,8 @@
         <li><strong>Emotional and Psychological Support:</strong> Active listening, providing counseling resources, supporting family members, addressing anxiety and depression.</li>
         <li><strong>Educational Support:</strong> Teaching about the disease, treatment plan, self-care, warning signs, and follow-up care.</li>
         <li><strong>Promoting Activity and Rest:</strong> Balancing activity to prevent fatigue with adequate rest periods.</li>
-        <li><strong>Skin Care:</strong> Managing radiation dermatitis, preventing pressure ulcers in immobile patients.</li>        <li><strong>End-of-Life Care:</strong> Providing palliative care, ensuring comfort, dignity, and support for patients and families during terminal stages.</li>
+        <li><strong>Skin Care:</strong> Managing radiation dermatitis, preventing pressure ulcers in immobile patients.</li>
+        <li><strong>End-of-Life Care:</strong> Providing palliative care, ensuring comfort, dignity, and support for patients and families during terminal stages.</li>
     </ul>
 
     <h2>9. Surgical Management Procedures</h2>
@@ -448,8 +488,7 @@
     <ul>
         <li><strong>Curative Surgery:</strong> Removal of the entire tumor and surrounding tissue (margins) to eliminate cancer. Examples: Lumpectomy, mastectomy, colectomy, prostatectomy.</li>
         <li><strong>Debulking Surgery:</strong> Removing part of the tumor when complete removal is not possible, to enhance effectiveness of other treatments like chemotherapy or radiation.</li>
-        <li><strong>Palliative Surgery:</strong> Relieving symptoms or side effects caused by the tumor (e.g., relieving obstruction, reducing pain) rather than curing the cancer.</li>
-        <li><strong>Preventive (Prophylactic) Surgery:</strong> Removing tissue likely to become cancerous (e.g., mastectomy in high-risk BRCA carriers, colectomy in familial adenomatous polyposis).</li>
+        <li><strong>Palliative Surgery:</strong> Relieving symptoms or side effects caused by the tumor (e.g., relieving obstruction, reducing pain) rather than curing the cancer.</li>        <li><strong>Preventive (Prophylactic) Surgery:</strong> Removing tissue likely to become cancerous (e.g., mastectomy in high-risk BRCA carriers, colectomy in familial adenomatous polyposis).</li>
         <li><strong>Staging Surgery:</strong> Determining the extent of cancer spread (e.g., laparoscopy, sentinel lymph node biopsy).</li>
         <li><strong>Reconstructive Surgery:</strong> Restoring appearance or function after curative surgery (e.g., breast reconstruction after mastectomy).</li>
         <li><strong>Minimally Invasive Techniques:</strong> Laparoscopy and robotic-assisted surgery offer smaller incisions, less pain, and faster recovery.</li>
@@ -488,6 +527,7 @@
 
     <h2>11. Conclusion</h2>
     <p>Cancer remains a major global health challenge, but advancements in understanding its biology, early detection, and treatment have significantly improved outcomes for many patients. It is a complex group of diseases with diverse causes, manifestations, and treatments. A multidisciplinary approach involving oncologists, surgeons, nurses, dietitians, and mental health professionals is essential for comprehensive care. Prevention through lifestyle modifications and adherence to screening guidelines is the most effective strategy to reduce the burden of cancer. Continued research into personalized medicine, immunotherapy, and early detection technologies offers hope for even better outcomes in the future.</p>
+
     <h2>12. References</h2>
     <ul class="reference-list">
         <li>[1] Healthdirect Australia. (n.d.). <em>Cancer - symptoms, causes, diagnosis and treatments</em>. Retrieved from https://www.healthdirect.gov.au/cancer</li>
@@ -497,8 +537,7 @@
         <li>[5] Mayo Clinic. (2024, November 19). <em>Cancer - Symptoms and causes</em>. Retrieved from https://www.mayoclinic.org/diseases-conditions/cancer/symptoms-causes/syc-20370588</li>
         <li>[6] HCG Oncology. (n.d.). <em>What is Cancer? Types, Symptoms & Treatments</em>. Retrieved from https://www.hcgoncology.com/blog/what-is-cancer-types-symptoms/</li>
         <li>[7] World Health Organization (WHO). (n.d.). <em>Cancer</em>. Retrieved from https://www.who.int/health-topics/cancer</li>
-        <li>[8] Quizlet. (2026, April 3). <em>Cancer Types, Diagnosis, and Nursing Care in Oncology</em>. Retrieved from https://quizlet.com/study-guides/cancer-types-diagnosis-and-nursing-care-in-oncology-76400ee1-7f74-4e86-8037-f77b4b3f84cf</li>
-        <li>[9] UT MD Anderson Cancer Center. (n.d.). <em>Types of Cancer</em>. Retrieved from https://www.mdanderson.org/patients-family/diagnosis-treatment/cancer-types.html</li>
+        <li>[8] Quizlet. (2026, April 3). <em>Cancer Types, Diagnosis, and Nursing Care in Oncology</em>. Retrieved from https://quizlet.com/study-guides/cancer-types-diagnosis-and-nursing-care-in-oncology-76400ee1-7f74-4e86-8037-f77b4b3f84cf</li>        <li>[9] UT MD Anderson Cancer Center. (n.d.). <em>Types of Cancer</em>. Retrieved from https://www.mdanderson.org/patients-family/diagnosis-treatment/cancer-types.html</li>
         <li>[10] National Cancer Institute (NCI). (n.d.). <em>Cancer Causes and Risk Factors</em>. Retrieved from https://www.ncbi.nlm.nih.gov/books/NBK54025/</li>
         <li>[11] American Cancer Society. (2024). <em>The Most Common Types of Cancer in the U.S.</em> [Infographic]. Statista.</li>
         <li>[12] International Agency for Research on Cancer (IARC). (2020). <em>The most common type of cancer</em> [Infographic]. Al Jazeera.</li>
