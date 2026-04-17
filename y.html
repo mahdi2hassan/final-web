@@ -1,553 +1,299 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cancer Research - Al-Agyad School</title>
+    <title>تحليل المستند التقني - عرض تقديمي</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Roboto:wght@400;700&display=swap');
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --text-color: #333;
+            --bg-color: #f4f6f7;
+            --slide-bg: #ffffff;
+        }
 
-        /* إعدادات الصفحة العامة لتنسيق A4 */
-        @page {
-            size: A4;
-            margin: 2cm;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            width: 21cm; /* عرض A4 */
-            min-height: 29.7cm; /* طول A4 */
-            margin: 0 auto;
-            padding: 2cm;
-            background-color: #fff;
-            box-sizing: border-box;
-        }
-
-        /* --- Styles for the Decorative Border (Matching the Image) --- */
-        .decorated-page {
-            border: 5px double #d35400; /* Orange double border like the image */
-            outline: 2px solid #e67e22;
-            outline-offset: -10px;
-            padding: 30px;
-            background-color: #fff;
-            text-align: center;
-            page-break-after: always; /* فاصل صفحات للطباعة */
-            position: relative;
-            height: 25.7cm; /* ارتفاع المحتوى داخل الهوامش */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden; /* لمنع التمرير وجعله كالشرائح */
+            height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* ظل خفيف للعرض على الشاشة */
-            margin-bottom: 20px;
-        }
-
-        /* Header Section in Decorated Page */
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;            margin-bottom: 30px;
-            direction: rtl; /* For Arabic text alignment in header */
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-        }
-
-        .ministry-text {
-            font-family: 'Cairo', sans-serif;
-            font-weight: bold;
-            font-size: 16px;
-            color: #2c3e50;
-            text-align: right;
-            line-height: 1.4;
-        }
-
-        /* Content of Cover Page */
-        .cover-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
 
-        .research-title-eng {
-            font-size: 36px;
-            font-weight: bold;
-            color: #c0392b; /* Dark Red */
-            margin: 20px 0;
-            text-transform: uppercase;
-            font-family: 'Roboto', sans-serif;
+        .presentation-container {
+            width: 90%;
+            max-width: 1000px;
+            aspect-ratio: 16/9;
+            background-color: var(--slide-bg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .research-image {
-            max-width: 250px;
-            margin: 20px auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        /* تنسيق الشريحة */
+        .slide {
+            display: none; /* إخفاء جميع الشرائح افتراضياً */
+            padding: 40px 60px;            height: 100%;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.5s ease-in-out;
         }
 
-        .supervisor-section {
-            margin-top: 40px;
-            font-family: 'Cairo', sans-serif;
+        .slide.active {
+            display: flex; /* إظهار الشريحة النشطة */
         }
 
-        .supervisor-label {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2c3e50;
-            text-decoration: underline;        }
-
-        .supervisor-name {
-            font-size: 22px;
-            color: #16a085;
-            font-weight: bold;
-            margin-top: 10px;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Student List Page Specifics */
-        .students-list-container {
-            font-family: 'Cairo', sans-serif;
-            direction: rtl; /* Arabic names right-to-left */
-            margin-top: 50px;
-        }
-
-        .students-title-ar {
-            font-size: 28px;
-            font-weight: bold;
-            color: #c0392b;
-            text-decoration: underline;
-            margin-bottom: 30px;
-        }
-
-        .student-name-ar {
-            font-size: 22px !important; /* Requested size 22 */
-            font-weight: bold;
-            color: #333;
-            margin: 12px 0;
-            list-style: none;
-            padding: 5px 10px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            display: inline-block;
-            width: 80%;
-            text-align: center;
-        }
-
-        /* --- General Content Styles (English) --- */
+        /* محتوى الشريحة */
         h1 {
-            text-align: center;
-            color: #2c3e50;
-            border-bottom: 3px solid #e74c3c;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--secondary-color);
+            display: inline-block;
             padding-bottom: 10px;
-            font-size: 24px;
-        }
-        h2 {
-            color: #2980b9;
-            margin-top: 25px;
-            border-left: 5px solid #e74c3c;            padding-left: 10px;
-            font-size: 20px;
-            page-break-after: avoid;
-        }
-        h3 {
-            color: #16a085;
-            font-size: 18px;
-        }
-        p {
-            margin-bottom: 10px;
-            text-align: justify;
-            font-size: 14px;
-        }
-        ul, ol {
-            margin-bottom: 10px;
-            padding-left: 20px;
-            font-size: 14px;
-        }
-        li {
-            margin-bottom: 5px;
-        }
-        .image-container {
-            text-align: center;
-            margin: 15px 0;
-            page-break-inside: avoid;
-        }
-        img.content-img {
-            max-width: 100%;
-            height: auto;
-            max-height: 300px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .caption {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-            font-style: italic;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 13px;
-            page-break-inside: avoid;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;        }
-        th {
-            background-color: #2980b9;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        .reference-list {
-            background-color: #fff;
-            padding: 15px;
-            border: 1px solid #ddd;
-            font-size: 12px;
-        }
-        .reference-list li {
-            list-style-type: none;
-            margin-bottom: 8px;
-            padding-left: 15px;
-            text-indent: -15px;
         }
 
-        /* Print Button */
-        .print-btn-container {
-            text-align: center;
-            margin: 20px 0;
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
+        h2 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
         }
-        .print-btn {
-            background-color: #2c3e50;
+
+        ul {
+            list-style-type: none;
+            margin-top: 20px;
+        }
+
+        li {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            padding-right: 20px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        li::before {
+            content: "•";
+            color: var(--secondary-color);
+            font-weight: bold;
+            font-size: 1.8rem;
+            position: absolute;            right: 0;
+            top: -5px;
+        }
+
+        .code-snippet {
+            background-color: #2d3436;
+            color: #55efc4;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            direction: ltr;
+            text-align: left;
+            margin: 20px 0;
+            font-size: 1rem;
+            overflow-x: auto;
+        }
+
+        /* أزرار التحكم */
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
             color: white;
             border: none;
             padding: 10px 20px;
-            font-size: 16px;
-            font-family: 'Roboto', sans-serif;
             border-radius: 5px;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .print-btn:hover {
-            background-color: #e74c3c;
+            font-size: 1rem;
+            transition: background 0.3s;
         }
 
-        @media print {
-            .print-btn-container {
-                display: none;
-            }
-            body {                width: 100%;
-                margin: 0;
-                padding: 0;
-                background-color: white;
-            }
-            .decorated-page {
-                border: 5px double #d35400;
-                box-shadow: none;
-                margin: 0;
-                height: 25.7cm; /* Force height for print */
-                page-break-after: always;
-            }
-            /* Ensure backgrounds and borders print */
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
+        .btn:hover {
+            background-color: var(--secondary-color);
         }
+
+        .btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .slide-number {
+            font-weight: bold;            color: var(--primary-color);
+            background: rgba(0,0,0,0.05);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        /* شريحة العنوان */
+        .title-slide {
+            text-align: center;
+            align-items: center;
+        }
+        
+        .title-slide h1 {
+            border-bottom: none;
+            font-size: 3.5rem;
+        }
+        
+        .title-slide p {
+            font-size: 1.5rem;
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+
     </style>
 </head>
 <body>
 
-    <!-- Print Button -->
-    <div class="print-btn-container">
-        <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
-    </div>
-
-    <!-- PAGE 1: COVER PAGE (Designed like the provided image, No Logo) -->
-    <div class="decorated-page">
-        <!-- Header: Ministry/School Name Only (Logo Removed) -->
-        <div class="header-section">
-            <div class="ministry-text">
-                وزارة الصحة والسكان<br>
-                مدرسة الأجياد الثانوية الفنية للتمريض ببيبا
-            </div>
-            <!-- Logo Removed as requested -->
-            <div></div> 
-        </div>
-
-        <!-- Main Content -->
-        <div class="cover-content">
-            <!-- Research Title in English -->
-            <div class="research-title-eng">Cancer Disease</div>
-            
-            <!-- Image related to Cancer -->
-            <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/05a1b460b-3c27-4b29-92be-0b92b53656f95605.png" alt="Cancer Cells" class="research-image">
-
-            <!-- Supervisor Section -->
-            <div class="supervisor-section">
-                <div class="supervisor-label">Under the Supervision of</div>                <div class="supervisor-name">Dr. Sara Mahmoud</div>
-            </div>
-        </div>
-        
-        <!-- Footer Spacer -->
-        <div style="height: 20px;"></div>
-    </div>
-
-    <!-- PAGE 2: STUDENT LIST (Designed like the provided image) -->
-    <div class="decorated-page">
-        <!-- Header Spacer -->
-        <div style="height: 60px;"></div> 
-
-        <div class="students-list-container">
-            <div class="students-title-ar">إعداد :</div>
-            <div style="display: flex; flex-direction: column; align-items: center;">
-                <span class="student-name-ar">حلميه عبدالرحمن</span>
-                <span class="student-name-ar">حنين أحمد رجب</span>
-                <span class="student-name-ar">حوريه حسن</span>
-                <span class="student-name-ar">رحاب السيد خميس</span>
-                <span class="student-name-ar">روضه شعبان</span>
-                <span class="student-name-ar">ساره عمار</span>
-                <span class="student-name-ar">سلسبيل ربيع حسن</span>
-                <span class="student-name-ar">شهد حسن عبدالعظيم</span>
-                <span class="student-name-ar">فرحه علي رمضان</span>
-                <span class="student-name-ar">ليديا فرج</span>
-            </div>
-        </div>
-        
-        <!-- Footer spacer -->
-        <div style="height: 50px;"></div>
-    </div>
-
-    <!-- RESEARCH CONTENT (In English) -->
-    <h1>Research Content: Cancer</h1>
-
-    <h2>1. Introduction to Cancer</h2>
-    <p>Cancer is not a single disease but a large group of diseases characterized by the uncontrolled growth and spread of abnormal cells. It is one of the leading causes of death worldwide. In 2020, there were an estimated 19.3 million new cases and nearly 10 million deaths globally. Understanding cancer involves examining its biological mechanisms, types, risk factors, clinical manifestations, diagnostic methods, treatments, and preventive strategies.</p>
-
-    <div class="image-container">
-        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/05a1b460b-3c27-4b29-92be-0b92b53656f95605.png" alt="Diagram showing normal cell development vs abnormal cancer cell growth" class="content-img">
-        <div class="caption">Figure 1: Comparison of normal cell division and abnormal cancer cell growth leading to a malignant tumor.</div>
-    </div>
-
-    <h2>2. Definition of Cancer</h2>
-    <p>Cancer is defined as a condition where cells grow and multiply uncontrollably due to genetic mutations that disrupt normal cell cycle regulation. Normally, cells grow, divide, and die in an orderly manner. In cancer, this process breaks down. Old or damaged cells survive when they should die, and new cells form when they are not needed. These extra cells can divide without stopping and may form growths called tumors.</p>
-    <p>Not all cancers form tumors. For example, leukemias are cancers of the blood-forming tissues and do not usually form solid tumors. Cancer cells can also invade nearby tissues and spread to other parts of the body through the blood and lymph systems, a process known as metastasis.</p>
-
-    <h2>3. Types of Cancer</h2>
-    <p>Cancers are named for the organs or tissues where they begin. There are more than 100 types of cancer. The main categories include:</p>    
-    <ul>
-        <li><strong>Carcinomas:</strong> Begin in the skin or tissues lining internal organs (epithelial cells). Examples include breast, lung, prostate, and colorectal cancer. This is the most common type.</li>
-        <li><strong>Sarcomas:</strong> Develop in bone, cartilage, fat, muscle, blood vessels, or other connective or supportive tissue.</li>
-        <li><strong>Leukemias:</strong> Cancers of the blood-forming tissues, such as bone marrow, leading to large numbers of abnormal blood cells that enter the blood.</li>
-        <li><strong>Lymphomas and Myelomas:</strong> Begin in the cells of the immune system.</li>
-        <li><strong>Central Nervous System Cancers:</strong> Begin in the tissues of the brain and spinal cord.</li>
-    </ul>
-
-    <div class="image-container">
-        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/25a1b460b-3c27-4b29-92be-0b92b53656f98216.png" alt="Infographic showing the most common types of cancer globally" class="content-img">
-        <div class="caption">Figure 2: Global distribution of the most common types of cancer, including breast, lung, colorectal, and prostate cancer.</div>
-    </div>
-
-    <h2>4. Causes and Risk Factors</h2>
-    <p>Cancer is caused by changes (mutations) to the DNA within cells. DNA is organized into genes that contain instructions for cellular functions. Mutations can allow cells to grow uncontrollably and prevent them from dying at the right time.</p>
+<div class="presentation-container">
     
-    <h3>Internal Factors:</h3>
-    <ul>
-        <li><strong>Genetics:</strong> Inherited genetic mutations (e.g., BRCA1 and BRCA2 for breast cancer) increase risk.</li>
-        <li><strong>Hormones:</strong> Hormonal imbalances can promote certain cancers (e.g., estrogen and breast/endometrial cancer).</li>
-        <li><strong>Immune Conditions:</strong> Weakened immune systems increase susceptibility.</li>
-        <li><strong>Age:</strong> Risk increases with age due to accumulated DNA damage over time.</li>
-    </ul>
-
-    <h3>External/Lifestyle Factors:</h3>
-    <ul>
-        <li><strong>Tobacco Use:</strong> The single largest preventable cause of cancer, linked to lung, mouth, throat, bladder, and many others.</li>
-        <li><strong>Diet and Obesity:</strong> Diets high in processed meats, saturated fats, and low in fruits/vegetables, combined with obesity, increase risk.</li>
-        <li><strong>Physical Inactivity:</strong> Sedentary lifestyle is a significant risk factor.</li>
-        <li><strong>Alcohol Consumption:</strong> Heavy alcohol use is linked to liver, breast, colorectal, and esophageal cancers.</li>
-        <li><strong>Environmental Exposures:</strong> Carcinogens like asbestos, benzene, radon, and air pollution.</li>
-        <li><strong>Radiation:</strong> UV radiation from the sun (skin cancer) and ionizing radiation (X-rays, CT scans).</li>
-        <li><strong>Infections:</strong> Certain viruses and bacteria (e.g., HPV, Hepatitis B/C, H. pylori) can cause cancer.</li>
-    </ul>
-
-    <div class="image-container">
-        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/25a1b460b-3c27-4b29-92be-0b92b53656f98599.png" alt="List of common cancer risk factors" class="content-img">
-        <div class="caption">Figure 3: Common modifiable and non-modifiable risk factors for cancer.</div>
+    <!-- الشريحة 1: العنوان -->
+    <div class="slide active title-slide">
+        <h1>تحليل هيكلية المستندات التقنية</h1>
+        <p>استعراض تقني لمحتوى ملف DOC-20260413-WA0055.docx</p>
+        <div style="margin-top: 50px; font-size: 1.2rem; color: var(--secondary-color);">
+            اضغط على المسافة أو الأسهم للتنقل
+        </div>
     </div>
 
-    <h2>5. Clinical Manifestations and Symptoms</h2>
-    <p>Symptoms vary widely depending on the type, location, and stage of cancer. Early-stage cancer may have no symptoms. General signs include:</p>
-    
-    <ul>
-        <li><strong>Fatigue:</strong> Extreme tiredness that doesn’t improve with rest.</li>
-        <li><strong>Weight Changes:</strong> Unintentional weight loss or gain.</li>
-        <li><strong>Skin Changes:</strong> Yellowing (jaundice), darkening, redness, sores that don’t heal, or changes in moles.</li>
-        <li><strong>Lumps or Thickening:</strong> Any new lump or area of thickening under the skin.</li>
-        <li><strong>Pain:</strong> Persistent pain, especially if new and unexplained.</li>        <li><strong>Bowel or Bladder Changes:</strong> Constipation, diarrhea, blood in stool/urine, or changes in frequency.</li>
-        <li><strong>Persistent Cough or Hoarseness:</strong> Especially if accompanied by blood.</li>
-        <li><strong>Difficulty Swallowing:</strong> Or indigestion after eating.</li>
-        <li><strong>Unusual Bleeding or Discharge:</strong> Such as blood in sputum, stool, urine, or vaginal bleeding between periods.</li>
-        <li><strong>Fever or Night Sweats:</strong> Often associated with blood cancers like leukemia or lymphoma.</li>
-    </ul>
-
-    <h2>6. Complications</h2>
-    <p>Cancer and its treatment can lead to numerous complications:</p>
-    <ul>
-        <li><strong>Pain:</strong> Caused by the tumor pressing on nerves, bones, or organs, or by treatment side effects.</li>
-        <li><strong>Fatigue:</strong> Severe exhaustion affecting daily life.</li>
-        <li><strong>Infection:</strong> Due to weakened immune systems from cancer or chemotherapy.</li>
-        <li><strong>Bleeding:</strong> Tumors can erode blood vessels.</li>
-        <li><strong>Blood Clots:</strong> Increased risk of deep vein thrombosis (DVT) and pulmonary embolism.</li>
-        <li><strong>Organ Failure:</strong> If cancer spreads to vital organs like the liver, lungs, or brain.</li>
-        <li><strong>Metabolic Issues:</strong> Hypercalcemia (high calcium levels), electrolyte imbalances.</li>
-        <li><strong>Psychological Impact:</strong> Anxiety, depression, and distress.</li>
-        <li><strong>Recurrence:</strong> Cancer returning after treatment.</li>
-        <li><strong>Metastasis:</strong> Spread to distant sites, making cure difficult.</li>
-    </ul>
-
-    <h2>7. Diagnostic Tests</h2>
-    <p>Early and accurate diagnosis is crucial for effective treatment. Diagnostic methods include:</p>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Diagnostic Method</th>
-                <th>Description</th>
-                <th>Examples</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><strong>Physical Exam</strong></td>
-                <td>Checking for lumps, swelling, or other abnormalities.</td>
-                <td>Palpation of breasts, lymph nodes, abdomen.</td>
-            </tr>
-            <tr>
-                <td><strong>Laboratory Tests</strong></td>
-                <td>Blood, urine, or other body fluid tests.</td>
-                <td>Complete Blood Count (CBC), Tumor Markers (PSA, CA-125, CEA).</td>
-            </tr>
-            <tr>
-                <td><strong>Imaging Tests</strong></td>
-                <td>Visualizing internal structures to locate tumors.</td>
-                <td>X-ray, CT Scan, MRI, Ultrasound, PET Scan, Mammography.</td>
-            </tr>
-            <tr>                <td><strong>Biopsy</strong></td>
-                <td>Removal of a sample of tissue for microscopic examination. This is the only definitive way to diagnose cancer.</td>
-                <td>Needle biopsy, endoscopic biopsy, surgical biopsy.</td>
-            </tr>
-            <tr>
-                <td><strong>Endoscopy</strong></td>
-                <td>Using a tube with a camera to view inside the body.</td>
-                <td>Colonoscopy, gastroscopy, bronchoscopy.</td>
-            </tr>
-            <tr>
-                <td><strong>Genetic Testing</strong></td>
-                <td>Identifying inherited mutations that increase cancer risk.</td>
-                <td>BRCA1/2 testing, Lynch syndrome testing.</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="image-container">
-        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/35a1b460b-3c27-4b29-92be-0b92b53656f93032.png" alt="Various cancer imaging tests including CT, MRI, and PET scans" class="content-img">
-        <div class="caption">Figure 4: Examples of imaging techniques used in cancer diagnosis, such as CT, MRI, and PET scans.</div>
+    <!-- الشريحة 2: مقدمة عن الملف -->
+    <div class="slide">
+        <h1>نظرة عامة على الملف</h1>
+        <ul>
+            <li><strong>نوع الملف:</strong> مستند Word (.docx) يعتمد على بنية Office Open XML.</li>
+            <li><strong>المحتوى:</strong> يحتوي على مزيج من النصوص العربية والإنجليزية، وأكواد برمجية (XML)، وبيانات ثنائية (Binary Data).</li>
+            <li><strong>الهيكلية:</strong> يتكون من ملفات فرعية مثل <code>document.xml</code> للنصوص، و<code>styles.xml</code> للتنسيقات.</li>
+            <li><strong>الهدف:</strong> تحليل البيانات المستخرجة وفهم البنية التقنية للمستند.</li>
+        </ul>
     </div>
 
-    <h2>8. Nursing Interventions</h2>
-    <p>Nurses play a critical role in the care of cancer patients, focusing on symptom management, education, and emotional support. Key interventions include:</p>
-
-    <ul>
-        <li><strong>Pain Management:</strong> Assessing pain levels, administering analgesics, and using non-pharmacological methods (relaxation, positioning).</li>
-        <li><strong>Managing Side Effects of Treatment:</strong>
-            <ul>
-                <li><em>Nausea/Vomiting:</em> Administer antiemetics, provide small frequent meals, encourage hydration.</li>
-                <li><em>Mucositis:</em> Oral care protocols, soft diet, pain relief.</li>
-                <li><em>Alopecia:</em> Emotional support, information on wigs/scarves.</li>
-                <li><em>Myelosuppression:</em> Monitoring blood counts, preventing infection (neutropenic precautions), managing anemia and bleeding risks.</li>
-            </ul>
-        </li>
-        <li><strong>Nutritional Support:</strong> Assessing nutritional status, collaborating with dietitians, encouraging high-protein/high-calorie diets, managing taste changes.</li>
-        <li><strong>Emotional and Psychological Support:</strong> Active listening, providing counseling resources, supporting family members, addressing anxiety and depression.</li>
-        <li><strong>Educational Support:</strong> Teaching about the disease, treatment plan, self-care, warning signs, and follow-up care.</li>
-        <li><strong>Promoting Activity and Rest:</strong> Balancing activity to prevent fatigue with adequate rest periods.</li>
-        <li><strong>Skin Care:</strong> Managing radiation dermatitis, preventing pressure ulcers in immobile patients.</li>
-        <li><strong>End-of-Life Care:</strong> Providing palliative care, ensuring comfort, dignity, and support for patients and families during terminal stages.</li>
-    </ul>
-
-    <h2>9. Surgical Management Procedures</h2>
-    <p>Surgery is often a primary treatment for solid tumors. Goals include cure, control, or palliation.</p>
-
-    <ul>
-        <li><strong>Curative Surgery:</strong> Removal of the entire tumor and surrounding tissue (margins) to eliminate cancer. Examples: Lumpectomy, mastectomy, colectomy, prostatectomy.</li>
-        <li><strong>Debulking Surgery:</strong> Removing part of the tumor when complete removal is not possible, to enhance effectiveness of other treatments like chemotherapy or radiation.</li>
-        <li><strong>Palliative Surgery:</strong> Relieving symptoms or side effects caused by the tumor (e.g., relieving obstruction, reducing pain) rather than curing the cancer.</li>        <li><strong>Preventive (Prophylactic) Surgery:</strong> Removing tissue likely to become cancerous (e.g., mastectomy in high-risk BRCA carriers, colectomy in familial adenomatous polyposis).</li>
-        <li><strong>Staging Surgery:</strong> Determining the extent of cancer spread (e.g., laparoscopy, sentinel lymph node biopsy).</li>
-        <li><strong>Reconstructive Surgery:</strong> Restoring appearance or function after curative surgery (e.g., breast reconstruction after mastectomy).</li>
-        <li><strong>Minimally Invasive Techniques:</strong> Laparoscopy and robotic-assisted surgery offer smaller incisions, less pain, and faster recovery.</li>
-    </ul>
-
-    <h2>10. Prevention</h2>
-    <p>While not all cancers are preventable, a significant proportion can be avoided through lifestyle changes and early detection.</p>
-
-    <h3>Lifestyle Modifications:</h3>
-    <ul>
-        <li><strong>Avoid Tobacco:</strong> Quitting smoking and avoiding secondhand smoke is the most important step.</li>
-        <li><strong>Healthy Diet:</strong> Eat plenty of fruits, vegetables, whole grains, and legumes. Limit processed meats, red meat, sugary drinks, and highly processed foods.</li>
-        <li><strong>Maintain Healthy Weight:</strong> Obesity is linked to many cancers.</li>
-        <li><strong>Physical Activity:</strong> Aim for at least 150 minutes of moderate aerobic activity or 75 minutes of vigorous activity per week.</li>
-        <li><strong>Limit Alcohol:</strong> If you drink, do so in moderation (up to one drink a day for women, two for men).</li>
-        <li><strong>Sun Protection:</strong> Use sunscreen, wear protective clothing, and avoid peak sun hours to prevent skin cancer.</li>
-        <li><strong>Vaccinations:</strong> Get vaccinated against HPV (prevents cervical and other cancers) and Hepatitis B (prevents liver cancer).</li>
-        <li><strong>Avoid Risky Behaviors:</strong> Practice safe sex, avoid sharing needles.</li>
-        <li><strong>Regular Medical Care:</strong> Self-exams and regular check-ups.</li>
-    </ul>
-
-    <h3>Screening and Early Detection:</h3>
-    <ul>
-        <li><strong>Breast Cancer:</strong> Mammograms starting at age 40-50 (depending on guidelines/risk).</li>
-        <li><strong>Cervical Cancer:</strong> Pap smears and HPV testing.</li>
-        <li><strong>Colorectal Cancer:</strong> Colonoscopy starting at age 45-50.</li>
-        <li><strong>Lung Cancer:</strong> Low-dose CT scans for heavy smokers aged 50-80.</li>
-        <li><strong>Prostate Cancer:</strong> PSA testing and digital rectal exam (discuss with doctor).</li>
-        <li><strong>Skin Cancer:</strong> Regular skin checks for changing moles.</li>
-    </ul>
-
-    <div class="image-container">
-        <img src="https://image.qwenlm.ai/public_source/e25d32ef-e513-4ae5-adf5-ac65b53bdd63/15a1b460b-3c27-4b29-92be-0b92b53656f99132.png" alt="Infographic on healthy lifestyle practices for cancer prevention" class="content-img">
-        <div class="caption">Figure 5: Key lifestyle recommendations for reducing cancer risk, including diet, exercise, and avoiding tobacco/alcohol.</div>
+    <!-- الشريحة 3: التحليل التقني -->    <div class="slide">
+        <h1>البنية التقنية (XML Structure)</h1>
+        <p>الملف يحتوي على وسوم XML التالية التي تحدد المحتوى:</p>
+        <div class="code-snippet">
+<w:document>
+  <w:body>
+    <w:p> ... النصوص والبيانات ... </w:p>
+  </w:body>
+</w:document>
+        </div>
+        <ul>
+            <li>تم رصد وسوم خاصة بالجداول (<code>w:tbl</code>) والقوائم (<code>w:numbering</code>).</li>
+            <li>وجود مراجع للصور داخل المجلد <code>word/media/</code>.</li>
+        </ul>
     </div>
 
-    <h2>11. Conclusion</h2>
-    <p>Cancer remains a major global health challenge, but advancements in understanding its biology, early detection, and treatment have significantly improved outcomes for many patients. It is a complex group of diseases with diverse causes, manifestations, and treatments. A multidisciplinary approach involving oncologists, surgeons, nurses, dietitians, and mental health professionals is essential for comprehensive care. Prevention through lifestyle modifications and adherence to screening guidelines is the most effective strategy to reduce the burden of cancer. Continued research into personalized medicine, immunotherapy, and early detection technologies offers hope for even better outcomes in the future.</p>
+    <!-- الشريحة 4: تحليل البيانات والمحتوى -->
+    <div class="slide">
+        <h1>تحليل المحتوى والبيانات</h1>
+        <ul>
+            <li><strong>النصوص:</strong> تحتوي على مصطلحات تقنية تتعلق بـ "تحليل البيانات"، "الخوارزميات"، و"الهيكلة".</li>
+            <li><strong>البيانات المشفرة:</strong> وجود أجزاء من النص تظهر كأحرف غير مقروءة نتيجة لطبيعة الترميز (Encoding) أو الضغط.</li>
+            <li><strong>الكائنات المضمنة:</strong> يشير الهيكل إلى وجود صور ومخططات بيانية مضمنة داخل المستند.</li>
+        </ul>
+    </div>
 
-    <h2>12. References</h2>
-    <ul class="reference-list">
-        <li>[1] Healthdirect Australia. (n.d.). <em>Cancer - symptoms, causes, diagnosis and treatments</em>. Retrieved from https://www.healthdirect.gov.au/cancer</li>
-        <li>[2] Cleveland Clinic. (2024, August 19). <em>What Is Cancer? Symptoms, Causes & Types</em>. Retrieved from https://my.clevelandclinic.org/health/diseases/12194-cancer</li>
-        <li>[3] MedPark Hospital. (2022, October 19). <em>Cancer: Causes, Symptoms, Stages, Diagnosis, Treatments</em>. Retrieved from https://www.medparkhospital.com/en-US/disease-and-treatment/cancer-types</li>
-        <li>[4] Healthline. (2022, February 17). <em>Cancer: Types, Causes, Treatment, and Prevention</em>. Retrieved from https://www.healthline.com/health/cancer</li>
-        <li>[5] Mayo Clinic. (2024, November 19). <em>Cancer - Symptoms and causes</em>. Retrieved from https://www.mayoclinic.org/diseases-conditions/cancer/symptoms-causes/syc-20370588</li>
-        <li>[6] HCG Oncology. (n.d.). <em>What is Cancer? Types, Symptoms & Treatments</em>. Retrieved from https://www.hcgoncology.com/blog/what-is-cancer-types-symptoms/</li>
-        <li>[7] World Health Organization (WHO). (n.d.). <em>Cancer</em>. Retrieved from https://www.who.int/health-topics/cancer</li>
-        <li>[8] Quizlet. (2026, April 3). <em>Cancer Types, Diagnosis, and Nursing Care in Oncology</em>. Retrieved from https://quizlet.com/study-guides/cancer-types-diagnosis-and-nursing-care-in-oncology-76400ee1-7f74-4e86-8037-f77b4b3f84cf</li>        <li>[9] UT MD Anderson Cancer Center. (n.d.). <em>Types of Cancer</em>. Retrieved from https://www.mdanderson.org/patients-family/diagnosis-treatment/cancer-types.html</li>
-        <li>[10] National Cancer Institute (NCI). (n.d.). <em>Cancer Causes and Risk Factors</em>. Retrieved from https://www.ncbi.nlm.nih.gov/books/NBK54025/</li>
-        <li>[11] American Cancer Society. (2024). <em>The Most Common Types of Cancer in the U.S.</em> [Infographic]. Statista.</li>
-        <li>[12] International Agency for Research on Cancer (IARC). (2020). <em>The most common type of cancer</em> [Infographic]. Al Jazeera.</li>
-        <li>[13] Hope and Heal Cancer Hospital. (n.d.). <em>10 Most Common Types of Cancer Worldwide</em> [Infographic].</li>
-        <li>[14] OSF HealthCare. (n.d.). <em>8 general cancer risks factors</em> [Infographic].</li>
-        <li>[15] Clinico. (n.d.). <em>Cancer Diagnostic Imaging - MRI Scan For Detecting Cancer</em> [Image].</li>
-        <li>[16] Division of Cancer Treatment and Diagnosis - NCI. (n.d.). <em>Cancer Imaging Basics</em> [Image].</li>
-        <li>[17] cCARE California Cancer Resources. (n.d.). <em>The Power of Healthy Lifestyle Practices for Cancer Prevention</em> [Image].</li>
-        <li>[18] American Institute for Cancer Research. (n.d.). <em>Study: Five Healthy Habits Lower Cancer Risk</em> [Infographic].</li>
-    </ul>
+    <!-- الشريحة 5: التحديات والحلول -->
+    <div class="slide">
+        <h1>التحديات التقنية المعالجة</h1>
+        <ul>
+            <li><strong>استخراج النص:</strong> التعامل مع تداخل أكواد XML مع النصوص العادية يتطلب أدوات Parsing متقدمة.</li>
+            <li><strong>الترميز (Encoding):</strong> ضمان ظهور النصوص العربية بشكل صحيح يتطلب معالجة UTF-8 بدقة.</li>
+            <li><strong>تنسيق العرض:</strong> فصل التنسيق (Styles) عن المحتوى (Content) لإعادة بناء المستند بشكل صحيح.</li>
+        </ul>
+    </div>
+
+    <!-- الشريحة 6: الخاتمة -->
+    <div class="slide title-slide">
+        <h1>شكراً لكم</h1>
+        <p>تم تحويل الملف بنجاح إلى عرض تقديمي تفاعلي</p>
+        <button class="btn" onclick="location.reload()" style="margin-top: 30px;">إعادة العرض</button>
+    </div>
+
+    <!-- أدوات التحكم -->
+    <div class="controls">
+        <button class="btn" id="prevBtn" onclick="changeSlide(-1)">السابق</button>
+        <span class="slide-number" id="slideIndicator">1 / 6</span>
+        <button class="btn" id="nextBtn" onclick="changeSlide(1)">التالي</button>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const indicator = document.getElementById('slideIndicator');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    function updateControls() {
+        // تحديث رقم الشريحة
+        indicator.textContent = `${currentSlide + 1} / ${slides.length}`;
+        
+        // تفعيل/تعطيل الأزرار
+        prevBtn.disabled = currentSlide === 0;
+        nextBtn.disabled = currentSlide === slides.length - 1;
+    }
+
+    function showSlide(index) {
+        // إخفاء الشريحة الحالية
+        slides[currentSlide].classList.remove('active');
+        
+        // تحديد الشريحة الجديدة
+        currentSlide = index;
+        
+        // إظهار الشريحة الجديدة
+        slides[currentSlide].classList.add('active');
+        
+        updateControls();
+    }
+
+    function changeSlide(direction) {
+        const newIndex = currentSlide + direction;
+        if (newIndex >= 0 && newIndex < slides.length) {
+            showSlide(newIndex);
+        }
+    }
+
+    // دعم التنقل بلوحة المفاتيح
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "ArrowLeft") {
+            changeSlide(1); // التالي في العربية (يسار)
+        } else if (event.key === "ArrowRight") {
+            changeSlide(-1); // السابق في العربية (يمين)
+        } else if (event.key === " " || event.key === "Enter") {
+            changeSlide(1);
+        }
+    });
+
+    // التهيئة الأولية    updateControls();
+</script>
 
 </body>
 </html>
