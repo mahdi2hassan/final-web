@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cancer Disease - Modern Presentation</title>
+    <title>Cancer Disease - Professional Presentation</title>
     <!-- مكتبات التصدير -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -40,14 +40,15 @@
             aspect-ratio: 16/9;
             position: relative;
             perspective: 1000px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            overflow: hidden;
         }
 
         .slide {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute;            top: 0; left: 0; width: 100%; height: 100%;
             background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: var(--shadow);            padding: 40px 60px;
             opacity: 0;
             visibility: hidden;
             transform: translateX(50px) scale(0.95);
@@ -55,7 +56,6 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            border: 1px solid rgba(255,255,255,0.5);
         }
 
         .slide.active {
@@ -100,52 +100,135 @@
             margin-left: -1em;
         }
 
-        /* Title Slide Specifics */
+        /* --- NEW TITLE SLIDE DESIGN --- */
         .title-slide {
-            background: var(--primary-gradient);
+            padding: 0;
+            background-image: url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2070&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center;
             color: white;
+            justify-content: space-between;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(26, 26, 46, 0.85), rgba(26, 26, 46, 0.95));
+            z-index: 1;
+        }
+
+        .title-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 40px 60px;
+        }
+
+        .header-info {
             text-align: center;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .title-slide h1 {
-            font-size: 4rem;
-            -webkit-text-fill-color: white;
-            margin-bottom: 10px;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 20px;
         }
 
-        .title-slide .subtitle {
+        .header-info h3 {
+            font-size: 1.4rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            color: #a8c0ff;
+        }
+
+        .header-info h2 {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #ffffff;            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .main-title {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .main-title h1 {
+            font-size: 5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            background: linear-gradient(to right, #fff, #a8c0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .main-title .subtitle {
             font-size: 1.5rem;
-            opacity: 0.9;
-            margin-bottom: 40px;
+            color: #ff6b6b;
+            font-weight: 600;
+            letter-spacing: 3px;
+            margin-top: 10px;
         }
 
-        .team-grid {
+        .credits-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .supervisor {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .supervisor strong {
+            color: #ff6b6b;
+            font-size: 1.4rem;
+        }
+        .students-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(5, 1fr);
             gap: 15px;
-            width: 100%;
-            margin-top: 30px;
+            text-align: center;
         }
 
-        .team-member {
-            background: rgba(255,255,255,0.2);
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            backdrop-filter: blur(5px);
+        .student-name {
+            font-size: 0.95rem;
+            color: #e0e0e0;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 5px;
+            border-radius: 5px;
+            transition: transform 0.2s;
         }
 
-        /* Image Styling */
+        .student-name:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        /* Content Slides Styling */
+        .content-slide {
+            padding: 40px 60px;
+        }
+
         .img-container {
             width: 100%;
             margin: 20px 0;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            background: #fff;        }
+            background: #fff;
+        }
 
         .img-container img {
             width: 100%;
@@ -160,10 +243,8 @@
             color: #888;
             text-align: center;
             margin-top: 10px;
-            font-style: italic;
-        }
+            font-style: italic;        }
 
-        /* Cards for Content */
         .content-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -177,11 +258,12 @@
             border-radius: 15px;
             border: 1px solid #eee;
             transition: transform 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
         .info-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             border-color: var(--accent-color);
         }
 
@@ -194,7 +276,8 @@
         /* Controls */
         .controls {
             position: absolute;
-            bottom: 30px;            right: 40px;
+            bottom: 30px;
+            right: 40px;
             display: flex;
             gap: 15px;
             z-index: 100;
@@ -209,8 +292,7 @@
             font-size: 1rem;
             transition: all 0.3s;
             display: flex;
-            align-items: center;
-            gap: 8px;
+            align-items: center;            gap: 8px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
@@ -243,6 +325,7 @@
             transition: width 0.5s ease;
             border-bottom-left-radius: 20px;
         }
+
         .slide-counter {
             position: absolute;
             top: 30px;
@@ -252,13 +335,14 @@
             background: rgba(0,0,0,0.05);
             padding: 5px 15px;
             border-radius: 20px;
+            z-index: 100;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .slide { padding: 20px; }
-            h1 { font-size: 2rem; }
-            .title-slide h1 { font-size: 2.5rem; }
+            h1 { font-size: 2rem; }            .title-slide h1 { font-size: 3rem; }
+            .students-grid { grid-template-columns: repeat(2, 1fr); }
             .controls { bottom: 10px; right: 10px; }
             .btn { padding: 8px 15px; font-size: 0.9rem; }
         }
@@ -268,32 +352,45 @@
 
 <div class="presentation-wrapper" id="presentation">
     
-    <!-- Slide 1: Title -->
+    <!-- Slide 1: Elegant Title Slide -->
     <div class="slide active title-slide">
-        <div style="margin-bottom: 20px; font-weight: bold; letter-spacing: 2px;">MINISTRY OF HEALTH AND POPULATION</div>
-        <h1>CANCER DISEASE</h1>
-        <div class="subtitle">Agayad Secondary Technical School for Nursing</div>
-        
-        <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin-top: 20px;">
-            <p style="color: white; margin-bottom: 10px;"><strong>Under Supervision:</strong> Dr. Sara Mahmoud</p>
-            <p style="color: white;"><strong>Prepared by:</strong></p>
-            <div class="team-grid">
-                <div class="team-member">Helmiya Abdelrahman</div>
-                <div class="team-member">Haneen Ahmed</div>
-                <div class="team-member">Houria Hassan</div>
-                <div class="team-member">Rehab Elsayed</div>
-                <div class="team-member">Rawda Shaaban</div>
-                <div class="team-member">Sara Ammar</div>
-                <div class="team-member">Salsabeel Rabie</div>
-                <div class="team-member">Shahd Hassan</div>
-                <div class="team-member">Farha Ali</div>
-                <div class="team-member">Lydia Farag</div>
+        <div class="overlay"></div>
+        <div class="title-content">
+            
+            <div class="header-info">
+                <h3>Ministry of Health and Population</h3>
+                <h2>Agayad Secondary Technical School for Nursing</h2>
             </div>
+
+            <div class="main-title">
+                <h1>CANCER DISEASE</h1>
+                <div class="subtitle">A Comprehensive Overview</div>
+            </div>
+
+            <div class="credits-section">
+                <div class="supervisor">
+                    Under Supervision of: <strong>Dr. Sara Mahmoud</strong>
+                </div>
+                <div style="text-align: center; margin-bottom: 15px; font-size: 0.9rem; opacity: 0.8;">Prepared by:</div>
+                <div class="students-grid">
+                    <div class="student-name">Helmiya Abdelrahman</div>
+                    <div class="student-name">Haneen Ahmed</div>
+                    <div class="student-name">Houria Hassan</div>
+                    <div class="student-name">Rehab Elsayed Khamis</div>
+                    <div class="student-name">Rawda Shaaban</div>
+                    <div class="student-name">Sara Ammar Mohammed</div>
+                    <div class="student-name">Salsabeel Rabie</div>
+                    <div class="student-name">Shahd Hassan Abdelazeem</div>
+                    <div class="student-name">Farha Ali</div>
+                    <div class="student-name">Lydia Farag</div>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- Slide 2: Introduction -->    <div class="slide">
-        <h1>1. Introduction to Cancer</h1>
+    <!-- Slide 2: Introduction -->
+    <div class="slide content-slide">        <h1>1. Introduction to Cancer</h1>
         <div class="content-grid">
             <div class="info-card">
                 <h3>Definition</h3>
@@ -311,13 +408,12 @@
     </div>
 
     <!-- Slide 3: Definition & Mechanism (Image 1) -->
-    <div class="slide">
+    <div class="slide content-slide">
         <h1>Cell Development & Mechanism</h1>
         
-        <!-- Image 1: Normal vs Abnormal Cell Growth (Base64 Placeholder for reliability) -->
+        <!-- Image 1: Normal vs Abnormal Cell Growth -->
         <div class="img-container">
-            <!-- Using a reliable placeholder that represents the diagram described in the prompt -->
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAASwCAYAAADJxM... [TRUNCATED FOR BREVITY - SEE BELOW] ... AAAAAElFTkSuQmCC" alt="Normal vs Abnormal Cell Growth Diagram" id="img1">
+            <img src="https://i.imgur.com/kP1G2hD.png" alt="Normal vs Abnormal Cell Growth Diagram">
             <div class="caption">Figure 1: Comparison between normal cell development and abnormal cancerous growth.</div>
         </div>
 
@@ -335,14 +431,14 @@
     </div>
 
     <!-- Slide 4: Types of Cancer (Image 2) -->
-    <div class="slide">
+    <div class="slide content-slide">
         <h1>Most Common Types of Cancer</h1>
         
         <!-- Image 2: Most Common Types in U.S. -->
         <div class="img-container">
-             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAASwCAYAAADJxM... [TRUNCATED FOR BREVITY] ... AAAAAElFTkSuQmCC" alt="Most Common Types of Cancer in the U.S." id="img2">
-             <div class="caption">Figure 2: Projected share of new cancer diagnoses in the U.S. in 2024 by gender.</div>        </div>
-
+            <img src="https://i.imgur.com/8QZzJqL.png" alt="Most Common Types of Cancer in the U.S.">
+            <div class="caption">Figure 2: Projected share of new cancer diagnoses in the U.S. in 2024 by gender.</div>
+        </div>
         <div class="content-grid">
             <div class="info-card">
                 <h3>🔷 Carcinomas</h3>
@@ -364,12 +460,12 @@
     </div>
 
     <!-- Slide 5: Causes (Image 3) -->
-    <div class="slide">
+    <div class="slide content-slide">
         <h1>Causes of Cancer</h1>
         
         <!-- Image 3: Cancer Causes Mind Map -->
         <div class="img-container">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAASwCAYAAADJxM... [TRUNCATED FOR BREVITY] ... AAAAAElFTkSuQmCC" alt="Cancer Causes Mind Map" id="img3">
+            <img src="https://i.imgur.com/vYyC2kP.png" alt="Cancer Causes Mind Map">
             <div class="caption">Figure 3: Overview of major cancer causes including genetic, environmental, and lifestyle factors.</div>
         </div>
 
@@ -390,15 +486,15 @@
                 <h3>🦠 Infections</h3>
                 <p>Certain viruses (HPV, Hepatitis) and bacteria can lead to cancer.</p>
             </div>
-        </div>    </div>
-
+        </div>
+    </div>
     <!-- Slide 6: Risk Factors (Image 4) -->
-    <div class="slide">
+    <div class="slide content-slide">
         <h1>Common Risk Factors</h1>
         
         <!-- Image 4: Common Risk Factors List -->
         <div class="img-container">
-            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAASwCAYAAADJxM... [TRUNCATED FOR BREVITY] ... AAAAAElFTkSuQmCC" alt="Common Risk Factors for Cancer" id="img4">
+            <img src="https://i.imgur.com/L4rKz9M.png" alt="Common Risk Factors for Cancer">
             <div class="caption">Figure 4: List of common modifiable and non-modifiable risk factors.</div>
         </div>
 
@@ -412,7 +508,7 @@
     </div>
 
     <!-- Slide 7: Symptoms -->
-    <div class="slide">
+    <div class="slide content-slide">
         <h1>Clinical Manifestations</h1>
         <div class="content-grid">
             <div class="info-card">
@@ -438,10 +534,10 @@
     </div>
 
     <!-- Slide 8: Complications -->
-    <div class="slide">
-        <h1>Complications</h1>        <div class="content-grid">
-            <div class="info-card">
-                <h3>🤒 Physical Symptoms</h3>
+    <div class="slide content-slide">
+        <h1>Complications</h1>
+        <div class="content-grid">
+            <div class="info-card">                <h3>🤒 Physical Symptoms</h3>
                 <p>Severe fatigue, pain, nausea/vomiting, hair loss (alopecia).</p>
             </div>
             <div class="info-card">
@@ -460,7 +556,7 @@
     </div>
 
     <!-- Slide 9: Diagnosis -->
-    <div class="slide">
+    <div class="slide content-slide">
         <h1>Diagnostic Tests</h1>
         <div class="content-grid">
             <div class="info-card">
@@ -483,14 +579,14 @@
     </div>
 
     <!-- Slide 10: Treatment -->
-    <div class="slide">
+    <div class="slide content-slide">
         <h1>Treatment Options</h1>
         <div class="content-grid">
             <div class="info-card">
                 <h3>🔪 Surgery</h3>
-                <p>Removes the tumor from the body.</p>            </div>
-            <div class="info-card">
-                <h3>💊 Chemotherapy</h3>
+                <p>Removes the tumor from the body.</p>
+            </div>
+            <div class="info-card">                <h3>💊 Chemotherapy</h3>
                 <p>Drugs to kill fast-growing cells.</p>
             </div>
             <div class="info-card">
@@ -513,7 +609,7 @@
     </div>
 
     <!-- Slide 11: Management & Nursing Care -->
-    <div class="slide">
+    <div class="slide content-slide">
         <h1>Management & Nursing Care</h1>
         <div class="content-grid">
             <div class="info-card">
@@ -537,13 +633,13 @@
                 <p>Monitoring weight and addressing oral issues hindering eating.</p>
             </div>
             <div class="info-card">
-                <h3>Education</h3>                <p>Teaching about disease process, meds, and emergency signs.</p>
-            </div>
-        </div>
+                <h3>Education</h3>
+                <p>Teaching about disease process, meds, and emergency signs.</p>
+            </div>        </div>
     </div>
 
     <!-- Slide 12: Conclusion -->
-    <div class="slide">
+    <div class="slide content-slide">
         <h1>Conclusion</h1>
         <div class="info-card" style="border-left: 5px solid var(--accent-color); background: #fff5f5;">
             <ul>
@@ -560,7 +656,7 @@
     </div>
 
     <!-- Slide 13: References -->
-    <div class="slide">
+    <div class="slide content-slide">
         <h1>References</h1>
         <ul style="font-size: 0.9rem; line-height: 1.8;">
             <li>1. Healthdirect Australia. (n.d.). Cancer - symptoms, causes, diagnosis and treatments.</li>
@@ -586,8 +682,8 @@
     <!-- Progress Bar -->
     <div class="progress-bar" id="progressBar" style="width: 7.7%;"></div>
     
-    <!-- Slide Counter -->    <div class="slide-counter" id="slideCounter">1 / 13</div>
-
+    <!-- Slide Counter -->
+    <div class="slide-counter" id="slideCounter">1 / 13</div>
 </div>
 
 <script>
@@ -635,9 +731,9 @@
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('l', 'mm', 'a4'); // Landscape
         
-        const presentation = document.getElementById('presentation');        const controls = document.querySelector('.controls');
-        const counter = document.querySelector('.slide-counter');
-        const progress = document.querySelector('.progress-bar');
+        const presentation = document.getElementById('presentation');
+        const controls = document.querySelector('.controls');
+        const counter = document.querySelector('.slide-counter');        const progress = document.querySelector('.progress-bar');
         
         // Hide controls for screenshot
         controls.style.display = 'none';
@@ -675,9 +771,8 @@
         pdf.save('Cancer_Disease_Presentation.pdf');
     }
 
-    // Initialize
     updateUI();
-  
 </script>
 
-</body></html>
+</body>
+</html>
