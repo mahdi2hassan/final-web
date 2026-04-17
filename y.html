@@ -3,171 +3,460 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحليل المستند التقني - عرض تقديمي</title>
+    <title>مرض السرطان - عرض تقديمي</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-            --text-color: #333;
-            --bg-color: #f4f6f7;
-            --slide-bg: #ffffff;
+            --primary: #1a5276;
+            --secondary: #2874a6;
+            --accent: #e74c3c;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
         }
-
+        
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            overflow: hidden; /* لمنع التمرير وجعله كالشرائح */
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            overflow: hidden;
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-
+        
         .presentation-container {
-            width: 90%;
-            max-width: 1000px;
+            width: 95%;
+            max-width: 1200px;
             aspect-ratio: 16/9;
-            background-color: var(--slide-bg);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            border-radius: 12px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            color: #333;
         }
-
-        /* تنسيق الشريحة */
+        
         .slide {
-            display: none; /* إخفاء جميع الشرائح افتراضياً */
-            padding: 40px 60px;            height: 100%;
+            display: none;            padding: 40px 60px;
+            height: 100%;
             flex-direction: column;
             justify-content: center;
-            animation: fadeIn 0.5s ease-in-out;
+            animation: fadeIn 0.6s ease-in-out;
+            overflow-y: auto;
         }
-
+        
         .slide.active {
-            display: flex; /* إظهار الشريحة النشطة */
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* محتوى الشريحة */
-        h1 {
-            color: var(--primary-color);
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            border-bottom: 3px solid var(--secondary-color);
-            display: inline-block;
-            padding-bottom: 10px;
-        }
-
-        h2 {
-            color: var(--secondary-color);
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-        }
-
-        ul {
-            list-style-type: none;
-            margin-top: 20px;
-        }
-
-        li {
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            padding-right: 20px;
-            position: relative;
-            line-height: 1.6;
-        }
-
-        li::before {
-            content: "•";
-            color: var(--secondary-color);
-            font-weight: bold;
-            font-size: 1.8rem;
-            position: absolute;            right: 0;
-            top: -5px;
-        }
-
-        .code-snippet {
-            background-color: #2d3436;
-            color: #55efc4;
-            padding: 15px;
-            border-radius: 5px;
-            font-family: 'Courier New', Courier, monospace;
-            direction: ltr;
-            text-align: left;
-            margin: 20px 0;
-            font-size: 1rem;
-            overflow-x: auto;
-        }
-
-        /* أزرار التحكم */
-        .controls {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
-
-        .btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background 0.3s;
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
         }
-
-        .btn:hover {
-            background-color: var(--secondary-color);
-        }
-
-        .btn:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-        }
-
-        .slide-number {
-            font-weight: bold;            color: var(--primary-color);
-            background: rgba(0,0,0,0.05);
-            padding: 5px 15px;
-            border-radius: 20px;
-        }
-
+        
         /* شريحة العنوان */
         .title-slide {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
             text-align: center;
             align-items: center;
+            justify-content: center;
         }
         
         .title-slide h1 {
-            border-bottom: none;
-            font-size: 3.5rem;
+            font-size: 3.2rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
-        .title-slide p {
-            font-size: 1.5rem;
-            color: #7f8c8d;
-            margin-top: 20px;
+        .title-slide .subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
         }
-
+        
+        .title-slide .institution {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        .title-slide .supervisor,
+        .title-slide .prepared-by {
+            font-size: 1.2rem;            margin: 10px 0;
+            opacity: 0.9;
+        }
+        
+        .title-slide .students {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 15px;
+            margin-top: 25px;
+            max-width: 90%;
+        }
+        
+        .title-slide .student {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+        }
+        
+        /* محتوى الشرائح */
+        h1 {
+            color: var(--primary);
+            font-size: 2.4rem;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 4px solid var(--secondary);
+            position: relative;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            right: 0;
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+        }
+        
+        h2 {
+            color: var(--secondary);
+            font-size: 1.9rem;
+            margin: 25px 0 15px;
+        }
+        
+        p {
+            font-size: 1.3rem;
+            line-height: 1.7;
+            margin: 15px 0;            color: #444;
+        }
+        
+        ul {
+            list-style: none;
+            margin: 20px 0;
+        }
+        
+        li {
+            font-size: 1.25rem;
+            margin: 12px 0;
+            padding-right: 25px;
+            position: relative;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        li::before {
+            content: "▸";
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.5rem;
+            position: absolute;
+            right: 0;
+            top: -2px;
+        }
+        
+        .definition-box {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4e6f1 100%);
+            border-right: 5px solid var(--secondary);
+            padding: 20px 25px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+            font-size: 1.2rem;
+        }
+        
+        .types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .type-card {
+            background: #f8f9fa;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            padding: 15px;
+            transition: transform 0.2s;
+        }        
+        .type-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--secondary);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .type-card h3 {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+        
+        .risk-factors {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .risk-item {
+            background: #fff3cd;
+            border-right: 4px solid var(--warning);
+            padding: 12px 18px;
+            border-radius: 0 8px 8px 0;
+            font-size: 1.1rem;
+        }
+        
+        .symptoms-list {
+            columns: 2;
+            column-gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .symptoms-list li {
+            break-inside: avoid;
+            margin: 8px 0;
+        }
+        
+        .complications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .complication-card {
+            background: #fff5f5;
+            border: 2px solid #fed7d7;
+            border-radius: 10px;            padding: 15px;
+        }
+        
+        .complication-card h4 {
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .diagnostic-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .diagnostic-card {
+            background: #e8f5e9;
+            border-right: 4px solid var(--success);
+            padding: 15px 20px;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .diagnostic-card h4 {
+            color: var(--success);
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .treatment-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .treatment-item {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 14px 20px;
+            border-radius: 10px;
+            border-right: 4px solid var(--secondary);
+            font-weight: 500;
+        }
+        
+        .nursing-care {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }        
+        .care-item {
+            background: #f3e5f5;
+            border-right: 4px solid #9c27b0;
+            padding: 15px;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .care-item h4 {
+            color: #7b1fa2;
+            margin-bottom: 8px;
+        }
+        
+        .conclusion-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border: 3px solid var(--success);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            font-size: 1.25rem;
+            line-height: 1.8;
+        }
+        
+        .references-list {
+            font-size: 1rem;
+            line-height: 1.8;
+            margin: 20px 0;
+            padding-right: 20px;
+        }
+        
+        .references-list li {
+            margin: 10px 0;
+            font-size: 0.95rem;
+            color: #666;
+        }
+        
+        .references-list li::before {
+            content: "📚";
+            margin-left: 8px;
+        }
+        
+        /* أدوات التحكم */
+        .controls {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            right: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;            z-index: 100;
+        }
+        
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(26, 82, 118, 0.4);
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 116, 166, 0.5);
+        }
+        
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-download {
+            background: var(--success);
+        }
+        
+        .btn-download:hover {
+            background: #219a52;
+        }
+        
+        .slide-indicator {
+            font-weight: 600;
+            color: var(--dark);
+            background: rgba(255,255,255,0.9);
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+                .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background: var(--accent);
+            transition: width 0.4s ease;
+            z-index: 50;
+        }
+        
+        .slide-number {
+            position: absolute;
+            top: 20px;
+            left: 25px;
+            background: rgba(26, 82, 118, 0.9);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        /* تحسينات للشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .slide {
+                padding: 25px 35px;
+            }
+            
+            h1 {
+                font-size: 1.9rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            p, li {
+                font-size: 1.1rem;
+            }
+            
+            .title-slide h1 {
+                font-size: 2.3rem;
+            }
+            
+            .title-slide .subtitle {
+                font-size: 1.4rem;
+            }
+            
+            .symptoms-list {
+                columns: 1;            }
+        }
+        
+        /* تأثيرات إضافية */
+        .highlight {
+            background: linear-gradient(120deg, rgba(231,76,60,0.15) 0%, rgba(231,76,60,0) 100%);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .icon {
+            display: inline-block;
+            width: 24px;
+            text-align: center;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
@@ -176,123 +465,607 @@
     
     <!-- الشريحة 1: العنوان -->
     <div class="slide active title-slide">
-        <h1>تحليل هيكلية المستندات التقنية</h1>
-        <p>استعراض تقني لمحتوى ملف DOC-20260413-WA0055.docx</p>
-        <div style="margin-top: 50px; font-size: 1.2rem; color: var(--secondary-color);">
-            اضغط على المسافة أو الأسهم للتنقل
+        <div class="institution">وزارة الصحة والسكان</div>
+        <div class="institution">مدرسة أجياد الثانوية الفنية للتمريض</div>
+        <h1>مرض السرطان</h1>
+        <div class="subtitle">CANCER DISEASE</div>
+        
+        <div class="supervisor">
+            <strong>إشراف:</strong> د. سارة محمود
+        </div>
+        
+        <div class="prepared-by">
+            <strong>إعداد الطالبات:</strong>
+        </div>
+        
+        <div class="students">
+            <span class="student">حلمية عبدالرحمن</span>
+            <span class="student">حنين أحمد</span>
+            <span class="student">حورية حسن</span>
+            <span class="student">رحاب السيد خميس</span>
+            <span class="student">روضة شعبان</span>
+            <span class="student">سارة عمار محمد</span>
+            <span class="student">سلسبيل ربيع</span>
+            <span class="student">شهد حسن عبدالعظيم</span>
+            <span class="student">فرحة علي</span>
+            <span class="student">ليديا فرج</span>        </div>
+    </div>
+
+    <!-- الشريحة 2: مقدمة عن السرطان -->
+    <div class="slide">
+        <h1>1. مقدمة عن السرطان</h1>
+        <p>السرطان هو مجموعة من الأمراض تتميز بنمو خلايا غير طبيعي وغير منضبط، وهو سبب رئيسي للوفاة عالمياً.</p>
+        
+        <div class="definition-box">
+            <strong>إحصائيات هامة (2020):</strong><br>
+            • حوالي <span class="highlight">10 مليون</span> حالة وفاة سنوياً<br>
+            • أكثر من <span class="highlight">19 مليون</span> حالة جديدة مسجلة
+        </div>
+        
+        <p>لفهم السرطان، يجب دراسة:</p>
+        <ul>
+            <li>الآليات البيولوجية المتنوعة للمرض</li>
+            <li>عوامل الخطر (مثل التدخين والبيئة)</li>
+            <li>أساليب التشخيص الحديثة</li>
+            <li>العلاجات المخصصة والموجهة</li>
+        </ul>
+    </div>
+
+    <!-- الشريحة 3: تعريف السرطان -->
+    <div class="slide">
+        <h1>تعريف السرطان</h1>
+        
+        <div class="definition-box">
+            <p><strong>السرطان:</strong> مرض تنمو فيه بعض خلايا الجسم بشكل غير منضبط وتنتشر إلى أجزاء أخرى من الجسم.</p>
+        </div>
+        
+        <h2>كيف يحدث السرطان؟</h2>
+        <ul>
+            <li>ينمو جسم الإنسان من تريليونات الخلايا التي تتجدد بشكل منتظم</li>
+            <li>عندما تشيخ الخلايا أو تتلف، تموت وتحل محلها خلايا جديدة</li>
+            <li>أحياناً تنهار هذه العملية المنظمة</li>
+            <li>تنمو الخلايا التالفة أو غير الطبيعية عندما لا ينبغي لها ذلك</li>
+            <li>قد تشكل هذه الخلايا <strong>أوراماً</strong> (كتل من الأنسجة)</li>
+        </ul>
+        
+        <p><strong>ملاحظة:</strong> الأورام قد تكون <span class="highlight">سرطانية (خبيثة)</span> أو <span class="highlight">غير سرطانية (حميدة)</span></p>
+    </div>
+
+    <!-- الشريحة 4: أنواع السرطان -->
+    <div class="slide">
+        <h1>أنواع السرطان الرئيسية</h1>
+        
+        <div class="types-grid">
+            <div class="type-card">
+                <h3>🔷 الكارسينوما</h3>                <p>النوع الأكثر شيوعاً، ينشأ في الخلايا الطلائية التي تغطي أو تبطن الأعضاء الداخلية (الرئة، الثدي، البروستاتا، القولون)</p>
+            </div>
+            
+            <div class="type-card">
+                <h3>🦴 الساركوما</h3>
+                <p>تبدأ في الأنسجة الضامة أو الداعمة مثل الدهون، العضلات، الغضاريف، والعظام</p>
+            </div>
+            
+            <div class="type-card">
+                <h3>🩸 اللوكيميا</h3>
+                <p>سرطانات خلايا الدم البيضاء التي تبدأ في نخاع العظم ولا تشكل عادة أوراماً صلبة</p>
+            </div>
+            
+            <div class="type-card">
+                <h3>🛡️ الليمفوما</h3>
+                <p>سرطانات تبدأ في خلايا الجهاز المناعي (الخلايا الليمفاوية)</p>
+            </div>
+            
+            <div class="type-card">
+                <h3>🎨 الميلانوما</h3>
+                <p>سرطانات تنشأ من الخلايا التي تنتج الصبغة (الميلانين) في الجلد</p>
+            </div>
+            
+            <div class="type-card">
+                <h3>🧬 أورام الخلايا الجرثومية</h3>
+                <p>تنشأ من الخلايا التي تنتج الحيوانات المنوية أو البويضات، شائعة في الخصيتين أو المبيضين</p>
+            </div>
         </div>
     </div>
 
-    <!-- الشريحة 2: مقدمة عن الملف -->
+    <!-- الشريحة 5: أسباب وعوامل الخطر -->
     <div class="slide">
-        <h1>نظرة عامة على الملف</h1>
-        <ul>
-            <li><strong>نوع الملف:</strong> مستند Word (.docx) يعتمد على بنية Office Open XML.</li>
-            <li><strong>المحتوى:</strong> يحتوي على مزيج من النصوص العربية والإنجليزية، وأكواد برمجية (XML)، وبيانات ثنائية (Binary Data).</li>
-            <li><strong>الهيكلية:</strong> يتكون من ملفات فرعية مثل <code>document.xml</code> للنصوص، و<code>styles.xml</code> للتنسيقات.</li>
-            <li><strong>الهدف:</strong> تحليل البيانات المستخرجة وفهم البنية التقنية للمستند.</li>
-        </ul>
-    </div>
-
-    <!-- الشريحة 3: التحليل التقني -->    <div class="slide">
-        <h1>البنية التقنية (XML Structure)</h1>
-        <p>الملف يحتوي على وسوم XML التالية التي تحدد المحتوى:</p>
-        <div class="code-snippet">
-<w:document>
-  <w:body>
-    <w:p> ... النصوص والبيانات ... </w:p>
-  </w:body>
-</w:document>
+        <h1>2. أسباب وعوامل خطر السرطان</h1>
+        
+        <p>لا يوجد سبب واحد للسرطان، بل توجد عوامل تزيد من احتمالية الإصابة:</p>
+        
+        <div class="risk-factors">
+            <div class="risk-item">🧬 <strong>التاريخ العائلي:</strong> وجود أقارب مصابين يزيد الخطر</div>
+            <div class="risk-item">🚬 <strong>التدخين:</strong> يزيد خطر سرطان الرئة والمريء والبنكرياس</div>
+            <div class="risk-item">🏭 <strong>العوامل البيئية:</strong> التعرض للأسبستوس والمبيدات والرادون</div>
+            <div class="risk-item">🍔 <strong>سوء التغذية:</strong> الأطعمة عالية الدهون والسكر</div>
+            <div class="risk-item">💊 <strong>العلاج الهرموني:</strong> قد يزيد خطر سرطان الثدي والرحم</div>
+            <div class="risk-item">☀️ <strong>التعرض للإشعاع:</strong> الأشعة فوق البنفسجية تزيد خطر سرطان الجلد</div>
         </div>
-        <ul>
-            <li>تم رصد وسوم خاصة بالجداول (<code>w:tbl</code>) والقوائم (<code>w:numbering</code>).</li>
-            <li>وجود مراجع للصور داخل المجلد <code>word/media/</code>.</li>
-        </ul>
+        
+        <p style="margin-top: 25px; font-style: italic; color: #666;">
+            <strong>ملاحظة:</strong> وجود عامل خطر لا يعني الإصابة الحتمية، وغيابه لا يعني الوقاية الكاملة
+        </p>
     </div>
-
-    <!-- الشريحة 4: تحليل البيانات والمحتوى -->
+    <!-- الشريحة 6: الأعراض والعلامات السريرية -->
     <div class="slide">
-        <h1>تحليل المحتوى والبيانات</h1>
-        <ul>
-            <li><strong>النصوص:</strong> تحتوي على مصطلحات تقنية تتعلق بـ "تحليل البيانات"، "الخوارزميات"، و"الهيكلة".</li>
-            <li><strong>البيانات المشفرة:</strong> وجود أجزاء من النص تظهر كأحرف غير مقروءة نتيجة لطبيعة الترميز (Encoding) أو الضغط.</li>
-            <li><strong>الكائنات المضمنة:</strong> يشير الهيكل إلى وجود صور ومخططات بيانية مضمنة داخل المستند.</li>
-        </ul>
+        <h1>3. الأعراض والعلامات السريرية</h1>
+        
+        <div class="symptoms-list">
+            <ul>
+                <li>😴 التعب والإرهاق المستمر</li>
+                <li>🔍 كتلة أو منطقة سميكة يمكن الشعور بها تحت الجلد</li>
+                <li>⚖️ تغيرات في الوزن (فقدان أو زيادة غير مقصودة)</li>
+                <li>🎨 تغيرات جلدية (اصفرار، اسمرار، احمرار)</li>
+                <li>🩹 قروح لا تلتئم أو تغيرات في الشامات</li>
+                <li>🚽 تغيرات في عادات الأمعاء أو المثانة</li>
+                <li>🤧 سعال مستمر أو صعوبة في التنفس</li>
+                <li>😣 صعوبة في البلع</li>
+                <li>🗣️ بحة في الصوت</li>
+                <li>🤢 عسر هضم مستمر أو انزعاج بعد الأكل</li>
+                <li>🦵 ألم مستمر وغير مبرر في العضلات أو المفاصل</li>
+                <li>🌡️ حمى مستمرة أو تعرق ليلي غير مبرر</li>
+                <li>🩸 نزيف أو كدمات غير مبررة</li>
+            </ul>
+        </div>
+        
+        <p style="margin-top: 20px; background: #fff3cd; padding: 12px; border-radius: 8px; border-right: 4px solid #f39c12;">
+            <strong>⚠️ تنبيه:</strong> ظهور عرض واحد لا يعني الإصابة بالسرطان، ولكن يستدعي استشارة طبية
+        </p>
     </div>
 
-    <!-- الشريحة 5: التحديات والحلول -->
+    <!-- الشريحة 7: المضاعفات -->
     <div class="slide">
-        <h1>التحديات التقنية المعالجة</h1>
-        <ul>
-            <li><strong>استخراج النص:</strong> التعامل مع تداخل أكواد XML مع النصوص العادية يتطلب أدوات Parsing متقدمة.</li>
-            <li><strong>الترميز (Encoding):</strong> ضمان ظهور النصوص العربية بشكل صحيح يتطلب معالجة UTF-8 بدقة.</li>
-            <li><strong>تنسيق العرض:</strong> فصل التنسيق (Styles) عن المحتوى (Content) لإعادة بناء المستند بشكل صحيح.</li>
-        </ul>
+        <h1>مضاعفات السرطان</h1>
+        
+        <div class="complications-grid">
+            <div class="complication-card">
+                <h4>🤒 أعراض جسدية</h4>
+                <ul>
+                    <li>إرهاق شديد</li>
+                    <li>ألم مزمن</li>
+                    <li>غثيان وقيء</li>
+                    <li>إمساك أو إسهال</li>
+                    <li>تساقط الشعر</li>
+                </ul>
+            </div>
+            
+            <div class="complication-card">
+                <h4>🔄 مشاكل جهازية</h4>
+                <ul>
+                    <li>العدوى (نقص كريات الدم البيضاء)</li>
+                    <li>فقر الدم</li>
+                    <li>فقدان الوزن وهزال العضلات</li>
+                </ul>            </div>
+            
+            <div class="complication-card">
+                <h4>🫀 تلف الأعضاء</h4>
+                <ul>
+                    <li>الوذمة الليمفاوية</li>
+                    <li>انسداد الأمعاء</li>
+                    <li>تغيرات في الجلد والأظافر</li>
+                    <li>مشاكل المثانة والمسالك البولية</li>
+                </ul>
+            </div>
+            
+            <div class="complication-card">
+                <h4>🧠 مشاكل عصبية</h4>
+                <ul>
+                    <li>تغيرات إدراكية ("دماغ العلاج الكيميائي")</li>
+                    <li>اعتلال الأعصاب المحيطية</li>
+                    <li>دوار وعدم اتزان</li>
+                </ul>
+            </div>
+        </div>
+        
+        <p style="margin-top: 20px; color: var(--accent); font-weight: 600;">
+            ⚠️ حالات طارئة: متلازمة الوريد الأجوف العلوي، انضغاط الحبل الشوكي، متلازمة انحلال الورم
+        </p>
     </div>
 
-    <!-- الشريحة 6: الخاتمة -->
-    <div class="slide title-slide">
-        <h1>شكراً لكم</h1>
-        <p>تم تحويل الملف بنجاح إلى عرض تقديمي تفاعلي</p>
-        <button class="btn" onclick="location.reload()" style="margin-top: 30px;">إعادة العرض</button>
+    <!-- الشريحة 8: الفحوصات التشخيصية -->
+    <div class="slide">
+        <h1>الفحوصات التشخيصية</h1>
+        
+        <p>قد يستخدم الطبيب واحدة أو أكثر من الأساليب التالية لتشخيص السرطان:</p>
+        
+        <div class="diagnostic-methods">
+            <div class="diagnostic-card">
+                <h4>🩺 الفحص البدني</h4>
+                <p>تحسس مناطق الجسم للكشف عن كتل، والبحث عن تغيرات غير طبيعية في الجلد أو حجم الأعضاء</p>
+            </div>
+            
+            <div class="diagnostic-card">
+                <h4>🔬 الفحوصات المخبرية</h4>
+                <p>تحاليل الدم والبول للكشف عن شذوذ قد يسببه السرطان (مثل تعداد الدم الكامل في حالات اللوكيميا)</p>
+            </div>
+            
+            <div class="diagnostic-card">
+                <h4>📷 الفحوصات التصويرية</h4>
+                <p>الأشعة المقطعية (CT)، الرنين المغناطيسي (MRI)، التصوير المقطعي بالإصدار البوزيتروني (PET)، الأشعة السينية، والموجات فوق الصوتية</p>
+            </div>
+            
+            <div class="diagnostic-card">                <h4>🧪 الخزعة (Biopsy)</h4>
+                <p>جمع عينة من الخلايا لفحصها مخبرياً - وهي الطريقة الوحيدة المؤكدة لتشخيص السرطان في معظم الحالات</p>
+            </div>
+        </div>
+        
+        <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; margin-top: 20px;">
+            <strong>🔬 تحت المجهر:</strong> الخلايا الطبيعية تبدو منتظمة ومتشابهة في الحجم، بينما الخلايا السرطانية تبدو غير منظمة بأحجام متفاوتة
+        </div>
+    </div>
+
+    <!-- الشريحة 9: طرق العلاج -->
+    <div class="slide">
+        <h1>طرق علاج السرطان</h1>
+        
+        <div class="treatment-list">
+            <div class="treatment-item">🔪 الجراحة: إزالة الورم السرطاني من الجسم</div>
+            <div class="treatment-item">💊 العلاج الكيميائي: استخدام أدوية لقتل الخلايا السرطانية سريعة النمو</div>
+            <div class="treatment-item">☢️ العلاج الإشعاعي: استخدام أشعة عالية الطاقة لتدمير الخلايا السرطانية</div>
+            <div class="treatment-item">🛡️ العلاج المناعي: تعزيز الجهاز المناعي لمحاربة السرطان</div>
+            <div class="treatment-item">🎯 العلاج الموجه: استهداف تغيرات جينية محددة داخل الخلايا السرطانية</div>
+            <div class="treatment-item">⚖️ العلاج الهرموني: إبطاء أو إيقاف نمو السرطان عن طريق خفض مستويات الهرمونات</div>
+            <div class="treatment-item">🔄 زراعة الخلايا الجذعية: استعادة الخلايا المكونة للدم</div>
+        </div>
+        
+        <p style="margin-top: 25px; background: #e8f5e9; padding: 15px; border-radius: 10px; border-right: 4px solid var(--success);">
+            <strong>💡 ملاحظة:</strong> غالباً ما يتم دمج أكثر من طريقة علاجية للحصول على أفضل النتائج، ويتم تحديد الخطة العلاجية بناءً على نوع السرطان ومرحلته وحالة المريض
+        </p>
+    </div>
+
+    <!-- الشريحة 10: استراتيجيات الإدارة -->
+    <div class="slide">
+        <h1>استراتيجيات إدارة السرطان</h1>
+        
+        <div class="nursing-care">
+            <div class="care-item">
+                <h4>🤝 الرعاية الداعمة</h4>
+                <ul>
+                    <li>إدارة الألم</li>
+                    <li>الاستشارات الغذائية</li>
+                    <li>أدوية لعلاج الغثيان</li>
+                    <li>الوقاية من العدوى</li>
+                </ul>
+            </div>
+            
+            <div class="care-item">
+                <h4>🩸 الوقاية من الجلطات</h4>
+                <ul>
+                    <li>المراقبة النشطة</li>
+                    <li>أدوية لتقليل خطر التخثر</li>
+                    <li>تشجيع الحركة والنشاط</li>                </ul>
+            </div>
+            
+            <div class="care-item">
+                <h4>♻️ إعادة التأهيل</h4>
+                <ul>
+                    <li>العلاج الطبيعي للوذمة الليمفاوية</li>
+                    <li>تمارين لاستعادة القوة</li>
+                    <li>الدعم الوظيفي والمهني</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div style="margin-top: 25px; background: #fff3e0; padding: 15px; border-radius: 10px; border-right: 4px solid #ff9800;">
+            <strong>🎯 الهدف:</strong> تحسين جودة حياة المريض، تخفيف الأعراض، ودعم المريض وعائلته خلال رحلة العلاج
+        </div>
+    </div>
+
+    <!-- الشريحة 11: الرعاية التمريضية -->
+    <div class="slide">
+        <h1>الرعاية التمريضية لمرضى السرطان</h1>
+        
+        <div class="nursing-care">
+            <div class="care-item">
+                <h4>🩹 إدارة الأعراض</h4>
+                <p>مراقبة وإدارة التعب، الألم، الغثيان، والقيء عبر طرق دوائية وغير دوائية (موسيقى، استرخاء)</p>
+            </div>
+            
+            <div class="care-item">
+                <h4>🦠 مكافحة العدوى</h4>
+                <p>تطبيق احتياطات نقص العدلات، تشجيع نظافة اليدين، مراقبة كريات الدم البيضاء، وتعليم المريض تجنب الزحام</p>
+            </div>
+            
+            <div class="care-item">
+                <h4>💉 دعم العلاج</h4>
+                <p>رعاية المرضى أثناء العلاج الكيميائي (إدارة الآثار الجانبية) والعلاج الإشعاعي، والعناية بمواقع الجراحة</p>
+            </div>
+            
+            <div class="care-item">
+                <h4>🧠 الدعم النفسي والاجتماعي</h4>
+                <p>مساعدة المريض في التحديات العاطفية، تشجيع التواصل، وتوفير التعليم لتقليل القلق</p>
+            </div>
+            
+            <div class="care-item">
+                <h4>🍽️ الحفاظ على التغذية</h4>
+                <p>مراقبة الوزن، تقييم الاحتياجات الغذائية، ومعالجة مشاكل الفم التي تعيق الأكل</p>
+            </div>
+            
+            <div class="care-item">
+                <h4>📚 تعليم المريض</h4>                <p>تعليم حول مسار المرض، جدول الأدوية، ومتى يجب الاتصال بمقدمي الرعاية الصحية</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- الشريحة 12: الخاتمة -->
+    <div class="slide">
+        <h1>الخلاصة</h1>
+        
+        <div class="conclusion-box">
+            <p>🔹 السرطان هو مجموعة معقدة ومتعددة الأوجه من الأمراض ناتجة عن نمو غير منضبط للخلايا</p>
+            <br>
+            <p>🔹 يمكن الوقاية منه إلى حد كبير من خلال تغييرات نمط الحياة والفحص المبكر</p>
+            <br>
+            <p>🔹 أدت التطورات في البيولوجيا الجزيئية إلى تحسين معدلات البقاء على قيد الحياة</p>
+            <br>
+            <p>🔹 يتجه العلاج نحو العلاجات الموجهة والشخصية المخصصة لكل مريض</p>
+            <br>
+            <p>🔹 النهج الشامل الذي يجمع بين الوقاية، الكشف المبكر، والرعاية التلطيفية هو المفتاح لتحسين النتائج</p>
+        </div>
+        
+        <p style="text-align: center; margin-top: 30px; font-size: 1.4rem; color: var(--primary);">
+            <strong>✨ معاً نواجه السرطان بالعلم والرعاية ✨</strong>
+        </p>
+    </div>
+
+    <!-- الشريحة 13: المراجع -->
+    <div class="slide">
+        <h1>المراجع</h1>
+        
+        <ol class="references-list">
+            <li>Healthdirect Australia. (n.d.). Cancer - symptoms, causes, diagnosis and treatments. Retrieved from https://www.healthdirect.gov.au/cancer</li>
+            <li>Cleveland Clinic. (2024, August 19). What Is Cancer? Symptoms, Causes & Types. Retrieved from https://my.clevelandclinic.org/health/diseases/12194-cancer</li>
+            <li>MedPark Hospital. (2022, October 19). Cancer: Causes, Symptoms, Stages, Diagnosis, Treatments. Retrieved from https://www.medparkhospital.com/en-US/disease-and-treatment/cancer-types</li>
+            <li>Healthline. (2022, February 17). Cancer: Types, Causes, Treatment, and Prevention. Retrieved from https://www.healthline.com/health/cancer</li>
+            <li>Mayo Clinic. (2024, November 19). Cancer - Symptoms and causes. Retrieved from https://www.mayoclinic.org/diseases-conditions/cancer/symptoms-causes/syc-20370588</li>
+            <li>HCG Oncology. (n.d.). What is Cancer? Types, Symptoms & Treatments. Retrieved from https://www.hcgoncology.com/blog/what-is-cancer-types-symptoms/</li>
+            <li>World Health Organization (WHO). (n.d.). Cancer. Retrieved from https://www.who.int/health-topics/cancer</li>
+        </ol>
+        
+        <p style="margin-top: 30px; text-align: center; font-style: italic; color: #666;">
+            تم إعداد هذا العرض لأغراض تعليمية في مدرسة أجياد الثانوية الفنية للتمريض
+        </p>
     </div>
 
     <!-- أدوات التحكم -->
     <div class="controls">
-        <button class="btn" id="prevBtn" onclick="changeSlide(-1)">السابق</button>
-        <span class="slide-number" id="slideIndicator">1 / 6</span>
-        <button class="btn" id="nextBtn" onclick="changeSlide(1)">التالي</button>
-    </div>
+        <button class="btn" id="prevBtn" onclick="changeSlide(-1)">◀ السابق</button>
+        <span class="slide-indicator" id="slideIndicator">1 / 13</span>
+        <button class="btn" id="nextBtn" onclick="changeSlide(1)">التالي ▶</button>    </div>
+    
+    <!-- زر التحميل -->
+    <button class="btn btn-download" style="position: absolute; top: 20px; right: 25px; z-index: 100;" onclick="downloadPPT()">
+        📥 تحميل PowerPoint
+    </button>
+    
+    <!-- شريط التقدم -->
+    <div class="progress-bar" id="progressBar" style="width: 7.7%;"></div>
+    
+    <!-- رقم الشريحة -->
+    <div class="slide-number" id="slideNumber">1/13</div>
+
 </div>
 
 <script>
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    
     const indicator = document.getElementById('slideIndicator');
+    const slideNumber = document.getElementById('slideNumber');
+    const progressBar = document.getElementById('progressBar');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
 
     function updateControls() {
-        // تحديث رقم الشريحة
-        indicator.textContent = `${currentSlide + 1} / ${slides.length}`;
+        indicator.textContent = `${currentSlide + 1} / ${totalSlides}`;
+        slideNumber.textContent = `${currentSlide + 1}/${totalSlides}`;
+        progressBar.style.width = `${((currentSlide + 1) / totalSlides) * 100}%`;
         
-        // تفعيل/تعطيل الأزرار
         prevBtn.disabled = currentSlide === 0;
-        nextBtn.disabled = currentSlide === slides.length - 1;
+        nextBtn.disabled = currentSlide === totalSlides - 1;
     }
 
     function showSlide(index) {
-        // إخفاء الشريحة الحالية
         slides[currentSlide].classList.remove('active');
-        
-        // تحديد الشريحة الجديدة
         currentSlide = index;
-        
-        // إظهار الشريحة الجديدة
         slides[currentSlide].classList.add('active');
-        
         updateControls();
+        
+        // تمرير لأعلى الشريحة
+        document.querySelector('.slide.active').scrollTop = 0;
     }
 
     function changeSlide(direction) {
         const newIndex = currentSlide + direction;
-        if (newIndex >= 0 && newIndex < slides.length) {
+        if (newIndex >= 0 && newIndex < totalSlides) {
             showSlide(newIndex);
-        }
-    }
+        }    }
 
-    // دعم التنقل بلوحة المفاتيح
+    // دعم لوحة المفاتيح
     document.addEventListener('keydown', function(event) {
         if (event.key === "ArrowLeft") {
-            changeSlide(1); // التالي في العربية (يسار)
+            changeSlide(1);
         } else if (event.key === "ArrowRight") {
-            changeSlide(-1); // السابق في العربية (يمين)
+            changeSlide(-1);
         } else if (event.key === " " || event.key === "Enter") {
             changeSlide(1);
         }
     });
 
-    // التهيئة الأولية    updateControls();
+    // دالة تحميل PowerPoint
+    function downloadPPT() {
+        try {
+            let pptx = new PptxGenJS();
+            pptx.layout = 'LAYOUT_16x9';
+            
+            // إعدادات عامة
+            const titleColor = '1a5276';
+            const bodyColor = '333333';
+            const accentColor = 'e74c3c';
+            
+            // الشريحة 1: العنوان
+            let slide1 = pptx.addSlide();
+            slide1.background = { color: '1a5276' };
+            slide1.addText('وزارة الصحة والسكان', { x: 1, y: 0.5, w: '90%', fontSize: 18, color: 'FFFFFF', align: 'center', bold: true });
+            slide1.addText('مدرسة أجياد الثانوية الفنية للتمريض', { x: 1, y: 1, w: '90%', fontSize: 16, color: 'FFFFFF', align: 'center' });
+            slide1.addText('مرض السرطان', { x: 1, y: 2.5, w: '90%', fontSize: 36, color: 'FFFFFF', align: 'center', bold: true });
+            slide1.addText('CANCER DISEASE', { x: 1, y: 3.5, w: '90%', fontSize: 24, color: 'FFFFFF', align: 'center' });
+            slide1.addText('إشراف: د. سارة محمود', { x: 1, y: 4.5, w: '90%', fontSize: 14, color: 'FFFFFF', align: 'center' });
+            
+            // الشريحة 2: المقدمة
+            let slide2 = pptx.addSlide();
+            slide2.addText('1. مقدمة عن السرطان', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });
+            slide2.addText('السرطان هو مجموعة من الأمراض تتميز بنمو خلايا غير طبيعي وغير منضبط', { x: 0.5, y: 1, w: '90%', fontSize: 14, color: bodyColor });
+            slide2.addText('إحصائيات هامة (2020):\n• حوالي 10 مليون حالة وفاة سنوياً\n• أكثر من 19 مليون حالة جديدة', { x: 0.5, y: 1.8, w: '90%', fontSize: 14, color: bodyColor, bullet: true });
+            slide2.addText('محاور الفهم:\n• الآليات البيولوجية المتنوعة\n• عوامل الخطر (التدخين، البيئة)\n• أساليب التشخيص الحديثة\n• العلاجات المخصصة', { x: 0.5, y: 3.2, w: '90%', fontSize: 14, color: bodyColor, bullet: true });
+            
+            // الشريحة 3: التعريف
+            let slide3 = pptx.addSlide();
+            slide3.addText('تعريف السرطان', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });
+            slide3.addText('السرطان: مرض تنمو فيه بعض خلايا الجسم بشكل غير منضبط وتنتشر إلى أجزاء أخرى', { x: 0.5, y: 1, w: '90%', fontSize: 14, color: bodyColor, fill: { color: 'e8f4f8' }, margin: 10 });
+            slide3.addText('كيف يحدث:\n• خلايا الجسم تتجدد بشكل منتظم\n• الخلايا التالفة تموت وتستبدل بجديدة\n• أحياناً تنهار هذه العملية\n• تنمو خلايا غير طبيعية وتشكل أوراماً', { x: 0.5, y: 2, w: '90%', fontSize: 13, color: bodyColor, bullet: true });
+            slide3.addText('⚠️ الأورام: سرطانية (خبيثة) أو غير سرطانية (حميدة)', { x: 0.5, y: 4.2, w: '90%', fontSize: 13, color: accentColor, bold: true });
+            
+            // الشريحة 4: الأنواع
+            let slide4 = pptx.addSlide();
+            slide4.addText('أنواع السرطان الرئيسية', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });            const types = [
+                '🔷 الكارسينوما: الخلايا الطلائية (الرئة، الثدي، البروستاتا)',
+                '🦴 الساركوما: الأنسجة الضامة (دهون، عضلات، عظام)',
+                '🩸 اللوكيميا: خلايا الدم البيضاء في نخاع العظم',
+                '🛡️ الليمفوما: خلايا الجهاز المناعي',
+                '🎨 الميلانوما: خلايا إنتاج الميلانين في الجلد',
+                '🧬 أورام الخلايا الجرثومية: الخصيتين أو المبيضين'
+            ];
+            types.forEach((type, i) => {
+                slide4.addText(type, { x: 0.5, y: 1 + (i * 0.65), w: '90%', fontSize: 13, color: bodyColor });
+            });
+            
+            // الشريحة 5: عوامل الخطر
+            let slide5 = pptx.addSlide();
+            slide5.addText('عوامل خطر السرطان', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });
+            const risks = [
+                '🧬 التاريخ العائلي: وجود أقارب مصابين',
+                '🚬 التدخين: سرطان الرئة، المريء، البنكرياس',
+                '🏭 العوامل البيئية: الأسبستوس، المبيدات، الرادون',
+                '🍔 سوء التغذية: أطعمة عالية الدهون والسكر',
+                '💊 العلاج الهرموني: قد يزيد خطر سرطان الثدي',
+                '☀️ التعرض للإشعاع: الأشعة فوق البنفسجية'
+            ];
+            risks.forEach((risk, i) => {
+                slide5.addText(risk, { x: 0.5, y: 1 + (i * 0.6), w: '90%', fontSize: 13, color: bodyColor });
+            });
+            
+            // الشريحة 6: الأعراض
+            let slide6 = pptx.addSlide();
+            slide6.addText('الأعراض والعلامات السريرية', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });
+            const symptoms = [
+                '😴 التعب والإرهاق المستمر', '🔍 كتلة تحت الجلد', '⚖️ تغيرات الوزن غير المقصودة',
+                '🎨 تغيرات جلدية', '🩹 قروح لا تلتئم', '🚽 تغيرات في الإخراج',
+                '🤧 سعال مستمر', '😣 صعوبة البلع', '🗣️ بحة الصوت',
+                '🤢 عسر هضم', '🦵 ألم غير مبرر', '🌡️ حمى أو تعرق ليلي', '🩸 نزيف غير مبرر'
+            ];
+            symptoms.forEach((symptom, i) => {
+                const col = i < 7 ? 0.5 : 5;
+                const row = i < 7 ? i : i - 7;
+                slide6.addText(symptom, { x: col, y: 1 + (row * 0.5), w: '45%', fontSize: 11, color: bodyColor });
+            });
+            
+            // الشريحة 7: المضاعفات
+            let slide7 = pptx.addSlide();
+            slide7.addText('مضاعفات السرطان', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });
+            slide7.addText('🤒 أعراض جسدية: إرهاق، ألم، غثيان، تساقط شعر', { x: 0.5, y: 1, w: '45%', fontSize: 12, color: bodyColor });
+            slide7.addText('🔄 مشاكل جهازية: عدوى، فقر دم، هزال', { x: 5, y: 1, w: '45%', fontSize: 12, color: bodyColor });
+            slide7.addText('🫀 تلف الأعضاء: وذمة ليمفاوية، انسداد معوي', { x: 0.5, y: 2.2, w: '45%', fontSize: 12, color: bodyColor });
+            slide7.addText('🧠 مشاكل عصبية: تغيرات إدراكية، اعتلال أعصاب', { x: 5, y: 2.2, w: '45%', fontSize: 12, color: bodyColor });
+            slide7.addText('⚠️ حالات طارئة: انضغاط الحبل الشوكي، انحلال الورم', { x: 0.5, y: 3.8, w: '90%', fontSize: 12, color: accentColor, bold: true });            
+            // الشريحة 8: التشخيص
+            let slide8 = pptx.addSlide();
+            slide8.addText('الفحوصات التشخيصية', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });
+            slide8.addText('🩺 الفحص البدني: تحسس الكتل، فحص الجلد والأعضاء', { x: 0.5, y: 1, w: '45%', fontSize: 12, color: bodyColor });
+            slide8.addText('🔬 الفحوصات المخبرية: تحاليل الدم والبول', { x: 5, y: 1, w: '45%', fontSize: 12, color: bodyColor });
+            slide8.addText('📷 التصوير: CT, MRI, PET, أشعة سينية', { x: 0.5, y: 2, w: '45%', fontSize: 12, color: bodyColor });
+            slide8.addText('🧪 الخزعة (Biopsy): الطريقة المؤكدة للتشخيص', { x: 5, y: 2, w: '45%', fontSize: 12, color: bodyColor });
+            slide8.addText('🔬 تحت المجهر: الخلايا السرطانية غير منتظمة بأحجام متفاوتة', { x: 0.5, y: 3.5, w: '90%', fontSize: 12, color: bodyColor, fill: { color: 'e3f2fd' } });
+            
+            // الشريحة 9: العلاج
+            let slide9 = pptx.addSlide();
+            slide9.addText('طرق علاج السرطان', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });
+            const treatments = [
+                '🔪 الجراحة: إزالة الورم',
+                '💊 العلاج الكيميائي: أدوية لقتل الخلايا السرطانية',
+                '☢️ العلاج الإشعاعي: أشعة عالية الطاقة',
+                '🛡️ العلاج المناعي: تعزيز الجهاز المناعي',
+                '🎯 العلاج الموجه: استهداف تغيرات جينية',
+                '⚖️ العلاج الهرموني: خفض مستويات الهرمونات',
+                '🔄 زراعة الخلايا الجذعية: استعادة خلايا الدم'
+            ];
+            treatments.forEach((treatment, i) => {
+                slide9.addText(treatment, { x: 0.5, y: 1 + (i * 0.55), w: '90%', fontSize: 13, color: bodyColor });
+            });
+            
+            // الشريحة 10: الإدارة
+            let slide10 = pptx.addSlide();
+            slide10.addText('استراتيجيات الإدارة', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });
+            slide10.addText('🤝 الرعاية الداعمة:\n• إدارة الألم والاستشارات الغذائية', { x: 0.5, y: 1, w: '30%', fontSize: 12, color: bodyColor });
+            slide10.addText('🩸 الوقاية من الجلطات:\n• مراقبة نشطة وأدوية مضادة للتخثر', { x: 3.5, y: 1, w: '30%', fontSize: 12, color: bodyColor });
+            slide10.addText('♻️ إعادة التأهيل:\n• علاج طبيعي وتمارين استعادة القوة', { x: 6.5, y: 1, w: '30%', fontSize: 12, color: bodyColor });
+            slide10.addText('🎯 الهدف: تحسين جودة حياة المريض ودعم العائلة', { x: 0.5, y: 3.5, w: '90%', fontSize: 13, color: 'ff9800', bold: true });
+            
+            // الشريحة 11: الرعاية التمريضية
+            let slide11 = pptx.addSlide();
+            slide11.addText('الرعاية التمريضية', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });
+            const care = [
+                '🩹 إدارة الأعراض: التعب، الألم، الغثيان',
+                '🦠 مكافحة العدوى: احتياطات نقص العدلات',
+                '💉 دعم العلاج: إدارة آثار العلاج الكيميائي',
+                '🧠 الدعم النفسي: مساعدة في التحديات العاطفية',
+                '🍽️ التغذية: مراقبة الوزن والاحتياجات',
+                '📚 تعليم المريض: مسار المرض وجدول الأدوية'
+            ];
+            care.forEach((item, i) => {
+                slide11.addText(item, { x: 0.5, y: 1 + (i * 0.65), w: '90%', fontSize: 13, color: bodyColor });
+            });
+            
+            // الشريحة 12: الخاتمة            let slide12 = pptx.addSlide();
+            slide12.addText('الخلاصة', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });
+            slide12.addText('🔹 السرطان: أمراض معقدة بنمو غير منضبط للخلايا', { x: 0.5, y: 1.2, w: '90%', fontSize: 14, color: bodyColor });
+            slide12.addText('🔹 الوقاية: تغييرات نمط الحياة والفحص المبكر', { x: 0.5, y: 2, w: '90%', fontSize: 14, color: bodyColor });
+            slide12.addText('🔹 التطور: تحسين معدلات البقاء بالعلاجات الموجهة', { x: 0.5, y: 2.8, w: '90%', fontSize: 14, color: bodyColor });
+            slide12.addText('🔹 النهج الشامل: وقاية + كشف مبكر + رعاية تلطيفية', { x: 0.5, y: 3.6, w: '90%', fontSize: 14, color: bodyColor });
+            slide12.addText('✨ معاً نواجه السرطان بالعلم والرعاية ✨', { x: 0.5, y: 4.8, w: '90%', fontSize: 16, color: accentColor, align: 'center', bold: true });
+            
+            // الشريحة 13: المراجع
+            let slide13 = pptx.addSlide();
+            slide13.addText('المراجع', { x: 0.5, y: 0.3, w: '90%', fontSize: 24, color: titleColor, bold: true });
+            const refs = [
+                '1. Healthdirect Australia - Cancer symptoms and treatment',
+                '2. Cleveland Clinic - What Is Cancer?',
+                '3. MedPark Hospital - Cancer: Causes & Diagnosis',
+                '4. Healthline - Cancer: Types & Prevention',
+                '5. Mayo Clinic - Cancer Symptoms and Causes',
+                '6. HCG Oncology - Cancer Types & Treatments',
+                '7. WHO - Cancer Health Topics'
+            ];
+            refs.forEach((ref, i) => {
+                slide13.addText(ref, { x: 0.5, y: 1 + (i * 0.55), w: '90%', fontSize: 11, color: '666666' });
+            });
+            slide13.addText('تم الإعداد لأغراض تعليمية - مدرسة أجياد الثانوية الفنية للتمريض', { x: 0.5, y: 5, w: '90%', fontSize: 10, color: '999999', align: 'center' });
+            
+            // حفظ الملف
+            pptx.writeFile({ fileName: 'Cancer_Disease_Presentation.pptx' });
+            
+            // رسالة نجاح
+            alert('✅ تم إنشاء ملف PowerPoint بنجاح!\nسيبدأ التحميل تلقائياً...');
+            
+        } catch (error) {
+            console.error('Error creating PPT:', error);
+            alert('⚠️ حدث خطأ أثناء إنشاء ملف PowerPoint.\nيرجى تجربة المتصفح أو نسخ المحتوى يدوياً.');
+        }
+    }
+
+    // التهيئة الأولية
+    updateControls();
 </script>
 
 </body>
