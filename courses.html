@@ -972,16 +972,21 @@ function submitInlineMcq(){
     if(ai!==undefined&&q.opts[ai]?.correct)sc++;
   });
   const pct=Math.round(sc/questions.length*100);
-  // حفظ الدرجة في Firestore
+  // ── حفظ الدرجة في Firestore بالـ setDoc والـ db الموجودين بالفعل في الـ module ──
   if(_user) {
-    import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(({setDoc,doc,serverTimestamp})=>{
-      setDoc(doc(db,'scores',_user.uid+'_'+examId),{
-        userId:_user.uid, userName:_userData?.name||'', userGrade:_userData?.grade||'',
-        gradeKey, examId,
-        score:sc, total:questions.length, pct,
-        submittedAt:serverTimestamp()
-      }).catch(()=>{});
-    }).catch(()=>{});
+    const examTitle = document.getElementById('iep-title')?.textContent||examId;
+    setDoc(doc(db,'scores',_user.uid+'_'+examId),{
+      userId:_user.uid,
+      userName:_userData?.name||'',
+      userGrade:_userData?.grade||'',
+      gradeKey,
+      examId,
+      examTitle,
+      score:sc,
+      total:questions.length,
+      pct,
+      submittedAt:serverTimestamp()
+    }).catch(e=>console.warn('save score:',e.message));
   }
   document.getElementById('iep-result').innerHTML=`
     <div class="mcq-result" style="display:block">
