@@ -304,10 +304,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="tbtn on" id="tv" onclick="switchTab('v')"><svg><use href="#i-yt"/></svg>الفيديوهات <span id="cnt-v" style="font-size:10px;opacity:.7"></span></button>
+      <button class="tbtn" id="tv" onclick="switchTab('v')"><svg><use href="#i-yt"/></svg>الفيديوهات <span id="cnt-v" style="font-size:10px;opacity:.7"></span></button>
       <button class="tbtn" id="te" onclick="switchTab('e')"><svg><use href="#i-check"/></svg>الامتحانات <span id="cnt-e" style="font-size:10px;opacity:.7"></span></button>
       <button class="tbtn" id="th" onclick="switchTab('h')"><svg><use href="#i-file"/></svg>الواجبات <span id="cnt-h" style="font-size:10px;opacity:.7"></span></button>
       <button class="tbtn" id="tb" onclick="switchTab('b')" style="background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border-color:rgba(201,168,76,0.3);color:var(--gold)">📚 الكتب <span id="cnt-b" style="font-size:10px;opacity:.7"></span></button>
+      <button class="tbtn" id="tpl" onclick="switchTab('pl')" style="background:linear-gradient(135deg,rgba(74,127,212,0.15),rgba(74,127,212,0.05));border-color:rgba(74,127,212,0.3);color:var(--blue)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        البلايلست <span id="cnt-pl" style="font-size:10px;opacity:.7"></span>
+      </button>
       <button class="tbtn" id="tr" onclick="switchTab('r')" style="background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04));border-color:rgba(16,185,129,0.3);color:#10b981">📝 الأبحاث <span id="cnt-r" style="font-size:10px;opacity:.7"></span></button>
       <button class="tbtn" onclick="openCopyModal()" style="margin-right:auto;border-color:rgba(139,92,246,0.3);color:#a78bfa" title="نسخ محتوى من صف لصف">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
@@ -622,6 +626,85 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div id="bList"><div class="empty"><p>لا يوجد كتب بعد</p></div></div>
       </div>
 
+    </div>
+
+    </div>
+
+    <!-- ══════════════════ PLAYLISTS ══════════════════ -->
+    <div id="spl" style="display:none">
+
+      <div class="card">
+        <div class="card-head">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            إضافة بلايلست
+          </h3>
+          <button class="btn sm ghost" onclick="clearPlaylist()">مسح</button>
+          <button class="btn sm primary" id="plSaveBtn" onclick="savePlaylist()"><svg><use href="#i-save"/></svg>حفظ</button>
+        </div>
+
+        <div class="note">
+          📋 البلايلست = مجموعة فيديوهات متسلسلة بتظهر للطالب كـ playlist. الطالب يشوف الفيديوهات واحد ورا التاني في نفس الصفحة.
+        </div>
+
+        <div class="fgrid">
+          <div class="ff full">
+            <label>عنوان البلايلست</label>
+            <input type="text" id="plTitle" placeholder="مثال: وحدة المعادلات — الفصل الأول"/>
+          </div>
+          <div class="ff full">
+            <label>وصف مختصر (اختياري)</label>
+            <input type="text" id="plDesc" placeholder="مثال: شرح كامل لوحدة المعادلات من الدرجة الأولى"/>
+          </div>
+          <div class="ff">
+            <label>الترتيب</label>
+            <input type="number" id="plOrder" placeholder="1" min="1" value="1"/>
+          </div>
+          <div class="ff">
+            <label>صورة الغلاف (اختياري)</label>
+            <input type="url" id="plCover" placeholder="https://..." oninput="previewPlCover(this.value)"/>
+          </div>
+          <div id="plCoverPreview" style="display:none;grid-column:1/-1;margin-top:-4px">
+            <img id="plCoverImg" style="width:120px;height:68px;object-fit:cover;border-radius:8px;border:1px solid var(--b2)"/>
+          </div>
+        </div>
+
+        <!-- قائمة الفيديوهات في البلايلست -->
+        <div style="margin-top:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <label style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.6px;text-transform:uppercase">فيديوهات البلايلست</label>
+            <button class="btn sm primary" onclick="addPlVideoRow()">
+              <svg><use href="#i-plus"/></svg>إضافة فيديو
+            </button>
+          </div>
+          <div id="plVideoRows" style="display:flex;flex-direction:column;gap:8px">
+            <!-- rows will be added here -->
+          </div>
+          <div id="plVideoEmpty" style="text-align:center;padding:20px;color:var(--muted);font-size:12px;background:rgba(74,127,212,0.04);border:1px dashed var(--b1);border-radius:10px;margin-top:4px">
+            اضغط "+ إضافة فيديو" لإضافة فيديوهات البلايلست
+          </div>
+        </div>
+
+        <!-- اختيار من الفيديوهات الموجودة -->
+        <div style="margin-top:10px;padding:10px 12px;background:rgba(74,127,212,0.05);border:1px solid var(--b2);border-radius:10px">
+          <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px">📥 أو اختر من الفيديوهات المحفوظة للصف ده</div>
+          <div id="plPickList" style="display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto">
+            <div style="font-size:11px;color:var(--muted)">اختار الصف الأول لتظهر الفيديوهات المحفوظة...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Playlists list -->
+      <div class="card">
+        <div class="card-head">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            البلايلستات المضافة
+          </h3>
+          <button class="btn sm ghost" onclick="loadPlaylists()"><svg><use href="#i-refresh"/></svg></button>
+        </div>
+        <div id="plList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
+      </div>
     </div>
 
     <!-- ══════════════════ RESEARCH ══════════════════ -->
@@ -1197,6 +1280,189 @@ window.clearBook = () => {
   if(window._editId) delete window._editId.b;
 };
 
+// ══ PLAYLIST FUNCTIONS (inside module - has access to db) ══
+
+window._plVideos = []; // الفيديوهات في البلايلست الحالية
+
+window.previewPlCover = (url)=>{
+  const wrap = document.getElementById('plCoverPreview');
+  const img  = document.getElementById('plCoverImg');
+  if(url){ img.src=url; wrap.style.display='block'; }
+  else wrap.style.display='none';
+};
+
+window.addPlVideoRow = (video={})=>{
+  const rows = document.getElementById('plVideoRows');
+  const empty = document.getElementById('plVideoEmpty');
+  if(empty) empty.style.display='none';
+  const idx = Date.now();
+  const div = document.createElement('div');
+  div.id='plrow-'+idx;
+  div.style.cssText='display:flex;align-items:center;gap:8px;background:rgba(74,127,212,0.04);border:1px solid var(--b2);border-radius:10px;padding:8px 10px';
+  div.innerHTML=`
+    <div style="width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0">${rows.children.length+1}</div>
+    <input type="text" placeholder="عنوان الفيديو..." value="${video.title||''}"
+      style="flex:1;padding:7px 10px;background:rgba(6,10,22,0.6);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"
+      data-field="title"/>
+    <input type="url" placeholder="رابط يوتيوب..." value="${video.url||''}"
+      style="flex:2;padding:7px 10px;background:rgba(6,10,22,0.6);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;direction:ltr"
+      data-field="url"/>
+    <input type="text" placeholder="المدة" value="${video.duration||''}"
+      style="width:80px;padding:7px 8px;background:rgba(6,10,22,0.6);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"
+      data-field="duration"/>
+    <button onclick="document.getElementById('plrow-${idx}').remove();reindexPlRows()"
+      style="width:28px;height:28px;border-radius:7px;border:1px solid rgba(255,77,109,0.3);background:rgba(255,77,109,0.07);color:var(--err);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>`;
+  rows.appendChild(div);
+};
+
+window.reindexPlRows = ()=>{
+  document.querySelectorAll('#plVideoRows > div').forEach((div,i)=>{
+    const num = div.querySelector('div');
+    if(num) num.textContent = i+1;
+  });
+  const empty = document.getElementById('plVideoEmpty');
+  if(empty) empty.style.display = document.getElementById('plVideoRows').children.length?'none':'block';
+};
+
+window.getPlVideoRows = ()=>{
+  const rows = document.querySelectorAll('#plVideoRows > div');
+  return Array.from(rows).map((div,i)=>{
+    const inputs = div.querySelectorAll('input[data-field]');
+    const obj={order:i+1};
+    inputs.forEach(inp=>{ obj[inp.dataset.field]=inp.value.trim(); });
+    return obj;
+  }).filter(v=>v.title||v.url);
+};
+
+window.loadPlPickList = async ()=>{
+  const grade = document.getElementById('gSel').value;
+  const el = document.getElementById('plPickList');
+  if(!grade){ el.innerHTML='<div style="font-size:11px;color:var(--muted)">اختار الصف الأول لتظهر الفيديوهات المحفوظة...</div>'; return; }
+  try{
+    const snap = await getDocs(collection(db,'content',grade,'videos'));
+    const videos = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+    if(!videos.length){ el.innerHTML='<div style="font-size:11px;color:var(--muted)">لا يوجد فيديوهات محفوظة للصف ده بعد</div>'; return; }
+    el.innerHTML = videos.map(v=>`
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;cursor:pointer;transition:background .15s"
+        onmouseover="this.style.background='rgba(74,127,212,0.08)'" onmouseout="this.style.background='transparent'"
+        onclick="addPlVideoRow({title:'${(v.title||'').replace(/'/g,"\\'")}',url:'${v.url||''}',duration:'${v.duration||''}'})">
+        <div style="width:7px;height:7px;border-radius:50%;background:var(--blue);flex-shrink:0"></div>
+        <div style="flex:1;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${v.order?v.order+'. ':''}${v.title||'—'}</div>
+        ${v.duration?`<div style="font-size:10px;color:var(--muted)">${v.duration}</div>`:''}
+        <div style="font-size:10px;color:var(--blue);font-weight:700;white-space:nowrap">+ أضف</div>
+      </div>`).join('');
+  }catch(e){ el.innerHTML=`<div style="font-size:11px;color:var(--err)">خطأ: ${e.message}</div>`; }
+};
+
+window.savePlaylist = async ()=>{
+  const grade = document.getElementById('gSel').value;
+  if(!grade){ window.toast('اختار صف','err'); return; }
+  const title = document.getElementById('plTitle').value.trim();
+  if(!title){ window.toast('ادخل عنوان البلايلست','err'); return; }
+  const videos = getPlVideoRows();
+  if(!videos.length){ window.toast('أضف فيديو واحد على الأقل','err'); return; }
+  const btn = document.getElementById('plSaveBtn');
+  btn.innerHTML='<div class="spin"></div>'; btn.disabled=true;
+  try{
+    const data = {
+      title,
+      description: document.getElementById('plDesc').value.trim(),
+      order: parseInt(document.getElementById('plOrder').value)||1,
+      coverUrl: document.getElementById('plCover').value.trim(),
+      videos,
+      videoCount: videos.length,
+      updatedAt: serverTimestamp()
+    };
+    if(window._editId?.pl){
+      await updateDoc(doc(db,'content',grade,'playlists',window._editId.pl), data);
+      delete window._editId.pl;
+      window.toast('تم تعديل البلايلست ✓','ok');
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db,'content',grade,'playlists'), data);
+      window.toast('تم حفظ البلايلست ✓','ok');
+    }
+    clearPlaylist(); loadPlaylists();
+  }catch(e){ window.toast('خطأ: '+e.message,'err'); }
+  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ'; btn.disabled=false;
+};
+
+window.loadPlaylists = async ()=>{
+  const grade = document.getElementById('gSel').value;
+  const el = document.getElementById('plList');
+  if(!grade){ el.innerHTML='<div class="empty"><p>اختار صفاً أولاً</p></div>'; return; }
+  el.innerHTML='<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
+  try{
+    const snap = await getDocs(collection(db,'content',grade,'playlists'));
+    const pls = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+    const cnt = document.getElementById('cnt-pl');
+    if(cnt) cnt.textContent = pls.length?'('+pls.length+')':'';
+    if(!pls.length){ el.innerHTML='<div class="empty"><p>لا يوجد بلايلستات — ابدأ بالإضافة ⬆️</p></div>'; return; }
+    el.innerHTML=`<div class="items">${pls.map(pl=>`
+      <div class="item" style="align-items:flex-start;gap:10px">
+        ${pl.coverUrl
+          ?`<img src="${pl.coverUrl}" style="width:64px;height:40px;object-fit:cover;border-radius:6px;flex-shrink:0;border:1px solid var(--b2)"/>`
+          :`<div style="width:64px;height:40px;border-radius:6px;background:linear-gradient(135deg,rgba(74,127,212,0.2),rgba(26,50,112,0.3));border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">▶</div>`
+        }
+        <div class="item-info" style="flex:1;min-width:0">
+          <div class="item-title">${pl.order?pl.order+'. ':''}${pl.title}</div>
+          <div class="item-meta">
+            <span class="tag v">📹 ${pl.videoCount||pl.videos?.length||0} فيديو</span>
+            ${pl.description?`<span style="color:var(--muted)">${pl.description}</span>`:''}
+          </div>
+          ${pl.videos?.length?`<div style="font-size:10px;color:var(--muted);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${pl.videos.slice(0,3).map(v=>v.title).join(' · ')}${pl.videos.length>3?' · ...':''}</div>`:''}
+        </div>
+        <div class="item-acts">
+          <button class="ia" onclick="editPlaylist('${pl.id}')" title="تعديل"><svg><use href="#i-edit"/></svg></button>
+          <button class="ia del" onclick="deletePlaylist('${pl.id}','${(pl.title||'').replace(/'/g,"\\'")}')"><svg><use href="#i-trash"/></svg></button>
+        </div>
+      </div>`).join('')}</div>`;
+  }catch(e){ el.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`; }
+};
+
+window.editPlaylist = async (id)=>{
+  const grade = document.getElementById('gSel').value;
+  try{
+    const d = await (async()=>{ const s=await getDocs(collection(db,'content',grade,'playlists')); return s.docs.find(x=>x.id===id); })();
+    if(!d) return;
+    const pl = d.data();
+    window._editId = window._editId||{};
+    window._editId.pl = id;
+    document.getElementById('plTitle').value = pl.title||'';
+    document.getElementById('plDesc').value  = pl.description||'';
+    document.getElementById('plOrder').value = pl.order||1;
+    document.getElementById('plCover').value = pl.coverUrl||'';
+    window.previewPlCover(pl.coverUrl||'');
+    // إعادة بناء صفوف الفيديوهات
+    document.getElementById('plVideoRows').innerHTML='';
+    document.getElementById('plVideoEmpty').style.display='none';
+    (pl.videos||[]).forEach(v=>addPlVideoRow(v));
+    if(!(pl.videos||[]).length) document.getElementById('plVideoEmpty').style.display='block';
+    window.scrollTo({top:0,behavior:'smooth'});
+    window.toast('جاهز للتعديل ✏️','ok');
+  }catch(e){ window.toast('خطأ: '+e.message,'err'); }
+};
+
+window.deletePlaylist = async (id, title)=>{
+  if(!confirm('حذف "'+title+'"؟')) return;
+  const grade = document.getElementById('gSel').value;
+  try{
+    await deleteDoc(doc(db,'content',grade,'playlists',id));
+    loadPlaylists();
+    window.toast('تم الحذف','ok');
+  }catch(e){ window.toast('خطأ: '+e.message,'err'); }
+};
+
+window.clearPlaylist = ()=>{
+  ['plTitle','plDesc','plOrder','plCover'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=el.id==='plOrder'?'1':''; });
+  document.getElementById('plVideoRows').innerHTML='';
+  document.getElementById('plVideoEmpty').style.display='block';
+  document.getElementById('plCoverPreview').style.display='none';
+  if(window._editId) delete window._editId.pl;
+};
+
 // ══ SEND NOTIFICATION — داخل الـ module عشان يوصل لـ db مباشرة ══
 window.sendContentNotif = async (gradeKey, type, title) => {
   try{
@@ -1252,17 +1518,26 @@ function onGrade(){
   if(!g) return;
   const gi=document.getElementById('gInfo');
   gi.style.display='inline';gi.textContent=GRADES_LABEL[g]||g;
-  const tab = _curTab==='v'?'videos':_curTab==='e'?'exams':'homework';
-  const elId = _curTab==='v'?'vList':_curTab==='e'?'eList':'hList';
-  loadList(tab, elId);
+  const tab = _curTab==='v'?'videos':_curTab==='e'?'exams':_curTab==='h'?'homework':null;
+  const elId = _curTab==='v'?'vList':_curTab==='e'?'eList':_curTab==='h'?'hList':null;
+  if(tab && elId) loadList(tab, elId);
+  if(_curTab==='pl'){ loadPlaylists(); loadPlPickList(); }
+  else if(typeof loadPlPickList==='function') loadPlPickList();
 }
 
 function switchTab(t){
   _curTab=t;
-  ['v','e','h','b'].forEach(x=>document.getElementById('t'+x)?.classList.toggle('on',x===t));
-  ['sv','se','sh','sb'].forEach(x=>document.getElementById('s'+x.slice(1)).style.display=x.slice(1)===t?'block':'none');
+  ['v','e','h','b','pl','r'].forEach(x=>{
+    document.getElementById('t'+x)?.classList.toggle('on',x===t);
+  });
+  ['sv','se','sh','sb','spl','sr'].forEach(x=>{
+    const el=document.getElementById(x);
+    if(el) el.style.display=x.slice(1)===t?'block':'none';
+  });
   const grade=document.getElementById('gSel').value;
   if(t==='b'){ loadBooks(); return; }
+  if(t==='pl'){ loadPlaylists(); loadPlPickList(); return; }
+  if(t==='r'){ loadResearchCM(); return; }
   if(grade){
     const tab=t==='v'?'videos':t==='e'?'exams':'homework';
     const el=t==='v'?'vList':t==='e'?'eList':'hList';

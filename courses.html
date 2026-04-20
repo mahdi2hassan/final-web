@@ -49,7 +49,27 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   );
 }
 
-/* ══ BOOKS STYLES ══ */
+/* ══ PLAYLIST STYLES ══ */
+.playlist-grid{display:flex;flex-direction:column;gap:10px}
+.pl-card{background:var(--s2);border:1px solid var(--b2);border-radius:13px;overflow:hidden;cursor:pointer;transition:all .2s;display:flex;align-items:stretch;gap:0}
+.pl-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.4);border-color:var(--blue)}
+.pl-thumb{width:90px;min-height:56px;flex-shrink:0;background:linear-gradient(135deg,var(--navy),rgba(74,127,212,0.3));display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.pl-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pl-thumb-icon{font-size:22px}
+.pl-count{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.7);color:#fff;font-size:9px;font-weight:800;padding:2px 5px;border-radius:4px}
+.pl-info{flex:1;padding:10px 12px;min-width:0}
+.pl-title{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.pl-desc{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-meta{font-size:10px;color:var(--blue);margin-top:4px;font-weight:700}
+/* Playlist video item */
+.pl-vid-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.pl-vid-item:hover{background:rgba(74,127,212,0.07);border-color:var(--b2)}
+.pl-vid-item.active{background:rgba(74,127,212,0.12);border-color:var(--blue)}
+.pl-vid-num{width:24px;height:24px;border-radius:6px;background:rgba(74,127,212,0.12);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--blue);flex-shrink:0}
+.pl-vid-item.active .pl-vid-num{background:var(--blue);color:#fff}
+.pl-vid-title{flex:1;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-vid-dur{font-size:10px;color:var(--muted);flex-shrink:0}
+.pl-vid-done{font-size:13px;flex-shrink:0}
 .books-grid-inline{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .book-card-sm{background:var(--s2);border:1px solid var(--b2);border-radius:12px;
   overflow:hidden;transition:all .2s;cursor:pointer}
@@ -471,6 +491,9 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
     <button class="cv-tab" onclick="switchTab('exams',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg>الامتحانات
     </button>
+    <button class="cv-tab" onclick="switchTab('playlists',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>بلايلست
+    </button>
     <button class="cv-tab" onclick="switchTab('homework',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>الواجبات
     </button>
@@ -538,6 +561,60 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
       <div id="iep-body"></div>
       <div id="iep-result"></div>
       <button id="iep-submit" style="display:none;width:100%;margin-top:14px;padding:13px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;cursor:pointer">تسليم الإجابات</button>
+    </div>
+
+    <!-- ══ PLAYLISTS TAB ══ -->
+    <div class="tab-pane" id="tp-playlists">
+      <!-- Playlist list view -->
+      <div id="pl-list-view">
+        <div class="playlist-grid" id="playlistGrid">
+          <div class="empty"><p>جاري التحميل...</p></div>
+        </div>
+      </div>
+      <!-- Playlist player view (inline) -->
+      <div id="pl-player-view" style="display:none">
+        <!-- Header -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--b2)">
+          <button onclick="closePlPlayer()" style="width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+          </button>
+          <div style="flex:1;min-width:0">
+            <div id="pl-player-title" style="font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+            <div id="pl-player-meta" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+          </div>
+        </div>
+        <!-- Video player area -->
+        <div style="border-radius:12px;overflow:hidden;background:#000;margin-bottom:14px;position:relative">
+          <div class="player-iframe-wrap" id="pl-iframe-wrap" style="position:relative">
+            <iframe id="pl-iframe" src="" allowfullscreen allow="autoplay"
+              style="width:100%;aspect-ratio:16/9;border:none;display:block"></iframe>
+          </div>
+        </div>
+        <!-- Current video info -->
+        <div id="pl-current-info" style="margin-bottom:14px;padding:10px 12px;background:rgba(74,127,212,0.06);border:1px solid var(--b1);border-radius:10px">
+          <div id="pl-current-title" style="font-size:13px;font-weight:800;margin-bottom:3px"></div>
+          <div id="pl-current-meta" style="font-size:11px;color:var(--muted)"></div>
+        </div>
+        <!-- Playlist videos list -->
+        <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          قائمة التشغيل
+        </div>
+        <div id="pl-video-list" style="display:flex;flex-direction:column;gap:6px"></div>
+        <!-- Nav buttons -->
+        <div style="display:flex;gap:8px;margin-top:14px">
+          <button id="pl-prev-btn" onclick="plNavVideo(-1)"
+            style="flex:1;padding:10px;border:1px solid var(--b1);border-radius:10px;background:transparent;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+            السابق
+          </button>
+          <button id="pl-next-btn" onclick="plNavVideo(1)"
+            style="flex:1;padding:10px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+            التالي
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+          </button>
+        </div>
+      </div>
     </div>
     <div class="tab-pane" id="tp-homework"><div class="hw-list" id="hwList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-books"><div id="booksList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
@@ -795,6 +872,8 @@ window.openCourse=async(gradeKey,label,stage)=>{
   renderVideos(vids,dV,gradeKey,isMine);
   renderExams(exams,dE,gradeKey,isMine);
   renderHw(hw,dH,gradeKey,isMine);
+  // تحميل البلايلست في الخلفية
+  loadPlaylistsTab(gradeKey);
   setTimeout(()=>{setProg('pv','pvt',vids.length,dV.length);setProg('pe','pet',exams.length,dE.length);setProg('ph','pht',hw.length,dH.length);},400);
   // Night mode
   if(isMine) buildNightMode(vids, dV);
@@ -1134,7 +1213,108 @@ window.closeImg=()=>{document.getElementById('imgModal').classList.remove('open'
 window.closePlayer=()=>{document.getElementById('playerFrame').src='';document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';};
 window.playerDone=()=>{if(_playerData)markDone(_playerData.gradeKey,'videos',_playerData.id);closePlayer();};
 
-window.markDone=async(gradeKey,type,itemId)=>{
+// ── PLAYLISTS ──
+let _activePl = null; // {videos, currentIdx, gradeKey, plId}
+
+async function loadPlaylistsTab(gradeKey){
+  const grid = document.getElementById('playlistGrid');
+  grid.innerHTML='<div class="empty"><p>جاري التحميل...</p></div>';
+  try{
+    const snap = await getDocs(collection(db,'content',gradeKey,'playlists'));
+    const pls = snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+    if(!pls.length){ grid.innerHTML='<div class="empty"><p>لا يوجد بلايلستات بعد</p></div>'; return; }
+    grid.innerHTML = pls.map(pl=>`
+      <div class="pl-card" onclick="openPlPlayer('${pl.id}')">
+        <div class="pl-thumb">
+          ${pl.coverUrl?`<img src="${pl.coverUrl}" onerror="this.style.display='none'"/>`:''}
+          ${!pl.coverUrl?`<span class="pl-thumb-icon">▶</span>`:''}
+          <div class="pl-count">📹 ${pl.videoCount||pl.videos?.length||0}</div>
+        </div>
+        <div class="pl-info">
+          <div class="pl-title">${pl.order?pl.order+'. ':''}${pl.title}</div>
+          ${pl.description?`<div class="pl-desc">${pl.description}</div>`:''}
+          <div class="pl-meta">${pl.videos?.length||0} فيديو · اضغط للتشغيل ▶</div>
+        </div>
+      </div>`).join('');
+    // حفظ البلايلستات للـ openPlPlayer
+    window._playlists = pls;
+  }catch(e){ grid.innerHTML=`<div class="empty"><p>خطأ: ${e.message}</p></div>`; }
+}
+
+window.openPlPlayer = (plId)=>{
+  const pl = window._playlists?.find(p=>p.id===plId);
+  if(!pl||!pl.videos?.length) return;
+  _activePl = {pl, currentIdx:0, gradeKey:window._openGrade};
+  document.getElementById('pl-list-view').style.display='none';
+  document.getElementById('pl-player-view').style.display='block';
+  document.getElementById('pl-player-title').textContent = pl.title;
+  document.getElementById('pl-player-meta').textContent = `${pl.videos.length} فيديو`;
+  renderPlVideoList();
+  plPlayVideo(0);
+};
+
+window.closePlPlayer = ()=>{
+  // وقف الفيديو
+  document.getElementById('pl-iframe').src='';
+  document.getElementById('pl-player-view').style.display='none';
+  document.getElementById('pl-list-view').style.display='block';
+  _activePl = null;
+};
+
+function plPlayVideo(idx){
+  if(!_activePl) return;
+  const {pl, gradeKey} = _activePl;
+  const videos = pl.videos||[];
+  if(idx<0||idx>=videos.length) return;
+  _activePl.currentIdx = idx;
+  const v = videos[idx];
+  const ytId = getYtId(v.url||'');
+  if(ytId){
+    document.getElementById('pl-iframe').src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
+  } else if(v.url){
+    document.getElementById('pl-iframe').src=v.url;
+  }
+  document.getElementById('pl-current-title').textContent = `${idx+1}. ${v.title||'فيديو'}`;
+  document.getElementById('pl-current-meta').textContent = `${v.duration?'⏱ '+v.duration+' · ':''}فيديو ${idx+1} من ${videos.length}`;
+  // تحديث nav buttons
+  document.getElementById('pl-prev-btn').style.opacity = idx===0?'0.4':'1';
+  document.getElementById('pl-next-btn').style.opacity = idx===videos.length-1?'0.4':'1';
+  // highlight الفيديو الحالي
+  document.querySelectorAll('.pl-vid-item').forEach((el,i)=>{
+    el.classList.toggle('active', i===idx);
+    if(i===idx) el.scrollIntoView({block:'nearest',behavior:'smooth'});
+  });
+  // تسجيل المشاهدة
+  if(_user && _userData?.gradeKey===gradeKey){
+    const vidKey = `pl_${pl.id}_${idx}`;
+    markDone(gradeKey,'videos',vidKey);
+  }
+}
+
+function renderPlVideoList(){
+  if(!_activePl) return;
+  const {pl, currentIdx} = _activePl;
+  const videos = pl.videos||[];
+  const gp = _progress[window._openGrade]||{};
+  const done = gp.videos||[];
+  document.getElementById('pl-video-list').innerHTML = videos.map((v,i)=>{
+    const vidKey = `pl_${pl.id}_${i}`;
+    const isDone = done.includes(vidKey);
+    return `<div class="pl-vid-item ${i===currentIdx?'active':''}" onclick="plPlayVideo(${i})">
+      <div class="pl-vid-num">${isDone&&i!==currentIdx?'✓':i+1}</div>
+      <div class="pl-vid-title">${v.title||'فيديو '+(i+1)}</div>
+      ${v.duration?`<div class="pl-vid-dur">${v.duration}</div>`:''}
+      ${isDone?`<div class="pl-vid-done" style="color:var(--ok)">✅</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+window.plNavVideo = (dir)=>{
+  if(!_activePl) return;
+  const next = _activePl.currentIdx + dir;
+  const len = (_activePl.pl.videos||[]).length;
+  if(next>=0 && next<len) plPlayVideo(next);
+};
   try{
     const gp=_progress[gradeKey]||{};
     const list=[...(gp[type]||[])];
@@ -1331,8 +1511,11 @@ function switchTab(name,btn){
   if(btn)btn.classList.add('on');
   // اخبي البانال لو تغيرنا من تاب
   if(name!=='exams'){const p=document.getElementById('inlineExamPanel');if(p)p.style.display='none';const el=document.getElementById('tp-exams');if(el)el.style.display='';}
+  // اخبي player البلايلست لو تغيرنا من تاب
+  if(name!=='playlists'){const pv=document.getElementById('pl-player-view');if(pv){document.getElementById('pl-iframe').src='';pv.style.display='none';const lv=document.getElementById('pl-list-view');if(lv)lv.style.display='block';_activePl=null;}}
   if(name==='books') loadBooksTab();
   if(name==='research') loadMyResearches();
+  if(name==='playlists'&&window._openGrade) loadPlaylistsTab(window._openGrade);
   // Show/hide search bar (only for videos/exams)
   const srch = document.getElementById('cvSearch');
   if(srch) srch.style.display = (name==='videos'||name==='exams') ? 'flex' : 'none';
