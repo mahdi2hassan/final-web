@@ -2140,6 +2140,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         allow read: if request.auth != null;
         allow write: if false;
       }
+      // ← أضف هذا السطر للدرجات
+      match /scores/{doc} {
+        allow read, write: if true;
+      }
     }
   }
   ════════════════════════════════════════════════════
@@ -6906,6 +6910,8 @@ function refreshAllGradeSelects(){
   updateCFGrade();
   // حدّث توليد الأكواد
   if(document.getElementById('gs')) updateGenGrades();
+  // حدّث فلتر الدرجات (لو موجود)
+  if(typeof buildScoreGradeFilter === 'function') buildScoreGradeFilter();
 }
 
 // ── إضافة/تعديل صف ──
@@ -7203,7 +7209,7 @@ window.goPage = (p,...args)=>{
   _origGoPage?.(p,...args);
   if(p==='research') loadResearch();
   if(p==='grades') renderGradesList();
-  if(p==='scores') loadScores();
+  if(p==='scores'){ buildScoreGradeFilter(); loadScores(); }
 };
 
 // ═══════════════════════════════════════════════
@@ -7225,13 +7231,107 @@ window.loadScores = async ()=>{
   if(!tbl) return;
   tbl.innerHTML='<tr><td colspan="7"><div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div></td></tr>';
   try{
-    const snap = await db.collection('scores').orderBy('submittedAt','desc').limit(500).get();
+    // بدون orderBy عشان نتجنب مشكلة الـ composite index
+    const snap = await db.collection('scores').limit(500).get();
     window._allScores = snap.docs.map(d=>({id:d.id,...d.data()}));
+    // Sort client-side بدل Firestore
+    window._allScores.sort((a,b)=>{
+      const ta = a.submittedAt?.toMillis?.()??0;
+      const tb2 = b.submittedAt?.toMillis?.()??0;
+      return tb2 - ta;
+    });
     renderScores();
     updateScoreStats();
+    // بناء الصفوف الديناميكية في الفلتر
+    buildScoreGradeFilter();
   }catch(e){
-    tbl.innerHTML=`<tr><td colspan="7"><div class="empty"><p>خطأ: ${e.message}</p></div></td></tr>`;
+    const isPerm = e.message&&(e.message.includes('permission')||e.message.includes('PERMISSION_DENIED')||e.message.includes('insufficient'));
+    if(isPerm){
+      tbl.innerHTML=`<tr><td colspan="7"><div style="padding:20px;text-align:center">
+        <div style="font-size:32px;margin-bottom:10px">🔒</div>
+        <div style="font-size:13px;color:var(--err);font-weight:800;margin-bottom:8px">Missing or insufficient permissions</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.8;margin-bottom:12px">محتاج تضيف قاعدة الـ <code style="background:rgba(74,127,212,0.1);padding:2px 6px;border-radius:4px;color:var(--blue)">scores</code> في Firestore Rules</div>
+        <div style="background:rgba(6,10,22,0.8);border:1px solid var(--b1);border-radius:10px;padding:12px;font-family:monospace;font-size:11px;color:var(--ok);text-align:left;direction:ltr;max-width:400px;margin:0 auto 12px">
+          match /scores/{doc} {<br>
+          &nbsp;&nbsp;allow read, write: if true;<br>
+          }
+        </div>
+        <div style="font-size:11px;color:var(--muted)">روح <strong style="color:var(--blue)">Firebase Console → Firestore → Rules</strong> وضيف القاعدة دي</div>
+        <button onclick="loadScores()" style="margin-top:12px;padding:8px 18px;border:none;border-radius:9px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:800">🔄 حاول تاني</button>
+      </div></td></tr>`;
+      toast('⚠️ permissions — ضيف rules للـ scores collection','err');
+    } else {
+      tbl.innerHTML=`<tr><td colspan="7"><div class="empty"><p>خطأ: ${e.message}</p></div></td></tr>`;
+      toast('خطأ تحميل الدرجات: '+e.message,'err');
+    }
   }
+};
+
+// بناء قائمة الصفوف في فلتر الدرجات — ثابتة + ديناميكية
+window.buildScoreGradeFilter = ()=>{
+  const BASE_GRADES = [
+    {key:'primary-4',label:'رابع ابتدائي',stage:'primary'},
+    {key:'primary-5',label:'خامس ابتدائي',stage:'primary'},
+    {key:'primary-6',label:'سادس ابتدائي',stage:'primary'},
+    {key:'prep-1',label:'أول إعدادي',stage:'prep'},
+    {key:'prep-2',label:'ثاني إعدادي',stage:'prep'},
+    {key:'prep-3',label:'ثالث إعدادي',stage:'prep'},
+    {key:'sec-1',label:'أول ثانوي',stage:'sec'},
+    {key:'sec-2',label:'ثاني ثانوي',stage:'sec'},
+    {key:'sec-3',label:'ثالث ثانوي',stage:'sec'},
+  ];
+  const STAGE_AR = {primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة/كورسات',pro:'كورسات إضافية'};
+
+  // دمج الديناميكية
+  const allGrades = [...BASE_GRADES];
+  const dynamicGrades = Object.values(window._dynamicGrades||{}).flat();
+  dynamicGrades.forEach(g=>{
+    if(!allGrades.some(b=>b.key===g.key)){
+      allGrades.push({key:g.key, label:g.label, stage:g.stage||'univ'});
+    }
+  });
+
+  // تجميع بالـ stage
+  const byStage = {};
+  allGrades.forEach(g=>{
+    if(!byStage[g.stage]) byStage[g.stage]=[];
+    byStage[g.stage].push(g);
+  });
+
+  // بناء الـ HTML لفلتر الدرجات
+  const filterSel = document.getElementById('sc-grade-filter');
+  if(filterSel){
+    filterSel.innerHTML = '<option value="">كل الصفوف</option>';
+    Object.keys(byStage).forEach(stage=>{
+      const grp = document.createElement('optgroup');
+      grp.label = STAGE_AR[stage]||stage;
+      byStage[stage].forEach(g=>{
+        const opt = document.createElement('option');
+        opt.value = g.key; opt.textContent = g.label;
+        grp.appendChild(opt);
+      });
+      filterSel.appendChild(grp);
+    });
+  }
+
+  // بناء الـ HTML لـ modal الإضافة اليدوية
+  const modalSel = document.getElementById('asc-grade');
+  if(modalSel){
+    modalSel.innerHTML = '<option value="">— اختار —</option>';
+    Object.keys(byStage).forEach(stage=>{
+      const grp = document.createElement('optgroup');
+      grp.label = STAGE_AR[stage]||stage;
+      byStage[stage].forEach(g=>{
+        const opt = document.createElement('option');
+        opt.value = g.key; opt.textContent = g.label;
+        grp.appendChild(opt);
+      });
+      modalSel.appendChild(grp);
+    });
+  }
+
+  // تحديث GRADE_LABELS_SC بالديناميكية
+  allGrades.forEach(g=>{ GRADE_LABELS_SC[g.key]=g.label; });
 };
 
 window.updateScoreStats = ()=>{
