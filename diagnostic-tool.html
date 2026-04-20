@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Plus Mathematics – أداة التشخيص</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0a0e1a;color:#e0e6ff;padding:20px;direction:rtl}
+.container{max-width:900px;margin:0 auto;background:rgba(20,25,45,0.8);border-radius:16px;padding:30px;border:1px solid rgba(74,127,212,0.2)}
+h1{color:#4a7fd4;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.subtitle{color:#6a7a9e;margin-bottom:30px;font-size:14px}
+.section{background:rgba(12,18,40,0.6);border:1px solid rgba(74,127,212,0.15);border-radius:12px;padding:20px;margin-bottom:20px}
+.section h2{font-size:16px;margin-bottom:15px;color:#fff;display:flex;align-items:center;gap:8px}
+.status{padding:10px 15px;border-radius:8px;margin-bottom:10px;font-size:13px;display:flex;align-items:center;gap:8px}
+.status.loading{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#f59e0b}
+.status.ok{background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:#10b981}
+.status.err{background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);color:#ff4d6d}
+.status.warn{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#f59e0b}
+.code{background:#000;border-radius:8px;padding:12px;font-family:'Courier New',monospace;font-size:12px;overflow-x:auto;margin:10px 0;border:1px solid rgba(74,127,212,0.2)}
+.btn{background:linear-gradient(135deg,#4a7fd4,#1a3270);color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:bold;margin-top:10px}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(74,127,212,0.4)}
+.detail{font-size:12px;color:#6a7a9e;margin-top:5px;padding-right:26px}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(245,158,11,0.3);border-top-color:#f59e0b;border-radius:50%;animation:spin 0.7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.list{list-style:none;margin:10px 0}
+.list li{padding:8px 12px;background:rgba(74,127,212,0.05);border-radius:6px;margin-bottom:6px;font-size:13px;border:1px solid rgba(74,127,212,0.1)}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🔍 أداة تشخيص Plus Mathematics</h1>
+  <p class="subtitle">هذه الأداة بتفحص Firebase connection والـ Firestore collections عشان تساعدك تعرف المشكلة</p>
+
+  <!-- Firebase Config -->
+  <div class="section">
+    <h2>⚙️ Firebase Configuration</h2>
+    <div id="configStatus" class="status loading">
+      <span class="spinner"></span>
+      جاري التحقق من الإعدادات...
+    </div>
+    <div id="configDetails"></div>
+  </div>
+
+  <!-- Authentication -->
+  <div class="section">
+    <h2>🔐 Authentication Status</h2>
+    <div id="authStatus" class="status loading">
+      <span class="spinner"></span>
+      جاري التحقق من المصادقة...
+    </div>
+    <div id="authDetails"></div>
+  </div>
+
+  <!-- Firestore Collections -->
+  <div class="section">
+    <h2>🗄️ Firestore Collections</h2>
+    <div id="firestoreStatus" class="status loading">
+      <span class="spinner"></span>
+      جاري فحص قاعدة البيانات...
+    </div>
+    <div id="firestoreDetails"></div>
+  </div>
+
+  <!-- Grades Collection -->
+  <div class="section">
+    <h2>📚 Grades Collection</h2>
+    <div id="gradesStatus" class="status loading">
+      <span class="spinner"></span>
+      جاري فحص الصفوف...
+    </div>
+    <div id="gradesDetails"></div>
+  </div>
+
+  <!-- Recommendations -->
+  <div class="section" id="recommendations" style="display:none">
+    <h2>💡 التوصيات</h2>
+    <div id="recommendationsList"></div>
+  </div>
+
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getFirestore, collection, getDocs, getDoc, doc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+// Firebase Config (استبدل بالإعدادات الخاصة بك)
+const firebaseConfig = {
+  apiKey: "AIzaSyDmT3QqJ-cq4jZe4r6yNq3nq6fZZ1nq6fZ", // ⚠️ استبدل هذا
+  authDomain: "plusinmath-web.firebaseapp.com",
+  projectId: "plusinmath-web",
+  storageBucket: "plusinmath-web.appspot.com",
+  messagingSenderId: "123456789012", // ⚠️ استبدل هذا
+  appId: "1:123456789012:web:abcdef1234567890abcdef" // ⚠️ استبدل هذا
+};
+
+const recommendations = [];
+
+// 1. Check Firebase Config
+function checkConfig(){
+  const el = document.getElementById('configStatus');
+  const details = document.getElementById('configDetails');
+  
+  if(!firebaseConfig.apiKey || firebaseConfig.apiKey === 'AIzaSyDmT3QqJ-cq4jZe4r6yNq3nq6fZZ1nq6fZ'){
+    el.className = 'status err';
+    el.innerHTML = '❌ Firebase Config غير صحيح';
+    details.innerHTML = '<p class="detail">لازم تستبدل الإعدادات بتاعت Firebase الخاصة بمشروعك</p><div class="code">// روح Firebase Console → Project Settings → Your apps<br/>// انسخ firebaseConfig الصحيح</div>';
+    recommendations.push('قم بتحديث Firebase Config في أول الملف');
+    return false;
+  }
+  
+  el.className = 'status ok';
+  el.innerHTML = '✅ Firebase Config صحيح';
+  details.innerHTML = `<p class="detail">Project ID: <strong>${firebaseConfig.projectId}</strong></p>`;
+  return true;
+}
+
+// 2. Initialize Firebase
+let app, auth, db;
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+  
+  if(checkConfig()){
+    // Config OK, continue
+  }
+} catch(e){
+  document.getElementById('configStatus').className = 'status err';
+  document.getElementById('configStatus').innerHTML = '❌ فشل تهيئة Firebase: ' + e.message;
+  recommendations.push('تأكد من صحة Firebase Config');
+}
+
+// 3. Check Authentication
+onAuthStateChanged(auth, async (user) => {
+  const el = document.getElementById('authStatus');
+  const details = document.getElementById('authDetails');
+  
+  if(!user){
+    el.className = 'status warn';
+    el.innerHTML = '⚠️ لم تسجل الدخول';
+    details.innerHTML = '<p class="detail">بعض الاختبارات تحتاج تسجيل دخول. لو عايز تختبر كل حاجة، سجل دخول الأول.</p>';
+    recommendations.push('سجل دخول للتأكد من كل الصلاحيات');
+  } else {
+    el.className = 'status ok';
+    el.innerHTML = '✅ مسجل الدخول';
+    details.innerHTML = `<p class="detail">User ID: <strong>${user.uid}</strong></p><p class="detail">Email: <strong>${user.email || 'لا يوجد'}</strong></p>`;
+    
+    // Check user document
+    try {
+      const userDoc = await getDoc(doc(db, 'users', user.uid));
+      if(userDoc.exists()){
+        const userData = userDoc.data();
+        details.innerHTML += `<p class="detail">الاشتراك: <strong style="color:${userData.subscriptionActive?'#10b981':'#ff4d6d'}">${userData.subscriptionActive?'نشط ✓':'غير نشط ✗'}</strong></p>`;
+        details.innerHTML += `<p class="detail">الصف: <strong>${userData.grade || 'غير محدد'}</strong></p>`;
+        if(!userData.subscriptionActive){
+          recommendations.push('قم بتفعيل الاشتراك للمستخدم في Firestore (subscriptionActive: true)');
+        }
+      } else {
+        details.innerHTML += '<p class="detail" style="color:#ff4d6d">⚠️ مستند المستخدم غير موجود في Firestore</p>';
+        recommendations.push('أنشئ مستند المستخدم في collection "users"');
+      }
+    } catch(e){
+      details.innerHTML += `<p class="detail" style="color:#ff4d6d">خطأ: ${e.message}</p>`;
+    }
+  }
+  
+  // Check Firestore connection
+  checkFirestore();
+});
+
+// 4. Check Firestore
+async function checkFirestore(){
+  const el = document.getElementById('firestoreStatus');
+  const details = document.getElementById('firestoreDetails');
+  
+  try {
+    // Try to read a simple collection
+    const testSnap = await getDocs(collection(db, 'grades'));
+    el.className = 'status ok';
+    el.innerHTML = '✅ Firestore متصل بنجاح';
+    details.innerHTML = '<p class="detail">قاعدة البيانات شغالة وجاهزة</p>';
+  } catch(e){
+    el.className = 'status err';
+    el.innerHTML = '❌ مشكلة في الاتصال بـ Firestore';
+    details.innerHTML = `<p class="detail" style="color:#ff4d6d">Error: ${e.message}</p>`;
+    
+    if(e.message.includes('Missing or insufficient permissions')){
+      details.innerHTML += '<div class="code">// المشكلة: Firestore Rules مش بتسمح بالقراءة<br/>// الحل: تحديث Rules في Firebase Console</div>';
+      recommendations.push('تحديث Firestore Rules للسماح بقراءة collection "grades"');
+    }
+  }
+  
+  // Check Grades collection
+  checkGrades();
+}
+
+// 5. Check Grades Collection
+async function checkGrades(){
+  const el = document.getElementById('gradesStatus');
+  const details = document.getElementById('gradesDetails');
+  
+  try {
+    const snap = await getDocs(collection(db, 'grades'));
+    
+    if(snap.empty){
+      el.className = 'status warn';
+      el.innerHTML = '⚠️ مفيش صفوف في قاعدة البيانات';
+      details.innerHTML = `
+        <p class="detail">collection "grades" فاضي. لازم تضيف صفوف عشان الموقع يشتغل.</p>
+        <p class="detail"><strong>الحل:</strong> روح Firebase Console → Firestore → أنشئ collection اسمه "grades" وضيف documents للصفوف</p>
+        <div class="code">
+// مثال document:<br/>
+{<br/>
+  "key": "sec-1",<br/>
+  "label": "أول ثانوي",<br/>
+  "stage": "sec",<br/>
+  "order": 1,<br/>
+  "icon": "🎓"<br/>
+}
+        </div>
+      `;
+      recommendations.push('أضف صفوف في collection "grades" في Firestore');
+    } else {
+      el.className = 'status ok';
+      el.innerHTML = `✅ تم العثور على ${snap.size} صف`;
+      
+      const gradesList = snap.docs.map(d => {
+        const g = d.data();
+        return `<li><strong>${g.label || 'بدون اسم'}</strong> (${g.key || d.id}) - المرحلة: ${g.stage || 'غير محددة'}</li>`;
+      }).join('');
+      
+      details.innerHTML = `<p class="detail">الصفوف الموجودة:</p><ul class="list">${gradesList}</ul>`;
+    }
+  } catch(e){
+    el.className = 'status err';
+    el.innerHTML = '❌ فشل قراءة الصفوف';
+    details.innerHTML = `<p class="detail" style="color:#ff4d6d">Error: ${e.message}</p>`;
+    
+    if(e.message.includes('Missing or insufficient permissions')){
+      details.innerHTML += '<div class="code">// Firestore Rules لازم تسمح بقراءة "grades":<br/><br/>match /grades/{gradeId} {<br/>  allow read: if true;<br/>  allow write: if isAdmin();<br/>}</div>';
+      recommendations.push('تحديث Firestore Rules للسماح بقراءة "grades"');
+    }
+  }
+  
+  // Show recommendations
+  showRecommendations();
+}
+
+// 6. Show Recommendations
+function showRecommendations(){
+  if(recommendations.length === 0) return;
+  
+  const section = document.getElementById('recommendations');
+  const list = document.getElementById('recommendationsList');
+  
+  section.style.display = 'block';
+  list.innerHTML = '<ul class="list">' + recommendations.map((r, i) => `<li><strong>${i+1}.</strong> ${r}</li>`).join('') + '</ul>';
+}
+
+</script>
+</body>
+</html>
