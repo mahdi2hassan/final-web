@@ -523,6 +523,22 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
   <div class="cv-body">
     <div class="tab-pane on" id="tp-videos"><div class="video-list" id="videoList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-exams"><div class="exam-list" id="examList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
+
+    <!-- Inline Exam Panel - يفتح جوا نفس الصفحة -->
+    <div id="inlineExamPanel" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--b2)">
+        <button onclick="closeInlineExam()" style="width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+        </button>
+        <div>
+          <div id="iep-title" style="font-size:15px;font-weight:800"></div>
+          <div id="iep-prog" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+        </div>
+      </div>
+      <div id="iep-body"></div>
+      <div id="iep-result"></div>
+      <button id="iep-submit" style="display:none;width:100%;margin-top:14px;padding:13px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;cursor:pointer">تسليم الإجابات</button>
+    </div>
     <div class="tab-pane" id="tp-homework"><div class="hw-list" id="hwList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-books"><div id="booksList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-progress">
@@ -864,12 +880,125 @@ window.handleExam=(el)=>{
   const{exams,gradeKey}=window._CE||{};
   if(!exams||isNaN(i)) return;
   const e=exams[i];
-  if(e.type==='mcq'&&e.mcqRaw) openMcq(e.id,gradeKey,e.title||'',e.mcqRaw);
-  else if(e.type==='essay'&&e.essayText) openEssay(e.id,gradeKey,e.title||'',e.essayText);
+  if(e.type==='mcq'&&e.mcqRaw) openInlineExam(e.id,gradeKey,e.title||'',{type:'mcq',raw:e.mcqRaw});
+  else if(e.type==='essay'&&e.essayText) openInlineExam(e.id,gradeKey,e.title||'',{type:'essay',text:e.essayText});
   else if((e.type==='images'||e.type==='pdf')&&(e.imageUrls?.length||e.fileUrl||e.externalUrl)){
     const urls=e.imageUrls?.length?e.imageUrls:(e.fileUrl?[e.fileUrl]:[e.externalUrl]);
-    openImgs(e.id,gradeKey,e.title||'',urls);
+    openInlineExam(e.id,gradeKey,e.title||'',{type:'images',urls});
+  } else if(e.type==='link'&&(e.externalUrl||e.url)){
+    openInlineExam(e.id,gradeKey,e.title||'',{type:'link',url:e.externalUrl||e.url});
   } else if(e.externalUrl||e.url) window.open(e.externalUrl||e.url,'_blank');
+};
+
+// ── INLINE EXAM — يفتح جوا صفحة الكورسات بدون مودال خارجي ──
+let _inlineExam={};
+function openInlineExam(examId,gradeKey,title,config){
+  _inlineExam={examId,gradeKey,config};
+  const panel=document.getElementById('inlineExamPanel');
+  document.getElementById('iep-title').textContent=title;
+  // إخفاء قائمة الامتحانات وإظهار البانال
+  document.getElementById('tp-exams').style.display='none';
+  panel.style.display='block';
+  panel.style.animation='fadeUp .25s ease both';
+
+  if(config.type==='mcq'){
+    renderInlineMcq(config.raw);
+  } else if(config.type==='essay'){
+    document.getElementById('iep-body').innerHTML=`
+      <div class="essay-text" style="margin-bottom:14px">${config.text}</div>
+      <textarea class="essay-area" id="iep-essay-ans" placeholder="اكتب إجابتك هنا..."></textarea>`;
+    document.getElementById('iep-submit').style.display='block';
+    document.getElementById('iep-submit').textContent='تسليم ✓';
+    document.getElementById('iep-submit').onclick=()=>{
+      markDone(gradeKey,'exams',examId);
+      document.getElementById('iep-result').innerHTML='<div style="font-size:32px;text-align:center;padding:12px">✅<div style="font-size:15px;font-weight:800;margin-top:8px">تم التسليم!</div></div>';
+      document.getElementById('iep-submit').style.display='none';
+    };
+  } else if(config.type==='images'){
+    document.getElementById('iep-body').innerHTML=config.urls.map((u,i)=>`
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">صفحة ${i+1}</div>
+        ${u.toLowerCase().includes('.pdf')
+          ?`<a href="${u}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(74,127,212,0.07);border:1px solid var(--b1);border-radius:10px;color:var(--blue);text-decoration:none;font-weight:700">📄 فتح الصفحة ${i+1}</a>`
+          :`<img src="${u}" style="width:100%;border-radius:10px;display:block;cursor:pointer" onclick="window.open('${u}','_blank')"/>`
+        }
+      </div>`).join('');
+    document.getElementById('iep-submit').style.display='block';
+    document.getElementById('iep-submit').textContent='تم المشاهدة ✓';
+    document.getElementById('iep-submit').onclick=()=>{markDone(gradeKey,'exams',examId);closeInlineExam();};
+  } else if(config.type==='link'){
+    document.getElementById('iep-body').innerHTML=`
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:40px;margin-bottom:12px">📝</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:16px">امتحان Google Form</div>
+        <a href="${config.url}" target="_blank"
+          style="display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border:none;border-radius:12px;
+          background:linear-gradient(135deg,var(--ok),#006040);color:#fff;font-family:'Tajawal',sans-serif;
+          font-size:14px;font-weight:800;text-decoration:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          افتح الامتحان
+        </a>
+      </div>`;
+    document.getElementById('iep-submit').style.display='block';
+    document.getElementById('iep-submit').textContent='أنهيت الامتحان ✓';
+    document.getElementById('iep-submit').onclick=()=>{markDone(gradeKey,'exams',examId);closeInlineExam();};
+  }
+}
+
+function renderInlineMcq(raw){
+  const questions=parseMcq(raw);
+  _inlineExam.questions=questions;_inlineExam.answers={};
+  document.getElementById('iep-prog').textContent=questions.length+' سؤال';
+  document.getElementById('iep-body').innerHTML=questions.map((q,qi)=>`
+    <div class="mcq-q">
+      <div class="mcq-q-text">${qi+1}. ${q.q}</div>
+      ${q.opts.map((o,oi)=>`<div class="mcq-opt" id="ieopt-${qi}-${oi}" onclick="iepick(${qi},${oi})">${o.text}</div>`).join('')}
+    </div>`).join('');
+  const btn=document.getElementById('iep-submit');
+  btn.textContent='تسليم الإجابات';btn.style.display='block';
+  btn.onclick=submitInlineMcq;
+}
+window.iepick=(qi,oi)=>{
+  _inlineExam.answers[qi]=oi;
+  document.querySelectorAll(`[id^="ieopt-${qi}-"]`).forEach(e=>e.classList.remove('sel'));
+  document.getElementById(`ieopt-${qi}-${oi}`)?.classList.add('sel');
+};
+function submitInlineMcq(){
+  const{questions,answers,examId,gradeKey}=_inlineExam;
+  let sc=0;
+  questions.forEach((q,qi)=>{
+    const ai=answers[qi];
+    q.opts.forEach((o,oi)=>{const e=document.getElementById(`ieopt-${qi}-${oi}`);if(!e)return;e.onclick=null;if(o.correct){e.classList.add('correct');e.classList.remove('sel');}else if(oi===ai){e.classList.add('wrong');e.classList.remove('sel');}});
+    if(ai!==undefined&&q.opts[ai]?.correct)sc++;
+  });
+  const pct=Math.round(sc/questions.length*100);
+  // حفظ الدرجة في Firestore
+  if(_user) {
+    import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then(({setDoc,doc,serverTimestamp})=>{
+      setDoc(doc(db,'scores',_user.uid+'_'+examId),{
+        userId:_user.uid, userName:_userData?.name||'', userGrade:_userData?.grade||'',
+        gradeKey, examId,
+        score:sc, total:questions.length, pct,
+        submittedAt:serverTimestamp()
+      }).catch(()=>{});
+    }).catch(()=>{});
+  }
+  document.getElementById('iep-result').innerHTML=`
+    <div class="mcq-result" style="display:block">
+      <div style="font-size:36px">${pct>=60?'🎉':'💪'}</div>
+      <div style="font-size:18px;font-weight:900;margin:8px 0">${sc}/${questions.length} صح</div>
+      <div style="font-size:14px;color:var(--muted)">${pct}% — ${pct>=80?'ممتاز':pct>=60?'جيد':'حاول تاني 💪'}</div>
+    </div>`;
+  document.getElementById('iep-submit').style.display='none';
+  if(pct>=50) markDone(gradeKey,'exams',examId);
+}
+window.closeInlineExam=()=>{
+  document.getElementById('inlineExamPanel').style.display='none';
+  document.getElementById('tp-exams').style.display='block';
+  document.getElementById('iep-body').innerHTML='';
+  document.getElementById('iep-result').innerHTML='';
+  document.getElementById('iep-prog').textContent='';
+  document.getElementById('iep-submit').style.display='none';
 };
 
 function renderHw(hw,done,gradeKey,isMine){
@@ -1195,6 +1324,8 @@ function switchTab(name,btn){
   document.querySelectorAll('.cv-tab').forEach(b=>b.classList.remove('on'));
   document.getElementById('tp-'+name)?.classList.add('on');
   if(btn)btn.classList.add('on');
+  // اخبي البانال لو تغيرنا من تاب
+  if(name!=='exams'){const p=document.getElementById('inlineExamPanel');if(p)p.style.display='none';const el=document.getElementById('tp-exams');if(el)el.style.display='';}
   if(name==='books') loadBooksTab();
   if(name==='research') loadMyResearches();
   // Show/hide search bar (only for videos/exams)

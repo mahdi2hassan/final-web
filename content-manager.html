@@ -597,6 +597,15 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
               <img id="bCoverImg" style="width:80px;height:110px;object-fit:cover;border-radius:8px;border:1px solid var(--b2)"/>
             </div>
           </div>
+          <!-- PDF Link -->
+          <div class="ff full">
+            <label style="display:flex;align-items:center;gap:6px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+              رابط PDF الكتاب (اختياري — للمعاينة أو التحميل)
+            </label>
+            <input type="url" id="bPdfUrl" placeholder="https://drive.google.com/... أو أي رابط PDF"/>
+            <div style="font-size:10px;color:var(--muted);margin-top:4px">🔒 الطلاب يقدروا يفتحوا الكتاب مباشرة من صفحة الكورسات</div>
+          </div>
           <div class="ff full">
             <label>ملاحظات إضافية للطالب</label>
             <textarea id="bNote" rows="2" placeholder="مثال: الكتاب متاح للتوصيل — تواصل معنا بعد الدفع"></textarea>
@@ -1086,6 +1095,7 @@ window.saveBook = async () => {
       pages: parseInt(document.getElementById('bPages').value)||0,
       order: parseInt(document.getElementById('bOrder').value)||1,
       coverUrl: document.getElementById('bCover').value.trim(),
+      pdfUrl: document.getElementById('bPdfUrl').value.trim(),
       note: document.getElementById('bNote').value.trim(),
       available: true,
       updatedAt: serverTimestamp()
@@ -1123,6 +1133,7 @@ window.loadBooks = async () => {
             <span style="color:var(--gold);font-weight:800">${b.price} جنيه</span>
             ${b.gradeKey?`<span class="tag e">${GL[b.gradeKey]||b.gradeKey}</span>`:'<span class="tag v">كل الصفوف</span>'}
             ${b.pages?`<span>📄 ${b.pages} صفحة</span>`:''}
+            ${b.pdfUrl?`<a href="${b.pdfUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(255,77,109,0.1);color:#ff4d6d;border:1px solid rgba(255,77,109,0.2);text-decoration:none">📄 PDF</a>`:''}
             <span class="tag ${b.available?'ok':'h'}">${b.available?'متاح':'غير متاح'}</span>
           </div>
           ${b.description?`<div style="font-size:11px;color:var(--muted);margin-top:3px">${b.description}</div>`:''}
@@ -1152,6 +1163,7 @@ window.editBook = async (id) => {
     document.getElementById('bPages').value = b.pages||'';
     document.getElementById('bOrder').value = b.order||'';
     document.getElementById('bCover').value = b.coverUrl||'';
+    document.getElementById('bPdfUrl').value = b.pdfUrl||'';
     document.getElementById('bNote').value  = b.note||'';
     window.previewCover(b.coverUrl||'');
     window.scrollTo({top:0,behavior:'smooth'});
@@ -1177,7 +1189,7 @@ window.deleteBook = async (id, title) => {
 };
 
 window.clearBook = () => {
-  ['bTitle','bDesc','bPrice','bPages','bOrder','bCover','bNote'].forEach(id=>{
+  ['bTitle','bDesc','bPrice','bPages','bOrder','bCover','bPdfUrl','bNote'].forEach(id=>{
     document.getElementById(id).value='';
   });
   document.getElementById('bGrade').value='';

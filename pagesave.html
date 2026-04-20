@@ -605,6 +605,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
         <span>الأبحاث</span>
       </div>
+      <div class="sb-item" onclick="goPage('scores')" data-perm="content">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+        <span>درجات الطلاب</span>
+      </div>
       <div class="sb-item" onclick="goPage('broadcast')" data-perm="broadcast">
         <svg><use href="#ic-send"/></svg><span>إرسال جماعي</span>
       </div>
@@ -948,6 +952,94 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
               <th>إجراء</th>
             </tr></thead>
             <tbody id="researchTbl"><tr><td colspan="7"><div class="empty"><p>لا يوجد أبحاث</p></div></td></tr></tbody>
+          </table>
+        </div></div>
+      </div>
+
+      <!-- ══ SCORES ══ -->
+      <div class="page" id="page-scores">
+        <div class="sh">
+          <div class="sh-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+            درجات الطلاب
+          </div>
+          <div class="sh-acts">
+            <button class="btn gold sm" onclick="exportScoresCsv()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              CSV
+            </button>
+            <button class="btn ghost sm" onclick="loadScores()">
+              <svg><use href="#ic-refresh"/></svg>تحديث
+            </button>
+          </div>
+        </div>
+
+        <!-- Stats row -->
+        <div class="stats-row" style="margin-bottom:14px">
+          <div class="sc go">
+            <div class="sc-ico" style="background:rgba(201,168,76,0.15);color:var(--gold)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+            </div>
+            <div class="sc-val" id="sc-total">—</div><div class="sc-lbl">إجمالي الإجابات</div>
+          </div>
+          <div class="sc gr">
+            <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20,6 9,17 4,12"/></svg></div>
+            <div class="sc-val" id="sc-avg">—</div><div class="sc-lbl">متوسط الدرجات</div>
+          </div>
+          <div class="sc bl">
+            <div class="sc-ico"><svg><use href="#ic-users"/></svg></div>
+            <div class="sc-val" id="sc-students">—</div><div class="sc-lbl">طلاب أجروا امتحانات</div>
+          </div>
+          <div class="sc pu">
+            <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg></div>
+            <div class="sc-val" id="sc-pass">—</div><div class="sc-lbl">نسبة النجاح</div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+          <select id="sc-grade-filter" onchange="renderScores()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
+            <option value="">كل الصفوف</option>
+            <optgroup label="ابتدائي">
+              <option value="primary-4">رابع ابتدائي</option>
+              <option value="primary-5">خامس ابتدائي</option>
+              <option value="primary-6">سادس ابتدائي</option>
+            </optgroup>
+            <optgroup label="إعدادي">
+              <option value="prep-1">أول إعدادي</option>
+              <option value="prep-2">ثاني إعدادي</option>
+              <option value="prep-3">ثالث إعدادي</option>
+            </optgroup>
+            <optgroup label="ثانوي">
+              <option value="sec-1">أول ثانوي</option>
+              <option value="sec-2">ثاني ثانوي</option>
+              <option value="sec-3">ثالث ثانوي</option>
+            </optgroup>
+          </select>
+          <div class="ftabs" style="margin:0">
+            <div class="ftab on" id="scf-all" onclick="setScFilter('all')">الكل</div>
+            <div class="ftab" id="scf-pass" onclick="setScFilter('pass')">ناجح ✅</div>
+            <div class="ftab" id="scf-fail" onclick="setScFilter('fail')">راسب ❌</div>
+          </div>
+          <input id="sc-search" placeholder="🔍 ابحث باسم الطالب..." oninput="renderScores()" style="flex:1;min-width:160px;padding:7px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"/>
+          <button onclick="openAddScoreModal()" class="btn primary sm">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            إضافة درجة
+          </button>
+        </div>
+
+        <div class="tw"><div class="tw-scroll">
+          <table>
+            <thead><tr>
+              <th onclick="sortScores('name')" style="cursor:pointer">الطالب <span id="sc-sort-name"></span></th>
+              <th>الصف</th>
+              <th>الامتحان</th>
+              <th onclick="sortScores('pct')" style="cursor:pointer">الدرجة <span id="sc-sort-pct"></span></th>
+              <th>الحالة</th>
+              <th onclick="sortScores('date')" style="cursor:pointer">التاريخ <span id="sc-sort-date"></span></th>
+              <th>إجراء</th>
+            </tr></thead>
+            <tbody id="scoresTbl"><tr><td colspan="7"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
           </table>
         </div></div>
       </div>
@@ -1430,6 +1522,57 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
     </div><!-- content -->
   </div><!-- body-wrap -->
 </div><!-- shell -->
+
+<!-- Add Score Modal -->
+<div class="mbg" id="addScoreModal">
+  <div class="modal" style="max-width:440px">
+    <h3>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      إضافة درجة يدوي
+    </h3>
+    <div class="ff"><label>اسم الطالب</label>
+      <input type="text" id="asc-name" placeholder="الاسم الكامل للطالب"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="ff" style="margin:0"><label>الصف</label>
+        <select id="asc-grade">
+          <option value="">— اختار —</option>
+          <optgroup label="ابتدائي">
+            <option value="primary-4">رابع ابتدائي</option>
+            <option value="primary-5">خامس ابتدائي</option>
+            <option value="primary-6">سادس ابتدائي</option>
+          </optgroup>
+          <optgroup label="إعدادي">
+            <option value="prep-1">أول إعدادي</option>
+            <option value="prep-2">ثاني إعدادي</option>
+            <option value="prep-3">ثالث إعدادي</option>
+          </optgroup>
+          <optgroup label="ثانوي">
+            <option value="sec-1">أول ثانوي</option>
+            <option value="sec-2">ثاني ثانوي</option>
+            <option value="sec-3">ثالث ثانوي</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="ff" style="margin:0"><label>اسم الامتحان</label>
+        <input type="text" id="asc-exam" placeholder="مثال: امتحان الفصل الأول"/></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+      <div class="ff" style="margin:0"><label>الدرجة التي أخذها</label>
+        <input type="number" id="asc-score" placeholder="مثال: 18" min="0"/></div>
+      <div class="ff" style="margin:0"><label>الدرجة الكاملة</label>
+        <input type="number" id="asc-total" placeholder="مثال: 25" min="1"/></div>
+    </div>
+    <div class="ff" style="margin-top:10px"><label>ملاحظة (اختياري)</label>
+      <input type="text" id="asc-note" placeholder="مثال: امتحان المراجعة"/></div>
+    <div class="mfooter">
+      <button class="btn ghost" onclick="closeModal('addScoreModal')">إلغاء</button>
+      <button class="btn primary" onclick="saveManualScore()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
+        حفظ الدرجة
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- Email Modal -->
 <div class="mbg" id="emailModal">
@@ -7060,6 +7203,198 @@ window.goPage = (p,...args)=>{
   _origGoPage?.(p,...args);
   if(p==='research') loadResearch();
   if(p==='grades') renderGradesList();
+  if(p==='scores') loadScores();
+};
+
+// ═══════════════════════════════════════════════
+// ══ SCORES SYSTEM ══
+// ═══════════════════════════════════════════════
+window._allScores = [];
+window._scFilter = 'all';
+window._scSortKey = 'date';
+window._scSortDir = -1;
+
+const GRADE_LABELS_SC = {
+  'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي',
+  'prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي',
+  'sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'
+};
+
+window.loadScores = async ()=>{
+  const tbl = document.getElementById('scoresTbl');
+  if(!tbl) return;
+  tbl.innerHTML='<tr><td colspan="7"><div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div></td></tr>';
+  try{
+    const snap = await db.collection('scores').orderBy('submittedAt','desc').limit(500).get();
+    window._allScores = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderScores();
+    updateScoreStats();
+  }catch(e){
+    tbl.innerHTML=`<tr><td colspan="7"><div class="empty"><p>خطأ: ${e.message}</p></div></td></tr>`;
+  }
+};
+
+window.updateScoreStats = ()=>{
+  const sc = window._allScores;
+  document.getElementById('sc-total').textContent = sc.length||'—';
+  const avg = sc.length ? Math.round(sc.reduce((s,x)=>s+(x.pct||0),0)/sc.length) : 0;
+  document.getElementById('sc-avg').textContent = sc.length?(avg+'%'):'—';
+  const students = new Set(sc.map(x=>x.userId||x.userName)).size;
+  document.getElementById('sc-students').textContent = students||'—';
+  const passed = sc.filter(x=>(x.pct||0)>=50).length;
+  document.getElementById('sc-pass').textContent = sc.length?(Math.round(passed/sc.length*100)+'%'):'—';
+};
+
+window.setScFilter = (f)=>{
+  window._scFilter=f;
+  document.querySelectorAll('[id^="scf-"]').forEach(el=>el.classList.remove('on'));
+  document.getElementById('scf-'+f)?.classList.add('on');
+  renderScores();
+};
+
+window.sortScores = (key)=>{
+  if(window._scSortKey===key) window._scSortDir*=-1;
+  else { window._scSortKey=key; window._scSortDir=-1; }
+  ['name','pct','date'].forEach(k=>{
+    const el=document.getElementById('sc-sort-'+k);
+    if(el) el.textContent = k===key?(window._scSortDir>0?'▲':'▼'):'';
+  });
+  renderScores();
+};
+
+window.renderScores = ()=>{
+  const tbl = document.getElementById('scoresTbl');
+  if(!tbl) return;
+  const gradeF = document.getElementById('sc-grade-filter')?.value||'';
+  const q = (document.getElementById('sc-search')?.value||'').trim().toLowerCase();
+  const passF = window._scFilter;
+  let list = [...window._allScores];
+  if(gradeF) list = list.filter(s=>s.gradeKey===gradeF);
+  if(passF==='pass') list = list.filter(s=>(s.pct||0)>=50);
+  if(passF==='fail') list = list.filter(s=>(s.pct||0)<50);
+  if(q) list = list.filter(s=>((s.userName||s.manualName||'').toLowerCase().includes(q)||(s.examId||s.examTitle||'').toLowerCase().includes(q)));
+  // sort
+  const sk = window._scSortKey;
+  list.sort((a,b)=>{
+    let va,vb;
+    if(sk==='name'){ va=(a.userName||a.manualName||''); vb=(b.userName||b.manualName||''); }
+    else if(sk==='pct'){ va=a.pct||0; vb=b.pct||0; }
+    else { va=a.submittedAt?.toMillis?.()??0; vb=b.submittedAt?.toMillis?.()??0; }
+    return va<vb?-window._scSortDir:va>vb?window._scSortDir:0;
+  });
+  if(!list.length){
+    tbl.innerHTML='<tr><td colspan="7"><div class="empty"><p>لا يوجد درجات بعد</p></div></td></tr>';
+    return;
+  }
+  tbl.innerHTML = list.map(s=>{
+    const pct = s.pct??Math.round((s.score||0)/(s.total||1)*100);
+    const passed = pct>=50;
+    const gradeLabel2 = GRADE_LABELS_SC[s.gradeKey]||s.userGrade||s.gradeKey||'—';
+    const name = s.userName||s.manualName||'—';
+    const examName = s.examTitle||s.examId||'—';
+    const dt = s.submittedAt?.toDate?.()?.toLocaleDateString('ar-EG')||'—';
+    const scoreStr = (s.score!=null&&s.total)?s.score+'/'+s.total:pct+'%';
+    const barColor = pct>=80?'var(--ok)':pct>=50?'var(--blue)':'var(--err)';
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:7px">
+          <div class="av">${(name[0]||'?').toUpperCase()}</div>
+          <div>
+            <div style="font-size:12px;font-weight:700">${name}</div>
+            ${s.note?`<div style="font-size:10px;color:var(--muted)">${s.note}</div>`:''}
+          </div>
+        </div>
+      </td>
+      <td><span class="bd blue" style="font-size:10px">${gradeLabel2}</span></td>
+      <td style="font-size:11px;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${examName}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="width:50px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;flex-shrink:0">
+            <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;transition:width .4s"></div>
+          </div>
+          <span style="font-size:12px;font-weight:800;color:${barColor}">${scoreStr}</span>
+        </div>
+      </td>
+      <td><span class="bd ${passed?'ok':'err'}">${passed?'✅ ناجح':'❌ راسب'}</span></td>
+      <td style="font-size:11px;color:var(--muted)">${dt}</td>
+      <td>
+        <button class="btn icon-btn del" onclick="deleteScore('${s.id}')" title="حذف">
+          <svg><use href="#ic-trash"/></svg>
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+};
+
+window.deleteScore = async (id)=>{
+  if(!confirm('حذف هذه الدرجة؟')) return;
+  try{
+    await db.collection('scores').doc(id).delete();
+    window._allScores = window._allScores.filter(s=>s.id!==id);
+    renderScores();
+    updateScoreStats();
+    toast('تم الحذف','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.openAddScoreModal = ()=>{ openModal('addScoreModal'); };
+
+window.saveManualScore = async ()=>{
+  const name = document.getElementById('asc-name').value.trim();
+  const grade = document.getElementById('asc-grade').value;
+  const exam  = document.getElementById('asc-exam').value.trim();
+  const score = parseFloat(document.getElementById('asc-score').value);
+  const total = parseFloat(document.getElementById('asc-total').value)||100;
+  const note  = document.getElementById('asc-note').value.trim();
+  if(!name||!exam||isNaN(score)){ toast('ادخل الاسم والامتحان والدرجة','err'); return; }
+  const pct = Math.round(score/total*100);
+  try{
+    await db.collection('scores').add({
+      manualName: name,
+      userName: name,
+      gradeKey: grade,
+      userGrade: GRADE_LABELS_SC[grade]||grade,
+      examTitle: exam,
+      examId: exam,
+      score, total, pct,
+      note,
+      manual: true,
+      submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    closeModal('addScoreModal');
+    ['asc-name','asc-exam','asc-score','asc-total','asc-note'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+    document.getElementById('asc-grade').value='';
+    toast('✅ تم حفظ الدرجة','ok');
+    loadScores();
+    logActivity('📊','درجة يدوي','إضافة درجة لـ '+name+' — '+exam);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.exportScoresCsv = ()=>{
+  const sc = window._allScores;
+  if(!sc.length){ toast('لا يوجد درجات للتصدير','err'); return; }
+  const rows = [['الاسم','الصف','الامتحان','الدرجة','من','النسبة','الحالة','التاريخ']];
+  sc.forEach(s=>{
+    const dt = s.submittedAt?.toDate?.()?.toLocaleDateString('ar-EG')||'—';
+    const pct = s.pct??Math.round((s.score||0)/(s.total||1)*100);
+    rows.push([
+      s.userName||s.manualName||'—',
+      GRADE_LABELS_SC[s.gradeKey]||s.userGrade||'—',
+      s.examTitle||s.examId||'—',
+      s.score??pct,
+      s.total||'—',
+      pct+'%',
+      pct>=50?'ناجح':'راسب',
+      dt
+    ]);
+  });
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='scores_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('تم تصدير الدرجات ✓','ok');
 };
 
 // ── تحميل المراحل عند الفتح ──
