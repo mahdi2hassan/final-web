@@ -304,7 +304,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
     <!-- Tabs -->
     <div class="tabs">
-      <button class="tbtn" id="tv" onclick="switchTab('v')"><svg><use href="#i-yt"/></svg>الفيديوهات <span id="cnt-v" style="font-size:10px;opacity:.7"></span></button>
+      <button class="tbtn on" id="tv" onclick="switchTab('v')"><svg><use href="#i-yt"/></svg>الفيديوهات <span id="cnt-v" style="font-size:10px;opacity:.7"></span></button>
       <button class="tbtn" id="te" onclick="switchTab('e')"><svg><use href="#i-check"/></svg>الامتحانات <span id="cnt-e" style="font-size:10px;opacity:.7"></span></button>
       <button class="tbtn" id="th" onclick="switchTab('h')"><svg><use href="#i-file"/></svg>الواجبات <span id="cnt-h" style="font-size:10px;opacity:.7"></span></button>
       <button class="tbtn" id="tb" onclick="switchTab('b')" style="background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border-color:rgba(201,168,76,0.3);color:var(--gold)">📚 الكتب <span id="cnt-b" style="font-size:10px;opacity:.7"></span></button>
@@ -1392,7 +1392,10 @@ window.savePlaylist = async ()=>{
 window.loadPlaylists = async ()=>{
   const grade = document.getElementById('gSel').value;
   const el = document.getElementById('plList');
-  if(!grade){ el.innerHTML='<div class="empty"><p>اختار صفاً أولاً</p></div>'; return; }
+  if(!grade){
+    el.innerHTML='<div class="empty"><p>اختار صفاً أولاً من القائمة بالأعلى 👆</p></div>';
+    return;
+  }
   el.innerHTML='<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
   try{
     const snap = await getDocs(collection(db,'content',grade,'playlists'));
@@ -1521,8 +1524,8 @@ function onGrade(){
   const tab = _curTab==='v'?'videos':_curTab==='e'?'exams':_curTab==='h'?'homework':null;
   const elId = _curTab==='v'?'vList':_curTab==='e'?'eList':_curTab==='h'?'hList':null;
   if(tab && elId) loadList(tab, elId);
-  if(_curTab==='pl'){ loadPlaylists(); loadPlPickList(); }
-  else if(typeof loadPlPickList==='function') loadPlPickList();
+  if(_curTab==='pl'){ window.loadPlaylists?.(); window.loadPlPickList?.(); }
+  else if(typeof window.loadPlPickList==='function') window.loadPlPickList();
 }
 
 function switchTab(t){
@@ -1536,7 +1539,7 @@ function switchTab(t){
   });
   const grade=document.getElementById('gSel').value;
   if(t==='b'){ loadBooks(); return; }
-  if(t==='pl'){ loadPlaylists(); loadPlPickList(); return; }
+  if(t==='pl'){ window.loadPlaylists?.(); window.loadPlPickList?.(); return; }
   if(t==='r'){ loadResearchCM(); return; }
   if(grade){
     const tab=t==='v'?'videos':t==='e'?'exams':'homework';

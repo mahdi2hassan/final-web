@@ -545,22 +545,25 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
   <div class="cv-body">
     <div class="tab-pane on" id="tp-videos"><div class="video-list" id="videoList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
-    <div class="tab-pane" id="tp-exams"><div class="exam-list" id="examList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
 
-    <!-- Inline Exam Panel - يفتح جوا نفس الصفحة -->
-    <div id="inlineExamPanel" style="display:none">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--b2)">
-        <button onclick="closeInlineExam()" style="width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
-        </button>
-        <div>
-          <div id="iep-title" style="font-size:15px;font-weight:800"></div>
-          <div id="iep-prog" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+    <!-- tp-exams يشمل القائمة والـ inline panel -->
+    <div class="tab-pane" id="tp-exams">
+      <div id="examListWrap"><div class="exam-list" id="examList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
+      <!-- Inline Exam Panel - جوا نفس الـ tab-pane -->
+      <div id="inlineExamPanel" style="display:none">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--b2)">
+          <button onclick="closeInlineExam()" style="width:36px;height:36px;border-radius:10px;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+          </button>
+          <div>
+            <div id="iep-title" style="font-size:15px;font-weight:800"></div>
+            <div id="iep-prog" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+          </div>
         </div>
+        <div id="iep-body"></div>
+        <div id="iep-result"></div>
+        <button id="iep-submit" style="display:none;width:100%;margin-top:14px;padding:13px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;cursor:pointer">تسليم الإجابات</button>
       </div>
-      <div id="iep-body"></div>
-      <div id="iep-result"></div>
-      <button id="iep-submit" style="display:none;width:100%;margin-top:14px;padding:13px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;cursor:pointer">تسليم الإجابات</button>
     </div>
 
     <!-- ══ PLAYLISTS TAB ══ -->
@@ -976,7 +979,7 @@ function openInlineExam(examId,gradeKey,title,config){
   const panel=document.getElementById('inlineExamPanel');
   document.getElementById('iep-title').textContent=title;
   // إخفاء قائمة الامتحانات وإظهار البانال
-  document.getElementById('tp-exams').style.display='none';
+  document.getElementById('examListWrap').style.display='none';
   panel.style.display='block';
   panel.style.animation='fadeUp .25s ease both';
 
@@ -1078,7 +1081,7 @@ function submitInlineMcq(){
 }
 window.closeInlineExam=()=>{
   document.getElementById('inlineExamPanel').style.display='none';
-  document.getElementById('tp-exams').style.display='block';
+  document.getElementById('examListWrap').style.display='block';
   document.getElementById('iep-body').innerHTML='';
   document.getElementById('iep-result').innerHTML='';
   document.getElementById('iep-prog').textContent='';
@@ -1509,10 +1512,21 @@ function switchTab(name,btn){
   document.querySelectorAll('.cv-tab').forEach(b=>b.classList.remove('on'));
   document.getElementById('tp-'+name)?.classList.add('on');
   if(btn)btn.classList.add('on');
-  // اخبي البانال لو تغيرنا من تاب
-  if(name!=='exams'){const p=document.getElementById('inlineExamPanel');if(p)p.style.display='none';const el=document.getElementById('tp-exams');if(el)el.style.display='';}
-  // اخبي player البلايلست لو تغيرنا من تاب
-  if(name!=='playlists'){const pv=document.getElementById('pl-player-view');if(pv){document.getElementById('pl-iframe').src='';pv.style.display='none';const lv=document.getElementById('pl-list-view');if(lv)lv.style.display='block';_activePl=null;}}
+  // لو طلعنا من exams — إخفاء panel الامتحان ورجوع للقائمة
+  if(name!=='exams'){
+    const panel=document.getElementById('inlineExamPanel');
+    if(panel) panel.style.display='none';
+    const wrap=document.getElementById('examListWrap');
+    if(wrap) wrap.style.display='block';
+  }
+  // لو طلعنا من playlists — إيقاف الفيديو ورجوع للقائمة
+  if(name!=='playlists'){
+    const pv=document.getElementById('pl-player-view');
+    if(pv){ const ifr=document.getElementById('pl-iframe'); if(ifr) ifr.src=''; pv.style.display='none'; }
+    const lv=document.getElementById('pl-list-view');
+    if(lv) lv.style.display='block';
+    _activePl=null;
+  }
   if(name==='books') loadBooksTab();
   if(name==='research') loadMyResearches();
   if(name==='playlists'&&window._openGrade) loadPlaylistsTab(window._openGrade);
