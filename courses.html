@@ -790,7 +790,17 @@ window._updateDoc = updateDoc;
 window._increment = increment;
 let _user,_userData,_progress={},_playerData=null,_imgData=null;
 
+// Timeout — لو Firebase ما ردش في 12 ثانية يكمل أو يروح للتسجيل
+const _authTimeout = setTimeout(()=>{
+  const ls = document.getElementById('loadingScreen');
+  if(ls && ls.style.display !== 'none'){
+    console.warn('Auth timeout — redirecting');
+    window.location.href='plus-math-auth.html';
+  }
+}, 12000);
+
 onAuthStateChanged(auth,async(user)=>{
+  clearTimeout(_authTimeout);
   if(!user){window.location.href='plus-math-auth.html';return;}
   _user=user;
   try{
@@ -875,8 +885,8 @@ window.openCourse=async(gradeKey,label,stage)=>{
   renderVideos(vids,dV,gradeKey,isMine);
   renderExams(exams,dE,gradeKey,isMine);
   renderHw(hw,dH,gradeKey,isMine);
-  // تحميل البلايلست في الخلفية
-  loadPlaylistsTab(gradeKey);
+  // تحميل البلايلست في الخلفية — مش بيوقف باقي التحميل
+  try{ loadPlaylistsTab(gradeKey); }catch(e){ console.warn('playlist load:',e); }
   setTimeout(()=>{setProg('pv','pvt',vids.length,dV.length);setProg('pe','pet',exams.length,dE.length);setProg('ph','pht',hw.length,dH.length);},400);
   // Night mode
   if(isMine) buildNightMode(vids, dV);

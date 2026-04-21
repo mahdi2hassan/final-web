@@ -329,8 +329,15 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       </div>
     </div>
 
+    <!-- Placeholder — يظهر قبل اختيار الصف -->
+    <div id="cmPlaceholder" style="text-align:center;padding:48px 20px;color:var(--muted)">
+      <div style="font-size:48px;margin-bottom:14px;opacity:.5">📚</div>
+      <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px">اختار الصف أولاً</div>
+      <div style="font-size:13px;line-height:1.7">اختار الصف من القائمة بالأعلى<br/>ثم اضغط على التاب اللي تريد تضيف فيه</div>
+    </div>
+
     <!-- ══════════════════ VIDEOS ══════════════════ -->
-    <div id="sv">
+    <div id="sv" style="display:none">
 
       <div class="card">
         <div class="card-head">
@@ -1519,17 +1526,18 @@ const GRADES_LABEL={'primary-4':'رابع ابتدائي','primary-5':'خامس 
 function onGrade(){
   const g = document.getElementById('gSel').value;
   if(!g) return;
+  const ph = document.getElementById('cmPlaceholder');
+  if(ph) ph.style.display='none';
   const gi=document.getElementById('gInfo');
   gi.style.display='inline';gi.textContent=GRADES_LABEL[g]||g;
-  const tab = _curTab==='v'?'videos':_curTab==='e'?'exams':_curTab==='h'?'homework':null;
-  const elId = _curTab==='v'?'vList':_curTab==='e'?'eList':_curTab==='h'?'hList':null;
-  if(tab && elId) loadList(tab, elId);
-  if(_curTab==='pl'){ window.loadPlaylists?.(); window.loadPlPickList?.(); }
-  else if(typeof window.loadPlPickList==='function') window.loadPlPickList();
+  switchTab(_curTab);
 }
 
 function switchTab(t){
   _curTab=t;
+  // أخبي الـ placeholder
+  const ph = document.getElementById('cmPlaceholder');
+  if(ph) ph.style.display='none';
   ['v','e','h','b','pl','r'].forEach(x=>{
     document.getElementById('t'+x)?.classList.toggle('on',x===t);
   });
