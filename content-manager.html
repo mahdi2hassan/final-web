@@ -434,6 +434,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <label>الترتيب</label>
             <input type="number" id="eOrder" placeholder="1" min="1"/>
           </div>
+          <div class="ff">
+            <label>🔢 عدد المحاولات المسموحة</label>
+            <input type="number" id="eMaxAttempts" placeholder="فارغ = غير محدود" min="1"/>
+          </div>
+          <div class="ff">
+            <label>📅 تاريخ انتهاء الامتحان</label>
+            <input type="datetime-local" id="eExpiresAt"/>
+          </div>
 
           <!-- MCQ -->
           <div class="ff full etype-fields show" id="ef-mcq">
@@ -887,10 +895,14 @@ window.saveExam = async () => {
   btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
   try {
     const type = window._eType||'mcq';
+    const maxAttempts = parseInt(document.getElementById('eMaxAttempts').value)||null;
+    const expiresAtVal = document.getElementById('eExpiresAt').value;
     const data = {
       title, type,
       duration: document.getElementById('eDur').value.trim(),
       order: parseInt(document.getElementById('eOrder').value)||1,
+      maxAttempts: maxAttempts,
+      expiresAt: expiresAtVal ? new Date(expiresAtVal) : null,
       mcqRaw: document.getElementById('eMcq').value.trim(),
       essayText: document.getElementById('eEssay').value.trim(),
       externalUrl: document.getElementById('eLink').value.trim(),
@@ -1041,6 +1053,11 @@ window.editItem = (tab, id) => {
     document.getElementById('eMcq').value   = item.mcqRaw||'';
     document.getElementById('eEssay').value = item.essayText||'';
     document.getElementById('eLink').value  = item.externalUrl||'';
+    document.getElementById('eMaxAttempts').value = item.maxAttempts||'';
+    if(item.expiresAt){
+      const d = item.expiresAt.toDate?item.expiresAt.toDate():new Date(item.expiresAt);
+      document.getElementById('eExpiresAt').value = d.toISOString().slice(0,16);
+    } else { document.getElementById('eExpiresAt').value=''; }
     setEType(item.type||'mcq');
     window.scrollTo({top:0,behavior:'smooth'});
   } else {
@@ -1592,6 +1609,8 @@ function renderItems(tab, items, elId){
           ${item.type?`<span class="tag ${tagCls}">${typeLabel[item.type]||item.type}</span>`:''}
           ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
           ${item.deadline?`<span>📅 ${item.deadline}</span>`:''}
+          ${item.maxAttempts?`<span style="color:var(--gold);font-weight:700">🔢 ${item.maxAttempts} محاولة</span>`:''}
+          ${item.expiresAt?`<span style="color:var(--err);font-weight:700">⏰ ينتهي ${(item.expiresAt.toDate?item.expiresAt.toDate():new Date(item.expiresAt)).toLocaleDateString('ar-EG')}</span>`:''}
           ${item.url||item.externalUrl?`<a href="${item.url||item.externalUrl}" target="_blank" style="color:var(--blue);font-size:11px;text-decoration:none">🔗 رابط</a>`:''}
           ${item.imageUrls?.length?`<span class="tag ok">📷 ${item.imageUrls.length} صورة</span>`:''}
           ${item.fileUrl?`<a href="${item.fileUrl}" target="_blank" style="color:var(--purple);font-size:11px;text-decoration:none">📎 ملف</a>`:''}
@@ -1612,7 +1631,7 @@ function clearV(){
   if(window._editId) delete window._editId.v;
 }
 function clearE(){
-  ['eTitle','eDur','eOrder','eMcq','eEssay','eLink'].forEach(id=>document.getElementById(id).value='');
+  ['eTitle','eDur','eOrder','eMcq','eEssay','eLink','eMaxAttempts','eExpiresAt'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('eImgPreviews').innerHTML='';
   window._examImgUrls=[];
   setEType('mcq');

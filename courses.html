@@ -949,51 +949,118 @@ function renderExams(exams,done,gradeKey,isMine){
   if(!exams.length){el.innerHTML='<div class="empty"><p>لا يوجد امتحانات بعد</p></div>';return;}
   const tL={mcq:'اختيار متعدد',essay:'مقالي',images:'صور امتحان',link:'Google Form',pdf:'PDF'};
   const tC={mcq:'var(--gold)',essay:'var(--blue)',images:'var(--purple)',link:'var(--ok)',pdf:'var(--err)'};
+  const now = new Date();
   el.innerHTML=exams.map((e,i)=>{
     const isDone=done.includes(e.id);
     const isLocked=isMine&&i>0&&!done.includes(exams[i-1].id)&&!isDone;
     const tl=tL[e.type]||'امتحان',tc=tC[e.type]||'var(--gold)';
     const hasAction=e.mcqRaw||e.essayText||e.imageUrls?.length||e.fileUrl||e.externalUrl||e.url;
-    return `<div class="exam-item" style="${isLocked?'opacity:.55;cursor:not-allowed':''}"
-      ${!isLocked&&hasAction?`data-eidx="${i}" onclick="handleExam(this)"`:''}
+
+    // ── التحقق من تاريخ الانتهاء ──
+    let isExpired = false;
+    if(e.expiresAt){
+      const exp = e.expiresAt.toDate ? e.expiresAt.toDate() : new Date(e.expiresAt);
+      if(now > exp) isExpired = true;
+    }
+
+    // ── التحقق من المحاولات ──
+    const gp = _progress[gradeKey]||{};
+    const attempts = (gp.examAttempts||{})[e.id]||0;
+    const maxAttempts = e.maxAttempts||null;
+    const noAttemptsLeft = maxAttempts && attempts >= maxAttempts;
+
+    // ── الامتحان انتهى (سُلِّم) أو انتهت محاولاته أو انتهى تاريخه ──
+    const isBlocked = isDone || noAttemptsLeft || isExpired;
+
+    let badgeHtml = '';
+    if(isDone) badgeHtml=`<span class="ebadge done">تم ✓</span>`;
+    else if(isExpired) badgeHtml=`<span class="ebadge" style="background:rgba(255,77,109,0.1);color:var(--err);border:1px solid rgba(255,77,109,0.2)">انتهى ⛔</span>`;
+    else if(noAttemptsLeft) badgeHtml=`<span class="ebadge" style="background:rgba(255,77,109,0.1);color:var(--err);border:1px solid rgba(255,77,109,0.2)">استُنفد 🚫</span>`;
+    else badgeHtml=`<span class="ebadge new">ابدأ</span>`;
+
+    let metaExtra = '';
+    if(maxAttempts) metaExtra += ` · 🔢 ${attempts}/${maxAttempts} محاولة`;
+    if(e.expiresAt && !isExpired){
+      const exp = e.expiresAt.toDate ? e.expiresAt.toDate() : new Date(e.expiresAt);
+      metaExtra += ` · ⏰ ينتهي ${exp.toLocaleDateString('ar-EG')}`;
+    }
+
+    const clickable = !isLocked && !isBlocked && hasAction && isMine;
+    return `<div class="exam-item" style="${isLocked||isBlocked?'opacity:.6;cursor:not-allowed':''}"
+      ${clickable?`data-eidx="${i}" onclick="handleExam(this)"`:''}
     >
       <div class="exam-ico" style="background:${tc}18;color:${tc}">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
       </div>
       <div class="exam-info">
         <div class="exam-title">${e.order?e.order+'. ':''}${e.title||'امتحان'}</div>
-        <div class="exam-meta"><span style="color:${tc};font-weight:700">${tl}</span>${e.duration?' · ⏱ '+e.duration:''} ${isLocked?'· 🔒':''}</div>
+        <div class="exam-meta">
+          <span style="color:${tc};font-weight:700">${tl}</span>
+          ${e.duration?' · ⏱ '+e.duration:''}
+          ${isLocked?' · 🔒':''}
+          ${metaExtra}
+        </div>
       </div>
-      <span class="ebadge ${isDone?'done':'new'}">${isDone?'تم ✓':'ابدأ'}</span>
+      ${badgeHtml}
     </div>`;
   }).join('');
 }
 
-window.handleExam=(el)=>{
+window.handleExam=async(el)=>{
   const i=parseInt(el.getAttribute('data-eidx'));
-  const{exams,gradeKey}=window._CE||{};
+  const{exams,gradeKey,isMine}=window._CE||{};
   if(!exams||isNaN(i)) return;
   const e=exams[i];
-  if(e.type==='mcq'&&e.mcqRaw) openInlineExam(e.id,gradeKey,e.title||'',{type:'mcq',raw:e.mcqRaw});
-  else if(e.type==='essay'&&e.essayText) openInlineExam(e.id,gradeKey,e.title||'',{type:'essay',text:e.essayText});
+
+  // ── التحقق من تاريخ الانتهاء ──
+  if(e.expiresAt){
+    const exp = e.expiresAt.toDate ? e.expiresAt.toDate() : new Date(e.expiresAt);
+    if(new Date() > exp){ showToast('انتهى وقت هذا الامتحان ⛔','err'); return; }
+  }
+
+  // ── التحقق من عدد المحاولات ──
+  if(e.maxAttempts && isMine){
+    const gp = _progress[gradeKey]||{};
+    const attempts = (gp.examAttempts||{})[e.id]||0;
+    if(attempts >= e.maxAttempts){ showToast(`انتهت محاولاتك (${attempts}/${e.maxAttempts}) 🚫`,'err'); return; }
+  }
+
+  if(e.type==='mcq'&&e.mcqRaw) openInlineExam(e,gradeKey);
+  else if(e.type==='essay'&&e.essayText) openInlineExam(e,gradeKey);
   else if((e.type==='images'||e.type==='pdf')&&(e.imageUrls?.length||e.fileUrl||e.externalUrl)){
-    const urls=e.imageUrls?.length?e.imageUrls:(e.fileUrl?[e.fileUrl]:[e.externalUrl]);
-    openInlineExam(e.id,gradeKey,e.title||'',{type:'images',urls});
+    openInlineExam(e,gradeKey);
   } else if(e.type==='link'&&(e.externalUrl||e.url)){
-    openInlineExam(e.id,gradeKey,e.title||'',{type:'link',url:e.externalUrl||e.url});
+    openInlineExam(e,gradeKey);
   } else if(e.externalUrl||e.url) window.open(e.externalUrl||e.url,'_blank');
 };
 
-// ── INLINE EXAM — يفتح جوا صفحة الكورسات بدون مودال خارجي ──
+// ── INLINE EXAM ──
 let _inlineExam={};
-function openInlineExam(examId,gradeKey,title,config){
-  _inlineExam={examId,gradeKey,config};
-  const panel=document.getElementById('inlineExamPanel');
+function openInlineExam(examObj, gradeKey){
+  const examId = examObj.id;
+  const title  = examObj.title||'امتحان';
+  const config = examObj.type==='mcq'    ? {type:'mcq',   raw:examObj.mcqRaw}
+               : examObj.type==='essay'  ? {type:'essay', text:examObj.essayText}
+               : (examObj.type==='images'||examObj.type==='pdf') ? {type:'images', urls:examObj.imageUrls?.length?examObj.imageUrls:(examObj.fileUrl?[examObj.fileUrl]:[examObj.externalUrl])}
+               : (examObj.type==='link') ? {type:'link',  url:examObj.externalUrl||examObj.url}
+               : null;
+  if(!config) return;
+
+  _inlineExam={examId, gradeKey, config, examObj};
   document.getElementById('iep-title').textContent=title;
-  // إخفاء قائمة الامتحانات وإظهار البانال
   document.getElementById('examListWrap').style.display='none';
+  const panel=document.getElementById('inlineExamPanel');
   panel.style.display='block';
   panel.style.animation='fadeUp .25s ease both';
+
+  // معلومات المحاولات
+  const gp = _progress[gradeKey]||{};
+  const attempts = (gp.examAttempts||{})[examId]||0;
+  const maxAttempts = examObj.maxAttempts||null;
+  const attemptsLeft = maxAttempts ? (maxAttempts - attempts) : null;
+  document.getElementById('iep-prog').textContent = maxAttempts
+    ? `محاولة ${attempts+1} من ${maxAttempts} · ${attemptsLeft} باقية`
+    : examObj.duration ? `⏱ ${examObj.duration}` : '';
 
   if(config.type==='mcq'){
     renderInlineMcq(config.raw);
@@ -1001,12 +1068,13 @@ function openInlineExam(examId,gradeKey,title,config){
     document.getElementById('iep-body').innerHTML=`
       <div class="essay-text" style="margin-bottom:14px">${config.text}</div>
       <textarea class="essay-area" id="iep-essay-ans" placeholder="اكتب إجابتك هنا..."></textarea>`;
-    document.getElementById('iep-submit').style.display='block';
-    document.getElementById('iep-submit').textContent='تسليم ✓';
-    document.getElementById('iep-submit').onclick=()=>{
+    const btn=document.getElementById('iep-submit');
+    btn.style.display='block'; btn.textContent='تسليم ✓';
+    btn.onclick=()=>{
+      recordAttempt(gradeKey,examId);
       markDone(gradeKey,'exams',examId);
-      document.getElementById('iep-result').innerHTML='<div style="font-size:32px;text-align:center;padding:12px">✅<div style="font-size:15px;font-weight:800;margin-top:8px">تم التسليم!</div></div>';
-      document.getElementById('iep-submit').style.display='none';
+      document.getElementById('iep-result').innerHTML='<div style="font-size:32px;text-align:center;padding:12px">✅<div style="font-size:15px;font-weight:800;margin-top:8px">تم التسليم — لا يمكن إعادة فتح الامتحان</div></div>';
+      btn.style.display='none';
     };
   } else if(config.type==='images'){
     document.getElementById('iep-body').innerHTML=config.urls.map((u,i)=>`
@@ -1017,9 +1085,9 @@ function openInlineExam(examId,gradeKey,title,config){
           :`<img src="${u}" style="width:100%;border-radius:10px;display:block;cursor:pointer" onclick="window.open('${u}','_blank')"/>`
         }
       </div>`).join('');
-    document.getElementById('iep-submit').style.display='block';
-    document.getElementById('iep-submit').textContent='تم المشاهدة ✓';
-    document.getElementById('iep-submit').onclick=()=>{markDone(gradeKey,'exams',examId);closeInlineExam();};
+    const btn=document.getElementById('iep-submit');
+    btn.style.display='block'; btn.textContent='تم المشاهدة ✓';
+    btn.onclick=()=>{ recordAttempt(gradeKey,examId); markDone(gradeKey,'exams',examId); closeInlineExam(); };
   } else if(config.type==='link'){
     document.getElementById('iep-body').innerHTML=`
       <div style="text-align:center;padding:20px">
@@ -1033,10 +1101,22 @@ function openInlineExam(examId,gradeKey,title,config){
           افتح الامتحان
         </a>
       </div>`;
-    document.getElementById('iep-submit').style.display='block';
-    document.getElementById('iep-submit').textContent='أنهيت الامتحان ✓';
-    document.getElementById('iep-submit').onclick=()=>{markDone(gradeKey,'exams',examId);closeInlineExam();};
+    const btn=document.getElementById('iep-submit');
+    btn.style.display='block'; btn.textContent='أنهيت الامتحان ✓';
+    btn.onclick=()=>{ recordAttempt(gradeKey,examId); markDone(gradeKey,'exams',examId); closeInlineExam(); };
   }
+}
+
+// ── تسجيل المحاولة في الـ progress ──
+async function recordAttempt(gradeKey, examId){
+  if(!_user) return;
+  try{
+    const gp = _progress[gradeKey]||{};
+    const attempts = (gp.examAttempts||{});
+    attempts[examId] = (attempts[examId]||0) + 1;
+    _progress[gradeKey] = {...gp, examAttempts: attempts};
+    await setDoc(doc(db,'progress',_user.uid), _progress, {merge:true});
+  }catch(e){ console.warn('recordAttempt:',e); }
 }
 
 function renderInlineMcq(raw){
