@@ -788,6 +788,11 @@ window._doc = doc;
 window._getDoc = getDoc;
 window._updateDoc = updateDoc;
 window._increment = increment;
+window._addDoc = addDoc;
+window._setDoc = setDoc;
+window._query = query;
+window._where = where;
+window._serverTimestamp = serverTimestamp;
 let _user,_userData,_progress={},_playerData=null,_imgData=null;
 
 // Timeout — لو Firebase ما ردش في 12 ثانية يكمل أو يروح للتسجيل
@@ -1378,6 +1383,23 @@ function setProg(fId,vId,tot,done){const p=tot?Math.round(done/tot*100):0;const 
 </script>
 
 <script>
+// ── Firebase aliases من الـ module — لازم يتاخدوا بعد ما الـ module يشتغل ──
+// كل دالة في السكريبت ده بتستخدم getter عشان تاخد القيمة المحدثة
+function getDb(){ return window._db; }
+function getDocs(...a){ return window._getDocs?.(...a); }
+function collection(...a){ return window._collection?.(...a); }
+function doc(...a){ return window._doc?.(...a); }
+function getDoc(...a){ return window._getDoc?.(...a); }
+function addDoc(...a){ return window._addDoc?.(...a); }
+function setDoc(...a){ return window._setDoc?.(...a); }
+function updateDoc(...a){ return window._updateDoc?.(...a); }
+function query(...a){ return window._query?.(...a); }
+function where(...a){ return window._where?.(...a); }
+function serverTimestamp(){ return window._serverTimestamp?.(); }
+function increment(...a){ return window._increment?.(...a); }
+// db shorthand
+Object.defineProperty(window,'db',{get:()=>window._db,configurable:true});
+
 // المراحل الافتراضية — تتحدث من Firestore تلقائياً
 let GRADES={
   primary:[
@@ -1406,13 +1428,17 @@ let GRADES={
 
 // جيب المراحل من Firestore وادمجها (بيكتب على القديم)
 async function loadDynamicGrades(){
+  // استخدم window._db اللي اتحفظت من الـ module
+  const _db = window._db;
+  const _getDocs = window._getDocs;
+  const _collection = window._collection;
+  if(!_db||!_getDocs||!_collection){ console.warn('Firebase not ready yet'); return; }
   try{
-    const snap=await getDocs(collection(db,'grades'));
+    const snap=await _getDocs(_collection(_db,'grades'));
     if(!snap.empty){
       snap.docs.forEach(d=>{
         const g={id:d.id,...d.data()};
         if(!g.key) return;
-        // لو مفيش stage أو فاضي → حطه في univ افتراضياً
         if(!g.stage) g.stage='univ';
         if(!GRADES[g.stage]) GRADES[g.stage]=[];
         const idx=GRADES[g.stage].findIndex(x=>x.key===g.key);
@@ -1423,7 +1449,6 @@ async function loadDynamicGrades(){
         }
       });
     }
-    // أعد بناء _GM بعد الدمج
     window._GM={};
     Object.values(GRADES).flat().forEach(g=>{window._GM[g.key]=g;});
     console.log('grades loaded:', Object.keys(GRADES).map(s=>s+':'+GRADES[s].length).join(', '));

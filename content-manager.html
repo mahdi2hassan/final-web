@@ -2160,28 +2160,7 @@ window.executeCopy = async () => {
   btn.disabled=false; btn.textContent='📋 ابدأ النسخ';
 };
 
-// ══════════════════════════════════════
-// ── SWITCH TAB (updated for research) ──
-// ══════════════════════════════════════
-const _origSwitchTab = window.switchTab;
-window.switchTab = (t) => {
-  _curTab=t;
-  ['v','e','h','b','r'].forEach(x=>{
-    document.getElementById('t'+x)?.classList.toggle('on',x===t);
-    document.getElementById('s'+x) && (document.getElementById('s'+x).style.display=x===t?'block':'none');
-  });
-  const grade=document.getElementById('gSel').value;
-  if(t==='b'){ loadBooks(); return; }
-  if(t==='r'){ loadResearchCM(); return; }
-  if(grade){
-    const tab=t==='v'?'videos':t==='e'?'exams':'homework';
-    const el=t==='v'?'vList':t==='e'?'eList':'hList';
-    loadList(tab,el);
-  }
-};
-
 document.addEventListener('fbready', ()=>{
-  // expose Firestore methods for use in new functions
   console.log('CM enhanced features ready');
 });
 </script>
