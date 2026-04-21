@@ -778,13 +778,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, getDocs, collection, setDoc, addDoc, updateDoc, increment, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-try {
-  console.log('Initializing Firebase...');
-  const app  = initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
-  const auth = getAuth(app);
-  const db   = getFirestore(app);
-  console.log('Firebase initialized successfully');
-  window._db = db;
+const app  = initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
+const auth = getAuth(app);
+const db   = getFirestore(app);
+window._db = db;
 window._getDocs = getDocs;
 window._collection = collection;
 window._doc = doc;
@@ -798,56 +795,23 @@ window._where = where;
 window._serverTimestamp = serverTimestamp;
 let _user,_userData,_progress={},_playerData=null,_imgData=null;
 
-// Timeout — لو Firebase ما ردش في 8 ثانية يكمل أو يروح للتسجيل
+// Timeout — لو Firebase ما ردش في 12 ثانية يكمل أو يروح للتسجيل
 const _authTimeout = setTimeout(()=>{
   const ls = document.getElementById('loadingScreen');
   if(ls && ls.style.display !== 'none'){
     console.warn('Auth timeout — redirecting');
-    showToast('مشكلة في الاتصال، جاري إعادة التوجيه...', 'err');
-    setTimeout(()=> window.location.href='plus-math-auth.html', 1000);
+    window.location.href='plus-math-auth.html';
   }
-}, 8000);
-
-// Safety check - إذا ما حصلش أي حاجة خالص بعد 15 ثانية، أخفي الـ loading
-setTimeout(()=>{
-  const ls = document.getElementById('loadingScreen');
-  if(ls && ls.style.display !== 'none'){
-    console.error('Complete timeout - forcing reload');
-    ls.style.display='none';
-    showToast('حصلت مشكلة، حاول تسجل الدخول تاني', 'err');
-    setTimeout(()=> window.location.href='plus-math-auth.html', 2000);
-  }
-}, 15000);
-
-console.log('Starting auth check...');
+}, 12000);
 
 onAuthStateChanged(auth,async(user)=>{
-  console.log('Auth state changed:', user ? 'User logged in' : 'No user');
   clearTimeout(_authTimeout);
-  if(!user){
-    console.log('No user - redirecting to auth');
-    showToast('لازم تسجل الدخول الأول', 'err');
-    setTimeout(()=> window.location.href='plus-math-auth.html', 1000);
-    return;
-  }
+  if(!user){window.location.href='plus-math-auth.html';return;}
   _user=user;
   try{
-    console.log('Fetching user data...');
     const ud=await getDoc(doc(db,'users',user.uid));
-    if(!ud.exists()){
-      console.log('User document not found');
-      showToast('حسابك مش موجود، سجل تاني', 'err');
-      setTimeout(()=> window.location.href='plus-math-auth.html', 1000);
-      return;
-    }
-    if(!ud.data().subscriptionActive){
-      console.log('Subscription not active');
-      showToast('اشتراكك منتهي أو غير مفعّل', 'err');
-      setTimeout(()=> window.location.href='plus-math-auth.html', 1000);
-      return;
-    }
+    if(!ud.exists()||!ud.data().subscriptionActive){window.location.href='plus-math-auth.html';return;}
     _userData=ud.data();
-    console.log('User data loaded successfully');
     if(_userData.expiresAt){
       const exp=_userData.expiresAt.toDate?_userData.expiresAt.toDate():new Date(_userData.expiresAt);
       if(new Date()>exp){
@@ -900,24 +864,13 @@ onAuthStateChanged(auth,async(user)=>{
       if(g) setTimeout(()=>openCourse(_userData.gradeKey,g.label,g.stage),600);
     }
   }catch(e){
-    console.error('Error loading user data:', e);
-    showToast('حصل خطأ في تحميل بياناتك: ' + e.message, 'err');
+    console.error(e);
     document.getElementById('loadingScreen').style.display='none';
     document.getElementById('navbar').style.display='flex';
     document.getElementById('mainContent').style.display='block';
     buildGrades();
   }
 });
-
-} catch(firebaseError) {
-  console.error('Firebase initialization error:', firebaseError);
-  showToast('خطأ في الاتصال بالسيرفر: ' + firebaseError.message, 'err');
-  document.getElementById('loadingScreen').style.display='none';
-  setTimeout(()=> {
-    alert('حصلت مشكلة في الاتصال بالسيرفر. تأكد من اتصالك بالإنترنت وحاول تاني.');
-    window.location.href='plus-math-auth.html';
-  }, 2000);
-}
 
 window.openCourse=async(gradeKey,label,stage)=>{
   document.getElementById('cvTitle').textContent=label;
