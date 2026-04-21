@@ -1231,6 +1231,182 @@ window.closeImg=()=>{document.getElementById('imgModal').classList.remove('open'
 window.closePlayer=()=>{document.getElementById('playerFrame').src='';document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';};
 window.playerDone=()=>{if(_playerData)markDone(_playerData.gradeKey,'videos',_playerData.id);closePlayer();};
 
+// ── PLAYLISTS ──
+// تعريف المتغيرات العامة المفترضة (تأكد من وجودها في ملفك الرئيسي)
+let _activePl = null; // { pl: object, currentIdx: number, gradeKey: string }
+// let _progress = {}; // يجب أن يكون معرفاً globally
+// let _user = null;   // يجب أن يكون معرفاً globally
+// let db, auth;       // تهيئة Firebase
+
+// دالة مساعدة لتنظيف النصوص ومنع حقن الكود (XSS)
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+// دالة استخراج ID اليوتيوب (تأكد من وجودها أو استخدم مكتبة)
+function getYtId(url) {
+  if (!url) return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+async function loadPlaylistsTab(gradeKey) {
+  const grid = document.getElementById('playlistGrid');
+  if (!grid) return;
+  
+  grid.innerHTML = '<div class="empty"><p>جاري التحميل...</p></div>';
+  
+  try {
+    // تأكد من استيراد getDocs و collection من firebase/firestore
+    const snap = await getDocs(collection(db, 'content', gradeKey, 'playlists'));
+    
+    const pls = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    if (!pls.length) {
+      grid.innerHTML = '<div class="empty"><p>لا يوجد بلايلستات بعد</p></div>';
+      return;
+    }
+
+    // حفظ البلايلستات في الذاكرة للوصول السريع
+    window._playlists = pls;
+
+    grid.innerHTML = pls.map(pl => `
+      <div class="pl-card" onclick="openPlPlayer('${pl.id}')">
+        <div class="pl-thumb">
+          ${pl.coverUrl ? `<img src="${esc(pl.coverUrl)}" onerror="this.style.display='none'"/>` : ''}
+          ${!pl.coverUrl ? `<span class="pl-thumb-icon">▶</span>` : ''}
+          <div class="pl-count">📹 ${pl.videoCount || (pl.videos ? pl.videos.length : 0)}</div>
+        </div>
+        <div class="pl-info">
+          <div class="pl-title">${esc(pl.order ? pl.order + '. ' : '')}${esc(pl.title)}</div>          ${pl.description ? `<div class="pl-desc">${esc(pl.description)}</div>` : ''}
+          <div class="pl-meta">${pl.videos ? pl.videos.length : 0} فيديو · اضغط للتشغيل ▶</div>
+        </div>
+      </div>
+    `).join('');
+
+  } catch (e) {
+    console.error("Error loading playlists:", e);
+    grid.innerHTML = `<div class="empty"><p>خطأ في التحميل: ${esc(e.message)}</p></div>`;
+  }
+}
+
+window.openPlPlayer = (plId) => {
+  const pl = window._playlists?.find(p => p.id === plId);
+  
+  // تحقق من وجود الفيديوهات داخل كائن البلايليست
+  // ملاحظة: أحياناً تكون الفيديوهات مخزنة في sub-collection وليست داخل المستند نفسه
+  // هذا الكود يفترض أن مصفوفة videos موجودة داخل مستند playlist
+  if (!pl || !pl.videos?.length) {
+    showToast('هذا البلايليست فارغ أو قيد التحديث', 'err');
+    return;
+  }
+
+  // تحديد gradeKey من السياق الحالي أو من البلايليست إذا كان محفوظاً فيه
+  const currentGrade = window._openGrade || pl.gradeKey;
+
+  _activePl = {
+    pl: pl,
+    currentIdx: 0,
+    gradeKey: currentGrade
+  };
+
+  // التبديل بين الواجهات
+  const listView = document.getElementById('pl-list-view');
+  const playerView = document.getElementById('pl-player-view');
+  
+  if(listView) listView.style.display = 'none';
+  if(playerView) playerView.style.display = 'block';
+
+  const titleEl = document.getElementById('pl-player-title');
+  const metaEl = document.getElementById('pl-player-meta');
+  
+  if(titleEl) titleEl.textContent = pl.title;
+  if(metaEl) metaEl.textContent = `${pl.videos.length} فيديو`;
+
+  renderPlVideoList();
+  plPlayVideo(0);
+};
+
+window.closePlPlayer = () => {  // إيقاف الفيديو عن طريق تفريغ المصدر
+  const iframe = document.getElementById('pl-iframe');
+  if (iframe) iframe.src = '';
+
+  const playerView = document.getElementById('pl-player-view');
+  const listView = document.getElementById('pl-list-view');
+
+  if (playerView) playerView.style.display = 'none';
+  if (listView) listView.style.display = 'block';
+
+  _activePl = null;
+};
+
+function plPlayVideo(idx) {
+  if (!_activePl) return;
+  
+  const { pl, gradeKey } = _activePl;
+  const videos = pl.videos || [];
+  
+  if (idx < 0 || idx >= videos.length) return;
+
+  _activePl.currentIdx = idx;
+  const v = videos[idx];
+  
+  const ytId = getYtId(v.url || '');
+  const iframe = document.getElementById('pl-iframe');
+
+  if (iframe) {
+    if (ytId) {
+      iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1`;
+    } else if (v.url) {
+      iframe.src = v.url;
+    } else {
+      iframe.src = ''; // لا يوجد رابط
+    }
+  }
+
+  const currentTitleEl = document.getElementById('pl-current-title');
+  const currentMetaEl = document.getElementById('pl-current-meta');
+
+  if (currentTitleEl) currentTitleEl.textContent = `${idx + 1}. ${v.title || 'فيديو بدون عنوان'}`;
+  if (currentMetaEl) currentMetaEl.textContent = `${v.duration ? '⏱ ' + v.duration + ' · ' : ''}فيديو ${idx + 1} من ${videos.length}`;
+
+  // تحديث أزرار التنقل
+  const prevBtn = document.getElementById('pl-prev-btn');
+  const nextBtn = document.getElementById('pl-next-btn');
+
+  if (prevBtn) prevBtn.style.opacity = idx === 0 ? '0.4' : '1';
+  if (nextBtn) nextBtn.style.opacity = idx === videos.length - 1 ? '0.4' : '1';
+  // تحديث القائمة الجانبية (Highlight)
+  document.querySelectorAll('.pl-vid-item').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+    if (i === idx) {
+      el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+  });
+
+  // تسجيل المشاهدة تلقائياً عند التشغيل (اختياري، يمكن نقله لحدث انتهاء الفيديو)
+  if (_user && _userData?.gradeKey === gradeKey) {
+    const vidKey = `pl_${pl.id}_${idx}`;
+    // نستخدم الدالة الجديدة markDone
+    markDone(gradeKey, 'videos', vidKey);
+  }
+}
+
+function renderPlVideoList() {
+  if (!_activePl) return;
+  
+  const { pl, currentIdx } = _activePl;
+  const videos = pl.videos || [];
+  const gradeKey = _activePl.gradeKey || window._openGrade;
+  
+  // جلب حالة التقدم
+  const gp = _progress[gradeKey] || {};
+  const doneList = gp.videos || [];
+
+  const listContainer = document.getElementById('
 // ── TICKETS ──
 window.openTicketModal=()=>{
   document.getElementById('tk-subject').value='';
