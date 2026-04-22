@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plus Mathematics – إدارة المحتوى</title>
+<title>Plus  – إدارة المحتوى</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -376,11 +376,23 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <label>📅 تاريخ النشر (اختياري)</label>
             <input type="datetime-local" id="vPublishAt"/>
           </div>
-          <div class="ff full">
-            <label class="ff-check">
+          <div class="ff">
+            <label>⏰ تاريخ انتهاء الفيديو (اختياري)</label>
+            <input type="datetime-local" id="vExpiresAt"/>
+          </div>
+          <div class="ff">
+            <label>🔢 عدد مرات المشاهدة المسموحة (اختياري)</label>
+            <input type="number" id="vMaxViews" placeholder="فارغ = غير محدود" min="1"/>
+          </div>
+          <div class="ff full" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <label class="ff-check" style="flex:1">
               <input type="checkbox" id="vNotify" style="width:17px;height:17px;accent-color:var(--blue);cursor:pointer;flex-shrink:0"/>
               🔔 إرسال إشعار للطلاب عند الحفظ
             </label>
+            <button type="button" onclick="openNotifModal('video')" class="btn sm ghost" style="border-color:rgba(74,127,212,0.4);color:var(--blue)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+              إشعار مخصص
+            </button>
           </div>
         </div>
       </div>
@@ -439,7 +451,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <input type="number" id="eMaxAttempts" placeholder="فارغ = غير محدود" min="1"/>
           </div>
           <div class="ff">
-            <label>📅 تاريخ انتهاء الامتحان</label>
+            <label>⏰ تاريخ انتهاء الامتحان (اختياري)</label>
             <input type="datetime-local" id="eExpiresAt"/>
           </div>
 
@@ -476,11 +488,15 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <label>رابط Google Form</label>
             <input type="url" id="eLink" placeholder="https://forms.google.com/..."/>
           </div>
-          <div class="ff full">
-            <label class="ff-check">
+          <div class="ff full" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <label class="ff-check" style="flex:1">
               <input type="checkbox" id="eNotify" style="width:17px;height:17px;accent-color:var(--gold);cursor:pointer;flex-shrink:0"/>
               🔔 إرسال إشعار للطلاب عند الحفظ
             </label>
+            <button type="button" onclick="openNotifModal('exam')" class="btn sm ghost" style="border-color:rgba(74,127,212,0.4);color:var(--blue)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+              إشعار مخصص
+            </button>
           </div>
         </div>
       </div>
@@ -520,6 +536,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <div class="ff">
             <label>الترتيب</label>
             <input type="number" id="hOrder" placeholder="1" min="1"/>
+          </div>
+          <div class="ff">
+            <label>⏰ تاريخ انتهاء الواجب (اختياري)</label>
+            <input type="datetime-local" id="hExpiresAt"/>
+          </div>
+          <div class="ff">
+            <label>🔢 عدد مرات التسليم المسموحة (اختياري)</label>
+            <input type="number" id="hMaxSubmissions" placeholder="فارغ = غير محدود" min="1"/>
           </div>
 
           <!-- PDF Upload -->
@@ -792,6 +816,54 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
     </div>
   </div>
 </div>
+<!-- Notify Modal -->
+<div id="notifModal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px">
+  <div style="background:#0c1228;border:1px solid var(--b1);border-radius:18px;padding:22px;max-width:420px;width:100%;position:relative">
+    <button onclick="closeNotifModal()" style="position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:50%;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center">×</button>
+    <h3 style="font-size:15px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--blue)"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      إرسال إشعار مخصص
+    </h3>
+    <!-- اختار من -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:6px">إرسال إلى</label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <label style="display:flex;align-items:center;gap:5px;padding:6px 10px;border:1px solid var(--b1);border-radius:8px;cursor:pointer;font-size:12px">
+          <input type="radio" name="notifTarget" value="grade" checked style="accent-color:var(--blue)"/> طلاب الصف الحالي
+        </label>
+        <label style="display:flex;align-items:center;gap:5px;padding:6px 10px;border:1px solid var(--b1);border-radius:8px;cursor:pointer;font-size:12px">
+          <input type="radio" name="notifTarget" value="all" style="accent-color:var(--blue)"/> كل الطلاب
+        </label>
+      </div>
+    </div>
+    <div style="margin-bottom:10px">
+      <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px">عنوان الإشعار</label>
+      <input id="notifTitle" type="text" placeholder="مثال: امتحان جديد 📝"
+        style="width:100%;padding:9px 12px;background:rgba(6,10,22,.8);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/>
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px">نص الإشعار</label>
+      <textarea id="notifBody" rows="3" placeholder="اكتب تفاصيل الإشعار هنا..."
+        style="width:100%;padding:9px 12px;background:rgba(6,10,22,.8);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;resize:vertical"></textarea>
+    </div>
+    <!-- قوالب سريعة -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:5px">قوالب سريعة</label>
+      <div style="display:flex;gap:5px;flex-wrap:wrap">
+        <button onclick="setNotifTemplate('exam')" style="padding:4px 10px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">📝 امتحان</button>
+        <button onclick="setNotifTemplate('video')" style="padding:4px 10px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">🎬 فيديو</button>
+        <button onclick="setNotifTemplate('hw')" style="padding:4px 10px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">📚 واجب</button>
+        <button onclick="setNotifTemplate('reminder')" style="padding:4px 10px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">⏰ تذكير</button>
+      </div>
+    </div>
+    <div id="notifModalResult" style="display:none;font-size:12px;padding:7px 10px;border-radius:8px;margin-bottom:10px"></div>
+    <button onclick="sendCustomNotif()" style="width:100%;padding:12px;border:none;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+      إرسال الإشعار
+    </button>
+  </div>
+</div>
+
 <div class="toast" id="toast"><svg id="tIc"><use href="#i-check"/></svg><span id="tMsg"></span></div>
 
 <!-- Firebase -->
@@ -857,6 +929,8 @@ window.saveVideo = async () => {
   btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
   try {
     const publishAtVal = document.getElementById('vPublishAt').value;
+    const expiresAtVal = document.getElementById('vExpiresAt').value;
+    const maxViews = parseInt(document.getElementById('vMaxViews').value)||null;
     const data = {
       title, type:'video', url,
       description: document.getElementById('vDesc').value.trim(),
@@ -864,6 +938,8 @@ window.saveVideo = async () => {
       order: parseInt(document.getElementById('vOrder').value)||1,
       publishAt: publishAtVal ? new Date(publishAtVal) : null,
       hidden: publishAtVal ? new Date(publishAtVal) > new Date() : false,
+      expiresAt: expiresAtVal ? new Date(expiresAtVal) : null,
+      maxViews: maxViews,
       updatedAt: serverTimestamp()
     };
     let isNew = !window._editId?.v;
@@ -896,13 +972,13 @@ window.saveExam = async () => {
   try {
     const type = window._eType||'mcq';
     const maxAttempts = parseInt(document.getElementById('eMaxAttempts').value)||null;
-    const expiresAtVal = document.getElementById('eExpiresAt').value;
+    const eExpiresAtVal = document.getElementById('eExpiresAt').value;
     const data = {
       title, type,
       duration: document.getElementById('eDur').value.trim(),
       order: parseInt(document.getElementById('eOrder').value)||1,
-      maxAttempts: maxAttempts,
-      expiresAt: expiresAtVal ? new Date(expiresAtVal) : null,
+      maxAttempts,
+      expiresAt: eExpiresAtVal ? new Date(eExpiresAtVal) : null,
       mcqRaw: document.getElementById('eMcq').value.trim(),
       essayText: document.getElementById('eEssay').value.trim(),
       externalUrl: document.getElementById('eLink').value.trim(),
@@ -933,12 +1009,16 @@ window.saveHomework = async () => {
   const btn = document.getElementById('hSaveBtn');
   btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
   try {
+    const hExpiresAtVal = document.getElementById('hExpiresAt').value;
+    const maxSubmissions = parseInt(document.getElementById('hMaxSubmissions').value)||null;
     const data = {
       title, type:'homework',
       description: document.getElementById('hDesc').value.trim(),
       deadline: document.getElementById('hDeadline').value,
       fileUrl: document.getElementById('hFileUrl').value||'',
       order: parseInt(document.getElementById('hOrder').value)||1,
+      expiresAt: hExpiresAtVal ? new Date(hExpiresAtVal) : null,
+      maxSubmissions,
       updatedAt: serverTimestamp()
     };
     if(window._editId?.h){
@@ -1053,11 +1133,6 @@ window.editItem = (tab, id) => {
     document.getElementById('eMcq').value   = item.mcqRaw||'';
     document.getElementById('eEssay').value = item.essayText||'';
     document.getElementById('eLink').value  = item.externalUrl||'';
-    document.getElementById('eMaxAttempts').value = item.maxAttempts||'';
-    if(item.expiresAt){
-      const d = item.expiresAt.toDate?item.expiresAt.toDate():new Date(item.expiresAt);
-      document.getElementById('eExpiresAt').value = d.toISOString().slice(0,16);
-    } else { document.getElementById('eExpiresAt').value=''; }
     setEType(item.type||'mcq');
     window.scrollTo({top:0,behavior:'smooth'});
   } else {
@@ -1490,17 +1565,16 @@ window.clearPlaylist = ()=>{
   if(window._editId) delete window._editId.pl;
 };
 
-// ══ SEND NOTIFICATION — داخل الـ module عشان يوصل لـ db مباشرة ══
+// ══ NOTIFICATIONS ══
+
+// إرسال إشعار تلقائي عند الحفظ
 window.sendContentNotif = async (gradeKey, type, title) => {
   try{
     const usersSnap = await getDocs(collection(db,'users'));
     const students = usersSnap.docs
       .map(d=>({id:d.id,...d.data()}))
       .filter(u=>u.gradeKey===gradeKey && u.subscriptionActive && !u.blocked);
-    if(!students.length){
-      toast('لا يوجد طلاب مشتركين في هذا الصف','warn');
-      return;
-    }
+    if(!students.length) return;
     const icon = type.includes('فيديو')?'🎬':type.includes('امتحان')?'📝':'📚';
     await Promise.all(students.map(s=>
       addDoc(collection(db,'notifications',s.id,'items'),{
@@ -1510,10 +1584,62 @@ window.sendContentNotif = async (gradeKey, type, title) => {
       })
     ));
     toast(`✅ تم إرسال إشعار لـ ${students.length} طالب`,'ok');
-  }catch(e){
-    console.error('sendContentNotif error:',e);
-    toast('خطأ في الإشعار: '+e.message,'err');
-  }
+  }catch(e){ toast('خطأ في الإشعار: '+e.message,'err'); }
+};
+
+// ── فتح Modal الإشعار المخصص ──
+window._notifContext = {};
+window.openNotifModal = (context='exam') => {
+  window._notifContext = { context };
+  const grade = document.getElementById('gSel').value;
+  const modal = document.getElementById('notifModal');
+  modal.style.display='flex';
+  document.getElementById('notifModalResult').style.display='none';
+  // قالب افتراضي بناءً على السياق
+  setNotifTemplate(context==='exam'?'exam':context==='video'?'video':'hw');
+};
+window.closeNotifModal = () => {
+  document.getElementById('notifModal').style.display='none';
+};
+
+// قوالب سريعة
+window.setNotifTemplate = (t) => {
+  const templates = {
+    exam:     { title:'امتحان جديد 📝', body:'تم إضافة امتحان جديد — ادخل الآن وابدأ!' },
+    video:    { title:'درس جديد 🎬',    body:'تم رفع درس جديد — شوفه دلوقتي!' },
+    hw:       { title:'واجب جديد 📚',   body:'تم إضافة واجب جديد — راجع الموعد!' },
+    reminder: { title:'تذكير مهم ⏰',   body:'لا تنسى مراجعة المحتوى والامتحانات القادمة!' },
+  };
+  const tpl = templates[t]||{};
+  if(tpl.title) document.getElementById('notifTitle').value = tpl.title;
+  if(tpl.body)  document.getElementById('notifBody').value  = tpl.body;
+};
+
+// إرسال الإشعار المخصص
+window.sendCustomNotif = async () => {
+  const grade   = document.getElementById('gSel').value;
+  const title   = document.getElementById('notifTitle').value.trim();
+  const body    = document.getElementById('notifBody').value.trim();
+  const target  = document.querySelector('input[name="notifTarget"]:checked')?.value||'grade';
+  const resEl   = document.getElementById('notifModalResult');
+  if(!title||!body){ resEl.style.display='block'; resEl.style.background='rgba(255,77,109,0.1)'; resEl.style.color='var(--err)'; resEl.textContent='ادخل العنوان والنص'; return; }
+  resEl.style.display='block'; resEl.style.background='rgba(74,127,212,0.08)'; resEl.style.color='var(--blue)'; resEl.textContent='جاري الإرسال...';
+  try{
+    const usersSnap = await getDocs(collection(db,'users'));
+    const students = usersSnap.docs
+      .map(d=>({id:d.id,...d.data()}))
+      .filter(u=> u.subscriptionActive && !u.blocked && (target==='all' || u.gradeKey===grade));
+    if(!students.length){ resEl.style.color='var(--err)'; resEl.textContent='لا يوجد طلاب'; return; }
+    await Promise.all(students.map(s=>
+      addDoc(collection(db,'notifications',s.id,'items'),{
+        icon:'🔔', title, body,
+        read:false, type:'custom', gradeKey:grade||'all',
+        createdAt:serverTimestamp()
+      })
+    ));
+    resEl.style.color='var(--ok)'; resEl.textContent=`✅ تم الإرسال لـ ${students.length} طالب`;
+    setTimeout(()=>closeNotifModal(), 2000);
+  }catch(e){ resEl.style.color='var(--err)'; resEl.textContent='خطأ: '+e.message; }
 };
 </script>
 
@@ -1609,8 +1735,6 @@ function renderItems(tab, items, elId){
           ${item.type?`<span class="tag ${tagCls}">${typeLabel[item.type]||item.type}</span>`:''}
           ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
           ${item.deadline?`<span>📅 ${item.deadline}</span>`:''}
-          ${item.maxAttempts?`<span style="color:var(--gold);font-weight:700">🔢 ${item.maxAttempts} محاولة</span>`:''}
-          ${item.expiresAt?`<span style="color:var(--err);font-weight:700">⏰ ينتهي ${(item.expiresAt.toDate?item.expiresAt.toDate():new Date(item.expiresAt)).toLocaleDateString('ar-EG')}</span>`:''}
           ${item.url||item.externalUrl?`<a href="${item.url||item.externalUrl}" target="_blank" style="color:var(--blue);font-size:11px;text-decoration:none">🔗 رابط</a>`:''}
           ${item.imageUrls?.length?`<span class="tag ok">📷 ${item.imageUrls.length} صورة</span>`:''}
           ${item.fileUrl?`<a href="${item.fileUrl}" target="_blank" style="color:var(--purple);font-size:11px;text-decoration:none">📎 ملف</a>`:''}
@@ -1631,7 +1755,7 @@ function clearV(){
   if(window._editId) delete window._editId.v;
 }
 function clearE(){
-  ['eTitle','eDur','eOrder','eMcq','eEssay','eLink','eMaxAttempts','eExpiresAt'].forEach(id=>document.getElementById(id).value='');
+  ['eTitle','eDur','eOrder','eMcq','eEssay','eLink'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('eImgPreviews').innerHTML='';
   window._examImgUrls=[];
   setEType('mcq');
