@@ -1188,6 +1188,9 @@ function submitInlineMcq(){
       ${!showAnswers&&attLeft>0?`<div style="font-size:12px;color:var(--gold);margin-top:6px">⚠️ لم تُظهر الإجابات — باقي لك ${attLeft} محاولة</div>`:''}
     </div>`;
   document.getElementById('iep-submit').style.display='none';
+  
+  // Reload page after 2 seconds to update progress
+  setTimeout(()=>location.reload(),2000);
 }
 
 // تسجيل المحاولة + الدرجة + markDone
@@ -1374,9 +1377,35 @@ function openEssay(examId,gradeKey,title,text){
   document.getElementById('mcqTitle').textContent=title;
   document.getElementById('mcqProg').textContent='امتحان مقالي';
   document.getElementById('mcqResult').style.display='none';
-  document.getElementById('mcqBody').innerHTML=`<div class="essay-text">${text}</div><textarea class="essay-area" placeholder="اكتب إجابتك هنا..."></textarea>`;
+  document.getElementById('mcqBody').innerHTML=`<div class="essay-text">${text}</div><textarea id="essay-answer-${examId}" class="essay-area" placeholder="اكتب إجابتك هنا..."></textarea>`;
   const btn=document.getElementById('mcqBtn');btn.textContent='تسليم ✓';btn.style.display='block';
-  btn.onclick=()=>{markDone(gradeKey,'exams',examId);document.getElementById('mcqResult').style.display='block';document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin-top:8px">تم التسليم!</div>';btn.style.display='none';};
+  btn.onclick=async()=>{
+    const answer=document.getElementById('essay-answer-'+examId)?.value.trim();
+    if(!answer){showToast('⚠️ اكتب إجابتك أولاً','err');return;}
+    // Save essay answer to Firebase
+    if(_user){
+      try{
+        const att=((_progress[gradeKey]||{}).examAttempts||{})[examId]||0;
+        await setDoc(doc(db,'scores',_user.uid+'_'+examId+'_'+(att+1)),{
+          userId:_user.uid,
+          userName:_userData?.name||'',
+          userGrade:_userData?.grade||'',
+          gradeKey,
+          examId,
+          examTitle:title,
+          essayAnswer:answer,
+          type:'essay',
+          attempt:att+1,
+          submittedAt:serverTimestamp()
+        });
+      }catch(e){console.warn('essay save:',e);}
+    }
+    markDone(gradeKey,'exams',examId);
+    document.getElementById('mcqResult').style.display='block';
+    document.getElementById('mcqResult').innerHTML='<div style="font-size:36px">✅</div><div style="font-size:16px;font-weight:800;margin-top:8px">تم التسليم!</div>';
+    btn.style.display='none';
+    setTimeout(()=>location.reload(),1500);
+  };
   document.getElementById('mcqModal').classList.add('open');document.body.style.overflow='hidden';
 }
 
@@ -1391,10 +1420,22 @@ function openImgs(examId,gradeKey,title,urls){
   document.getElementById('imgDoneBtn').style.display='flex';
   document.getElementById('imgModal').classList.add('open');document.body.style.overflow='hidden';
 }
-window.imgDone=()=>{if(_imgData)markDone(_imgData.gradeKey,'exams',_imgData.examId);closeImg();};
+window.imgDone=()=>{
+  if(_imgData){
+    markDone(_imgData.gradeKey,'exams',_imgData.examId);
+    closeImg();
+    setTimeout(()=>location.reload(),500);
+  }
+};
 window.closeImg=()=>{document.getElementById('imgModal').classList.remove('open');document.body.style.overflow='';};
 window.closePlayer=()=>{document.getElementById('playerFrame').src='';document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';};
-window.playerDone=()=>{if(_playerData)markDone(_playerData.gradeKey,'videos',_playerData.id);closePlayer();};
+window.playerDone=()=>{
+  if(_playerData){
+    markDone(_playerData.gradeKey,'videos',_playerData.id);
+    closePlayer();
+    setTimeout(()=>location.reload(),500);
+  }
+};
 
 // ── TICKETS ──
 window.openTicketModal=()=>{
