@@ -313,7 +313,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         البلايلست <span id="cnt-pl" style="font-size:10px;opacity:.7"></span>
       </button>
       <button class="tbtn" id="tr" onclick="switchTab('r')" style="background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04));border-color:rgba(16,185,129,0.3);color:#10b981">📝 الأبحاث <span id="cnt-r" style="font-size:10px;opacity:.7"></span></button>
-      <button class="tbtn" id="tsc" onclick="switchTab('sc')" style="background:linear-gradient(135deg,rgba(255,77,109,0.12),rgba(255,77,109,0.04));border-color:rgba(255,77,109,0.3);color:var(--err)">📊 إجابات الطلاب <span id="cnt-sc" style="font-size:10px;opacity:.7"></span></button>
+
       <button class="tbtn" onclick="openCopyModal()" style="margin-right:auto;border-color:rgba(139,92,246,0.3);color:#a78bfa" title="نسخ محتوى من صف لصف">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
         نسخ صف
@@ -771,27 +771,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
     </div>
 
-    <!-- ══════════════════ SCORES / ANSWERS ══════════════════ -->
-    <div id="ssc" style="display:none">
-
-      <div class="card">
-        <div class="card-head">
-          <h3>📊 إجابات ونتائج الطلاب</h3>
-          <div style="display:flex;gap:6px;margin-right:auto">
-            <select id="sc-type-filter" onchange="loadScores()" style="padding:6px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
-              <option value="">كل الأنواع</option>
-              <option value="mcq">MCQ فقط</option>
-              <option value="essay">مقالي فقط</option>
-            </select>
-            <button class="btn sm ghost" onclick="loadScores()"><svg><use href="#i-refresh"/></svg></button>
-          </div>
-        </div>
-        <input id="sc-search" placeholder="🔍 ابحث في الإجابات..." oninput="filterScores()"
-          style="width:100%;padding:9px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;margin-bottom:12px"/>
-        <div id="scList"><div class="empty"><p>لا يوجد إجابات بعد</p></div></div>
-      </div>
-
-    </div>
 
   </div><!-- /main -->
 </div><!-- /app -->
@@ -1704,10 +1683,10 @@ function switchTab(t){
   // أخبي الـ placeholder
   const ph = document.getElementById('cmPlaceholder');
   if(ph) ph.style.display='none';
-  ['v','e','h','b','pl','r','sc'].forEach(x=>{
+  ['v','e','h','b','pl','r'].forEach(x=>{
     document.getElementById('t'+x)?.classList.toggle('on',x===t);
   });
-  ['sv','se','sh','sb','spl','sr','ssc'].forEach(x=>{
+  ['sv','se','sh','sb','spl','sr'].forEach(x=>{
     const el=document.getElementById(x);
     if(el) el.style.display=x.slice(1)===t?'block':'none';
   });
@@ -1715,7 +1694,6 @@ function switchTab(t){
   if(t==='b'){ loadBooks(); return; }
   if(t==='pl'){ window.loadPlaylists?.(); window.loadPlPickList?.(); return; }
   if(t==='r'){ loadResearchCM(); return; }
-  if(t==='sc'){ loadScores(); return; }
   if(grade){
     const tab=t==='v'?'videos':t==='e'?'exams':'homework';
     const el=t==='v'?'vList':t==='e'?'eList':'hList';
@@ -2332,111 +2310,8 @@ document.addEventListener('fbready', ()=>{
 });
 
 // ══════════════════ SCORES / ANSWERS ══════════════════
-let _allScores = [];
 
-async function loadScores(){
-  const grade = document.getElementById('gSel').value;
-  if(!grade){ toast('اختار الصف الأول','err'); return; }
-  
-  const listEl = document.getElementById('scList');
-  listEl.innerHTML = '<div class="empty"><p>جاري التحميل...</p></div>';
-  
-  try{
-    // Get all scores
-    const snap = await window._getDocs(window._collection(window._db,'scores'));
-    const items = snap.docs.map(d=>({id:d.id,...d.data()}))
-      .filter(s => s.gradeKey === grade)
-      .sort((a,b) => (b.submittedAt?.seconds||0) - (a.submittedAt?.seconds||0));
-    
-    _allScores = items;
-    
-    // Update count
-    const cntEl = document.getElementById('cnt-sc');
-    if(cntEl) cntEl.textContent = items.length ? `(${items.length})` : '';
-    
-    renderScores(items);
-  }catch(e){
-    listEl.innerHTML = `<div class="empty"><p>خطأ: ${e.message}</p></div>`;
-  }
-}
 
-function renderScores(items){
-  const listEl = document.getElementById('scList');
-  const typeFilter = document.getElementById('sc-type-filter')?.value || '';
-  
-  let filtered = items;
-  if(typeFilter === 'mcq') filtered = items.filter(s => !s.type || s.type === 'mcq');
-  if(typeFilter === 'essay') filtered = items.filter(s => s.type === 'essay');
-  
-  if(!filtered.length){
-    listEl.innerHTML = '<div class="empty"><p>لا يوجد إجابات</p></div>';
-    return;
-  }
-  
-  listEl.innerHTML = filtered.map(s=>{
-    const isEssay = s.type === 'essay';
-    const dt = s.submittedAt?.toDate ? s.submittedAt.toDate() : new Date(s.submittedAt);
-    const dateStr = dt.toLocaleDateString('ar-EG', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
-    
-    return `
-      <div class="item" style="margin-bottom:10px">
-        <div style="display:flex;gap:10px;align-items:start;flex:1">
-          <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-              <div class="tag ${isEssay?'e':'v'}" style="font-size:9px;padding:3px 7px">${isEssay?'📝 مقالي':'✅ MCQ'}</div>
-              <div style="font-size:11px;color:var(--muted)">${s.attempt ? 'محاولة '+s.attempt : ''}</div>
-            </div>
-            <div style="font-size:13px;font-weight:800;margin-bottom:3px">${s.examTitle || s.examId}</div>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:4px">
-              👤 ${s.userName || 'طالب'} • ${s.userGrade || '—'}
-            </div>
-            ${isEssay ? `
-              <div style="margin-top:8px;padding:10px;background:rgba(6,10,22,0.6);border:1px solid var(--b2);border-radius:8px">
-                <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:5px">📝 الإجابة المقالية:</div>
-                <div style="font-size:12px;line-height:1.6;color:var(--text);white-space:pre-wrap">${s.essayAnswer || 'لا توجد إجابة'}</div>
-              </div>
-            ` : `
-              <div style="display:flex;gap:8px;align-items:center">
-                <div style="font-size:14px;font-weight:900;color:${s.pct>=60?'var(--ok)':'var(--err)'}">
-                  ${s.score}/${s.total} — ${s.pct}%
-                </div>
-                <div style="font-size:11px;color:var(--muted)">${s.pct>=80?'ممتاز 🏆':s.pct>=60?'جيد 👍':'ضعيف'}</div>
-              </div>
-            `}
-            <div style="font-size:10px;color:var(--muted2);margin-top:6px">📅 ${dateStr}</div>
-          </div>
-        </div>
-        <div class="ia-group">
-          <button class="ia del" onclick="deleteScore('${s.id}')" title="حذف"><svg><use href="#i-trash"/></svg></button>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-function filterScores(){
-  const q = document.getElementById('sc-search')?.value.toLowerCase().trim() || '';
-  if(!q){ renderScores(_allScores); return; }
-  
-  const filtered = _allScores.filter(s=>
-    (s.examTitle||'').toLowerCase().includes(q) ||
-    (s.userName||'').toLowerCase().includes(q) ||
-    (s.userGrade||'').toLowerCase().includes(q) ||
-    (s.essayAnswer||'').toLowerCase().includes(q)
-  );
-  
-  renderScores(filtered);
-}
-
-async function deleteScore(id){
-  if(!confirm('تحذف الإجابة دي؟')) return;
-  try{
-    await window._deleteDoc(window._doc(window._db,'scores',id));
-    await loadScores();
-    toast('✅ تم الحذف','ok');
-  }catch(e){
-    toast('خطأ: '+e.message,'err');
-  }
-}
 
 </script>
 </body>
