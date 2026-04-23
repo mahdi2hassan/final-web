@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>النقد الأدبي الحديث - تلخيص شامل</title>
+    
+    <!-- خطوط عربية أنيقة من جوجل -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- مكتبة لتصدير PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #1a5f3a;
+            --secondary-color: #2e8b57;
+            --accent-color: #d4af37;
+            --bg-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            --card-bg: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #5a6c7d;
+            --quran-bg: #fff9e6;
+            --hadith-bg: #e8f4fd;
+            --note-bg: #f0f7f2;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --border-radius: 12px;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Tajawal', 'Cairo', 'Amiri', sans-serif;
+            font-size: 20px;
+            line-height: 2;
+            color: var(--text-primary);
+            background: var(--bg-gradient);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--border-radius);            box-shadow: var(--shadow);
+            position: relative;
+        }
+        
+        /* شريط الأدوات العلوي */
+        .toolbar {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            border: 2px solid var(--secondary-color);
+        }
+        
+        .toolbar-title {
+            font-family: 'Amiri', serif;
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .btn-save-pdf {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 18px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(46, 139, 87, 0.3);
+        }
+        
+        .btn-save-pdf:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 139, 87, 0.5);
+        }
+        
+        .btn-save-pdf:active {            transform: translateY(0);
+        }
+        
+        .btn-save-pdf svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* الهيدر الرئيسي */
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            border-bottom: 3px solid var(--accent-color);
+            margin-bottom: 35px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--border-radius);
+            color: white;
+        }
+        
+        header h1 {
+            font-family: 'Amiri', serif;
+            font-size: 32px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        header .author {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        header .affiliation {
+            font-size: 20px;
+            opacity: 0.95;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        /* العناوين */
+        h2 {
+            font-family: 'Amiri', serif;
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 35px 0 20px;
+            padding: 12px 20px;
+            background: linear-gradient(to left, var(--secondary-color), transparent);
+            border-radius: 8px 0 0 8px;
+            border-right: 5px solid var(--accent-color);        }
+        
+        h3 {
+            font-family: 'Cairo', sans-serif;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin: 25px 0 15px;
+            padding-right: 10px;
+        }
+        
+        h4 {
+            font-family: 'Cairo', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 20px 0 12px;
+        }
+        
+        /* الفقرات والنصوص */
+        p {
+            margin-bottom: 18px;
+            text-align: justify;
+            font-size: 20px;
+        }
+        
+        ul, ol {
+            margin: 15px 0 25px;
+            padding-right: 30px;
+            font-size: 20px;
+        }
+        
+        li {
+            margin-bottom: 12px;
+            padding-right: 8px;
+        }
+        
+        /* صناديق الآيات والأحاديث */
+        .quote-box {
+            font-family: 'Amiri', serif;
+            font-size: 22px;
+            color: #1565c0;
+            background: var(--hadith-bg);
+            padding: 20px 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border-right: 5px solid #2196f3;
+            line-height: 2;
+        }
+                .definition-box {
+            background: #fff3e0;
+            border-right: 5px solid var(--accent-color);
+            padding: 20px 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+            font-size: 20px;
+        }
+        
+        .key-points {
+            background: #f8f9fa;
+            border: 2px dashed var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .key-points ul {
+            margin: 0;
+            padding-right: 25px;
+        }
+        
+        .key-points li {
+            margin: 10px 0;
+            position: relative;
+            padding-right: 20px;
+        }
+        
+        .key-points li::before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            color: var(--secondary-color);
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        /* بطاقات الفصول */
+        .chapter-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .chapter-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);            transform: translateY(-3px);
+            border-color: var(--secondary-color);
+        }
+        
+        .chapter-number {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: bold;
+            font-size: 18px;
+            margin-left: 10px;
+        }
+        
+        /* جدول المحتويات */
+        .toc {
+            background: linear-gradient(135deg, #f1f8e9, #e8f5e9);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin-bottom: 35px;
+            border: 2px solid var(--secondary-color);
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 22px;
+        }
+        
+        .toc ul {
+            list-style: none;
+            padding-right: 0;
+            margin: 0;
+        }
+        
+        .toc li {
+            padding: 10px 15px;
+            border-bottom: 1px dashed #c8e6c9;
+            font-size: 20px;
+        }
+        
+        .toc li:last-child {
+            border-bottom: none;
+        }
+        
+        .toc a {            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .toc a:hover {
+            color: var(--secondary-color);
+        }
+        
+        .toc a::before {
+            content: "📌";
+            font-size: 16px;
+        }
+        
+        /* بنك الأسئلة */
+        .quiz-section {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: white;
+            padding: 35px;
+            border-radius: var(--border-radius);
+            margin-top: 40px;
+        }
+        
+        .quiz-section h2 {
+            color: #ffd54f;
+            background: none;
+            border-right: none;
+            text-align: center;
+            font-size: 24px;
+            margin-top: 0;
+        }
+        
+        .question-block {
+            background: rgba(255,255,255,0.12);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border-right: 4px solid #ffd54f;
+        }
+        
+        .question-block p {
+            color: white;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+                .options label {
+            display: block;
+            margin: 8px 0;
+            padding: 10px 15px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 20px;
+        }
+        
+        .options label:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        
+        .options input {
+            margin-left: 12px;
+            transform: scale(1.2);
+        }
+        
+        .answer-key {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: #43a047;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 1.8;
+        }
+        
+        .show-answer-btn {
+            background: #ffd54f;
+            color: #1a237e;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 18px;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.2s;
+        }
+        
+        .show-answer-btn:hover {
+            background: #ffca28;
+            transform: scale(1.05);
+        }
+        
+        /* الخاتمة */        .conclusion {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            margin-top: 40px;
+            text-align: center;
+        }
+        
+        .conclusion h3 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .conclusion ol {
+            text-align: right;
+            margin: 0 auto;
+            max-width: 800px;
+        }
+        
+        .conclusion li {
+            margin: 12px 0;
+            font-size: 20px;
+        }
+        
+        /* حقوق الملكية */
+        .copyright {
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-top: 3px solid var(--accent-color);
+            background: linear-gradient(to left, #f5f5f5, white);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+        }
+        
+        .copyright p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin: 5px 0;
+        }
+        
+        .copyright strong {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+        
+        .copyright .platform-name {
+            color: var(--secondary-color);
+            font-weight: bold;            font-size: 20px;
+        }
+        
+        /* شريط التقدم */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
+            z-index: 1000;
+            transition: width 0.1s;
+        }
+        
+        /* أزرار التنقل السريع */
+        .quick-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        
+        .quick-nav a {
+            background: white;
+            color: var(--primary-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 18px;
+            border: 2px solid var(--secondary-color);
+            transition: all 0.2s;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        .quick-nav a:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        /* تحسينات الطباعة */
+        @media print {
+            .toolbar, .btn-save-pdf, .show-answer-btn {
+                display: none !important;
+            }
+            body {
+                font-size: 18px;
+                background: white;            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+        
+        /* التجاوب مع الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            body {
+                font-size: 18px;
+                padding: 10px;
+            }
+            .container {
+                padding: 25px 20px;
+            }
+            header h1 {
+                font-size: 26px;
+            }
+            header .author, header .affiliation {
+                font-size: 18px;
+            }
+            h2 {
+                font-size: 22px;
+            }
+            h3 {
+                font-size: 20px;
+            }
+            .quote-box, .definition-box {
+                font-size: 20px;
+            }
+            .toolbar {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+        
+        /* تأثيرات حركية خفيفة */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chapter-card {
+            animation: fadeIn 0.4s ease forwards;
+        }
+        
+        .chapter-card:nth-child(1) { animation-delay: 0.1s; }
+        .chapter-card:nth-child(2) { animation-delay: 0.2s; }        .chapter-card:nth-child(3) { animation-delay: 0.3s; }
+        .chapter-card:nth-child(4) { animation-delay: 0.4s; }
+        .chapter-card:nth-child(5) { animation-delay: 0.5s; }
+        .chapter-card:nth-child(6) { animation-delay: 0.6s; }
+        .chapter-card:nth-child(7) { animation-delay: 0.7s; }
+        .chapter-card:nth-child(8) { animation-delay: 0.8s; }
+    </style>
+</head>
+<body>
+
+<!-- شريط التقدم -->
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="container" id="contentToSave">
+
+    <!-- شريط الأدوات -->
+    <div class="toolbar">
+        <div class="toolbar-title">📚 النقد الأدبي الحديث - تلخيص تفاعلي</div>
+        <button class="btn-save-pdf" onclick="saveAsPDF()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            حفظ كـ PDF
+        </button>
+    </div>
+
+    <!-- الهيدر -->
+    <header>
+        <h1>النقد الأدبي الحديث</h1>
+        <p class="author">✍️ تأليف: د. أمين علي محمد</p>
+        <p class="affiliation">أستاذ الأدب والنقد - كلية الآداب</p>
+        <p class="affiliation">جامعة بنها - جمهورية مصر العربية</p>
+    </header>
+
+    <!-- جدول المحتويات -->
+    <nav class="toc">
+        <h3>📋 فهرس الفصول الرئيسية</h3>
+        <ul>
+            <li><a href="#intro">المقدمة: مفهوم النقد الأدبي وأهميته</a></li>
+            <li><a href="#ch1">الفصل الأول: المدارس النقدية الكلاسيكية</a></li>
+            <li><a href="#ch2">الفصل الثاني: المدرسة الرومانسية في النقد</a></li>
+            <li><a href="#ch3">الفصل الثالث: النقد الواقعي والاجتماعي</a></li>
+            <li><a href="#ch4">الفصل الرابع: النقد النفسي والتحليلي</a></li>
+            <li><a href="#ch5">الفصل الخامس: البنيوية والنقد البنيوي</a></li>
+            <li><a href="#ch6">الفصل السادس: التفكيكية وما بعد البنيوية</a></li>
+            <li><a href="#ch7">الفصل السابع: النقد الأسلوبي والبلاغي</a></li>
+            <li><a href="#ch8">الفصل الثامن: تطبيقات النقد على الأدب العربي</a></li>
+        </ul>    </nav>
+
+    <!-- روابط سريعة -->
+    <div class="quick-nav">
+        <a href="#quiz">🎯 بنك الأسئلة</a>
+        <a href="#conclusion">🎓 الخاتمة</a>
+        <a href="#intro">⬅️ البداية</a>
+    </div>
+
+    <!-- المقدمة -->
+    <article class="chapter-card" id="intro">
+        <h2><span class="chapter-number">م</span> المقدمة: مفهوم النقد الأدبي وأهميته</h2>
+        
+        <h3>🔷 تعريف النقد الأدبي</h3>
+        <p>النقد الأدبي هو: <strong>العملية العقلية المنظمة التي تهدف إلى دراسة النصوص الأدبية وتحليلها وتقويمها</strong>، بناءً على معايير ومقاييس علمية وفنية، للكشف عن قيمها الجمالية والفكرية، وتحديد مواطن القوة والضعف فيها.</p>
+        
+        <div class="definition-box">
+            <strong>📌 عناصر التعريف:</strong>
+            <ul>
+                <li>عملية عقلية منظمة وليست انطباعية عشوائية</li>
+                <li>تهدف إلى الدراسة والتحليل والتقويم</li>
+                <li>تعتمد على معايير ومقاييس علمية</li>
+                <li>تكشف عن القيم الجمالية والفكرية</li>
+                <li>تحدد مواطن القوة والضعف في النص</li>
+            </ul>
+        </div>
+
+        <h3>🔷 أهداف النقد الأدبي</h3>
+        <ol>
+            <li><strong>الفهم العميق:</strong> كشف دلالات النص ومراميه الخفية</li>
+            <li><strong>التقويم الموضوعي:</strong> الحكم على قيمة العمل الأدبي فنياً وفكرياً</li>
+            <li><strong>التوجيه القرائي:</strong> إرشاد القارئ إلى النصوص الجيدة وقيمها</li>
+            <li><strong>تطوير الإبداع:</strong> مساعدة المبدعين على تحسين إنتاجهم</li>
+            <li><strong>بناء النظرية:</strong> المساهمة في صياغة النظريات النقدية والأدبية</li>
+            <li><strong>ربط الأدب بالحياة:</strong> كشف علاقة النص بواقعه الاجتماعي والتاريخي</li>
+        </ol>
+
+        <h3>🔷 أنواع النقد الأدبي</h3>
+        <div class="key-points">
+            <strong>🎯 التصنيف حسب المنهج:</strong>
+            <ul>
+                <li>✅ <strong>النقد الانطباعي:</strong> يعتمد على استجابة الناقد الشخصية</li>
+                <li>✅ <strong>النقد الموضوعي:</strong> يعتمد على معايير خارجية ثابتة</li>
+                <li>✅ <strong>النقد التحليلي:</strong> يفكك النص إلى عناصره المكونة</li>
+                <li>✅ <strong>النقد التركيبي:</strong> يدرس النص ككل متكامل</li>
+            </ul>
+            <strong>🎯 التصنيف حسب الغاية:</strong>
+            <ul>
+                <li>✅ <strong>النقد التقويمي:</strong> يهدف للحكم على قيمة العمل</li>
+                <li>✅ <strong>النقد التفسيري:</strong> يهدف لفهم النص وشرحه</li>                <li>✅ <strong>النقد التوجيهي:</strong> يهدف لإرشاد القراء والمبدعين</li>
+            </ul>
+        </div>
+
+        <div class="quote-box">
+            <strong>💬 مقولة مهمة:</strong><br>
+            "النقد الجيد لا يقتل الإبداع، بل يضيء طريقه ويساعد على نضجه"
+        </div>
+    </article>
+
+    <!-- الفصل الأول -->
+    <article class="chapter-card" id="ch1">
+        <h2><span class="chapter-number">1</span> المدارس النقدية الكلاسيكية</h2>
+        
+        <h3>🔷 النقد عند اليونان: أفلاطون وأرسطو</h3>
+        
+        <h4>أفلاطون (427-347 ق.م)</h4>
+        <p>يُعد أفلاطون من أوائل من تناولوا النقد الأدبي بشكل منهجي، ورأيه في الأدب يتسم بالصرامة:</p>
+        <ul>
+            <li><strong>نظرية المُثُل:</strong> العالم المحسوس ظل للعالم المثالي، والأدب ظل للظل (بعيد ثلاث درجات عن الحقيقة)</li>
+            <li><strong>النقد الأخلاقي:</strong> يرفض الشعر الذي يصور الآلهة بشكل غير لائق أو يثير العواطف السلبية</li>
+            <li><strong>النفعية التربوية:</strong> لا يقبل إلا الأدب الذي يخدم تربية النشء وتقوية الدولة</li>
+            <li><strong>طرد الشعراء:</strong> في "جمهورية أفلاطون" يطرد الشعراء من المدينة الفاضلة إلا إذا خدموا الفضيلة</li>
+        </ul>
+
+        <h4>أرسطو (384-322 ق.م)</h4>
+        <p>يُعد أرسطو مؤسس النقد الأدبي العلمي في كتابه "فن الشعر" (البوطيقا):</p>
+        <ul>
+            <li><strong>نظرية المحاكاة:</strong> الفن محاكاة للطبيعة، لكنها محاكاة إبداعية تسمو بالواقع</li>
+            <li><strong>التطهير (الكاثارسيس):</strong> هدف التراجيديا تطهير النفس من المشاعر السلبية عبر الشفقة والخوف</li>
+            <li><strong>وحدات الدراما:</strong> وحدة الفعل، وحدة الزمان، وحدة المكان (طورها النقاد لاحقاً)</li>
+            <li><strong>تحليل عناصر الشعر:</strong> الحبكة، الشخصيات، الفكر، اللفظ، الغناء، المنظر</li>
+            <li><strong>النقد الموضوعي:</strong> يحكم على العمل بمعايير فنية داخلية لا أخلاقية خارجية</li>
+        </ul>
+
+        <div class="key-points">
+            <strong>🎯 الفروق بين أفلاطون وأرسطو:</strong>
+            <ul>
+                <li>🔹 أفلاطون: ينظر للأدب من زاوية أخلاقية-سياسية</li>
+                <li>🔹 أرسطو: ينظر للأدب من زاوية فنية-جمالية</li>
+                <li>🔹 أفلاطون: يرفض الشعر العاطفي، أرسطو: يقرره كوسيلة للتطهير</li>
+                <li>🔹 أفلاطون: معياري صارم، أرسطو: وصفي تحليلي</li>
+            </ul>
+        </div>
+
+        <h3>🔷 النقد الكلاسيكي في العصر الروماني</h3>
+        <p>تطور النقد عند الرومان مع الحفاظ على الأصول اليونانية:</p>
+        <ul>
+            <li><strong>هوراس (65-8 ق.م):</strong> في "فن الشعر" يجمع بين المتعة والفائدة "المنفعة مع اللذة"</li>
+            <li><strong>لونجينوس:</strong> في "السامي" يدرس مصادر السمو الأدبي: العظمة الفكرية، العاطفة القوية، الصور البلاغية</li>            <li><strong>كينتيليان:</strong> يركز على البلاغة والتربية الخطابية</li>
+        </ul>
+
+        <h3>🔷 خصائص النقد الكلاسيكي عامة</h3>
+        <div class="definition-box">
+            <strong>✨ السمات الأساسية:</strong>
+            <ol>
+                <li>الالتزام بالقواعد والضوابط الثابتة</li>
+                <li>تقليد النماذج القديمة (الإغريق والرومان)</li>
+                <li>العقلانية والوضوح ونبذ الغموض</li>
+                <li>الاهتمام بالبناء الفني والوحدة العضوية</li>
+                <li>الجمع بين المتعة والفائدة الأخلاقية</li>
+                <li>النزعة الكونية: البحث عن القيم الإنسانية العامة</li>
+            </ol>
+        </div>
+    </article>
+
+    <!-- الفصل الثاني -->
+    <article class="chapter-card" id="ch2">
+        <h2><span class="chapter-number">2</span> المدرسة الرومانسية في النقد</h2>
+        
+        <h3>🔷 نشأة الرومانسية النقدية</h3>
+        <p>ظهرت الرومانسية في أواخر القرن الثامن عشر كرد فعل على الكلاسيكية العقلانية، وبلغت ذروتها في القرن التاسع عشر في أوروبا، ثم انتقلت للعالم العربي في مطلع القرن العشرين.</p>
+
+        <h3>🔷 الأسس الفلسفية للرومانسية</h3>
+        <ul>
+            <li><strong>الفردية:</strong> تمجيد الذات الفردية وخبراتها الشخصية</li>
+            <li><strong>العاطفة:</strong> تقديم العاطفة والخيال على العقل والمنطق</li>
+            <li><strong>الطبيعة:</strong> العودة للطبيعة كمصدر للإلهام والصفاء</li>
+            <li><strong>الحرية:</strong> رفض القيود والقواعد الكلاسيكية الجامدة</li>
+            <li><strong>اللاوعي:</strong> الاهتمام بالأحلام والحدس والغرائز</li>
+        </ul>
+
+        <h3>🔷 مبادئ النقد الرومانسي</h3>
+        <div class="key-points">
+            <strong>🎯 أسس التقويم عند الرومانسيين:</strong>
+            <ul>
+                <li>✅ <strong>صدق العاطفة:</strong> قيمة العمل في صدق تعبيره عن مشاعر صاحبه</li>
+                <li>✅ <strong>قوة الخيال:</strong> القدرة على خلق عوالم جديدة ومدهشة</li>
+                <li>✅ <strong>الأصالة:</strong> الابتعاد عن التقليد وابتكار أسلوب فريد</li>
+                <li>✅ <strong>العمق النفسي:</strong> الكشف عن أغوار النفس الإنسانية</li>
+                <li>✅ <strong>الوحدة العضوية:</strong> انسجام أجزاء العمل في كيان حي متكامل</li>
+            </ul>
+        </div>
+
+        <h3>🔷 أعلام النقد الرومانسي</h3>
+        <ol>
+            <li><strong>وليم وردزورث (1770-1850):</strong> دعا للشعر البسيط المستمد من حياة العامة</li>
+            <li><strong>صمويل كولريدج (1772-1834):</strong> ميز بين الخيال والإيهام، ودرس قوة الإبداع الشعري</li>
+            <li><strong>توماس كارليل (1795-1881):</strong> نظر للأديب كنبي ورسول يحمل رسالة إنسانية</li>            <li><strong>فيكتور هوغو (1802-1885):</strong> دعا للحرية المطلقة في الفن ورفض الوحدات الكلاسيكية</li>
+        </ol>
+
+        <h3>🔷 الرومانسية في النقد العربي</h3>
+        <p>تأثر النقاد العرب بالرومانسية الأوروبية عبر الترجمة والاحتكاك الثقافي:</p>
+        <ul>
+            <li><strong>ميخائيل نعيمة:</strong> في "الغربال" دعا للنقد الذاتي والصدق العاطفي</li>
+            <li><strong>عباس محمود العقاد:</strong> جمع بين الرومانسية والعقلانية في نقده</li>
+            <li><strong>إبراهيم المازني:</strong> تميز بنقده الانطباعي المرهف</li>
+            <li><strong>أحمد حسن الزيات:</strong> في "رسالة النقد" جدد في مناهج النقد العربي</li>
+        </ul>
+
+        <div class="quote-box">
+            <strong>💬 مقولة نعيمة:</strong><br>
+            "النقد ليس تجسساً على الأسرار، ولا تشهيراً بالعيوب، ولا تمجيداً للكمال... النقد هو إظهار ما في العمل من جمال وقبح، من قوة وضعف، من حق وباطل"
+        </div>
+    </article>
+
+    <!-- الفصل الثالث -->
+    <article class="chapter-card" id="ch3">
+        <h2><span class="chapter-number">3</span> النقد الواقعي والاجتماعي</h2>
+        
+        <h3>🔷 مفهوم الواقعية في الأدب والنقد</h3>
+        <p>الواقعية مذهب أدبي ونقدي ظهر في منتصف القرن التاسع عشر، يدعو لتصوير الحياة كما هي في واقعها الملموس، بعيداً عن المثالية والخيال الرومانسي.</p>
+
+        <h3>🔷 أسس النقد الواقعي</h3>
+        <div class="definition-box">
+            <strong>📌 المبادئ الأساسية:</strong>
+            <ol>
+                <li><strong>الموضوعية:</strong> دراسة النص في علاقته بواقعه الاجتماعي</li>
+                <li><strong>التوثيق:</strong> الاعتماد على الحقائق والبيانات الواقعية</li>
+                <li><strong>النقد الاجتماعي:</strong> تقييم العمل حسب دوره في كشف مشكلات المجتمع</li>
+                <li><strong>الالتزام:</strong> مطالبة الأديب بالانحياز لقضايا العدالة والتقدم</li>
+                <li><strong>التطور التاريخي:</strong> فهم الأدب في سياق تطوره التاريخي</li>
+            </ol>
+        </div>
+
+        <h3>🔷 النقد الماركسي (الواقعية الاشتراكية)</h3>
+        <p>تطور النقد الواقعي مع الماركسية ليشكل مدرسة نقدية مؤثرة:</p>
+        <ul>
+            <li><strong>البنية التحتية والفوقية:</strong> الأدب جزء من البنية الفوقية يتأثر بالبنية الاقتصادية</li>
+            <li><strong>الصراع الطبقي:</strong> تحليل النصوص في ضوء الصراع بين الطبقات</li>
+            <li><strong>الأدب كأداة تغيير:</strong> دور الأديب في خدمة الثورة والتقدم الاجتماعي</li>
+            <li><strong>نقد الأيديولوجيا:</strong> كشف القيم الطبقية المخفية في النصوص</li>
+        </ul>
+
+        <h3>🔷 أعلام النقد الاجتماعي</h3>
+        <ol>
+            <li><strong>بلزاك (1799-1850):</strong> صور المجتمع الفرنسي في "الكوميديا الإنسانية"</li>
+            <li><strong>إميل زولا (1840-1902):</strong> مؤسس الطبيعية، دعا للتجريب العلمي في الأدب</li>            <li><strong>جورج لوكاتش (1885-1971):</strong> طور النظرية الماركسية في الأدب</li>
+            <li><strong>لوسيان جولدمان (1913-1970):</strong> نظرية البنية الدلالية والرؤية العالمية</li>
+        </ol>
+
+        <h3>🔷 النقد الاجتماعي في الأدب العربي</h3>
+        <p>تبنى كثير من النقاد العرب المنهج الاجتماعي في تحليل الأدب:</p>
+        <ul>
+            <li><strong>طه حسين:</strong> في "في الشعر الجاهلي" طبق المنهج التاريخي-الاجتماعي</li>
+            <li><strong>محمد مندور:</strong> في "النقد المنهجي" دعا لربط الأدب بواقعه</li>
+            <li><strong>عبد القادر القط:</strong> طبق المناهج الماركسية على الشعر العربي الحديث</li>
+            <li><strong>غالي شكري:</strong> في "في الميزان الجديد" جدد في النقد الاجتماعي</li>
+        </ul>
+
+        <div class="key-points">
+            <strong>🎯 إيجابيات وسلبيات النقد الاجتماعي:</strong>
+            <ul>
+                <li>✅ <strong>الإيجابيات:</strong> يربط الأدب بالحياة، يكشف الأبعاد الاجتماعية، يخدم قضايا العدالة</li>
+                <li>❌ <strong>السلبيات:</strong> قد يختزل القيمة الفنية في الرسالة الاجتماعية، قد يخضع النقد للأيديولوجيا</li>
+            </ul>
+        </div>
+    </article>
+
+    <!-- الفصل الرابع -->
+    <article class="chapter-card" id="ch4">
+        <h2><span class="chapter-number">4</span> النقد النفسي والتحليلي</h2>
+        
+        <h3>🔷 نشأة النقد النفسي</h3>
+        <p>ظهر النقد النفسي مع تطور علم النفس الحديث، وخاصة مع أعمال سيغموند فرويد وكارل يونغ، حيث بدأ النقاد في تحليل النصوص من زاوية الدوافع اللاشعورية والصراعات النفسية.</p>
+
+        <h3>🔷 أسس التحليل النفسي الفرويدي</h3>
+        <div class="definition-box">
+            <strong>📌 المفاهيم الأساسية:</strong>
+            <ul>
+                <li><strong>اللاوعي:</strong> مخزن الرغبات المكبوتة التي تؤثر في السلوك والإبداع</li>
+                <li><strong>العقدة:</strong> مجموعة مشاعر مكبوتة تدور حول موضوع واحد (عقدة أوديب)</li>
+                <li><strong>الكبت:</strong> عملية دفع الرغبات غير المقبولة إلى اللاوعي</li>
+                <li><strong>التسامي:</strong> تحويل الطاقة الجنسية إلى إبداع فني وأدبي</li>
+                <li><strong>الرمز:</strong> تعبير غير مباشر عن الرغبات المكبوتة</li>
+            </ul>
+        </div>
+
+        <h3>🔷 تطبيقات النقد الفرويدي</h3>
+        <ol>
+            <li><strong>تحليل شخصية المؤلف:</strong> الكشف عن الصراعات النفسية في سيرته وأعماله</li>
+            <li><strong>تحليل الشخصيات:</strong> فهم دوافع الشخصيات الأدبية وعقدها النفسية</li>
+            <li><strong>تحليل الرموز:</strong> تفسير الصور والرموز كتعبير عن اللاوعي</li>
+            <li><strong>تحليل الأحلام:</strong> دراسة المشاهد الحلمية في النصوص</li>
+        </ol>
+
+        <h3>🔷 مدرسة يونغ: اللاوعي الجمعي والأسطورة</h3>        <p>طور كارل يونغ النظرية الفرويدية بإضافة مفهوم اللاوعي الجمعي:</p>
+        <ul>
+            <li><strong>اللاوعي الجمعي:</strong> مخزن التجارب الإنسانية المشتركة عبر الأجيال</li>
+            <li><strong>النماذج الأولية (الأركيتايب):</strong> صور ورموز مشتركة في أساطير الشعوب (الأم، البطل، الظل)</li>
+            <li><strong>تحليل الأسطورة:</strong> دراسة النصوص في ضوء الأنماط الأسطورية العالمية</li>
+        </ul>
+
+        <h3>🔷 النقد النفسي في الأدب العربي</h3>
+        <p>تبنى عدد من النقاد العرب المنهج النفسي:</p>
+        <ul>
+            <li><strong>يوسف حلاق:</strong> في "النقد النفسي" طبق نظريات فرويد على الشعر العربي</li>
+            <li><strong>جابر عصفور:</strong> في "بنية القصيدة" حلل الصور الشعرية نفسياً</li>
+            <li><strong>محمد غنيمي هلال:</strong> في "الأدب المقارن" استخدم التحليل النفسي</li>
+            <li><strong>صلاح فضل:</strong> في "سيكولوجية الإبداع" درس العلاقة بين النفس والإبداع</li>
+        </ul>
+
+        <div class="key-points">
+            <strong>🎯 شروط النقد النفسي السليم:</strong>
+            <ul>
+                <li>✅ عدم اختزال العمل الأدبي في عقدة نفسية واحدة</li>
+                <li>✅ الجمع بين التحليل النفسي والتحليل الفني</li>
+                <li>✅ احترام خصوصية النص وعدم فرض النظريات عليه</li>
+                <li>✅ التوازن بين تفسير المؤلف وتفسير النص</li>
+            </ul>
+        </div>
+    </article>
+
+    <!-- الفصل الخامس -->
+    <article class="chapter-card" id="ch5">
+        <h2><span class="chapter-number">5</span> البنيوية والنقد البنيوي</h2>
+        
+        <h3>🔷 مفهوم البنيوية</h3>
+        <p>البنيوية منهج علمي ظهر في منتصف القرن العشرين، يدعو لدراسة الظواهر (بما فيها النصوص الأدبية) كأنظمة من العلاقات المتبادلة، بغض النظر عن المرجع الخارجي أو النية الذاتية.</p>
+
+        <h3>🔷 الأسس النظرية للبنيوية</h3>
+        <div class="definition-box">
+            <strong>📌 المبادئ الأساسية:</strong>
+            <ol>
+                <li><strong>الكلية:</strong> دراسة النص كنظام كلي تتحدد قيمة أجزائه بعلاقتها بالكل</li>
+                <li><strong>العلائقية:</strong> المعنى ينتج من العلاقات بين العناصر لا من العناصر نفسها</li>
+                <li><strong>اللاشخصية:</strong> إلغاء دور المؤلف والقارئ في إنتاج المعنى</li>
+                <li><strong>اللاتاريخية:</strong> دراسة البنية بمعزل عن السياق التاريخي</li>
+                <li><strong>العلمية:</strong> تطبيق مناهج العلوم الإنسانية على الأدب</li>
+            </ol>
+        </div>
+
+        <h3>🔷 أعلام البنيوية</h3>
+        <ol>
+            <li><strong>فرديناند دي سوسير (1857-1913):</strong> مؤسس اللسانيات الحديثة، ميز بين اللغة والكلام، الدال والمدلول</li>
+            <li><strong>رولان بارت (1915-1980):</strong> في "درجة الصفر في الكتابة" و"موت المؤلف" دعا لفصل النص عن مؤلفه</li>            <li><strong>جيرار جينيت (1930-2018):</strong> في "خطاب الحكاية" طور نظرية السرد البنيوية</li>
+            <li><strong>تزفيتان تودوروف (1939-2017):</strong> درس البنى السردية في الحكاية</li>
+        </ol>
+
+        <h3>🔷 تطبيقات البنيوية على النص الأدبي</h3>
+        <ul>
+            <li><strong>تحليل البنية السردية:</strong> دراسة وظائف الشخصيات، تتابع الأحداث، أنماط السرد</li>
+            <li><strong>تحليل البنية الشعرية:</strong> دراسة الإيقاع، الصور، العلاقات الدلالية</li>
+            <li><strong>تحليل البنية الدرامية:</strong> دراسة الصراع، التطور، الحل في المسرحية</li>
+            <li><strong>تحليل البنية الدلالية:</strong> دراسة شبكات المعنى والعلاقات بين الدوال</li>
+        </ul>
+
+        <h3>🔷 البنيوية في النقد العربي</h3>
+        <p>دخلت البنيوية النقد العربي في السبعينيات وأثرت في جيل من النقاد:</p>
+        <ul>
+            <li><strong>عبد الله الغذامي:</strong> في "النقد الثقافي" طور منهجاً بنيوياً-ثقافياً</li>
+            <li><strong>محمد مفتاح:</strong> في "تحليل الخطاب الشعري" طبق البنيوية على الشعر العربي</li>
+            <li><strong>كمال أبو ديب:</strong> في "البنية الإيقاعية" درس الإيقاع في الشعر الجاهلي</li>
+            <li><strong>حميد لحمداني:</strong> في "بنيات النص السردي" حلل الرواية العربية بنيوياً</li>
+        </ul>
+
+        <div class="key-points">
+            <strong>🎯 إيجابيات وسلبيات البنيوية:</strong>
+            <ul>
+                <li>✅ <strong>الإيجابيات:</strong> دقة التحليل، موضوعية المنهج، كشف البنى الخفية</li>
+                <li>❌ <strong>السلبيات:</strong> إهمال السياق التاريخي، تجريد النص من إنسانيته، صعوبة التطبيق على بعض النصوص</li>
+            </ul>
+        </div>
+    </article>
+
+    <!-- الفصل السادس -->
+    <article class="chapter-card" id="ch6">
+        <h2><span class="chapter-number">6</span> التفكيكية وما بعد البنيوية</h2>
+        
+        <h3>🔷 نشأة التفكيكية</h3>
+        <p>ظهرت التفكيكية في ستينيات القرن العشرين كرد فعل على البنيوية، على يد الفيلسوف الفرنسي جاك دريدا، وتدعو لكشف التناقضات الداخلية في النصوص وتفكيك الثنائيات التقليدية.</p>
+
+        <h3>🔷 أسس التفكيكية</h3>
+        <div class="definition-box">
+            <strong>📌 المفاهيم الأساسية:</strong>
+            <ul>
+                <li><strong>تفكيك الثنائيات:</strong> قلب الثنائيات التقليدية (خير/شر، عقل/عاطفة، ذكر/أنثى)</li>
+                <li><strong>اللعب الدلالي:</strong> المعنى غير ثابت بل متحرك ومتعدد</li>
+                <li><strong>الاختلاف والتأجيل:</strong> المعنى يؤجل دائماً ولا يستقر نهائياً</li>
+                <li><strong>كتابة ما وراء الكتابة:</strong> كل نص يحيل إلى نصوص أخرى (التناص)</li>
+                <li><strong>موت المؤلف:</strong> النص مستقل عن نية مؤلفه، والقارئ شريك في إنتاج المعنى</li>
+            </ul>
+        </div>
+
+        <h3>🔷 منهج القراءة التفكيكية</h3>        <ol>
+            <li><strong>تحديد الثنائيات:</strong> اكتشاف الأزواج المفهومية التي ينطلق منها النص</li>
+            <li><strong>قلب الهرمية:</strong> إظهار كيف يعتمد الطرف المفضل على الطرف المهمش</li>
+            <li><strong>كشف التناقضات:</strong> إظهار كيف ينقض النص نفسه داخلياً</li>
+            <li><strong>تتبع الانزياحات:</strong> دراسة اللحظات التي ينفلت فيها المعنى عن السيطرة</li>
+            <li><strong>فتح النص:</strong> إظهار تعدد القراءات الممكنة</li>
+        </ol>
+
+        <h3>🔷 أعلام ما بعد البنيوية</h3>
+        <ul>
+            <li><strong>جاك دريدا (1930-2004):</strong> مؤسس التفكيكية، في "في علم الكتابة"</li>
+            <li><strong>ميشيل فوكو (1926-1984):</strong> درس علاقة المعرفة بالسلطة، وتحليل الخطاب</li>
+            <li><strong>جوليا كريستيفا (1941-):</strong> طورت مفهوم التناص والسيمنائية</li>
+            <li><strong>إدوارد سعيد (1935-2003):</strong> في "الاستشراق" طبق ما بعد البنيوية على النقد الثقافي</li>
+        </ul>
+
+        <h3>🔷 التفكيكية في النقد العربي</h3>
+        <p>دخلت التفكيكية النقد العربي في الثمانينيات وأثارت جدلاً واسعاً:</p>
+        <ul>
+            <li><strong>محمد عابد الجابري:</strong> في "نقد العقل العربي" حلل البنى المعرفية</li>
+            <li><strong>نصر حامد أبو زيد:</strong> طبق المناهج الحديثة على النص الديني</li>
+            <li><strong>عبد الله الغذامي:</strong> في "الخطيئة والتكفير" جمع بين البنيوية والتفكيكية</li>
+            <li><strong>حسن بحراوي:</strong> في "تكوين الرواية العربية" طبق مناهج ما بعد البنيوية</li>
+        </ul>
+
+        <div class="key-points">
+            <strong>🎯 إيجابيات وسلبيات التفكيكية:</strong>
+            <ul>
+                <li>✅ <strong>الإيجابيات:</strong> تحرير النص من التفسير الواحد، كشف الأيديولوجيات المخفية، فتح آفاق جديدة للقراءة</li>
+                <li>❌ <strong>السلبيات:</strong> النسبية المفرطة، صعوبة التطبيق العملي، خطر تفكيك القيم الثابتة</li>
+            </ul>
+        </div>
+    </article>
+
+    <!-- الفصل السابع -->
+    <article class="chapter-card" id="ch7">
+        <h2><span class="chapter-number">7</span> النقد الأسلوبي والبلاغي</h2>
+        
+        <h3>🔷 مفهوم الأسلوبية</h3>
+        <p>الأسلوبية منهج نقدي يدرس الخصائص اللغوية والفنية التي تميز نصاً عن غيره، أو كاتباً عن غيره، أو مرحلة أدبية عن غيرها.</p>
+
+        <h3>🔷 مستويات التحليل الأسلوبي</h3>
+        <div class="definition-box">
+            <strong>📌 المستويات الأساسية:</strong>
+            <ol>
+                <li><strong>المستوى الصوتي:</strong> دراسة الإيقاع، الجناس، السجع، التكرار</li>
+                <li><strong>المستوى المعجمي:</strong> دراسة اختيار الألفاظ، دلالاتها، حقولها الدلالية</li>
+                <li><strong>المستوى التركيبي:</strong> دراسة تراكيب الجمل، التقديم والتأخير، الحذف والذكر</li>
+                <li><strong>المستوى البلاغي:</strong> دراسة الصور البيانية، المحسنات البديعية</li>
+                <li><strong>المستوى الدلالي:</strong> دراسة المعاني، الرموز، الإيحاءات</li>            </ol>
+        </div>
+
+        <h3>🔷 أنواع الأسلوبية</h3>
+        <ul>
+            <li><strong>أسلوبية النص:</strong> دراسة الخصائص الأسلوبية لنص معين</li>
+            <li><strong>أسلوبية الكاتب:</strong> دراسة السمات الأسلوبية المميزة لأديب ما</li>
+            <li><strong>أسلوبية الجنس الأدبي:</strong> دراسة الخصائص الأسلوبية لنوع أدبي (شعر، قصة، مسرح)</li>
+            <li><strong>أسلوبية العصر:</strong> دراسة السمات الأسلوبية المشتركة في مرحلة زمنية</li>
+        </ul>
+
+        <h3>🔷 أعلام الأسلوبية</h3>
+        <ol>
+            <li><strong>شارل بالي (1865-1947):</strong> رائد الأسلوبية الحديثة، ميز بين اللغة والأسلوب</li>
+            <li><strong>ليو سبيتزر (1887-1960):</strong> طور "الحلقة الأسلوبية" للربط بين اللغة والنفس</li>
+            <li><strong>جان بيار ريشارد (1922-2019):</strong> درس العلاقة بين الأسلوب والموضوع</li>
+            <li><strong>جان كوهين (1930-):</strong> في "بنية اللغة الشعرية" درس الانزياح الأسلوبي</li>
+        </ol>
+
+        <h3>🔷 الأسلوبية في التراث العربي</h3>
+        <p>للنقد العربي تراث غني في دراسة الأسلوب:</p>
+        <ul>
+            <li><strong>عبد القاهر الجرجاني:</strong> في "دلائل الإعجاز" أسس لنظرية النظم</li>
+            <li><strong>حازم القرطاجني:</strong> في "منهاج البلغاء" درس خصائص الأسلوب الشعري</li>
+            <li><strong>ابن الأثير:</strong> في "المثل السائر" حلل الأساليب البلاغية</li>
+        </ul>
+
+        <h3>🔷 الأسلوبية في النقد العربي الحديث</h3>
+        <ul>
+            <li><strong>أمين الخولي:</strong> في "فن القول" دعا لأسلوبية تربط بين اللغة والنفس</li>
+            <li><strong>شوقي ضيف:</strong> في "البلاغة تطور وتاريخ" درس تطور الأسلوب العربي</li>
+            <li><strong>تمام حسان:</strong> في "اللغة معناها ومبناها" طبق اللسانيات على النقد</li>
+            <li><strong>عبد السلام المسدي:</strong> في "معجم البلاغة" جمع بين التراث والحداثة</li>
+        </ul>
+
+        <div class="key-points">
+            <strong>🎯 شروط التحليل الأسلوبي السليم:</strong>
+            <ul>
+                <li>✅ الجمع بين الوصف والتفسير</li>
+                <li>✅ ربط المستوى الشكلي بالمستوى الدلالي</li>
+                <li>✅ عدم الاكتفاء بالحصر بل التحليل والتأويل</li>
+                <li>✅ احترام خصوصية النص وعدم فرض قوالب جاهزة</li>
+            </ul>
+        </div>
+    </article>
+
+    <!-- الفصل الثامن -->
+    <article class="chapter-card" id="ch8">
+        <h2><span class="chapter-number">8</span> تطبيقات النقد على الأدب العربي</h2>
+                <h3>🔷 خصوصية التطبيق النقدي على الأدب العربي</h3>
+        <p>عند تطبيق المناهج النقدية الحديثة على الأدب العربي، يجب مراعاة الخصوصيات التالية:</p>
+        <ul>
+            <li><strong>الخصوصية اللغوية:</strong> طبيعة اللغة العربية وخصائصها البلاغية</li>
+            <li><strong>الخصوصية الثقافية:</strong> المرجعية الإسلامية والعربية للنصوص</li>
+            <li><strong>الخصوصية التاريخية:</strong> تطور الأدب العربي في سياقه الحضاري</li>
+            <li><strong>الخصوصية الجمالية:</strong> معايير الجمال في التراث النقدي العربي</li>
+        </ul>
+
+        <h3>🔷 نماذج تطبيقية</h3>
+        
+        <h4>تطبيق المنهج النفسي على شعر المتنبي</h4>
+        <p>يمكن تحليل شعر المتنبي نفسياً من خلال:</p>
+        <ul>
+            <li>دراسة عقدة العظمة والكبرياء في شخصيته</li>
+            <li>تحليل صور الصراع بين الأنا والآخر في شعره</li>
+            <li>تفسير رموز القوة والضعف في قصائده</li>
+            <li>ربط تجربته الحياتية الصعبة بإبداعه الشعري</li>
+        </ul>
+
+        <h4>تطبيق المنهج البنيوي على الرواية العربية</h4>
+        <p>تحليل رواية "موسم الهجرة إلى الشمال" للطيب صالح بنيوياً:</p>
+        <ul>
+            <li>دراسة بنية السرد: الراوي، الزمن، المكان</li>
+            <li>تحليل وظائف الشخصيات: البطل، الضد، المساعد</li>
+            <li>كشف البنى الثنائية: شرق/غرب، تقليد/حداثة، هوية/اغتراب</li>
+            <li>دراسة شبكات المعنى والعلاقات الدلالية</li>
+        </ul>
+
+        <h4>تطبيق المنهج الاجتماعي على الشعر الحر</h4>
+        <p>تحليل شعر نازك الملائكة وبدر شاكر السياب اجتماعياً:</p>
+        <ul>
+            <li>ربط ظهور الشعر الحر بالتحولات الاجتماعية في الأربعينيات</li>
+            <li>دراسة تعبير الشعر عن قضايا المرأة والحرية</li>
+            <li>تحليل انعكاس الصراع الطبقي في الصور الشعرية</li>
+            <li>تقييم دور الشعر في التغيير الاجتماعي</li>
+        </ul>
+
+        <h3>🔷 تحديات التطبيق النقدي</h3>
+        <div class="key-points">
+            <strong>⚠️ التحديات الرئيسية:</strong>
+            <ul>
+                <li>خطر استيراد المناهج دون تكييفها مع الخصوصية العربية</li>
+                <li>صعوبة تطبيق بعض المناهج على النصوص التراثية</li>
+                <li>الحاجة لتطوير مناهج نقدية عربية أصيلة</li>
+                <li>التوازن بين الأصالة والمعاصرة في النقد</li>
+            </ul>
+        </div>
+
+        <h3>🔷 مستقبل النقد الأدبي العربي</h3>        <p>يتجه النقد العربي نحو:</p>
+        <ol>
+            <li>التكامل بين المناهج بدلاً من التعصب لمنهج واحد</li>
+            <li>تطوير مناهج نقدية تجمع بين التراث والحداثة</li>
+            <li>الاهتمام بالنقد التطبيقي على النصوص المعاصرة</li>
+            <li>تعزيز الحوار النقدي بين الثقافات</li>
+            <li>استخدام التقنيات الحديثة في التحليل النقدي</li>
+        </ol>
+
+        <div class="quote-box">
+            <strong>💬 خاتمة:</strong><br>
+            "النقد ليس غاية في ذاته، بل وسيلة لفهم الأدب وتطويره... والنقد الجيد هو الذي يفتح آفاقاً جديدة للقراءة، لا الذي يغلقها بقوالب جامدة"
+        </div>
+    </article>
+
+    <!-- بنك الأسئلة -->
+    <section class="quiz-section" id="quiz">
+        <h2>📝 بنك الأسئلة التفاعلي</h2>
+        <p style="text-align: center; margin-bottom: 25px; font-size: 20px;">اختبر فهمك لمحتوى الكتاب من خلال الأسئلة التالية:</p>
+
+        <!-- أسئلة صح وخطأ -->
+        <h3 style="color: #ffd54f; margin: 25px 0 15px;">✅ قسم صح وخطأ (10 أسئلة)</h3>
+        
+        <div class="question-block">
+            <p><strong>1. (صح/خطأ): النقد الانطباعي يعتمد على معايير موضوعية ثابتة.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans1')">🔍 إظهار الإجابة</button>
+            <div id="ans1" class="answer-key">
+                ❌ <strong>خطأ.</strong> النقد الانطباعي يعتمد على استجابة الناقد الشخصية ومشاعره الذاتية، وليس على معايير خارجية ثابتة.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>2. (صح/خطأ): أفلاطون كان يرفض الشعر العاطفي لأنه يثير المشاعر السلبية.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans2')">🔍 إظهار الإجابة</button>
+            <div id="ans2" class="answer-key">
+                ✅ <strong>صح.</strong> رفض أفلاطون الشعر الذي يثير العواطف غير العقلانية لأنه يؤثر سلباً على تربية النشء واستقرار الدولة.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>3. (صح/خطأ): أرسطو اعتبر أن هدف التراجيديا هو التطهير (الكاثارسيس).</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans3')">🔍 إظهار الإجابة</button>
+            <div id="ans3" class="answer-key">
+                ✅ <strong>صح.</strong> يرى أرسطو أن التراجيديا تطهر النفس من مشاعر الشفقة والخوف عبر مشاهدتها.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>4. (صح/خطأ): الرومانسية النقدية تقدم العقل على العاطفة والخيال.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans4')">🔍 إظهار الإجابة</button>            <div id="ans4" class="answer-key">
+                ❌ <strong>خطأ.</strong> الرومانسية تقدم العاطفة والخيال على العقل والمنطق، وتتمرد على القيود الكلاسيكية.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>5. (صح/خطأ): النقد الماركسي يحلل النصوص في ضوء الصراع الطبقي.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans5')">🔍 إظهار الإجابة</button>
+            <div id="ans5" class="answer-key">
+                ✅ <strong>صح.</strong> ينطلق النقد الماركسي من فكرة أن الأدب يعكس الصراع بين الطبقات الاجتماعية.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>6. (صح/خطأ): فرويد اعتبر أن الإبداع الأدبي هو شكل من أشكال التسامي للطاقة الجنسية.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans6')">🔍 إظهار الإجابة</button>
+            <div id="ans6" class="answer-key">
+                ✅ <strong>صح.</strong> يرى فرويد أن الفنان يحول طاقته المكبوتة إلى إبداع فني عبر عملية التسامي.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>7. (صح/خطأ): البنيوية تهتم بدراسة النص في سياقه التاريخي والاجتماعي.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans7')">🔍 إظهار الإجابة</button>
+            <div id="ans7" class="answer-key">
+                ❌ <strong>خطأ.</strong> البنيوية تدرس النص كنظام مغلق بمعزل عن السياق التاريخي والاجتماعي.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>8. (صح/خطأ): التفكيكية تؤمن بثبات المعنى ووضوحه في النص.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans8')">🔍 إظهار الإجابة</button>
+            <div id="ans8" class="answer-key">
+                ❌ <strong>خطأ.</strong> التفكيكية ترى أن المعنى متحرك ومتعدد ولا يستقر نهائياً.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>9. (صح/خطأ): الأسلوبية تدرس الخصائص اللغوية التي تميز نصاً عن غيره.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans9')">🔍 إظهار الإجابة</button>
+            <div id="ans9" class="answer-key">
+                ✅ <strong>صح.</strong> هذا هو الهدف الأساسي للأسلوبية: كشف السمات المميزة للنص أو الكاتب أو العصر.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>10. (صح/خطأ): عبد القاهر الجرجاني أسس لنظرية النظم في البلاغة العربية.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans10')">🔍 إظهار الإجابة</button>
+            <div id="ans10" class="answer-key">
+                ✅ <strong>صح.</strong> يعتبر الجرجاني في "دلائل الإعجاز" مؤسس نظرية النظم التي تربط بين المعنى واللفظ.            </div>
+        </div>
+
+        <!-- أسئلة اختيار من متعدد -->
+        <h3 style="color: #ffd54f; margin: 25px 0 15px;">🔘 قسم اختيار من متعدد (15 سؤالاً)</h3>
+        
+        <div class="question-block">
+            <p><strong>11. من هو مؤسس النقد الأدبي العلمي في كتاب "فن الشعر"؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q11"> أ) أفلاطون</label>
+                <label><input type="radio" name="q11"> ب) أرسطو</label>
+                <label><input type="radio" name="q11"> ج) هوراس</label>
+                <label><input type="radio" name="q11"> د) لونجينوس</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans11')">🔍 إظهار الإجابة</button>
+            <div id="ans11" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) أرسطو</strong><br>
+                كتاب "فن الشعر" (البوطيقا) لأرسطو يُعد أول دراسة علمية منهجية للنقد الأدبي.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>12. ما هو مفهوم "الكاثارسيس" عند أرسطو؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q12"> أ) المحاكاة الفنية للطبيعة</label>
+                <label><input type="radio" name="q12"> ب) التطهير النفسي عبر الشفقة والخوف</label>
+                <label><input type="radio" name="q12"> ج) وحدة الزمان والمكان والفعل</label>
+                <label><input type="radio" name="q12"> د) الجمع بين المتعة والفائدة</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans12')">🔍 إظهار الإجابة</button>
+            <div id="ans12" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) التطهير النفسي عبر الشفقة والخوف</strong><br>
+                الكاثارسيس هو الهدف النفسي للتراجيديا حسب أرسطو.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>13. أي من التالي ليس من مبادئ النقد الرومانسي؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q13"> أ) تقديم العاطفة على العقل</label>
+                <label><input type="radio" name="q13"> ب) الالتزام بالقواعد الكلاسيكية</label>
+                <label><input type="radio" name="q13"> ج) تمجيد الفردية والذات</label>
+                <label><input type="radio" name="q13"> د) العودة إلى الطبيعة</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans13')">🔍 إظهار الإجابة</button>
+            <div id="ans13" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) الالتزام بالقواعد الكلاسيكية</strong><br>
+                الرومانسية تتمرّد على القواعد الكلاسيكية الجامدة وتدعو للحرية الإبداعية.
+            </div>
+        </div>
+        <div class="question-block">
+            <p><strong>14. من قال: "المنفعة مع اللذة" في نقده للأدب؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q14"> أ) أفلاطون</label>
+                <label><input type="radio" name="q14"> ب) أرسطو</label>
+                <label><input type="radio" name="q14"> ج) هوراس</label>
+                <label><input type="radio" name="q14"> د) لونجينوس</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans14')">🔍 إظهار الإجابة</button>
+            <div id="ans14" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ج) هوراس</strong><br>
+                هوراس في "فن الشعر" دعا للجمع بين المتعة الجمالية والفائدة الأخلاقية.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>15. أي من التالي يمثل مفهوم "اللاوعي الجمعي"؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q15"> أ) فرويد</label>
+                <label><input type="radio" name="q15"> ب) يونغ</label>
+                <label><input type="radio" name="q15"> ج) أرسطو</label>
+                <label><input type="radio" name="q15"> د) بارت</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans15')">🔍 إظهار الإجابة</button>
+            <div id="ans15" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) يونغ</strong><br>
+                كارل يونغ طور مفهوم اللاوعي الجمعي والأنماط الأولية (الأركيتايب).
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>16. ما هو الهدف الأساسي للبنيوية في دراسة النص؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q16"> أ) فهم نية المؤلف</label>
+                <label><input type="radio" name="q16"> ب) دراسة العلاقات بين عناصر النص</label>
+                <label><input type="radio" name="q16"> ج) تقييم القيمة الأخلاقية</label>
+                <label><input type="radio" name="q16"> د) ربط النص بواقعه التاريخي</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans16')">🔍 إظهار الإجابة</button>
+            <div id="ans16" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) دراسة العلاقات بين عناصر النص</strong><br>
+                البنيوية تدرس النص كنظام من العلاقات المتبادلة بغض النظر عن المرجع الخارجي.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>17. من هو رائد التفكيكية؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q17"> أ) ميشيل فوكو</label>                <label><input type="radio" name="q17"> ب) رولان بارت</label>
+                <label><input type="radio" name="q17"> ج) جاك دريدا</label>
+                <label><input type="radio" name="q17"> د) جوليا كريستيفا</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans17')">🔍 إظهار الإجابة</button>
+            <div id="ans17" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ج) جاك دريدا</strong><br>
+                جاك دريدا هو مؤسس منهج التفكيكية في كتابه "في علم الكتابة".
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>18. أي من التالي ليس من مستويات التحليل الأسلوبي؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q18"> أ) المستوى الصوتي</label>
+                <label><input type="radio" name="q18"> ب) المستوى المعجمي</label>
+                <label><input type="radio" name="q18"> ج) المستوى الأيديولوجي</label>
+                <label><input type="radio" name="q18"> د) المستوى التركيبي</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans18')">🔍 إظهار الإجابة</button>
+            <div id="ans18" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ج) المستوى الأيديولوجي</strong><br>
+                المستويات الأسلوبية هي: الصوتي، المعجمي، التركيبي، البلاغي، الدلالي.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>19. من قال: "موت المؤلف"؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q19"> أ) جاك دريدا</label>
+                <label><input type="radio" name="q19"> ب) رولان بارت</label>
+                <label><input type="radio" name="q19"> ج) ميشيل فوكو</label>
+                <label><input type="radio" name="q19"> د) جيرار جينيت</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans19')">🔍 إظهار الإجابة</button>
+            <div id="ans19" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) رولان بارت</strong><br>
+                بارت في مقالته "موت المؤلف" دعا لفصل النص عن نية مؤلفه.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>20. أي من النقاد العرب طبق المنهج النفسي على الشعر العربي؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q20"> أ) طه حسين</label>
+                <label><input type="radio" name="q20"> ب) يوسف حلاق</label>
+                <label><input type="radio" name="q20"> ج) شوقي ضيف</label>
+                <label><input type="radio" name="q20"> د) عبد الله الغذامي</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans20')">🔍 إظهار الإجابة</button>            <div id="ans20" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) يوسف حلاق</strong><br>
+                يوسف حلاق في "النقد النفسي" طبق نظريات فرويد على الشعر العربي.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>21. ما هو مفهوم "التناص"؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q21"> أ) تكرار الكلمات في النص</label>
+                <label><input type="radio" name="q21"> ب) إحالة النص إلى نصوص أخرى</label>
+                <label><input type="radio" name="q21"> ج) وحدة الموضوع في العمل</label>
+                <label><input type="radio" name="q21"> د) التزام الشاعر بالوزن</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans21')">🔍 إظهار الإجابة</button>
+            <div id="ans21" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) إحالة النص إلى نصوص أخرى</strong><br>
+                التناص مفهوم طوره كريستيفا يعني أن كل نص يحيل إلى نصوص سابقة.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>22. أي من التالي يمثل خاصية من خصائص النقد الكلاسيكي؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q22"> أ) تمجيد الفردية</label>
+                <label><input type="radio" name="q22"> ب) الالتزام بالقواعد والضوابط</label>
+                <label><input type="radio" name="q22"> ج) تقديم العاطفة على العقل</label>
+                <label><input type="radio" name="q22"> د) الاهتمام باللاوعي</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans22')">🔍 إظهار الإجابة</button>
+            <div id="ans22" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) الالتزام بالقواعد والضوابط</strong><br>
+                الكلاسيكية تتميز بالالتزام بالقواعد الثابتة وتقليد النماذج القديمة.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>23. من هو صاحب نظرية "الحلقة الأسلوبية"؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q23"> أ) شارل بالي</label>
+                <label><input type="radio" name="q23"> ب) ليو سبيتزر</label>
+                <label><input type="radio" name="q23"> ج) جان بيار ريشارد</label>
+                <label><input type="radio" name="q23"> د) جان كوهين</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans23')">🔍 إظهار الإجابة</button>
+            <div id="ans23" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) ليو سبيتزر</strong><br>
+                سبيتزر طور "الحلقة الأسلوبية" للربط بين الخصائص اللغوية والنفسية.
+            </div>
+        </div>
+        <div class="question-block">
+            <p><strong>24. أي من التالي يمثل تحدياً لتطبيق المناهج النقدية على الأدب العربي؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q24"> أ) ثراء التراث النقدي العربي</label>
+                <label><input type="radio" name="q24"> ب) خطر استيراد المناهج دون تكييف</label>
+                <label><input type="radio" name="q24"> ج) تنوع الأجناس الأدبية</label>
+                <label><input type="radio" name="q24"> د) تطور اللغة العربية</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans24')">🔍 إظهار الإجابة</button>
+            <div id="ans24" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) خطر استيراد المناهج دون تكييف</strong><br>
+                من أهم التحديات تطبيق المناهج الغربية على الأدب العربي دون مراعاة الخصوصية.
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>25. ما هو اتجاه النقد العربي المعاصر؟</strong></p>
+            <div class="options">
+                <label><input type="radio" name="q25"> أ) التعصب لمنهج واحد</label>
+                <label><input type="radio" name="q25"> ب) التكامل بين المناهج</label>
+                <label><input type="radio" name="q25"> ج) رفض كل المناهج الحديثة</label>
+                <label><input type="radio" name="q25"> د) العودة للكلاسيكية فقط</label>
+            </div>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans25')">🔍 إظهار الإجابة</button>
+            <div id="ans25" class="answer-key">
+                ✅ <strong>الإجابة الصحيحة: ب) التكامل بين المناهج</strong><br>
+                يتجه النقد العربي المعاصر للتكامل بين المناهج بدلاً من التعصب لأحدها.
+            </div>
+        </div>
+
+        <!-- أسئلة مقالية -->
+        <h3 style="color: #ffd54f; margin: 25px 0 15px;">✍️ قسم الأسئلة المقالية (10 أسئلة)</h3>
+        
+        <div class="question-block">
+            <p><strong>26. قارن بين منهج أفلاطون وأرسطو في النقد الأدبي من حيث: الهدف، المعايير، الموقف من الشعر.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans26')">🔍 إظهار الإجابة النموذجية</button>
+            <div id="ans26" class="answer-key">
+                ✅ <strong>الإجابة:</strong><br>
+                <strong>الهدف:</strong><br>
+                • أفلاطون: تربية النشء وتقوية الدولة (هدف أخلاقي-سياسي)<br>
+                • أرسطو: فهم الفن وتقويمه فنياً (هدف جمالي-تحليلي)<br><br>
+                <strong>المعايير:</strong><br>
+                • أفلاطون: أخلاقية خارجية (خدمة الفضيلة)<br>
+                • أرسطو: فنية داخلية (البنية، المحاكاة، التطهير)<br><br>
+                <strong>الموقف من الشعر:</strong><br>
+                • أفلاطون: رفض الشعر العاطفي، طرد الشعراء إلا لخدمة الفضيلة<br>
+                • أرسطو: إقرار الشعر كوسيلة للتطهير النفسي والمتعة الجمالية
+            </div>
+        </div>
+        <div class="question-block">
+            <p><strong>27. اشرح مفهوم "التطهير" (الكاثارسيس) عند أرسطو، وبيّن أهميته في فهم التراجيديا.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans27')">🔍 إظهار الإجابة النموذجية</button>
+            <div id="ans27" class="answer-key">
+                ✅ <strong>الإجابة:</strong><br>
+                <strong>تعريف الكاثارسيس:</strong> عملية تطهير النفس من مشاعر الشفقة والخوف عبر مشاهدتها في التراجيديا.<br><br>
+                <strong>آلية العمل:</strong><br>
+                • المشاهد يتعاطف مع البطل التراجيدي (شفقة)<br>
+                • يخاف من مصيره المشابه (خوف)<br>
+                • يخرج من المسرح وقد تطهرت نفسه من هذه المشاعر المكبوتة<br><br>
+                <strong>الأهمية:</strong><br>
+                • يفسر القيمة النفسية والاجتماعية للتراجيديا<br>
+                • يبرر وجود الفن رغم تصويره للألم والمأساة<br>
+                • يربط بين الجمالي والنفسي في تجربة المتلقي
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>28. ما هي الخصائص الأساسية للمنهج الرومانسي في النقد؟ وكيف يختلف عن المنهج الكلاسيكي؟</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans28')">🔍 إظهار الإجابة النموذجية</button>
+            <div id="ans28" class="answer-key">
+                ✅ <strong>الإجابة:</strong><br>
+                <strong>خصائص المنهج الرومانسي:</strong><br>
+                1️⃣ تقديم العاطفة والخيال على العقل<br>
+                2️⃣ تمجيد الفردية والتجربة الذاتية<br>
+                3️⃣ العودة للطبيعة كمصدر للإلهام<br>
+                4️⃣ رفض القيود والقواعد الجامدة<br>
+                5️⃣ الاهتمام باللاوعي والأحلام والحدس<br><br>
+                <strong>الاختلاف عن الكلاسيكية:</strong><br>
+                • الكلاسيكية: عقلانية، قواعد ثابتة، تقليد القديم، موضوعية خارجية<br>
+                • الرومانسية: عاطفية، حرية إبداعية، ابتكار الجديد، ذاتية داخلية
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>29. وضح كيف يطبق النقد الماركسي مفهوم "الصراع الطبقي" على تحليل النص الأدبي.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans29')">🔍 إظهار الإجابة النموذجية</button>
+            <div id="ans29" class="answer-key">
+                ✅ <strong>الإجابة:</strong><br>
+                <strong>خطوات التطبيق:</strong><br>
+                1️⃣ تحديد البنية الاقتصادية للمجتمع الذي ينتج فيه النص<br>
+                2️⃣ كشف الطبقات الاجتماعية الممثلة في الشخصيات والأحداث<br>
+                3️⃣ تحليل علاقات القوة والصراع بين هذه الطبقات<br>
+                4️⃣ تحديد الموقف الأيديولوجي للنص (مع من يقف؟)<br>
+                5️⃣ تقييم دور النص في خدمة التغيير الاجتماعي أو الحفاظ على الوضع القائم<br><br>
+                <strong>مثال:</strong> تحليل رواية تعالج الفقر قد يكشف:<br>
+                • تصوير معاناة الطبقة العاملة (كشف الظلم)<br>
+                • نقد استغلال الرأسماليين (موقف أيديولوجي)<br>
+                • الدعوة للتغيير (دور اجتماعي)            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>30. اشرح مفهوم "اللاوعي" عند فرويد، وبيّن كيف يمكن استخدامه في تحليل شخصية أدبية.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans30')">🔍 إظهار الإجابة النموذجية</button>
+            <div id="ans30" class="answer-key">
+                ✅ <strong>الإجابة:</strong><br>
+                <strong>مفهوم اللاوعي:</strong><br>
+                • مخزن الرغبات والذكريات المكبوتة التي لا يدركها الشخص واعياً<br>
+                • تؤثر هذه المكبوتات في السلوك والأحلام والإبداع دون شعور الشخص<br><br>
+                <strong>تطبيقه على الشخصية الأدبية:</strong><br>
+                1️⃣ تحليل أفعال الشخصية التي تبدو غير مبررة واعياً (قد تعبر عن دافع لاواعي)<br>
+                2️⃣ دراسة الأحلام والرموز في النص كتعبير عن المكبوتات<br>
+                3️⃣ ربط سلوك الشخصية بعقد نفسية محتملة (كعقدة أوديب)<br>
+                4️⃣ تفسير التناقضات في الشخصية كصراع بين الوعي واللاوعي
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>31. ما هي المبادئ الأساسية للبنيوية؟ وكيف تطبق على تحليل بنية القصيدة؟</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans31')">🔍 إظهار الإجابة النموذجية</button>
+            <div id="ans31" class="answer-key">
+                ✅ <strong>الإجابة:</strong><br>
+                <strong>مبادئ البنيوية:</strong><br>
+                1️⃣ الكلية: دراسة النص كنظام متكامل<br>
+                2️⃣ العلائقية: المعنى من العلاقات بين العناصر<br>
+                3️⃣ اللاشخصية: إلغاء دور المؤلف والقارئ<br>
+                4️⃣ اللاتاريخية: دراسة البنية بمعزل عن السياق<br><br>
+                <strong>تطبيق على القصيدة:</strong><br>
+                • تحليل العلاقات بين الصور الشعرية (كيف تكوّن شبكة دلالية؟)<br>
+                • دراسة الإيقاع كبنية صوتية منظمة (لا كمجرد زينة)<br>
+                • كشف الثنائيات الضمنية (حياة/موت، حب/كره) وعلاقاتها<br>
+                • تحليل الانزياحات اللغوية كعناصر بنيوية منتجة للمعنى
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>32. وضح مفهوم "تفكيك الثنائيات" عند دريدا، مع ذكر مثال تطبيقي.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans32')">🔍 إظهار الإجابة النموذجية</button>
+            <div id="ans32" class="answer-key">
+                ✅ <strong>الإجابة:</strong><br>
+                <strong>مفهوم تفكيك الثنائيات:</strong><br>
+                • النصوص تقوم على ثنائيات هرمية (خير/شر، عقل/عاطفة، ذكر/أنثى)<br>
+                • الطرف الأول مفضل والثاني مهمش في الثقافة السائدة<br>
+                • التفكيكية تكشف كيف يعتمد الطرف المفضل على المهمش، وتقلب الهرمية<br><br>
+                <strong>مثال: ثنائية عقل/عاطفة</strong><br>
+                • الثقافة التقليدية: العقل مفضل، العاطفة مهمشة كضعف أنثوي<br>
+                • التفكيك: يظهر أن "العقل" نفسه يعتمد على استعارات عاطفية، وأن "العاطفة" ضرورية للإبداع المعرفي، فينهار التمييز الصارم
+            </div>        </div>
+
+        <div class="question-block">
+            <p><strong>33. ما هي مستويات التحليل الأسلوبي؟ وكيف تربط بين المستوى الشكلي والدلالي؟</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans33')">🔍 إظهار الإجابة النموذجية</button>
+            <div id="ans33" class="answer-key">
+                ✅ <strong>الإجابة:</strong><br>
+                <strong>المستويات الخمسة:</strong><br>
+                1️⃣ الصوتي: إيقاع، جناس، تكرار...<br>
+                2️⃣ المعجمي: اختيار الألفاظ، دلالاتها، حقولها...<br>
+                3️⃣ التركيبي: تراكيب الجمل، التقديم والتأخير...<br>
+                4️⃣ البلاغي: صور بيانية، محسنات...<br>
+                5️⃣ الدلالي: معاني، رموز، إيحاءات...<br><br>
+                <strong>الربط بين الشكلي والدلالي:</strong><br>
+                • لا نكتفي بحصر الظواهر الشكلية، بل نفسر وظيفتها الدلالية:<br>
+                - لماذا كرر الشاعر كلمة معينة؟ (لتأكيد فكرة، أو خلق إيقاع نفسي)<br>
+                - لماذا قدّم المفعول على الفعل؟ (للتوكيد، أو خلق تشويق)<br>
+                - ما دلالة الصورة البيانية المختارة؟ (كيف تعبر عن المعنى بشكل مجازي؟)
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>34. ناقش التحديات التي تواجه تطبيق المناهج النقدية الغربية على الأدب العربي، واقترح حلولاً.</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans34')">🔍 إظهار الإجابة النموذجية</button>
+            <div id="ans34" class="answer-key">
+                ✅ <strong>الإجابة:</strong><br>
+                <strong>التحديات:</strong><br>
+                1️⃣ خصوصية اللغة العربية (البلاغة، الإيقاع، الاشتقاق)<br>
+                2️⃣ المرجعية الثقافية الإسلامية والعربية للنصوص<br>
+                3️⃣ تطور الأدب العربي في سياق حضاري مختلف<br>
+                4️⃣ معايير الجمال في التراث النقدي العربي المختلفة عن الغربية<br><br>
+                <strong>الحلول المقترحة:</strong><br>
+                1️⃣ تكييف المناهج الغربية مع الخصوصية العربية لا استيرادها حرفياً<br>
+                2️⃣ الاستفادة من التراث النقدي العربي (الجرجاني، حازم...) في صياغة مناهج أصيلة<br>
+                3️⃣ تطوير مناهج تكاملية تجمع بين الأصالة والمعاصرة<br>
+                4️⃣ تعزيز الحوار النقدي بين الثقافات بدلاً من التبعية أو الرفض
+            </div>
+        </div>
+
+        <div class="question-block">
+            <p><strong>35. ما هو مستقبل النقد الأدبي العربي في رأيك؟ وكيف يمكن تطويره؟</strong></p>
+            <button class="show-answer-btn" onclick="toggleAnswer('ans35')">🔍 إظهار الإجابة النموذجية</button>
+            <div id="ans35" class="answer-key">
+                ✅ <strong>الإجابة:</strong><br>
+                <strong>اتجاهات المستقبل:</strong><br>
+                1️⃣ التكامل بين المناهج بدلاً من التعصب لأحدها<br>
+                2️⃣ تطوير مناهج نقدية عربية أصيلة تجمع بين التراث والحداثة<br>
+                3️⃣ الاهتمام بالنقد التطبيقي على النصوص المعاصرة (رواية، شعر حر...)<br>
+                4️⃣ تعزيز الحوار النقدي بين الثقافات العربية والغربية<br>
+                5️⃣ استخدام التقنيات الرقمية والذكاء الاصطناعي في التحليل النقدي<br><br>                <strong>سبل التطوير:</strong><br>
+                • تدريب النقاد على مناهج متعددة ومرنة<br>
+                • تشجيع البحوث التي تطبق المناهج على نصوص عربية محددة<br>
+                • إنشاء منصات نقدية تفاعلية تجمع بين الأكاديميين والمبدعين والقراء
+            </div>
+        </div>
+
+    </section>
+
+    <!-- الخاتمة -->
+    <section class="conclusion" id="conclusion">
+        <h3>🎯 الخاتمة والنتائج العامة</h3>
+        <p style="margin-bottom: 20px;">يخلص كتاب "النقد الأدبي الحديث" إلى مجموعة من النتائج والتوصيات المهمة:</p>
+        <ol>
+            <li>النقد الأدبي عملية عقلية منظمة تهدف لفهم النصوص وتقويمها، وليس مجرد انطباعات شخصية</li>
+            <li>تنوع المناهج النقدية (كلاسيكية، رومانسية، واقعية، نفسية، بنيوية، تفكيكية...) يثري فهمنا للأدب ولا يتعارض</li>
+            <li>كل منهج له نقاط قوة وضعف، والناقد الحكيم يختار ما يناسب النص والهدف</li>
+            <li>تطبيق المناهج الحديثة على الأدب العربي يتطلب مراعاة الخصوصية اللغوية والثقافية والتاريخية</li>
+            <li>مستقبل النقد العربي في التكامل بين المناهج وتطوير مناهج أصيلة تجمع بين التراث والحداثة</li>
+            <li>النقد الجيد لا يقتل الإبداع بل يضيء طريقه ويساعد على نضجه</li>
+        </ol>
+        <p style="margin-top: 25px; font-weight: bold; font-size: 20px;">والله أعلم، وفق الله الجميع لما فيه خير الأدب والنقد والأمة.</p>
+    </section>
+
+    <!-- حقوق الملكية -->
+    <footer class="copyright">
+        <p>📚 <strong>مصدر المحتوى:</strong> كتاب "النقد الأدبي الحديث" - د. أمين علي محمد</p>
+        <p>🎨 <strong>التصميم والتلخيص:</strong> بواسطة منصة <span class="platform-name">منصات بلس</span></p>
+        <p>🔒 <strong>حقوق الملكية الفكرية:</strong> محفوظة لـ <span class="platform-name">منصات بلس</span> © 2026</p>
+        <p style="margin-top: 10px; font-size: 16px; color: #777;">⚠️ يُسمح بالنقل والاستفادة للأغراض التعليمية مع ذكر المصدر</p>
+    </footer>
+
+</div>
+
+<script>
+    // دالة إظهار/إخفاء الإجابات
+    function toggleAnswer(id) {
+        var x = document.getElementById(id);
+        var btn = event.target;
+        if (x.style.display === "block") {
+            x.style.display = "none";
+            btn.innerHTML = "🔍 إظهار الإجابة";
+        } else {
+            x.style.display = "block";
+            btn.innerHTML = "🔒 إخفاء الإجابة";
+        }
+    }
+
+    // دالة حفظ الصفحة كـ PDF
+    function saveAsPDF() {        const element = document.getElementById('contentToSave');
+        const opt = {
+            margin: 10,
+            filename: 'النقد_الأدبي_الحديث_تلخيص_منصات_بلس.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        
+        // إظهار رسالة تحميل
+        const btn = document.querySelector('.btn-save-pdf');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ جاري الحفظ...';
+        btn.disabled = true;
+        
+        html2pdf().set(opt).from(element).save().then(() => {
+            btn.innerHTML = '✅ تم الحفظ!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 3000);
+        }).catch(() => {
+            btn.innerHTML = '❌ فشل الحفظ';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }, 3000);
+        });
+    }
+
+    // شريط التقدم عند التمرير
+    window.addEventListener('scroll', function() {
+        const progressBar = document.getElementById('progressBar');
+        const scrollTop = document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (scrollTop / scrollHeight) * 100;
+        progressBar.style.width = scrolled + '%';
+    });
+
+    // تحسين تجربة المستخدم: تمرير سلس للروابط
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+    // إضافة تأثير عند تحميل الصفحة
+    window.addEventListener('load', function() {
+        document.body.style.opacity = '1';
+        document.body.style.transition = 'opacity 0.5s ease';
+    });
+</script>
+
+</body>
+</html>
