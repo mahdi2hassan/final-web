@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدليل الشامل لدمج ذوي الاحتياجات الخاصة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #1a5f7a;
+            --secondary-color: #159895;
+            --accent-color: #ffc107;
+            --bg-color: #f0f2f5;
+            --text-color: #2c3e50;
+            --white: #ffffff;
+            --success: #28a745;
+            --error: #dc3545;
+            --light-blue: #e3f2fd;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.9;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+        .progress-bar {
+            height: 10px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 40px;
+            background: var(--white);            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 15px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            border-bottom: 4px solid var(--primary-color);
+            padding-bottom: 30px;
+        }
+
+        h1 {
+            font-family: 'Cairo', sans-serif;
+            color: var(--primary-color);
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-family: 'Cairo', sans-serif;
+            color: var(--secondary-color);
+            border-right: 6px solid var(--accent-color);
+            padding-right: 20px;
+            margin-top: 50px;
+            font-size: 2rem;
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-top: 30px;
+            font-size: 1.5rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            list-style-type: none;
+            padding-right: 20px;
+        }
+
+        ul li::before {
+            content: "✔";            color: var(--secondary-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1.5em;
+            margin-left: -1.5em;
+        }
+
+        .highlight-box {
+            background-color: var(--light-blue);
+            border: 2px solid #bbdefb;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: "💡 نقطة محورية";
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: var(--primary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            font-size: 1.1rem;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: right;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .btn-print {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 50px;
+            font-family: 'Cairo', sans-serif;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: block;
+            margin: 30px auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-print:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Quiz Styles */
+        .quiz-section {
+            margin-top: 60px;
+            border-top: 4px solid var(--primary-color);
+            padding-top: 30px;
+        }
+
+        .question-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-color: var(--secondary-color);
+        }
+
+        .question-text {
+            font-weight: bold;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 12px;
+            cursor: pointer;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .options label:hover {
+            background: #e9ecef;
+        }
+
+        .options input {
+            margin-left: 10px;
+        }
+
+        .answer-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #d4edda;
+            border-right: 5px solid var(--success);
+            color: #155724;
+            font-weight: bold;
+            border-radius: 5px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-toggle {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-toggle:hover {
+            background-color: var(--primary-color);        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            color: #6c757d;
+            font-size: 1rem;
+            border-top: 1px solid #dee2e6;
+        }
+
+        @media print {
+            .btn-print, .btn-toggle { display: none; }
+            .answer-box { display: block !important; border: 1px solid #ccc; color: black; background: none; }
+            body { background: white; }
+            .container { box-shadow: none; margin: 0; width: 100%; max-width: 100%; padding: 10px; }
+            h2 { page-break-before: always; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-container">
+        <div class="progress-bar" id="myBar"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>الدليل الشامل لدمج ذوي الاحتياجات الخاصة</h1>
+            <p style="font-size: 1.4rem; color: #555;">مرجع أكاديمي متكامل: المفاهيم، التصنيفات، الاستراتيجيات، والتطبيقات العملية</p>
+            <button class="btn-print" onclick="window.print()">🖨️ حفظ كـ PDF / طباعة النسخة الكاملة</button>
+        </header>
+
+        <main>
+            <!-- الفصل الأول: المفاهيم -->
+            <section id="concepts">
+                <h2>1. الإطار المفاهيمي والتطور التاريخي</h2>
+                <p>شهد مجال رعاية ذوي الاحتياجات الخاصة تحولاً جذرياً في المصطلحات والمفاهيم، منتقلاً من نظرة "الرعوية والعزل" إلى نظرة "الحقوق والدمج".</p>
+                
+                <div class="highlight-box">
+                    <strong>التطور الدلالي للمصطلحات:</strong><br>
+                    <ul>
+                        <li><strong>الإعاقة (Disability):</strong> مصطلح يركز على القصور الوظيفي أو العضوي.</li>
+                        <li><strong>العجز (Impairment):</strong> فقدان أو شذوذ في التركيب النفسي أو الفسيولوجي.</li>
+                        <li><strong>ذوي الاحتياجات الخاصة (Special Needs):</strong> مصطلح إيجابي يركز على أن هؤلاء الأفراد يحتاجون إلى خدمات إضافية وبرامج معدلة لتحقيق النمو الأمثل، وهو المصطلح الأكثر قبولاً حالياً.</li>
+                    </ul>
+                </div>
+
+                <h3>مبادئ التربية الخاصة:</h3>
+                <ol>                    <li><strong>الفروق الفردية:</strong> الاعتراف بأن كل فرد فريد في قدراته واحتياجاته.</li>
+                    <li><strong>التربية المبكرة:</strong> التدخل في أسرع وقت ممكن لضمان أفضل نتائج نمائية.</li>
+                    <li><strong>التربية المجانية والمناسبة:</strong> حق كل طفل في الحصول على تعليم يتناسب مع قدراته دون تكلفة.</li>
+                    <li><strong>المشاركة الأسرية:</strong> الأسرة هي الشريك الأساسي في عملية التربية والتدخل.</li>
+                </ol>
+            </section>
+
+            <!-- الفصل الثاني: الإعاقة العقلية -->
+            <section id="intellectual">
+                <h2>2. الإعاقة العقلية (Intellectual Disability)</h2>
+                <p>تعرف وفقاً للدليل التشخيصي والإحصائي (DSM-5) بأنها اضطراب يبدأ خلال فترة النمو، ويتميز بقصور في الأداء العقلي (التفكير، حل المشكلات) والقصور في السلوك التكيفي (المهارات اليومية والاجتماعية).</p>
+
+                <h3>التصنيف حسب الشدة (بدلاً من الاعتماد فقط على الذكاء):</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الدرجة</th>
+                            <th>نسبة الذكاء (تقريبية)</th>
+                            <th>الخصائص وقابلية التعلم</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>بسيطة (Mild)</strong></td>
+                            <td>50 - 70</td>
+                            <td>يمكنهم الوصول لمستوى أكاديمي يقارب الصف السادس الابتدائي، ويمكن دمجهم في الفصول العادية مع دعم بسيط.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>متوسطة (Moderate)</strong></td>
+                            <td>35 - 50</td>
+                            <td>يمكنهم تعلم مهارات حياتية ومهنية بسيطة، ويحتاجون لإشراف متوسط في المجتمع.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>شديدة (Severe)</strong></td>
+                            <td>20 - 35</td>
+                            <td>قدرات لغوية محدودة جداً، يحتاجون لإشراف مستمر في جميع أنشطة الحياة اليومية.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>عميقة (Profound)</strong></td>
+                            <td>أقل من 20</td>
+                            <td>اعتماد كلي على الآخرين في الرعاية، واستجابات حسية وحركية بدائية.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>الخصائص المعرفية المميزة:</h3>
+                <ul>
+                    <li><strong>ضعف الانتباه:</strong> صعوبة في التركيز لفترات طويلة وتشتت سريع.</li>
+                    <li><strong>قصور الذاكرة:</strong> خاصة الذاكرة قصيرة المدى وصعوبة ترميز المعلومات.</li>
+                    <li><strong>صعوبة التعميم:</strong> عدم القدرة على نقل المهارة المكتسبة في موقف إلى مواقف جديدة.</li>                </ul>
+            </section>
+
+            <!-- الفصل الثالث: التوحد -->
+            <section id="autism">
+                <h2>3. اضطراب طيف التوحد (Autism Spectrum Disorder - ASD)</h2>
+                <p>اضطراب نمائي عصبي معقد يظهر في السنوات الثلاث الأولى من العمر، ويتميز بخلل نوعي في ثلاث مجالات رئيسية (الثلاثية النمطية).</p>
+
+                <div class="highlight-box">
+                    <strong>محكات التشخيص الأساسية (DSM-5):</strong><br>
+                    1. عجز مستمر في التواصل الاجتماعي والتفاعل الاجتماعي.<br>
+                    2. أنماط سلوكية واهتمامات وأنشطة مقيدة ومتكررة.<br>
+                    3. الأعراض تظهر مبكراً وتسبب خللاً وظيفياً كبيراً.
+                </div>
+
+                <h3>الفرق بين التوحد ومتلازمة أسبرجر:</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>وجه المقارنة</th>
+                            <th>التوحد الكلاسيكي</th>
+                            <th>متلازمة أسبرجر</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>النمو اللغوي</strong></td>
+                            <td>تأخر واضح أو غياب للكلام.</td>
+                            <td>لا يوجد تأخر لغوي ملحوظ، مفردات غنية أحياناً.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>النمو المعرفي</strong></td>
+                            <td>يتراوح من الإعاقة العقلية إلى التفوق.</td>
+                            <td>ذكاء متوسط أو فوق المتوسط.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>التواصل البصري</strong></td>
+                            <td>تجنب شديد للتواصل البصري.</td>
+                            <td>تواصل بصري موجود لكنه قد يكون شاذاً.</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>استراتيجيات التدخل:</h3>
+                <ul>
+                    <li><strong>تحليل السلوك التطبيقي (ABA):</strong> لتعديل السلوك وتعزيز المهارات الإيجابية.</li>
+                    <li><strong>التعليم المنظم (TEACCH):</strong> استخدام الدعم البصري وتنظيم البيئة.</li>
+                    <li><strong>قصص التواصل الاجتماعي:</strong> لمساعدة الطفل على فهم المواقف الاجتماعية.</li>
+                </ul>
+            </section>
+            <!-- الفصل الرابع: صعوبات التعلم -->
+            <section id="learning">
+                <h2>4. صعوبات التعلم (Learning Disabilities)</h2>
+                <p>هي حالة اضطراب في واحدة أو أكثر من العمليات النفسية الأساسية involved in understanding or using language، والتي تظهر في صعوبات الاستماع، التفكير، الكلام، القراءة، الكتابة، أو الحساب.</p>
+                
+                <div class="highlight-box">
+                    <strong>معيار التباعد (Discrepancy Criterion):</strong><br>
+                    هو الفجوة الواضحة بين الذكاء العام للطالب (الذي يكون متوسطاً أو مرتفعاً) وبين أدائه الأكاديمي الفعلي (الذي يكون منخفضاً بشكل غير متوقع).
+                </div>
+
+                <h3>أنواع صعوبات التعلم الأكاديمية:</h3>
+                <ul>
+                    <li><strong>عسر القراءة (Dyslexia):</strong> صعوبة في التعرف على الكلمات، القراءة بطلاقة، وفهم المقروء.</li>
+                    <li><strong>عسر الكتابة (Dysgraphia):</strong> صعوبة في تكوين الحروف، التنظيم الكتابي، وسرعة الكتابة.</li>
+                    <li><strong>عسر الحساب (Dyscalculia):</strong> صعوبة في فهم الأرقام، الحقائق الرياضية، والعمليات الحسابية.</li>
+                </ul>
+            </section>
+
+            <!-- الفصل الخامس: الإعاقات الأخرى -->
+            <section id="other-disabilities">
+                <h2>5. الإعاقات الحسية والجسمية</h2>
+                
+                <h3>أ. الإعاقة البصرية:</h3>
+                <p>تنقسم إلى فئتين رئيسيتين:</p>
+                <ul>
+                    <li><strong>الكفوف (Blindness):</strong> فقدان البصر لدرجة الاعتماد على حاسة اللمس (برايل) والسمع في التعلم.</li>
+                    <li><strong>ضعف البصر (Low Vision):</strong> وجود بقايا إبصار يمكن الاستفادة منها باستخدام المعينات البصرية.</li>
+                </ul>
+
+                <h3>ب. الإعاقة السمعية:</h3>
+                <ul>
+                    <li><strong>الصمم (Deafness):</strong> فقدان سمعي شديد يمنع معالجة المعلومات اللغوية عبر السمع حتى مع المعينات.</li>
+                    <li><strong>ضعف السمع (Hard of Hearing):</strong> وجود بقايا سمعية تسمح بالاستفادة من المعينات السمعية في التواصل.</li>
+                </ul>
+
+                <h3>ج. الإعاقة الجسمية والصحية:</h3>
+                <p>تشمل حالات مثل الشلل الدماغي (Cerebral Palsy)، والشلل الرعاش، وأمراض العظام، والحالات الصحية المزمنة كالصرع والسكري التي تؤثر على الأداء التعليمي.</p>
+            </section>
+
+            <!-- الفصل السادس: استراتيجيات الدمج -->
+            <section id="inclusion-strategies">
+                <h2>6. استراتيجيات التدريس والدمج الفعال</h2>
+                
+                <h3>التصميم الشامل للتعلم (UDL):</h3>
+                <p>إطار تعليمي يهدف إلى تحسين تجربة التعلم لجميع الناس بناءً على البحث العلمي، ويقوم على ثلاثة مبادئ:</p>
+                <ol>
+                    <li><strong>تمثيل متعدد للمعلومات:</strong> عرض المحتوى بطرق مختلفة (بصري، سمعي، حركي).</li>
+                    <li><strong>تعبير متعدد:</strong> السماح للطلاب بإظهار ما تعلموه بطرق مختلفة (كتابة، تحدث، رسم).</li>
+                    <li><strong>اشتراك متعدد:</strong> طرق مختلفة لتحفيز الطلاب وجذب انتباههم.</li>                </ol>
+
+                <h3>الخطة التربوية الفردية (IEP):</h3>
+                <p>وثيقة قانونية وتربوية تُعد لكل طالب من ذوي الاحتياجات الخاصة، وتتضمن:</p>
+                <ul>
+                    <li>مستوى الأداء الحالي (نقاط القوة والضعف).</li>
+                    <li>الأهداف السنوية الكبرى والأهداف قصيرة المدى.</li>
+                    <li>الخدمات المساندة (علاج نطق، علاج وظيفي، إلخ).</li>
+                    <li>معايير النجاح وطرق القياس.</li>
+                </ul>
+            </section>
+
+            <!-- بنك الأسئلة الموسع -->
+            <section class="quiz-section">
+                <h2>بنك الأسئلة الشامل والتفاعلي</h2>
+                <p>اختبر معلوماتك بدقة عالية. يضم هذا القسم أسئلة تحليلية وتطبيقية.</p>
+
+                <!-- قسم صح وخطأ -->
+                <h3>أولاً: أسئلة الصواب والخطأ (تحليل المفاهيم)</h3>
+                
+                <div class="question-card">
+                    <div class="question-text">1. يُعتبر مصطلح "ذوي الاحتياجات الخاصة" أوسع من مصطلح "الإعاقة" لأنه يشمل الموهوبين والمتفوقين أيضاً.</div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans1')">إظهار الإجابة والتحليل</button>
+                    <div id="ans1" class="answer-box">
+                        <strong>الإجابة: صحيح.</strong><br>
+                        التحليل: مصطلح "Exceptionalities" أو الحالات الخاصة يشمل الانحراف عن المتوسط سواء كان سلبياً (إعاقة) أو إيجابياً (موهبة وتفوق)، بينما "الإعاقة" تركز فقط على الجانب السلبي.
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text">2. طلاب صعوبات التعلم يعانون من انخفاض في مستوى الذكاء العام مما يؤثر على تحصيلهم الأكاديمي.</div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans2')">إظهار الإجابة والتحليل</button>
+                    <div id="ans2" class="answer-box">
+                        <strong>الإجابة: خطأ.</strong><br>
+                        التحليل: السمة الأساسية لصعوبات التعلم هي أن الطالب لديه ذكاء متوسط أو فوق المتوسط، ولكن هناك فجوة بين قدراته الكامنة وأدائه الفعلي بسبب اضطراب في العمليات النفسية.
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text">3. التدخل المبكر يعني تقديم الخدمات التعليمية والعلاجية للأطفال منذ لحظة اكتشاف الحالة وحتى سن المدرسة.</div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans3')">إظهار الإجابة والتحليل</button>
+                    <div id="ans3" class="answer-box">
+                        <strong>الإجابة: صحيح.</strong><br>
+                        التحليل: التدخل المبكر يستغل مرونة الدماغ في السنوات الأولى (0-6 سنوات) لمنع تفاقم الإعاقة وتطوير المهارات الأساسية.
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text">4. متلازمة أسبرجر تعتبر شكلاً حاداً من التوحد يصاحبه تأخر لغوي شديد.</div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans4')">إظهار الإجابة والتحليل</button>                    <div id="ans4" class="answer-box">
+                        <strong>الإجابة: خطأ.</strong><br>
+                        التحليل: متلازمة أسبرجر تتميز بعدم وجود تأخر لغوي أو معرفي ملحوظ، وغالباً ما يكون ذكاء الأفراد طبيعياً أو مرتفعاً، لكنهم يعانون في التفاعل الاجتماعي.
+                    </div>
+                </div>
+
+                <!-- قسم اختيار من متعدد -->
+                <h3>ثانياً: أسئلة الاختيار من متعدد (تطبيق واستنتاج)</h3>
+
+                <div class="question-card">
+                    <div class="question-text">5. أي من الخصائص التالية تعتبر السمة الأساسية المميزة لاضطراب فرط الحركة وتشتت الانتباه (ADHD)؟</div>
+                    <div class="options">
+                        <label><input type="radio" name="q5"> أ) انخفاض الذكاء وصعوبة في القراءة.</label>
+                        <label><input type="radio" name="q5"> ب) نمط مستمر من عدم الانتباه و/أو فرط النشاط والاندفاعية.</label>
+                        <label><input type="radio" name="q5"> ج) انسحاب اجتماعي وحركات نمطية متكررة.</label>
+                        <label><input type="radio" name="q5"> د) صعوبة في السمع تستدعي استخدام سماعات.</label>
+                    </div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans5')">إظهار الإجابة</button>
+                    <div id="ans5" class="answer-box">الإجابة الصحيحة: ب) نمط مستمر من عدم الانتباه و/أو فرط النشاط والاندفاعية.</div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text">6. عند وضع خطة تربوية فردية (IEP)، من هم الأعضاء الأساسيون الذين يجب أن يتواجدوا في فريق العمل؟</div>
+                    <div class="options">
+                        <label><input type="radio" name="q6"> أ) مدير المدرسة فقط.</label>
+                        <label><input type="radio" name="q6"> ب) المعلم، ولي الأمر، والطالب (إذا أمكن)، والأخصائيين ذات الصلة.</label>
+                        <label><input type="radio" name="q6"> ج) الطبيب المعالج ومدير المستشفى.</label>
+                        <label><input type="radio" name="q6"> د) أخصائي الاجتماع فقط.</label>
+                    </div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans6')">إظهار الإجابة</button>
+                    <div id="ans6" class="answer-box">الإجابة الصحيحة: ب) المعلم، ولي الأمر، والطالب (إذا أمكن)، والأخصائيين ذات الصلة.</div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text">7. مبدأ "التصميم الشامل للتعلم" (UDL) يهدف أساساً إلى:</div>
+                    <div class="options">
+                        <label><input type="radio" name="q7"> أ) تصميم مبنى مدرسي يتناسب مع ذوي الإعاقة الحركية.</label>
+                        <label><input type="radio" name="q7"> ب) توفير طرق متعددة للتمثيل والتعبير والمشاركة لتناسب جميع المتعلمين.</label>
+                        <label><input type="radio" name="q7"> ج) فصل الطلاب ذوي الإعاقة في فصول خاصة.</label>
+                        <label><input type="radio" name="q7"> د) تقليل المناهج الدراسية للطلاب المتأخرين.</label>
+                    </div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans7')">إظهار الإجابة</button>
+                    <div id="ans7" class="answer-box">الإجابة الصحيحة: ب) توفير طرق متعددة للتمثيل والتعبير والمشاركة لتناسب جميع المتعلمين.</div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text">8. ما هو المصطلح الذي يطلق على الفجوة بين الذكاء المرتفع والتحصيل الأكاديمي المنخفض؟</div>
+                    <div class="options">
+                        <label><input type="radio" name="q8"> أ) معيار التباعد (Discrepancy Criterion).</label>
+                        <label><input type="radio" name="q8"> ب) معيار الاستجابة للتدخل (RTI).</label>                        <label><input type="radio" name="q8"> ج) التأثير التربوي.</label>
+                        <label><input type="radio" name="q8"> د) العجز التكيفي.</label>
+                    </div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans8')">إظهار الإجابة</button>
+                    <div id="ans8" class="answer-box">الإجابة الصحيحة: أ) معيار التباعد (Discrepancy Criterion).</div>
+                </div>
+
+                <!-- قسم الأسئلة المقالية -->
+                <h3>ثالثاً: أسئلة مقالية وتفكير ناقد (إجابات نموذجية)</h3>
+
+                <div class="question-card">
+                    <div class="question-text">9. قارن بين "الدمج المكاني" و"الدمج الاجتماعي" و"الدمج الأكاديمي"، موضحاً أيهم يمثل الشكل الأمثل للدمج ولماذا؟</div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans9')">إظهار الإجابة النموذجية</button>
+                    <div id="ans9" class="answer-box">
+                        <strong>الإجابة النموذجية:</strong><br>
+                        - <strong>الدمج المكاني:</strong> تواجد الطالب ذي الإعاقة في نفس المبنى المدرسي ولكن في فصول منعزلة (أقل درجات الدمج).<br>
+                        - <strong>الدمج الاجتماعي:</strong> مشاركة الطالب ذي الإعاقة في الأنشطة اللاصفية (رياضية، فنية) مع أقرانه العاديين.<br>
+                        - <strong>الدمج الأكاديمي (الكامل):</strong> تواجد الطالب في الفصل العادي طوال اليوم الدراسي، ويتلقى التعليم المعدل مع الدعم اللازم.<br>
+                        - <strong>الشكل الأمثل:</strong> الدمج الأكاديمي الكامل، لأنه يحقق المساواة في الفرص التعليمية، ويعزز التفاعل الاجتماعي الحقيقي، ويقلل من الوصم، ويرفع توقعات الأداء لدى الطالب.
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text">10. اشرح دور "السلوك التكيفي" في تشخيص الإعاقة العقلية، ولماذا لا يكفي قياس الذكاء وحده؟</div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans10')">إظهار الإجابة النموذجية</button>
+                    <div id="ans10" class="answer-box">
+                        <strong>الإجابة النموذجية:</strong><br>
+                        لا يكفي قياس الذكاء وحده لأن الشخص قد يكون لديه ذكاء حدودي ولكنه قادر على العيش باستقلالية. السلوك التكيفي يقيس قدرة الفرد على مواجهة متطلبات الحياة اليومية (الأكل، اللبس، التواصل، السلامة، المهارات الاجتماعية). التشخيص الصحيح للإعاقة العقلية يتطلب قصوراً في كلا المجالين: الأداء العقلي (IQ < 70-75) والسلوك التكيفي، وظهور ذلك خلال فترة النمو.
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text">11. ذكر الملف خصائص طلاب التوحد في مجال "التواصل". اذكر ثلاثاً منها واقترح استراتيجية لدعم كل منها.</div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans11')">إظهار الإجابة النموذجية</button>
+                    <div id="ans11" class="answer-box">
+                        <strong>الإجابة النموذجية:</strong><br>
+                        1. <strong>الخاصية:</strong> الصدى الكلامي (تكرار ما يسمعه). <br> <strong>الاستراتيجية:</strong> استخدام الصور لتوضيح المعنى وعدم الاكتفاء بالكلام، وتوجيه السؤال بشكل صحيح.<br>
+                        2. <strong>الخاصية:</strong> الفهم الحرفي للكلام (عدم فهم النكت أو المجاز). <br> <strong>الاستراتيجية:</strong> استخدام لغة واضحة ومباشرة وتجنب التعابير المجازية.<br>
+                        3. <strong>الخاصية:</strong> ضعف التواصل البصري. <br> <strong>الاستراتيجية:</strong> عدم إجبار الطفل على النظر في العين، واستخدام اهتماماته البصرية كأداة لجذب الانتباه.
+                    </div>
+                </div>
+
+                <div class="question-card">
+                    <div class="question-text">12. ما هي "متلازمة داون"؟ وما هي أبرز الخصائص الجسمية والتعليمية associated بها؟</div>
+                    <button class="btn-toggle" onclick="toggleAnswer('ans12')">إظهار الإجابة النموذجية</button>
+                    <div id="ans12" class="answer-box">
+                        <strong>الإجابة النموذجية:</strong><br>
+                        - <strong>التعريف:</strong> اضطراب وراثي ناتج عن وجود كروموسوم زائد (21) في الزوج الحادي والعشرين (Trisomy 21).<br>
+                        - <strong>الخصائص الجسمية:</strong> ميلان العينين، تسطح الأنف، قصر القامة، ارتخاء العضلات، خط واحد في راحة اليد.<br>
+                        - <strong>الخصائص التعليمية:</strong> ذاكرة بصرية جيدة غالباً، صعوبة في التجريد والتركيز، حاجة لتكرار المعلومة، ومهارات اجتماعية ودودة تسهل دمجهم.                    </div>
+                </div>
+
+            </section>
+        </main>
+
+        <footer>
+            <p>جميع الحقوق محفوظة لمنصات بلس © 2026</p>
+            <p>تم إعداد هذا المرجع الشامل بناءً على أحدث الأدبيات التربوية وملف "دمج ذوي الاحتياجات الخاصة"</p>
+        </footer>
+    </div>
+
+    <script>
+        // شريط التقدم
+        window.onscroll = function() {myFunction()};
+
+        function myFunction() {
+            var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            var scrolled = (winScroll / height) * 100;
+            document.getElementById("myBar").style.width = scrolled + "%";
+        }
+
+        // إظهار/إخفاء الإجابات
+        function toggleAnswer(id) {
+            var x = document.getElementById(id);
+            if (x.style.display === "block") {
+                x.style.display = "none";
+            } else {
+                x.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
