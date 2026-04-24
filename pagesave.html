@@ -609,6 +609,17 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="sb-item" onclick="goPage('answers')" data-perm="scores">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
         <span>الدرجات والإجابات</span>
+        <span class="sb-badge" id="essayPendingBadge" style="display:none;background:var(--purple)">0</span>
+      </div>
+      <div class="sb-item" onclick="goPage('comments')" data-perm="content">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span>تعليقات الفيديوهات</span>
+        <span class="sb-badge" id="commentsSbBadge" style="display:none;background:var(--blue)">0</span>
+      </div>
+      <div class="sb-item" onclick="goPage('comments')" data-perm="content">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span>تعليقات الطلاب</span>
+        <span class="sb-badge" id="commentsSbBadge" style="display:none;background:var(--blue)">0</span>
       </div>
       <div class="sb-item" onclick="goPage('broadcast')" data-perm="broadcast">
         <svg><use href="#ic-send"/></svg><span>إرسال جماعي</span>
@@ -1010,6 +1021,20 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
         </div>
 
+        <!-- Pass/Fail Chart -->
+        <div style="background:rgba(8,13,28,0.6);border:1px solid var(--b1);border-radius:14px;padding:16px;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:6px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M21.21 15.89A10 10 0 118 2.83"/><path d="M22 12A10 10 0 0012 2v10z"/></svg>
+            توزيع النتائج
+          </div>
+          <div id="answersChart"><div style="text-align:center;font-size:11px;color:var(--muted);padding:10px">جاري التحميل...</div></div>
+        </div>
+
+        <!-- Pass/Fail chart -->
+        <div id="answersChart" style="background:rgba(8,13,28,0.6);border:1px solid var(--b1);border-radius:14px;padding:16px;margin-bottom:14px">
+          <div style="text-align:center;font-size:11px;color:var(--muted);padding:8px">اضغط تحديث لتحميل الرسم البياني</div>
+        </div>
+
         <!-- Filters row -->
         <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
           <select id="mg-grade-filter" onchange="renderMerged()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
@@ -1072,6 +1097,52 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </div>
       </div>
 
+
+      <!-- ══ COMMENTS ══ -->
+      <div class="page" id="page-comments">
+        <div class="sh">
+          <div class="sh-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            تعليقات الفيديوهات
+          </div>
+          <div class="sh-acts">
+            <select id="comments-filter-admin" onchange="renderCommentsAdmin()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
+              <option value="all">كل التعليقات</option>
+              <option value="unanswered">⏳ لم يُرد عليها</option>
+              <option value="answered">✅ تم الرد</option>
+            </select>
+            <input id="comments-search-admin" placeholder="🔍 ابحث..." oninput="renderCommentsAdmin()" style="padding:7px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;width:160px"/>
+            <button class="btn ghost sm" onclick="loadVideoCommentsAdmin()">
+              <svg><use href="#ic-refresh"/></svg>تحديث
+            </button>
+          </div>
+        </div>
+        <!-- Stats -->
+        <div class="stats-row" style="margin-bottom:14px">
+          <div class="sc bl">
+            <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+            <div class="sc-val" id="cmt-total">—</div><div class="sc-lbl">إجمالي التعليقات</div>
+          </div>
+          <div class="sc pu">
+            <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <div class="sc-val" id="cmt-pending">—</div><div class="sc-lbl">تنتظر رد</div>
+          </div>
+          <div class="sc gr">
+            <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20,6 9,17 4,12"/></svg></div>
+            <div class="sc-val" id="cmt-answered">—</div><div class="sc-lbl">تم الرد عليها</div>
+          </div>
+          <div class="sc go">
+            <div class="sc-ico"><svg><use href="#ic-users"/></svg></div>
+            <div class="sc-val" id="cmt-students">—</div><div class="sc-lbl">طلاب مختلفين</div>
+          </div>
+        </div>
+        <div id="commentsList-admin">
+          <div class="empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            <p>اضغط تحديث لتحميل التعليقات</p>
+          </div>
+        </div>
+      </div>
 
       <!-- ══ BROADCAST ══ -->
       <div class="page" id="page-broadcast">
@@ -3696,7 +3767,8 @@ function goPage(p){
       content:'content', broadcast:'broadcast',
       analytics:'analytics', tickets:'tickets',
       admins:null, settings:null, sessions:null,
-      answers:'scores'
+      answers:'scores',
+      comments:'content'
     };
     if(p in permMap && permMap[p]===null){ toast('ليس لديك صلاحية لهذه الصفحة','err'); return; }
     if(p in permMap && permMap[p] && !perms[permMap[p]]){ toast('ليس لديك صلاحية لهذه الصفحة','err'); return; }
@@ -7254,6 +7326,7 @@ window.goPage = (p,...args)=>{
   if(p==='grades') renderGradesList();
   if(p==='scores'){ goPage('answers'); return; }  // redirect → merged page
   if(p==='answers'){ buildAnswersGradeFilter(); loadAnswers(); }
+  if(p==='comments'){ loadVideoCommentsAdmin(); }
 };
 
 // ═══════════════════════════════════════════════
@@ -7595,6 +7668,7 @@ window.loadMerged = async ()=>{
     window._allScores = window._allMerged;
     renderMerged();
     updateMergedStats();
+    updateAnswersChart();
     buildScoreGradeFilter();
   }catch(e){
     const isPerm = e.message&&(e.message.includes('permission')||e.message.includes('PERMISSION_DENIED'));
@@ -7823,6 +7897,191 @@ window.openMcqDetail = (id)=>{
     `:'<div style="text-align:center;color:var(--muted);font-size:12px;padding:16px">لا تفاصيل إضافية محفوظة لهذه الإجابة</div>'}
   `;
   openModal('mcqDetailModal');
+};
+
+
+// ══════════════════════════════════════════════
+// PASS/FAIL CHART (SVG pie)
+// ══════════════════════════════════════════════
+window.updateAnswersChart = ()=>{
+  const all = window._allMerged||[];
+  const mcq   = all.filter(s=>!s.type||s.type==='mcq'||s.type==='manual');
+  const pass  = mcq.filter(s=>(s.pct??Math.round((s.score||0)/(s.total||1)*100))>=50).length;
+  const fail  = mcq.length - pass;
+  const essay = all.filter(s=>s.type==='essay');
+  const graded= essay.filter(s=>s.graded).length;
+  const pend  = essay.length - graded;
+
+  // Update essay pending badge
+  const badge = document.getElementById('essayPendingBadge');
+  if(badge){
+    badge.textContent = pend;
+    badge.style.display = pend>0?'flex':'none';
+  }
+  // Update mg-essay-pending stat
+  const pendEl = document.getElementById('mg-essay-pending');
+  if(pendEl) pendEl.textContent = pend||'0';
+
+  // Draw chart
+  const chartEl = document.getElementById('answersChart');
+  if(!chartEl) return;
+  if(!mcq.length){ chartEl.innerHTML='<div style="text-align:center;font-size:11px;color:var(--muted);padding:16px">لا يوجد بيانات MCQ بعد</div>'; return; }
+
+  const passP = Math.round(pass/mcq.length*100);
+  const failP = 100 - passP;
+  // SVG donut
+  const r=40, cx=60, cy=60, circ=2*Math.PI*r;
+  const passOffset = 0;
+  const failOffset = circ * passP/100;
+
+  chartEl.innerHTML = `
+    <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div style="position:relative">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,77,109,0.25)" stroke-width="14"/>
+          <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#00d68f" stroke-width="14"
+            stroke-dasharray="${circ * passP/100} ${circ * failP/100}"
+            stroke-dashoffset="${circ*0.25}" stroke-linecap="round"
+            transform="rotate(-90 ${cx} ${cy})"/>
+          <text x="${cx}" y="${cy-4}" text-anchor="middle" fill="var(--text)" font-size="16" font-weight="900" font-family="Tajawal">${passP}%</text>
+          <text x="${cx}" y="${cy+14}" text-anchor="middle" fill="var(--muted)" font-size="9" font-family="Tajawal">نسبة النجاح</text>
+        </svg>
+      </div>
+      <div style="flex:1;min-width:120px">
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:12px;display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#00d68f;display:inline-block"></span>ناجح</span>
+            <span style="font-size:14px;font-weight:900;color:#00d68f">${pass} طالب</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-size:12px;display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#ff4d6d;display:inline-block"></span>راسب</span>
+            <span style="font-size:14px;font-weight:900;color:#ff4d6d">${fail} طالب</span>
+          </div>
+        </div>
+        ${essay.length?`
+        <div style="border-top:1px solid var(--b2);padding-top:10px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <span style="font-size:12px;display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:var(--purple);display:inline-block"></span>مقالي مصحح</span>
+            <span style="font-size:14px;font-weight:900;color:var(--purple)">${graded}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-size:12px;display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:var(--warn);display:inline-block"></span>ينتظر تصحيح</span>
+            <span style="font-size:14px;font-weight:900;color:var(--warn)">${pend}</span>
+          </div>
+        </div>`:''}
+      </div>
+    </div>`;
+};
+
+// ══════════════════════════════════════════════
+// VIDEO COMMENTS REPLY (in admin)
+// ══════════════════════════════════════════════
+window._commentsData = [];
+
+window.loadVideoCommentsAdmin = async ()=>{
+  const el = document.getElementById('commentsList-admin');
+  if(!el) return;
+  el.innerHTML='<div class="empty"><div style="width:20px;height:20px;border:2px solid var(--b1);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin:16px auto"></div></div>';
+  try{
+    const snap = await db.collection('videoComments').orderBy('createdAt','desc').limit(200).get();
+    window._commentsData = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderCommentsAdmin();
+    // Update comments badge in sidebar
+    const pending = window._commentsData.filter(c=>!c.reply).length;
+    const badge = document.getElementById('commentsSbBadge');
+    if(badge){ badge.textContent=pending; badge.style.display=pending>0?'flex':'none'; }
+  }catch(e){ el.innerHTML='<div class="empty"><p>خطأ: '+e.message+'</p></div>'; }
+};
+
+window.renderCommentsAdmin = ()=>{
+  // Update stats
+  const all = window._commentsData||[];
+  const pending  = all.filter(c=>!c.reply).length;
+  const answered = all.filter(c=>!!c.reply).length;
+  const students = new Set(all.map(c=>c.userId||c.userName)).size;
+  ['cmt-total','cmt-pending','cmt-answered','cmt-students'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent=[all.length,pending,answered,students][i]||'0';
+  });
+  // Update sidebar badge
+  const badge=document.getElementById('commentsSbBadge');
+  if(badge){ badge.textContent=pending; badge.style.display=pending>0?'flex':'none'; }
+  const el = document.getElementById('commentsList-admin');
+  if(!el) return;
+  const q = (document.getElementById('comments-search-admin')?.value||'').toLowerCase();
+  const f = document.getElementById('comments-filter-admin')?.value||'all';
+  let list = [...window._commentsData];
+  if(f==='unanswered') list=list.filter(c=>!c.reply);
+  if(f==='answered')   list=list.filter(c=>!!c.reply);
+  if(q) list=list.filter(c=>(c.userName||'').toLowerCase().includes(q)||(c.text||'').toLowerCase().includes(q));
+  if(!list.length){ el.innerHTML='<div class="empty"><p>لا يوجد تعليقات</p></div>'; return; }
+  el.innerHTML = list.map(c=>{
+    const dt=c.createdAt?.toDate?.()?.toLocaleDateString('ar-EG',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})||'—';
+    const grLabel = GRADE_LABELS_SC[c.gradeKey]||c.gradeKey||'—';
+    return `<div style="background:rgba(8,13,28,0.6);border:1px solid ${c.reply?'rgba(0,214,143,0.15)':'rgba(74,127,212,0.2)'};border-radius:14px;padding:14px;margin-bottom:10px">
+      <div style="display:flex;align-items:start;gap:10px;margin-bottom:10px">
+        <div style="width:36px;height:36px;border-radius:50%;background:rgba(74,127,212,0.15);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;flex-shrink:0">${(c.userName||'ط')[0]}</div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap">
+            <span style="font-weight:800;font-size:13px">${c.userName||'—'}</span>
+            <span style="font-size:10px;color:var(--muted)">${grLabel}</span>
+            <span class="bd ${c.reply?'ok':'blue'}" style="font-size:10px">${c.reply?'✅ تم الرد':'⏳ لم يُرد'}</span>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">🎬 فيديو: ${c.videoTitle||c.videoId||'—'} &bull; 📅 ${dt}</div>
+          <div style="background:rgba(6,10,22,0.7);border:1px solid var(--b2);border-radius:9px;padding:10px 12px;font-size:13px;line-height:1.7;white-space:pre-wrap">${c.text||''}</div>
+        </div>
+      </div>
+      ${c.reply?`
+      <div style="background:rgba(0,214,143,0.05);border:1px solid rgba(0,214,143,0.2);border-radius:9px;padding:10px 12px;margin-bottom:10px">
+        <div style="font-size:11px;color:var(--ok);font-weight:800;margin-bottom:4px">👨‍🏫 ردك:</div>
+        <div style="font-size:13px;line-height:1.7;white-space:pre-wrap">${c.reply}</div>
+      </div>`:''}
+      <div style="display:flex;gap:8px;align-items:center">
+        <textarea placeholder="اكتب ردك على الطالب..." id="reply-${c.id}" rows="2" style="flex:1;padding:8px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;resize:none">${c.reply||''}</textarea>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <button onclick="sendCommentReply('${c.id}')" class="btn primary sm" style="font-size:11px">📤 إرسال</button>
+          <button onclick="deleteComment('${c.id}')" class="btn icon-btn del"><svg><use href="#ic-trash"/></svg></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+window.sendCommentReply = async (id)=>{
+  const reply = (document.getElementById('reply-'+id)?.value||'').trim();
+  if(!reply){ toast('اكتب الرد أولاً','err'); return; }
+  try{
+    await db.collection('videoComments').doc(id).update({
+      reply,
+      replyRead: false,
+      repliedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    // send notification to student
+    const c = window._commentsData.find(x=>x.id===id);
+    if(c?.userId){
+      await db.collection('notifications').doc(c.userId).collection('items').add({
+        icon:'🎓',
+        title:'المدرس رد على سؤالك!',
+        body: reply.slice(0,100),
+        read: false,
+        type:'comment_reply',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+    logActivity('💬','رد على تعليق', (c?.userName||'طالب')+': '+reply.slice(0,40));
+    toast('✅ تم إرسال الرد','ok');
+    loadVideoCommentsAdmin();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.deleteComment = async (id)=>{
+  if(!confirm('حذف هذا التعليق؟')) return;
+  try{
+    await db.collection('videoComments').doc(id).delete();
+    window._commentsData = window._commentsData.filter(c=>c.id!==id);
+    renderCommentsAdmin();
+    toast('تم الحذف','ok');
+  }catch(e){ toast('خطأ','err'); }
 };
 
 // ── Delete ──

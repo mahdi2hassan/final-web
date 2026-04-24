@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plus Math – الكورسات</title>
+<title>Plus Mathematics – الكورسات</title>
 <meta name="theme-color" content="#04060f"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -497,6 +497,10 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
     <button class="cv-tab" onclick="switchTab('books',this)">
       📚 الكتب
     </button>
+    <button class="cv-tab" onclick="switchTab('comments',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>تعليقات
+      <span id="commentsDot" style="display:none;width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0"></span>
+    </button>
     <button class="cv-tab" onclick="switchTab('progress',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>تقدمك
     </button>
@@ -618,13 +622,76 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
     </div>
     <div class="tab-pane" id="tp-homework"><div class="hw-list" id="hwList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-books"><div id="booksList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
-    <div class="tab-pane" id="tp-progress">
-      <div class="prog-card">
-        <h4>📊 تقدمك الدراسي</h4>
-        <div class="prog-row"><div class="prog-lbl">الفيديوهات</div><div class="prog-bar"><div class="prog-fill blue" id="pv" style="width:0%"></div></div><div class="prog-val" id="pvt">0%</div></div>
-        <div class="prog-row"><div class="prog-lbl">الامتحانات</div><div class="prog-bar"><div class="prog-fill gold" id="pe" style="width:0%"></div></div><div class="prog-val" id="pet">0%</div></div>
-        <div class="prog-row"><div class="prog-lbl">الواجبات</div><div class="prog-bar"><div class="prog-fill ok" id="ph" style="width:0%"></div></div><div class="prog-val" id="pht">0%</div></div>
+    <!-- ── COMMENTS TAB ── -->
+    <div class="tab-pane" id="tp-comments">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:14px;font-weight:800">💬 التعليقات والأسئلة</div>
+        <div id="comments-video-name" style="font-size:11px;color:var(--muted);background:rgba(74,127,212,0.1);padding:4px 10px;border-radius:20px">اختار فيديو أولاً</div>
       </div>
+      <!-- Comment input -->
+      <div style="background:rgba(8,13,28,0.6);border:1px solid var(--b1);border-radius:14px;padding:14px;margin-bottom:14px">
+        <div id="comments-video-selector" style="margin-bottom:10px">
+          <select id="comment-video-select" onchange="loadVideoComments(this.value)" style="width:100%;padding:8px 12px;background:rgba(6,10,22,0.8);border:1px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
+            <option value="">اختار الفيديو اللي عندك سؤال عليه...</option>
+          </select>
+        </div>
+        <textarea id="comment-text" placeholder="اكتب سؤالك أو تعليقك هنا... 💡" rows="3" style="width:100%;padding:10px 12px;background:rgba(6,10,22,0.8);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;resize:none;transition:border-color .2s" onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--b1)'"></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button onclick="submitComment()" style="padding:9px 20px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            إرسال
+          </button>
+        </div>
+      </div>
+      <!-- Comments list -->
+      <div id="commentsList">
+        <div style="text-align:center;padding:20px;color:var(--muted);font-size:12px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px;margin-bottom:8px;opacity:.4"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <p>اختار فيديو لتشوف تعليقاته</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-pane" id="tp-progress">
+      <!-- Overall circular progress -->
+      <div style="display:flex;align-items:center;gap:16px;background:rgba(8,13,28,0.7);border:1px solid var(--b1);border-radius:16px;padding:16px;margin-bottom:14px">
+        <div style="position:relative;width:90px;height:90px;flex-shrink:0">
+          <svg viewBox="0 0 90 90" style="width:90px;height:90px;transform:rotate(-90deg)">
+            <circle cx="45" cy="45" r="38" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+            <circle id="prog-ring" cx="45" cy="45" r="38" fill="none" stroke="url(#progGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="238.76" stroke-dashoffset="238.76" style="transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)"/>
+            <defs><linearGradient id="progGrad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#4a7fd4"/><stop offset="100%" stop-color="#00d68f"/></linearGradient></defs>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div id="prog-overall-val" style="font-size:20px;font-weight:900;color:var(--text)">0%</div>
+            <div style="font-size:9px;color:var(--muted)">اكتمال</div>
+          </div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:800;margin-bottom:4px">تقدمك الدراسي</div>
+          <div id="prog-status-msg" style="font-size:11px;color:var(--muted);margin-bottom:10px">استمر هتوصل!</div>
+          <div class="prog-row"><div class="prog-lbl">الفيديوهات</div><div class="prog-bar"><div class="prog-fill blue" id="pv" style="width:0%"></div></div><div class="prog-val" id="pvt">0%</div></div>
+          <div class="prog-row"><div class="prog-lbl">الامتحانات</div><div class="prog-bar"><div class="prog-fill gold" id="pe" style="width:0%"></div></div><div class="prog-val" id="pet">0%</div></div>
+          <div class="prog-row"><div class="prog-lbl">الواجبات</div><div class="prog-bar"><div class="prog-fill ok" id="ph" style="width:0%"></div></div><div class="prog-val" id="pht">0%</div></div>
+        </div>
+      </div>
+      <!-- Stats cards -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px">
+        <div style="background:rgba(74,127,212,0.08);border:1px solid rgba(74,127,212,0.2);border-radius:12px;padding:12px;text-align:center">
+          <div id="prog-vid-done" style="font-size:22px;font-weight:900;color:var(--blue)">0</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">فيديو أكملته</div>
+        </div>
+        <div style="background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:12px;text-align:center">
+          <div id="prog-exam-done" style="font-size:22px;font-weight:900;color:var(--gold)">0</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">امتحان اجتزته</div>
+        </div>
+        <div style="background:rgba(0,214,143,0.08);border:1px solid rgba(0,214,143,0.2);border-radius:12px;padding:12px;text-align:center">
+          <div id="prog-hw-done" style="font-size:22px;font-weight:900;color:var(--ok)">0</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px">واجب سلّمته</div>
+        </div>
+      </div>
+      <!-- Achievement badges -->
+      <div id="prog-achievements" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px"></div>
+      <div id="prog-card-old" style="display:none">
       <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
         <a href="plus-math-auth.html" style="flex:1;padding:10px 14px;background:rgba(74,127,212,0.08);border:1px solid var(--b1);border-radius:11px;text-decoration:none;color:var(--text);font-size:13px;font-weight:700;display:flex;align-items:center;gap:7px;justify-content:center">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>بروفايلي
@@ -634,6 +701,7 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
         </a>
       </div>
     </div>
+    </div><!-- /prog-card-old -->
 
     <!-- تاب الأبحاث -->
     <div class="tab-pane" id="tp-research">
@@ -840,6 +908,9 @@ onAuthStateChanged(auth,async(user)=>{
     // ── إشعار تلقائي قرب انتهاء الاشتراك ──
     checkSubscriptionExpiry(_userData, user.uid);
     sendWelcomeNotif(_userData, user.uid);
+    // Check teacher replies + essay grades
+    setTimeout(checkCommentReplies, 2000);
+    setTimeout(checkEssayGradeNotif, 3000);
     // Teacher note
     if(_userData.notes) showTeacherNote(_userData.notes, _userData.noteColor);
     // ── رد على الشكاوى ──
@@ -884,14 +955,25 @@ window.openCourse=async(gradeKey,label,stage)=>{
   const[vids,exams,hw]=await Promise.all([loadList(gradeKey,'videos'),loadList(gradeKey,'exams'),loadList(gradeKey,'homework')]);
   // Store for search
   _allVideos = vids; _allExams = exams;
+  // store globally for markDone progress update
+  window._allVideos = vids;
+  window._allExams  = exams;
+  window._allHw     = hw;
   renderVideos(vids,dV,gradeKey,isMine);
   renderExams(exams,dE,gradeKey,isMine);
   renderHw(hw,dH,gradeKey,isMine);
   // تحميل البلايلست في الخلفية — مش بيوقف باقي التحميل
   try{ loadPlaylistsTab(gradeKey); }catch(e){ console.warn('playlist load:',e); }
-  setTimeout(()=>{setProg('pv','pvt',vids.length,dV.length);setProg('pe','pet',exams.length,dE.length);setProg('ph','pht',hw.length,dH.length);},400);
+  setTimeout(()=>{
+    setProg('pv','pvt',vids.length,dV.length);
+    setProg('pe','pet',exams.length,dE.length);
+    setProg('ph','pht',hw.length,dH.length);
+    updateCourseProgressBar(gradeKey);
+  },400);
   // Night mode
   if(isMine) buildNightMode(vids, dV);
+  // populate comment video selector
+  setTimeout(buildCommentVideoSelector, 300);
   // ── اعرض الملاحظة والرد عند فتح الصف ──
   if(isMine){
     if(_userData?.notes) showTeacherNote(_userData.notes, _userData.noteColor);
@@ -1280,6 +1362,18 @@ function renderHw(hw,done,gradeKey,isMine){
   }).join('');
 }
 
+// ── YouTube IFrame API ──
+window._ytPlayers = {};   // { videoId: YT.Player }
+window._ytWatched = {};   // { videoId: true } — تم احتساب الثلث
+
+function onYouTubeIframeAPIReady(){
+  // شغل أي players كانوا في الانتظار
+  (window._ytPendingInit||[]).forEach(({id,ytId,gradeKey})=>{
+    _createYTPlayer(id,ytId,gradeKey);
+  });
+  window._ytPendingInit = [];
+}
+
 window.openVid=(id,ytId)=>{
   document.querySelectorAll('[id^="vp-"]').forEach(w=>{w.style.display='none';const f=w.querySelector('iframe');if(f)f.src='';});
   const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);
@@ -1294,8 +1388,89 @@ window.openVidWithTracking=(id,ytId,gradeKey)=>{
     _progress[gradeKey]={...gp,videoViews:vv};
     setDoc(doc(db,'progress',_user.uid),_progress,{merge:true}).catch(()=>{});
   }
-  window.openVid(id,ytId);
+  // فتح الفيديو
+  document.querySelectorAll('[id^="vp-"]').forEach(w=>{w.style.display='none';const f=w.querySelector('iframe');if(f)f.src='';});
+  const w=document.getElementById('vp-'+id);
+  if(w) w.style.display='block';
+
+  // تهيئة YT Player لتتبع الثلث
+  if(ytId && typeof YT !== 'undefined' && YT.Player){
+    _createYTPlayer(id, ytId, gradeKey);
+  } else {
+    // fallback لو API مش جاهزة — نحط src عادي
+    const f=document.getElementById('vf-'+id);
+    if(f) f.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&enablejsapi=1`;
+    // retry بعد لما API تتحمل
+    window._ytPendingInit = window._ytPendingInit||[];
+    window._ytPendingInit.push({id,ytId,gradeKey});
+  }
 };
+
+function _createYTPlayer(id, ytId, gradeKey){
+  // لو فيه player قديم ندمره
+  if(window._ytPlayers[id]){
+    try{ window._ytPlayers[id].destroy(); }catch(e){}
+    delete window._ytPlayers[id];
+  }
+  // ننشئ iframe جديد نظيف
+  const container = document.getElementById('vp-'+id);
+  if(!container) return;
+  const oldIframe = document.getElementById('vf-'+id);
+  if(oldIframe) oldIframe.remove();
+  const newIframe = document.createElement('div');
+  newIframe.id = 'vf-'+id;
+  container.insertBefore(newIframe, container.firstChild);
+
+  window._ytPlayers[id] = new YT.Player('vf-'+id, {
+    videoId: ytId,
+    playerVars: { autoplay:1, rel:0, modestbranding:1 },
+    events:{
+      onReady: (e)=>{ e.target.playVideo(); },
+      onStateChange: (e)=>{
+        if(e.data === YT.PlayerState.PLAYING){
+          _startThirdTracker(id, gradeKey, e.target);
+        }
+      }
+    }
+  });
+}
+
+function _startThirdTracker(id, gradeKey, player){
+  if(window._ytWatched[id]) return; // سبق احتسابه
+  clearInterval(window._ytTrackTimer);
+  window._ytTrackTimer = setInterval(()=>{
+    try{
+      if(window._ytWatched[id]){ clearInterval(window._ytTrackTimer); return; }
+      const cur = player.getCurrentTime();
+      const dur = player.getDuration();
+      if(dur > 0 && cur >= dur * 0.33){
+        // الطالب شاف ثلث الفيديو — نسجل تلقائياً
+        window._ytWatched[id] = true;
+        clearInterval(window._ytTrackTimer);
+        _autoMarkDone(id, gradeKey);
+      }
+    }catch(e){ clearInterval(window._ytTrackTimer); }
+  }, 3000);
+}
+
+function _autoMarkDone(id, gradeKey){
+  // نحدث زرار "انهيت الدرس" ليظهر كـ مكتمل
+  const btn = document.querySelector('#vp-'+id+' .pbtn.ok');
+  if(btn){
+    btn.textContent = '✅ تم تسجيل المشاهدة';
+    btn.style.background = 'rgba(0,214,143,0.25)';
+    btn.style.borderColor = 'rgba(0,214,143,0.5)';
+    btn.style.color = 'var(--ok)';
+    btn.onclick = null;
+    btn.style.cursor = 'default';
+  }
+  // نسجل في progress
+  markDone(gradeKey,'videos',id);
+  // نظهر رايتنج
+  const rDiv = document.getElementById('rating-'+id);
+  if(rDiv) rDiv.style.display = 'flex';
+}
+
 window.closeVid=(id)=>{const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);if(w)w.style.display='none';if(f)f.src='';};
 window.markVDone=(g,id)=>{
   markDone(g,'videos',id);
@@ -1469,8 +1644,87 @@ window.submitTicket=async()=>{
     msgEl.style.display='block';msgEl.style.color='var(--err)';msgEl.textContent='خطأ: '+e.message;
   }
 };
+
+// ── Course Progress Bar (circular + achievements) ──
+function updateCourseProgressBar(gradeKey){
+  if(!gradeKey) return;
+  const gp    = _progress[gradeKey]||{};
+  const vids  = window._allVideos||[];
+  const exams = window._allExams||[];
+  const hw    = window._allHw||[];
+  const dV    = (gp.videos||[]).length;
+  const dE    = (gp.exams||[]).length;
+  const dH    = (gp.homework||[]).length;
+  const total = vids.length + exams.length + hw.length;
+  const done  = dV + dE + dH;
+  const pct   = total>0 ? Math.round(done/total*100) : 0;
+
+  // Ring
+  const ring = document.getElementById('prog-ring');
+  if(ring){ const circ=238.76; ring.style.strokeDashoffset = circ - (circ * pct/100); }
+  const valEl = document.getElementById('prog-overall-val');
+  if(valEl) valEl.textContent = pct+'%';
+
+  // Status message
+  const msgEl = document.getElementById('prog-status-msg');
+  if(msgEl){
+    if(pct===100)      msgEl.textContent = '🎉 أكملت المنهج كله — أنت نجم!';
+    else if(pct>=75)   msgEl.textContent = '💪 رائع! اقتربت من النهاية';
+    else if(pct>=50)   msgEl.textContent = '🔥 نص المشوار خلص، كمّل!';
+    else if(pct>=25)   msgEl.textContent = '📚 بداية ممتازة، استمر!';
+    else               msgEl.textContent = '🚀 ابدأ رحلتك، كل خطوة تحسب!';
+  }
+
+  // Count cards
+  const vdEl = document.getElementById('prog-vid-done');
+  const edEl = document.getElementById('prog-exam-done');
+  const hdEl = document.getElementById('prog-hw-done');
+  if(vdEl) vdEl.textContent = dV + (vids.length ? '/'+vids.length : '');
+  if(edEl) edEl.textContent = dE + (exams.length ? '/'+exams.length : '');
+  if(hdEl) hdEl.textContent = dH + (hw.length ? '/'+hw.length : '');
+
+  // Achievements
+  const achEl = document.getElementById('prog-achievements');
+  if(achEl){
+    const badges = [];
+    if(dV>=1)               badges.push({icon:'▶️', label:'أول فيديو'});
+    if(dV>=vids.length&&vids.length>0) badges.push({icon:'🎬', label:'كل الفيديوهات'});
+    if(dE>=1)               badges.push({icon:'📝', label:'أول امتحان'});
+    if(dE>=exams.length&&exams.length>0) badges.push({icon:'🏆', label:'كل الامتحانات'});
+    if(dH>=1)               badges.push({icon:'📋', label:'أول واجب'});
+    if(pct>=50)             badges.push({icon:'⭐', label:'نص المنهج'});
+    if(pct===100)           badges.push({icon:'🎓', label:'المنهج كامل'});
+    achEl.innerHTML = badges.map(b=>`
+      <div style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px">
+        <span style="font-size:14px">${b.icon}</span>
+        <span style="font-size:11px;font-weight:700;color:var(--text2)">${b.label}</span>
+      </div>`).join('');
+  }
+}
+
 function getYtId(url){const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);return m?m[1]:'';}
 function setProg(fId,vId,tot,done){const p=tot?Math.round(done/tot*100):0;const f=document.getElementById(fId),v=document.getElementById(vId);if(f)f.style.width=p+'%';if(v)v.textContent=p+'%';}
+
+async function markDone(gradeKey, type, id){
+  if(!_user||!gradeKey||!type||!id) return;
+  try{
+    const gp = _progress[gradeKey]||{};
+    const arr = [...(gp[type]||[])];
+    if(!arr.includes(id)) arr.push(id);
+    _progress[gradeKey] = {...gp, [type]:arr};
+    await setDoc(doc(db,'progress',_user.uid), _progress, {merge:true});
+    // update progress bars live
+    const vids  = window._allVideos||[];
+    const exams = window._allExams||[];
+    const hw    = window._allHw||[];
+    const gp2   = _progress[gradeKey]||{};
+    setProg('pv','pvt', vids.length,  (gp2.videos||[]).length);
+    setProg('pe','pet', exams.length, (gp2.exams||[]).length);
+    setProg('ph','pht', hw.length,    (gp2.homework||[]).length);
+    // update full course progress bar
+    updateCourseProgressBar(gradeKey);
+  }catch(e){ console.warn('markDone error:',e); }
+}
 </script>
 
 <script>
@@ -1655,6 +1909,12 @@ function switchTab(name,btn){
   }
   if(name==='books') loadBooksTab();
   if(name==='research') loadMyResearches();
+  if(name==='comments'){
+    buildCommentVideoSelector();
+    // reload current video comments if one is selected
+    const vid = window._currentCommentVideoId;
+    if(vid) loadVideoComments(vid);
+  }
   if(name==='playlists'&&window._openGrade) loadPlaylistsTab(window._openGrade);
   // Show/hide search bar (only for videos/exams)
   const srch = document.getElementById('cvSearch');
@@ -1876,6 +2136,7 @@ h2{color:#c62828;margin:60px 0 20px;border-right:8px solid #c62828;padding-right
 <h2>${r.topic||'—'}</h2>
 <div class="box">${(r.details||'لا يوجد محتوى').replace(/\n/g,'<br/>')}</div>
 <button class="print-btn" onclick="window.print()">🖨️ طباعة البحث</button>
+<script src="https://www.youtube.com/iframe_api"></script>
 </body></html>`;
   const w=window.open('','_blank');
   w.document.write(html);
@@ -2351,6 +2612,180 @@ function confirmBookOnWA(waNum){
   window.open(`https://wa.me/${waNum}?text=${msg}`,'_blank');
 }
 let tTimer;
+
+// ══════════════════════════════════════════════
+// VIDEO COMMENTS SYSTEM
+// ══════════════════════════════════════════════
+window._currentCommentVideoId = '';
+window._currentCommentVideoTitle = '';
+
+function buildCommentVideoSelector(){
+  const sel = document.getElementById('comment-video-select');
+  if(!sel) return;
+  const vids = window._allVideos||[];
+  sel.innerHTML = '<option value="">اختار الفيديو اللي عندك سؤال عليه...</option>';
+  vids.forEach(v=>{
+    const o = document.createElement('option');
+    o.value = v.id;
+    o.textContent = (v.order?v.order+'. ':'')+( v.title||'درس');
+    sel.appendChild(o);
+  });
+}
+
+async function loadVideoComments(videoId){
+  window._currentCommentVideoId = videoId;
+  const listEl = document.getElementById('commentsList');
+  const nameEl = document.getElementById('comments-video-name');
+  if(!listEl) return;
+  if(!videoId){
+    listEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px"><p>اختار فيديو لتشوف تعليقاته</p></div>';
+    if(nameEl) nameEl.textContent='اختار فيديو أولاً';
+    return;
+  }
+  const vid = (window._allVideos||[]).find(v=>v.id===videoId);
+  window._currentCommentVideoTitle = vid?.title||'فيديو';
+  if(nameEl) nameEl.textContent = vid?.title||'فيديو';
+  listEl.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px">جاري التحميل...</div>';
+  try{
+    const gradeKey = window._openGrade;
+    const snap = await getDocs(query(
+      collection(db,'videoComments'),
+      where('videoId','==',videoId),
+      where('gradeKey','==',gradeKey)
+    ));
+    const comments = snap.docs.map(d=>({id:d.id,...d.data()}))
+      .sort((a,b)=>(a.createdAt?.seconds||0)-(b.createdAt?.seconds||0));
+    
+    // Update dot badge
+    const dot = document.getElementById('commentsDot');
+    const myReplies = comments.filter(c=>c.reply&&c.userId===_user?.uid&&!c.replyRead);
+    if(dot) dot.style.display = myReplies.length?'inline-block':'none';
+
+    if(!comments.length){
+      listEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px"><svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' style='width:24px;height:24px;margin-bottom:8px;opacity:.4'><path d='M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z'/></svg><p>لا يوجد تعليقات — كن أول من يسأل! 🙋</p></div>';
+      return;
+    }
+    listEl.innerHTML = comments.map(c=>{
+      const isMe = c.userId === _user?.uid;
+      const dt = c.createdAt?.toDate?.()?.toLocaleDateString('ar-EG',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})||'—';
+      return `<div style="margin-bottom:12px">
+        <!-- Student comment -->
+        <div style="display:flex;gap:8px;${isMe?'flex-direction:row-reverse':''}">
+          <div style="width:32px;height:32px;border-radius:50%;background:${isMe?'linear-gradient(135deg,var(--blue),var(--navy))':'rgba(255,255,255,0.08)'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;color:#fff">
+            ${(c.userName||'ط')[0].toUpperCase()}
+          </div>
+          <div style="flex:1;max-width:85%">
+            <div style="background:${isMe?'rgba(74,127,212,0.15)':'rgba(255,255,255,0.05)'};border:1px solid ${isMe?'rgba(74,127,212,0.3)':'rgba(255,255,255,0.08)'};border-radius:${isMe?'14px 4px 14px 14px':'4px 14px 14px 14px'};padding:10px 12px">
+              <div style="font-size:11px;font-weight:800;color:${isMe?'var(--blue)':'var(--gold)'};margin-bottom:4px">${isMe?'أنت':c.userName||'طالب'}</div>
+              <div style="font-size:13px;line-height:1.6;white-space:pre-wrap">${c.text||''}</div>
+            </div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px;${isMe?'text-align:right':''}">${dt}</div>
+          </div>
+        </div>
+        ${c.reply?`
+        <!-- Teacher reply -->
+        <div style="display:flex;gap:8px;margin-top:8px;padding-right:16px">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#8a5010);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:13px;height:13px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);border-radius:4px 14px 14px 14px;padding:10px 12px">
+              <div style="font-size:11px;font-weight:800;color:var(--gold);margin-bottom:4px">👨‍🏫 المدرس</div>
+              <div style="font-size:13px;line-height:1.6;white-space:pre-wrap">${c.reply}</div>
+            </div>
+            <div style="font-size:10px;color:var(--muted);margin-top:3px">${c.repliedAt?.toDate?.()?.toLocaleDateString('ar-EG',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})||'—'}</div>
+          </div>
+        </div>`:''}
+      </div>`;
+    }).join('');
+  }catch(e){
+    listEl.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px">خطأ في التحميل</div>';
+  }
+}
+
+async function submitComment(){
+  if(!_user){ showToast('سجل دخول أولاً','err'); return; }
+  const videoId = window._currentCommentVideoId;
+  const text = (document.getElementById('comment-text')?.value||'').trim();
+  if(!videoId){ showToast('اختار الفيديو أولاً','err'); return; }
+  if(!text){ showToast('اكتب تعليقك أولاً','err'); return; }
+  try{
+    const gradeKey = window._openGrade;
+    await addDoc(collection(db,'videoComments'),{
+      videoId, gradeKey,
+      userId:   _user.uid,
+      userName: _userData?.name||'طالب',
+      text,
+      reply: null,
+      replyRead: false,
+      createdAt: serverTimestamp()
+    });
+    // Notify admin
+    notifyAdmin('💬','سؤال جديد على فيديو', (_userData?.name||'طالب')+': '+text.slice(0,80));
+    document.getElementById('comment-text').value='';
+    showToast('تم إرسال تعليقك ✓','ok');
+    loadVideoComments(videoId);
+  }catch(e){ showToast('خطأ: '+e.message,'err'); }
+}
+
+// Check for new teacher replies on load
+async function checkCommentReplies(){
+  if(!_user) return;
+  try{
+    const snap = await getDocs(query(
+      collection(db,'videoComments'),
+      where('userId','==',_user.uid),
+      where('replyRead','==',false)
+    ));
+    const count = snap.docs.filter(d=>d.data().reply).length;
+    const dot = document.getElementById('commentsDot');
+    if(dot) dot.style.display = count>0?'inline-block':'none';
+    // Show notification for each new reply
+    snap.docs.forEach(async d=>{
+      const c = d.data();
+      if(c.reply && !c.replyRead){
+        showToast('🎓 المدرس رد على سؤالك في: '+(c.videoTitle||'فيديو'),'ok');
+        // Mark as read
+        await updateDoc(doc(db,'videoComments',d.id),{replyRead:true}).catch(()=>{});
+      }
+    });
+  }catch(e){}
+}
+
+// ══════════════════════════════════════════════
+// ESSAY GRADE NOTIFICATION TO STUDENT
+// ══════════════════════════════════════════════
+async function checkEssayGradeNotif(){
+  if(!_user) return;
+  try{
+    const snap = await getDocs(query(
+      collection(db,'scores'),
+      where('userId','==',_user.uid),
+      where('type','==','essay'),
+      where('graded','==',true),
+      where('studentNotified','!=',true)
+    ));
+    for(const d of snap.docs){
+      const s = d.data();
+      // Send notification to student
+      await addDoc(collection(db,'notifications',_user.uid,'items'),{
+        icon: '📝',
+        title: 'تم تصحيح إجابتك المقالية!',
+        body: `امتحان: ${s.examTitle||'—'} — درجتك: ${s.essayScore??'—'}/100`,
+        read: false,
+        type: 'essay_graded',
+        createdAt: serverTimestamp()
+      });
+      // Mark as notified
+      await updateDoc(doc(db,'scores',d.id),{studentNotified:true}).catch(()=>{});
+      // Show toast
+      showToast(`✅ تم تصحيح إجابتك: ${s.examTitle||''} — درجتك ${s.essayScore??'—'}/100`,'ok');
+      // Update notif dot
+      checkNotifDot();
+    }
+  }catch(e){ console.warn('checkEssayGradeNotif:',e); }
+}
+
 function showToast(msg,type='ok'){
   const t=document.getElementById('toast');t.className='toast '+type;
   document.getElementById('tMsg').textContent=msg;
