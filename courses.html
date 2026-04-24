@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plus Mathematics – الكورسات</title>
+<title>Plus Math – الكورسات</title>
 <meta name="theme-color" content="#04060f"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -1280,18 +1280,6 @@ function renderHw(hw,done,gradeKey,isMine){
   }).join('');
 }
 
-// ── YouTube IFrame API ──
-window._ytPlayers = {};   // { videoId: YT.Player }
-window._ytWatched = {};   // { videoId: true } — تم احتساب الثلث
-
-function onYouTubeIframeAPIReady(){
-  // شغل أي players كانوا في الانتظار
-  (window._ytPendingInit||[]).forEach(({id,ytId,gradeKey})=>{
-    _createYTPlayer(id,ytId,gradeKey);
-  });
-  window._ytPendingInit = [];
-}
-
 window.openVid=(id,ytId)=>{
   document.querySelectorAll('[id^="vp-"]').forEach(w=>{w.style.display='none';const f=w.querySelector('iframe');if(f)f.src='';});
   const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);
@@ -1306,89 +1294,8 @@ window.openVidWithTracking=(id,ytId,gradeKey)=>{
     _progress[gradeKey]={...gp,videoViews:vv};
     setDoc(doc(db,'progress',_user.uid),_progress,{merge:true}).catch(()=>{});
   }
-  // فتح الفيديو
-  document.querySelectorAll('[id^="vp-"]').forEach(w=>{w.style.display='none';const f=w.querySelector('iframe');if(f)f.src='';});
-  const w=document.getElementById('vp-'+id);
-  if(w) w.style.display='block';
-
-  // تهيئة YT Player لتتبع الثلث
-  if(ytId && typeof YT !== 'undefined' && YT.Player){
-    _createYTPlayer(id, ytId, gradeKey);
-  } else {
-    // fallback لو API مش جاهزة — نحط src عادي
-    const f=document.getElementById('vf-'+id);
-    if(f) f.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&enablejsapi=1`;
-    // retry بعد لما API تتحمل
-    window._ytPendingInit = window._ytPendingInit||[];
-    window._ytPendingInit.push({id,ytId,gradeKey});
-  }
+  window.openVid(id,ytId);
 };
-
-function _createYTPlayer(id, ytId, gradeKey){
-  // لو فيه player قديم ندمره
-  if(window._ytPlayers[id]){
-    try{ window._ytPlayers[id].destroy(); }catch(e){}
-    delete window._ytPlayers[id];
-  }
-  // ننشئ iframe جديد نظيف
-  const container = document.getElementById('vp-'+id);
-  if(!container) return;
-  const oldIframe = document.getElementById('vf-'+id);
-  if(oldIframe) oldIframe.remove();
-  const newIframe = document.createElement('div');
-  newIframe.id = 'vf-'+id;
-  container.insertBefore(newIframe, container.firstChild);
-
-  window._ytPlayers[id] = new YT.Player('vf-'+id, {
-    videoId: ytId,
-    playerVars: { autoplay:1, rel:0, modestbranding:1 },
-    events:{
-      onReady: (e)=>{ e.target.playVideo(); },
-      onStateChange: (e)=>{
-        if(e.data === YT.PlayerState.PLAYING){
-          _startThirdTracker(id, gradeKey, e.target);
-        }
-      }
-    }
-  });
-}
-
-function _startThirdTracker(id, gradeKey, player){
-  if(window._ytWatched[id]) return; // سبق احتسابه
-  clearInterval(window._ytTrackTimer);
-  window._ytTrackTimer = setInterval(()=>{
-    try{
-      if(window._ytWatched[id]){ clearInterval(window._ytTrackTimer); return; }
-      const cur = player.getCurrentTime();
-      const dur = player.getDuration();
-      if(dur > 0 && cur >= dur * 0.33){
-        // الطالب شاف ثلث الفيديو — نسجل تلقائياً
-        window._ytWatched[id] = true;
-        clearInterval(window._ytTrackTimer);
-        _autoMarkDone(id, gradeKey);
-      }
-    }catch(e){ clearInterval(window._ytTrackTimer); }
-  }, 3000);
-}
-
-function _autoMarkDone(id, gradeKey){
-  // نحدث زرار "انهيت الدرس" ليظهر كـ مكتمل
-  const btn = document.querySelector('#vp-'+id+' .pbtn.ok');
-  if(btn){
-    btn.textContent = '✅ تم تسجيل المشاهدة';
-    btn.style.background = 'rgba(0,214,143,0.25)';
-    btn.style.borderColor = 'rgba(0,214,143,0.5)';
-    btn.style.color = 'var(--ok)';
-    btn.onclick = null;
-    btn.style.cursor = 'default';
-  }
-  // نسجل في progress
-  markDone(gradeKey,'videos',id);
-  // نظهر رايتنج
-  const rDiv = document.getElementById('rating-'+id);
-  if(rDiv) rDiv.style.display = 'flex';
-}
-
 window.closeVid=(id)=>{const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);if(w)w.style.display='none';if(f)f.src='';};
 window.markVDone=(g,id)=>{
   markDone(g,'videos',id);
@@ -1969,7 +1876,6 @@ h2{color:#c62828;margin:60px 0 20px;border-right:8px solid #c62828;padding-right
 <h2>${r.topic||'—'}</h2>
 <div class="box">${(r.details||'لا يوجد محتوى').replace(/\n/g,'<br/>')}</div>
 <button class="print-btn" onclick="window.print()">🖨️ طباعة البحث</button>
-<script src="https://www.youtube.com/iframe_api"></script>
 </body></html>`;
   const w=window.open('','_blank');
   w.document.write(html);
@@ -2457,12 +2363,6 @@ function showToast(msg,type='ok'){
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCourse();});
 </script>
 
-<!-- PWA Install Button -->
-<button id="installBtn" onclick="installPWA()" style="display:none;flex-direction:column;align-items:center;gap:3px;background:linear-gradient(135deg,var(--blue),var(--navy));border:none;cursor:pointer;color:#fff;padding:6px 10px;border-radius:10px;font-family:'Tajawal',sans-serif">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-  <span style="font-size:9px;font-weight:700">تثبيت</span>
-</button>
-
 <script>
 // تسجيل Service Worker للتثبيت على الموبايل
 let _deferredInstall=null;
@@ -2490,4 +2390,9 @@ window.addEventListener('appinstalled',()=>{
 </script>
 </body>
 </html>
+  <!-- PWA Install Button -->
+  <button id="installBtn" onclick="installPWA()" style="display:none;flex-direction:column;align-items:center;gap:3px;background:linear-gradient(135deg,var(--blue),var(--navy));border:none;cursor:pointer;color:#fff;padding:6px 10px;border-radius:10px;font-family:'Tajawal',sans-serif">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    <span style="font-size:9px;font-weight:700">تثبيت</span>
+  </button>
 
