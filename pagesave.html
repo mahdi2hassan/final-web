@@ -399,6 +399,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 .mbg{position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(4px);
   z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
 .mbg.on{display:flex}
+.mbx{background:rgba(8,13,28,0.97);backdrop-filter:blur(24px);border:1px solid var(--b1);border-radius:var(--r);padding:24px;width:100%}
 .modal{background:rgba(8,13,28,0.97);backdrop-filter:blur(24px);
   border:1px solid var(--b1);border-radius:var(--r);
   padding:clamp(18px,4vw,24px);width:100%;max-width:420px;
@@ -605,14 +606,9 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
         <span>الأبحاث</span>
       </div>
-      <div class="sb-item" onclick="goPage('scores')" data-perm="content">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
-        <span>درجات الطلاب</span>
-      </div>
       <div class="sb-item" onclick="goPage('answers')" data-perm="scores">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-        <span>إجابات الطلاب</span>
-        <span class="sb-badge" id="answersBadge" style="display:none;background:var(--purple)">0</span>
+        <span>الدرجات والإجابات</span>
       </div>
       <div class="sb-item" onclick="goPage('broadcast')" data-perm="broadcast">
         <svg><use href="#ic-send"/></svg><span>إرسال جماعي</span>
@@ -961,22 +957,35 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </div></div>
       </div>
 
-      <!-- ══ SCORES ══ -->
-      <div class="page" id="page-scores">
+
+
+
+      <!-- ══ ANSWERS + SCORES (MERGED) ══ -->
+      <div class="page" id="page-answers">
+
+        <!-- Page header -->
         <div class="sh">
           <div class="sh-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
-            درجات الطلاب
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+            الدرجات والإجابات
           </div>
           <div class="sh-acts">
-            <button class="btn gold sm" onclick="exportScoresCsv()">
+            <button class="btn gold sm" onclick="exportMergedCsv()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               CSV
             </button>
-            <button class="btn ghost sm" onclick="loadScores()">
+            <button class="btn ghost sm" onclick="loadMerged()">
               <svg><use href="#ic-refresh"/></svg>تحديث
             </button>
           </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="ftabs" style="margin-bottom:14px">
+          <div class="ftab on" id="atab-all"   onclick="setAnsTab('all')">📋 الكل</div>
+          <div class="ftab"    id="atab-mcq"   onclick="setAnsTab('mcq')">✅ MCQ</div>
+          <div class="ftab"    id="atab-essay" onclick="setAnsTab('essay')">📝 مقالي</div>
+          <div class="ftab"    id="atab-manual" onclick="setAnsTab('manual')">✏️ يدوي</div>
         </div>
 
         <!-- Stats row -->
@@ -985,135 +994,47 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <div class="sc-ico" style="background:rgba(201,168,76,0.15);color:var(--gold)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
             </div>
-            <div class="sc-val" id="sc-total">—</div><div class="sc-lbl">إجمالي الإجابات</div>
-          </div>
-          <div class="sc gr">
-            <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20,6 9,17 4,12"/></svg></div>
-            <div class="sc-val" id="sc-avg">—</div><div class="sc-lbl">متوسط الدرجات</div>
+            <div class="sc-val" id="mg-total">—</div><div class="sc-lbl">إجمالي السجلات</div>
           </div>
           <div class="sc bl">
             <div class="sc-ico"><svg><use href="#ic-users"/></svg></div>
-            <div class="sc-val" id="sc-students">—</div><div class="sc-lbl">طلاب أجروا امتحانات</div>
+            <div class="sc-val" id="mg-students">—</div><div class="sc-lbl">طلاب</div>
+          </div>
+          <div class="sc gr">
+            <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20,6 9,17 4,12"/></svg></div>
+            <div class="sc-val" id="mg-avg">—</div><div class="sc-lbl">متوسط الدرجات</div>
           </div>
           <div class="sc pu">
-            <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg></div>
-            <div class="sc-val" id="sc-pass">—</div><div class="sc-lbl">نسبة النجاح</div>
+            <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
+            <div class="sc-val" id="mg-essay-pending">—</div><div class="sc-lbl">مقالي لم تُصحح</div>
           </div>
         </div>
 
-        <!-- Filters -->
+        <!-- Filters row -->
         <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
-          <select id="sc-grade-filter" onchange="renderScores()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
+          <select id="mg-grade-filter" onchange="renderMerged()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
             <option value="">كل الصفوف</option>
-            <optgroup label="ابتدائي">
-              <option value="primary-4">رابع ابتدائي</option>
-              <option value="primary-5">خامس ابتدائي</option>
-              <option value="primary-6">سادس ابتدائي</option>
-            </optgroup>
-            <optgroup label="إعدادي">
-              <option value="prep-1">أول إعدادي</option>
-              <option value="prep-2">ثاني إعدادي</option>
-              <option value="prep-3">ثالث إعدادي</option>
-            </optgroup>
-            <optgroup label="ثانوي">
-              <option value="sec-1">أول ثانوي</option>
-              <option value="sec-2">ثاني ثانوي</option>
-              <option value="sec-3">ثالث ثانوي</option>
-            </optgroup>
           </select>
           <div class="ftabs" style="margin:0">
-            <div class="ftab on" id="scf-all" onclick="setScFilter('all')">الكل</div>
-            <div class="ftab" id="scf-pass" onclick="setScFilter('pass')">ناجح ✅</div>
-            <div class="ftab" id="scf-fail" onclick="setScFilter('fail')">راسب ❌</div>
+            <div class="ftab on" id="mgf-all"   onclick="setMgFilter('all')">الكل</div>
+            <div class="ftab"   id="mgf-pass"   onclick="setMgFilter('pass')">✅ ناجح</div>
+            <div class="ftab"   id="mgf-fail"   onclick="setMgFilter('fail')">❌ راسب</div>
+            <div class="ftab"   id="mgf-pending" onclick="setMgFilter('pending')">⏳ لم تُصحح</div>
           </div>
-          <input id="sc-search" placeholder="🔍 ابحث باسم الطالب..." oninput="renderScores()" style="flex:1;min-width:160px;padding:7px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"/>
+          <input id="mg-search" placeholder="🔍 ابحث باسم الطالب أو الامتحان..." oninput="renderMerged()" style="flex:1;min-width:180px;padding:7px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"/>
           <button onclick="openAddScoreModal()" class="btn primary sm">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             إضافة درجة
           </button>
         </div>
 
-        <div class="tw"><div class="tw-scroll">
-          <table>
-            <thead><tr>
-              <th onclick="sortScores('name')" style="cursor:pointer">الطالب <span id="sc-sort-name"></span></th>
-              <th>الصف</th>
-              <th>الامتحان</th>
-              <th onclick="sortScores('pct')" style="cursor:pointer">الدرجة <span id="sc-sort-pct"></span></th>
-              <th>الحالة</th>
-              <th onclick="sortScores('date')" style="cursor:pointer">التاريخ <span id="sc-sort-date"></span></th>
-              <th>إجراء</th>
-            </tr></thead>
-            <tbody id="scoresTbl"><tr><td colspan="7"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
-          </table>
-        </div></div>
-      </div>
-
-
-      <!-- ══ STUDENT ANSWERS ══ -->
-      <div class="page" id="page-answers">
-        <div class="sh">
-          <div class="sh-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
-            إجابات الطلاب
-          </div>
-          <div class="sh-acts">
-            <select id="ans-type-filter" onchange="renderAnswers()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
-              <option value="">كل الأنواع</option>
-              <option value="mcq">MCQ فقط</option>
-              <option value="essay">مقالي فقط</option>
-            </select>
-            <select id="ans-grade-filter" onchange="renderAnswers()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
-              <option value="">كل الصفوف</option>
-            </select>
-            <button class="btn gold sm" onclick="exportAnswersCsv()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              CSV
-            </button>
-            <button class="btn ghost sm" onclick="loadAnswers()">
-              <svg><use href="#ic-refresh"/></svg>تحديث
-            </button>
-          </div>
-        </div>
-
-        <!-- Stats row -->
-        <div class="stats-row" style="margin-bottom:14px">
-          <div class="sc go">
-            <div class="sc-ico" style="background:rgba(167,139,250,0.15);color:var(--purple)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
-            </div>
-            <div class="sc-val" id="ans-total">—</div><div class="sc-lbl">إجمالي الإجابات</div>
-          </div>
-          <div class="sc bl">
-            <div class="sc-ico"><svg><use href="#ic-users"/></svg></div>
-            <div class="sc-val" id="ans-students">—</div><div class="sc-lbl">طلاب أجابوا</div>
-          </div>
-          <div class="sc gr">
-            <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20,6 9,17 4,12"/></svg></div>
-            <div class="sc-val" id="ans-mcq-count">—</div><div class="sc-lbl">إجابات MCQ</div>
-          </div>
-          <div class="sc pu">
-            <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
-            <div class="sc-val" id="ans-essay-count">—</div><div class="sc-lbl">إجابات مقالية</div>
-          </div>
-        </div>
-
-        <!-- Search + Filter -->
-        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
-          <input id="ans-search" placeholder="🔍 ابحث باسم الطالب أو الامتحان..." oninput="renderAnswers()" style="flex:1;min-width:200px;padding:7px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"/>
-          <div class="ftabs" style="margin:0">
-            <div class="ftab on" id="ansf-all" onclick="setAnsFilter('all')">الكل</div>
-            <div class="ftab" id="ansf-pending" onclick="setAnsFilter('pending')">⏳ لم تُصحح</div>
-            <div class="ftab" id="ansf-graded" onclick="setAnsFilter('graded')">✅ مصححة</div>
-          </div>
-        </div>
-
-        <div id="answersList"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg><p>اضغط تحديث لتحميل الإجابات</p></div></div>
+        <!-- List -->
+        <div id="mergedList"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg><p>اضغط تحديث لتحميل البيانات</p></div></div>
       </div>
 
       <!-- Essay Grade Modal -->
-      <div id="essayGradeModal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px">
-        <div style="background:#0c1228;border:1px solid var(--b1);border-radius:18px;padding:24px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative">
+      <div id="essayGradeModal" class="mbg">
+        <div class="mbx" style="max-width:560px;max-height:90vh;overflow-y:auto;position:relative">
           <button onclick="closeModal('essayGradeModal')" style="position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:50%;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:18px">×</button>
           <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" style="width:16px;height:16px"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -1140,8 +1061,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       </div>
 
       <!-- MCQ Answer Detail Modal -->
-      <div id="mcqDetailModal" style="display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px">
-        <div style="background:#0c1228;border:1px solid var(--b1);border-radius:18px;padding:24px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative">
+      <div id="mcqDetailModal" class="mbg">
+        <div class="mbx" style="max-width:560px;max-height:90vh;overflow-y:auto;position:relative">
           <button onclick="closeModal('mcqDetailModal')" style="position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:50%;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:18px">×</button>
           <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px">
             <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" style="width:16px;height:16px"><polyline points="9,11 12,14 22,4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
@@ -1150,6 +1071,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <div id="mcqDetailContent"></div>
         </div>
       </div>
+
 
       <!-- ══ BROADCAST ══ -->
       <div class="page" id="page-broadcast">
@@ -7330,7 +7252,7 @@ window.goPage = (p,...args)=>{
   _origGoPage?.(p,...args);
   if(p==='research') loadResearch();
   if(p==='grades') renderGradesList();
-  if(p==='scores'){ buildScoreGradeFilter(); loadScores(); }
+  if(p==='scores'){ goPage('answers'); return; }  // redirect → merged page
   if(p==='answers'){ buildAnswersGradeFilter(); loadAnswers(); }
 };
 
@@ -7391,6 +7313,8 @@ window.loadScores = async ()=>{
 
 // بناء قائمة الصفوف في فلتر الدرجات — ثابتة + ديناميكية
 window.buildScoreGradeFilter = ()=>{
+  // sync to merged page filter too
+  if(typeof buildAnswersGradeFilter === 'function') buildAnswersGradeFilter();
   const BASE_GRADES = [
     {key:'primary-4',label:'رابع ابتدائي',stage:'primary'},
     {key:'primary-5',label:'خامس ابتدائي',stage:'primary'},
@@ -7620,16 +7544,19 @@ window.exportScoresCsv = ()=>{
 };
 
 
-// ══════════════════════════════════════════════
-// STUDENT ANSWERS — إجابات الطلاب
-// ══════════════════════════════════════════════
-window._allAnswers = [];
-window._ansFilter  = 'all';
 
+// ══════════════════════════════════════════════
+// MERGED SCORES + ANSWERS
+// ══════════════════════════════════════════════
+window._allMerged  = [];
+window._mgFilter   = 'all';
+window._ansTab     = 'all';   // all | mcq | essay | manual
+
+// ── Build grade filter for merged page ──
 window.buildAnswersGradeFilter = ()=>{
-  const sel = document.getElementById('ans-grade-filter');
+  const sel = document.getElementById('mg-grade-filter');
   if(!sel) return;
-  const BASE_GRADES = [
+  const allGrades = [
     {key:'primary-4',label:'رابع ابتدائي',stage:'ابتدائي'},
     {key:'primary-5',label:'خامس ابتدائي',stage:'ابتدائي'},
     {key:'primary-6',label:'سادس ابتدائي',stage:'ابتدائي'},
@@ -7640,133 +7567,174 @@ window.buildAnswersGradeFilter = ()=>{
     {key:'sec-2',label:'ثاني ثانوي',stage:'ثانوي'},
     {key:'sec-3',label:'ثالث ثانوي',stage:'ثانوي'},
   ];
-  const allGrades = [...BASE_GRADES];
-  const dynamicGrades = Object.values(window._dynamicGrades||{}).flat();
-  dynamicGrades.forEach(g=>{ if(!allGrades.some(b=>b.key===g.key)) allGrades.push({key:g.key,label:g.label,stage:g.stage||'أخرى'}); });
+  const dyn = Object.values(window._dynamicGrades||{}).flat();
+  dyn.forEach(g=>{ if(!allGrades.some(b=>b.key===g.key)) allGrades.push({key:g.key,label:g.label,stage:g.stage||'أخرى'}); });
   const byStage = {};
   allGrades.forEach(g=>{ if(!byStage[g.stage]) byStage[g.stage]=[]; byStage[g.stage].push(g); });
   sel.innerHTML = '<option value="">كل الصفوف</option>';
   Object.keys(byStage).forEach(stage=>{
-    const grp = document.createElement('optgroup'); grp.label = stage;
-    byStage[stage].forEach(g=>{ const opt=document.createElement('option'); opt.value=g.key; opt.textContent=g.label; grp.appendChild(opt); });
+    const grp=document.createElement('optgroup'); grp.label=stage;
+    byStage[stage].forEach(g=>{ const o=document.createElement('option'); o.value=g.key; o.textContent=g.label; grp.appendChild(o); });
     sel.appendChild(grp);
   });
+  // also refresh GRADE_LABELS_SC
+  allGrades.forEach(g=>{ GRADE_LABELS_SC[g.key]=g.label; });
 };
 
-window.loadAnswers = async ()=>{
-  const listEl = document.getElementById('answersList');
+// ── Load all data from scores collection ──
+window.loadAnswers = async ()=> window.loadMerged();
+window.loadMerged = async ()=>{
+  const listEl = document.getElementById('mergedList');
   if(!listEl) return;
-  listEl.innerHTML='<div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
+  listEl.innerHTML='<tr><td><div class="empty"><div style="width:24px;height:24px;border:2px solid var(--b1);border-top-color:var(--purple);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div></td></tr>';
   try{
-    const snap = await db.collection('scores').limit(800).get();
-    window._allAnswers = snap.docs.map(d=>({id:d.id,...d.data()}))
+    const snap = await db.collection('scores').limit(1000).get();
+    window._allMerged = snap.docs.map(d=>({id:d.id,...d.data()}))
       .sort((a,b)=>(b.submittedAt?.toMillis?.()??0)-(a.submittedAt?.toMillis?.()??0));
-    renderAnswers();
-    updateAnswerStats();
+    // keep _allScores in sync for legacy CSV
+    window._allScores = window._allMerged;
+    renderMerged();
+    updateMergedStats();
+    buildScoreGradeFilter();
   }catch(e){
     const isPerm = e.message&&(e.message.includes('permission')||e.message.includes('PERMISSION_DENIED'));
     listEl.innerHTML = isPerm
-      ? '<div style="padding:20px;text-align:center"><div style="font-size:32px;margin-bottom:10px">🔒</div><div style="font-size:13px;color:var(--err);font-weight:800">Missing or insufficient permissions</div></div>'
-      : `<div class="empty"><p>خطأ: ${e.message}</p></div>`;
+      ? '<div style="padding:20px;text-align:center"><div style="font-size:32px;margin-bottom:10px">🔒</div><div style="font-size:13px;color:var(--err);font-weight:800">Missing permissions — ارفع Firestore Rules</div></div>'
+      : '<div class="empty"><p>خطأ: '+e.message+'</p></div>';
+    toast('خطأ: '+e.message,'err');
   }
 };
 
-window.updateAnswerStats = ()=>{
-  const ans = window._allAnswers;
-  document.getElementById('ans-total').textContent    = ans.length||'—';
-  document.getElementById('ans-students').textContent = new Set(ans.map(a=>a.userId||a.userName)).size||'—';
-  document.getElementById('ans-mcq-count').textContent  = ans.filter(a=>!a.type||a.type==='mcq').length||'—';
-  document.getElementById('ans-essay-count').textContent = ans.filter(a=>a.type==='essay').length||'—';
+window.updateMergedStats = ()=>{
+  const all = window._allMerged;
+  document.getElementById('mg-total').textContent    = all.length||'—';
+  document.getElementById('mg-students').textContent = new Set(all.map(a=>a.userId||a.userName)).size||'—';
+  const withPct = all.filter(a=>a.pct!=null||(a.score!=null&&a.total));
+  const avg = withPct.length ? Math.round(withPct.reduce((s,x)=>s+(x.pct??Math.round((x.score||0)/(x.total||1)*100)),0)/withPct.length) : 0;
+  document.getElementById('mg-avg').textContent      = withPct.length?(avg+'%'):'—';
+  document.getElementById('mg-essay-pending').textContent = all.filter(a=>a.type==='essay'&&!a.graded).length||'0';
 };
 
-window.setAnsFilter = (f)=>{
-  window._ansFilter=f;
-  document.querySelectorAll('[id^="ansf-"]').forEach(el=>el.classList.remove('on'));
-  document.getElementById('ansf-'+f)?.classList.add('on');
-  renderAnswers();
+window.setAnsTab = (t)=>{
+  window._ansTab = t;
+  ['all','mcq','essay','manual'].forEach(x=>{
+    document.getElementById('atab-'+x)?.classList.toggle('on',x===t);
+  });
+  renderMerged();
 };
 
-window.renderAnswers = ()=>{
-  const listEl = document.getElementById('answersList');
+window.setMgFilter = (f)=>{
+  window._mgFilter=f;
+  ['all','pass','fail','pending'].forEach(x=>document.getElementById('mgf-'+x)?.classList.remove('on'));
+  document.getElementById('mgf-'+f)?.classList.add('on');
+  renderMerged();
+};
+
+window.renderMerged = ()=>{
+  const listEl = document.getElementById('mergedList');
   if(!listEl) return;
-  const gradeF = document.getElementById('ans-grade-filter')?.value||'';
-  const typeF  = document.getElementById('ans-type-filter')?.value||'';
-  const q      = (document.getElementById('ans-search')?.value||'').trim().toLowerCase();
-  const stateF = window._ansFilter;
+  const gradeF = document.getElementById('mg-grade-filter')?.value||'';
+  const q      = (document.getElementById('mg-search')?.value||'').trim().toLowerCase();
+  const tab    = window._ansTab;
+  const stF    = window._mgFilter;
 
-  let list = [...window._allAnswers];
+  let list = [...window._allMerged];
+
+  // Tab filter
+  if(tab==='mcq')    list = list.filter(s=>!s.type||s.type==='mcq');
+  if(tab==='essay')  list = list.filter(s=>s.type==='essay');
+  if(tab==='manual') list = list.filter(s=>s.manual===true);
+
+  // Grade filter
   if(gradeF) list = list.filter(s=>s.gradeKey===gradeF);
-  if(typeF==='mcq')   list = list.filter(s=>!s.type||s.type==='mcq');
-  if(typeF==='essay') list = list.filter(s=>s.type==='essay');
-  if(stateF==='pending') list = list.filter(s=>s.type==='essay'&&!s.graded);
-  if(stateF==='graded')  list = list.filter(s=>s.graded);
+
+  // Status filter
+  if(stF==='pass')    list = list.filter(s=>(s.pct??Math.round((s.score||0)/(s.total||1)*100))>=50);
+  if(stF==='fail')    list = list.filter(s=>(s.pct??Math.round((s.score||0)/(s.total||1)*100))<50&&s.type!=='essay');
+  if(stF==='pending') list = list.filter(s=>s.type==='essay'&&!s.graded);
+
+  // Search
   if(q) list = list.filter(s=>
-    (s.userName||'').toLowerCase().includes(q)||
+    (s.userName||s.manualName||'').toLowerCase().includes(q)||
     (s.examTitle||s.examId||'').toLowerCase().includes(q)||
-    (s.userGrade||'').toLowerCase().includes(q)
+    (s.userGrade||GRADE_LABELS_SC[s.gradeKey]||'').toLowerCase().includes(q)
   );
 
   if(!list.length){
-    listEl.innerHTML='<div class="empty"><p>لا يوجد إجابات تطابق البحث</p></div>';
+    listEl.innerHTML='<div class="empty"><p>لا يوجد نتائج تطابق البحث</p></div>';
     return;
   }
 
   listEl.innerHTML = list.map(s=>{
-    const isEssay = s.type==='essay';
-    const dt = s.submittedAt?.toDate?.()?.toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})||'—';
-    const name = s.userName||s.manualName||'—';
-    const examName = s.examTitle||s.examId||'—';
-    const gradeLabel = GRADE_LABELS_SC[s.gradeKey]||s.userGrade||s.gradeKey||'—';
-    const pct = s.pct??Math.round((s.score||0)/(s.total||1)*100);
+    const isEssay  = s.type==='essay';
+    const isManual = s.manual===true;
+    const pct      = s.pct??Math.round((s.score||0)/(s.total||1)*100);
     const barColor = pct>=80?'var(--ok)':pct>=50?'var(--blue)':'var(--err)';
+    const name     = s.userName||s.manualName||'—';
+    const examName = s.examTitle||s.examId||'—';
+    const grLabel  = GRADE_LABELS_SC[s.gradeKey]||s.userGrade||s.gradeKey||'—';
+    const dt       = s.submittedAt?.toDate?.()?.toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'})||'—';
+    const scoreStr = (s.score!=null&&s.total)?s.score+'/'+s.total:pct+'%';
 
     if(isEssay){
-      const isGraded = !!s.graded;
-      const essayPreview = (s.essayAnswer||'').slice(0,120) + ((s.essayAnswer||'').length>120?'...':'');
-      return `<div style="background:rgba(8,13,28,0.6);border:1px solid ${isGraded?'rgba(0,214,143,0.25)':'rgba(167,139,250,0.25)'};border-radius:14px;padding:14px 16px;margin-bottom:10px">
+      const isGraded   = !!s.graded;
+      const preview    = (s.essayAnswer||'لا توجد إجابة').slice(0,100)+((s.essayAnswer||'').length>100?'...':'');
+      const statusBadge = isGraded
+        ? `<span class="bd ok" style="font-size:10px">✅ مصحح — ${s.essayScore??'—'}/100</span>`
+        : `<span class="bd" style="font-size:10px;background:rgba(245,166,35,0.1);color:var(--warn);border-color:rgba(245,166,35,0.3)">⏳ لم تُصحح</span>`;
+      return `<div style="background:rgba(8,13,28,0.6);border:1px solid ${isGraded?'rgba(0,214,143,0.2)':'rgba(167,139,250,0.25)'};border-radius:14px;padding:13px 15px;margin-bottom:9px">
         <div style="display:flex;align-items:start;gap:10px">
           <div style="width:36px;height:36px;border-radius:10px;background:rgba(167,139,250,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">📝</div>
           <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap">
-              <span style="background:rgba(167,139,250,0.15);color:var(--purple);padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800">مقالي</span>
-              ${isGraded?'<span style="background:rgba(0,214,143,0.12);color:var(--ok);padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800">✅ مصحح — '+s.essayScore+'/100</span>':'<span style="background:rgba(245,166,35,0.12);color:var(--warn);padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800">⏳ لم يُصحح</span>'}
-              ${s.attempt?`<span style="font-size:10px;color:var(--muted)">محاولة ${s.attempt}</span>`:''}
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px;flex-wrap:wrap">
+              <span class="bd pu" style="font-size:10px">مقالي</span>
+              ${statusBadge}
+              ${s.attempt?`<span style="font-size:10px;color:var(--muted)">م${s.attempt}</span>`:''}
             </div>
-            <div style="font-size:13px;font-weight:800;margin-bottom:3px">${examName}</div>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:8px">👤 ${name} &bull; ${gradeLabel} &bull; 📅 ${dt}</div>
-            <div style="background:rgba(6,10,22,0.8);border:1px solid var(--b2);border-radius:9px;padding:10px 12px;font-size:12px;line-height:1.7;color:var(--text2);white-space:pre-wrap;max-height:80px;overflow:hidden;cursor:pointer" onclick="openEssayDetail('${s.id}')">${essayPreview||'<span style=\"color:var(--muted)\">لا توجد إجابة</span>'}</div>
-            ${isGraded&&s.teacherComment?`<div style="margin-top:7px;font-size:11px;color:var(--gold)">💬 ${s.teacherComment}</div>`:''}
+            <div style="font-weight:800;margin-bottom:2px;font-size:13px">${examName}</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px">👤 ${name} &bull; ${grLabel} &bull; 📅 ${dt}</div>
+            <div onclick="openEssayDetail('${s.id}')" style="background:rgba(6,10,22,0.8);border:1px solid var(--b2);border-radius:8px;padding:9px 11px;font-size:11px;line-height:1.7;color:var(--text2);white-space:pre-wrap;max-height:60px;overflow:hidden;cursor:pointer;position:relative">
+              ${preview}
+              <div style="position:absolute;bottom:0;left:0;right:0;height:25px;background:linear-gradient(transparent,rgba(6,10,22,0.9));border-radius:0 0 8px 8px"></div>
+            </div>
+            ${isGraded&&s.teacherComment?`<div style="margin-top:6px;font-size:11px;color:var(--gold)">💬 ${s.teacherComment}</div>`:''}
           </div>
           <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
-            <button onclick="openEssayGrade('${s.id}')" style="padding:6px 10px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--gold),#b8860b);color:#000;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:800" title="تصحيح">${isGraded?'✏️ تعديل':'🖊️ تصحيح'}</button>
-            <button onclick="deleteAnswer('${s.id}')" style="padding:6px 10px;border:1px solid rgba(255,77,109,0.3);border-radius:8px;background:transparent;color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px" title="حذف">🗑</button>
+            <button onclick="openEssayDetail('${s.id}')" class="btn primary sm" style="font-size:11px">${isGraded?'✏️ تعديل':'🖊️ تصحيح'}</button>
+            <button onclick="deleteMerged('${s.id}')" class="btn icon-btn del"><svg><use href="#ic-trash"/></svg></button>
           </div>
         </div>
       </div>`;
     } else {
-      // MCQ
-      return `<div style="background:rgba(8,13,28,0.6);border:1px solid rgba(74,127,212,0.2);border-radius:14px;padding:14px 16px;margin-bottom:10px">
+      // MCQ or manual
+      const typeBadge = isManual
+        ? `<span class="bd" style="font-size:10px;background:rgba(245,166,35,0.08);color:var(--warn);border-color:rgba(245,166,35,0.3)">✏️ يدوي</span>`
+        : `<span class="bd blue" style="font-size:10px">MCQ</span>`;
+      const passed = pct>=50;
+      return `<div style="background:rgba(8,13,28,0.6);border:1px solid ${passed?'rgba(74,127,212,0.2)':'rgba(255,77,109,0.15)'};border-radius:14px;padding:13px 15px;margin-bottom:9px">
         <div style="display:flex;align-items:center;gap:10px">
-          <div style="width:36px;height:36px;border-radius:10px;background:rgba(74,127,212,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">✅</div>
+          <div style="width:36px;height:36px;border-radius:10px;background:rgba(74,127,212,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <div class="av" style="width:28px;height:28px;font-size:11px">${(name[0]||'?').toUpperCase()}</div>
+          </div>
           <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap">
-              <span style="background:rgba(74,127,212,0.15);color:var(--blue);padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800">MCQ</span>
-              <span style="background:${pct>=50?'rgba(0,214,143,0.12)':'rgba(255,77,109,0.12)'};color:${pct>=50?'var(--ok)':'var(--err)'};padding:3px 8px;border-radius:20px;font-size:10px;font-weight:800">${pct>=50?'✅ ناجح':'❌ راسب'}</span>
-              ${s.attempt?`<span style="font-size:10px;color:var(--muted)">محاولة ${s.attempt}</span>`:''}
+            <div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;flex-wrap:wrap">
+              ${typeBadge}
+              <span class="bd ${passed?'ok':'err'}" style="font-size:10px">${passed?'✅ ناجح':'❌ راسب'}</span>
+              ${s.attempt?`<span style="font-size:10px;color:var(--muted)">م${s.attempt}</span>`:''}
             </div>
-            <div style="font-size:13px;font-weight:800;margin-bottom:3px">${examName}</div>
-            <div style="font-size:11px;color:var(--muted);margin-bottom:6px">👤 ${name} &bull; ${gradeLabel} &bull; 📅 ${dt}</div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <div style="width:90px;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden">
+            <div style="font-weight:800;margin-bottom:2px;font-size:13px">${examName}</div>
+            <div style="font-size:11px;color:var(--muted);margin-bottom:6px">👤 ${name} &bull; ${grLabel} &bull; 📅 ${dt}</div>
+            <div style="display:flex;align-items:center;gap:7px">
+              <div style="width:80px;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden">
                 <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px"></div>
               </div>
-              <span style="font-size:14px;font-weight:900;color:${barColor}">${s.score!=null&&s.total?s.score+'/'+s.total:pct+'%'}</span>
-              <span style="font-size:11px;color:var(--muted)">${pct>=80?'ممتاز 🏆':pct>=60?'جيد 👍':pct>=50?'مقبول':'ضعيف'}</span>
+              <span style="font-size:13px;font-weight:900;color:${barColor}">${scoreStr}</span>
+              <span style="font-size:10px;color:var(--muted)">${pct>=80?'ممتاز 🏆':pct>=60?'جيد 👍':pct>=50?'مقبول':'ضعيف'}</span>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
-            <button onclick="openMcqDetail('${s.id}')" style="padding:6px 10px;border:1px solid rgba(74,127,212,0.3);border-radius:8px;background:transparent;color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">🔍 تفاصيل</button>
-            <button onclick="deleteAnswer('${s.id}')" style="padding:6px 10px;border:1px solid rgba(255,77,109,0.3);border-radius:8px;background:transparent;color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px">🗑</button>
+            ${!isManual?`<button onclick="openMcqDetail('${s.id}')" class="btn ghost sm" style="font-size:11px">🔍 تفاصيل</button>`:''}
+            <button onclick="deleteMerged('${s.id}')" class="btn icon-btn del"><svg><use href="#ic-trash"/></svg></button>
           </div>
         </div>
       </div>`;
@@ -7774,22 +7742,24 @@ window.renderAnswers = ()=>{
   }).join('');
 };
 
+// ── Essay Detail / Grade ──
 window.openEssayDetail = (id)=>{
-  const s = window._allAnswers.find(a=>a.id===id);
-  if(!s) return;
+  const s = (window._allMerged||[]).find(a=>a.id===id);
+  if(!s){ toast('لم يتم العثور على الإجابة','err'); return; }
+  const grLabel = GRADE_LABELS_SC[s.gradeKey]||s.userGrade||'—';
+  const dt = s.submittedAt?.toDate?.()?.toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})||'—';
   document.getElementById('essayGradeContent').innerHTML = `
     <div style="background:rgba(6,10,22,0.8);border:1px solid var(--b2);border-radius:10px;padding:14px;margin-bottom:12px">
-      <div style="font-size:11px;color:var(--gold);font-weight:800;margin-bottom:6px">📋 ${s.examTitle||s.examId||'—'}</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">👤 ${s.userName||'—'} &bull; ${GRADE_LABELS_SC[s.gradeKey]||s.userGrade||'—'}</div>
-      <div style="font-size:12px;line-height:1.8;color:var(--text);white-space:pre-wrap">${s.essayAnswer||'<span style="color:var(--muted)">لا توجد إجابة</span>'}</div>
+      <div style="font-size:12px;color:var(--gold);font-weight:800;margin-bottom:4px">📋 ${s.examTitle||s.examId||'—'}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">👤 ${s.userName||'—'} &bull; ${grLabel} &bull; 📅 ${dt}</div>
+      <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px">إجابة الطالب:</div>
+      <div style="font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;max-height:240px;overflow-y:auto;padding-right:4px">${s.essayAnswer||'<span style="color:var(--muted)">لا توجد إجابة مكتوبة</span>'}</div>
     </div>`;
-  document.getElementById('essayGradeScore').value = s.essayScore||'';
+  document.getElementById('essayGradeScore').value   = s.essayScore!=null?s.essayScore:'';
   document.getElementById('essayGradeComment').value = s.teacherComment||'';
-  document.getElementById('essayGradeDocId').value = id;
+  document.getElementById('essayGradeDocId').value   = id;
   openModal('essayGradeModal');
 };
-
-window.openEssayGrade = (id)=>{ openEssayDetail(id); };
 
 window.saveEssayGrade = async ()=>{
   const id      = document.getElementById('essayGradeDocId').value;
@@ -7799,81 +7769,92 @@ window.saveEssayGrade = async ()=>{
   if(isNaN(score)||score<0||score>100){ toast('ادخل درجة صحيحة من 0 إلى 100','err'); return; }
   try{
     await db.collection('scores').doc(id).update({
-      graded: true,
-      essayScore: score,
-      pct: score,
-      teacherComment: comment,
+      graded:true, essayScore:score, pct:score,
+      teacherComment:comment,
       gradedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-    // Update local cache
-    const idx = window._allAnswers.findIndex(a=>a.id===id);
-    if(idx>-1){ window._allAnswers[idx].graded=true; window._allAnswers[idx].essayScore=score; window._allAnswers[idx].teacherComment=comment; }
+    const idx = window._allMerged.findIndex(a=>a.id===id);
+    if(idx>-1){
+      window._allMerged[idx].graded=true;
+      window._allMerged[idx].essayScore=score;
+      window._allMerged[idx].pct=score;
+      window._allMerged[idx].teacherComment=comment;
+    }
     closeModal('essayGradeModal');
-    renderAnswers(); updateAnswerStats();
-    logActivity('✏️','تصحيح مقالي', (window._allAnswers.find(a=>a.id===id)?.examTitle||id)+' — '+score+'/100');
+    renderMerged(); updateMergedStats();
+    const rec = window._allMerged.find(a=>a.id===id);
+    logActivity('✏️','تصحيح مقالي',(rec?.examTitle||id)+' — '+score+'/100');
     toast('✅ تم حفظ الدرجة','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
+// ── MCQ Detail ──
 window.openMcqDetail = (id)=>{
-  const s = window._allAnswers.find(a=>a.id===id);
-  if(!s) return;
+  const s = (window._allMerged||[]).find(a=>a.id===id);
+  if(!s){ toast('لم يتم العثور على الإجابة','err'); return; }
   const pct = s.pct??Math.round((s.score||0)/(s.total||1)*100);
   const barColor = pct>=80?'var(--ok)':pct>=50?'var(--blue)':'var(--err)';
+  const grLabel = GRADE_LABELS_SC[s.gradeKey]||s.userGrade||'—';
   document.getElementById('mcqDetailContent').innerHTML = `
-    <div style="text-align:center;padding:16px 0;border-bottom:1px solid var(--b2);margin-bottom:14px">
-      <div style="font-size:13px;font-weight:800;margin-bottom:4px">${s.examTitle||s.examId||'—'}</div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">👤 ${s.userName||'—'} &bull; ${GRADE_LABELS_SC[s.gradeKey]||s.userGrade||'—'}</div>
-      <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(6,10,22,0.8);border:1px solid var(--b2);border-radius:12px;padding:10px 18px">
-        <div style="font-size:28px;font-weight:900;color:${barColor}">${s.score!=null&&s.total?s.score+'/'+s.total:pct+'%'}</div>
+    <div style="text-align:center;padding:12px 0 16px;border-bottom:1px solid var(--b2);margin-bottom:14px">
+      <div style="font-size:13px;font-weight:800;margin-bottom:3px">${s.examTitle||s.examId||'—'}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">👤 ${s.userName||'—'} &bull; ${grLabel}</div>
+      <div style="display:inline-flex;align-items:center;gap:12px;background:rgba(6,10,22,0.8);border:1px solid var(--b2);border-radius:12px;padding:10px 20px">
+        <div style="font-size:26px;font-weight:900;color:${barColor}">${s.score!=null&&s.total?s.score+'/'+s.total:''}</div>
         <div>
-          <div style="font-size:20px;font-weight:900;color:${barColor}">${pct}%</div>
+          <div style="font-size:22px;font-weight:900;color:${barColor}">${pct}%</div>
           <div style="font-size:11px;color:var(--muted)">${pct>=80?'ممتاز 🏆':pct>=60?'جيد 👍':pct>=50?'مقبول':'ضعيف'}</div>
         </div>
       </div>
     </div>
-    ${s.answers&&Array.isArray(s.answers)?`
-      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:8px">تفاصيل الإجابات:</div>
-      <div style="display:flex;flex-direction:column;gap:6px">
+    ${s.answers&&Array.isArray(s.answers)&&s.answers.length?`
+      <div style="font-size:11px;color:var(--muted);font-weight:700;margin-bottom:8px">تفاصيل إجابات الطالب (${s.answers.length} سؤال):</div>
+      <div style="display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto">
         ${s.answers.map((a,i)=>`
-          <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(6,10,22,0.6);border:1px solid ${a.correct?'rgba(0,214,143,0.2)':'rgba(255,77,109,0.2)'};border-radius:8px">
-            <span style="font-size:16px">${a.correct?'✅':'❌'}</span>
-            <div style="flex:1;font-size:11px">
-              <div style="font-weight:700;margin-bottom:2px">س${i+1}: ${a.question||'—'}</div>
-              <div style="color:var(--muted)">إجابة الطالب: <span style="color:${a.correct?'var(--ok)':'var(--err)'}">${a.chosen||'—'}</span></div>
-              ${!a.correct?`<div style="color:var(--ok);font-size:10px">الصح: ${a.correct_answer||'—'}</div>`:''}
+          <div style="display:flex;gap:8px;padding:9px 11px;background:rgba(6,10,22,0.7);border:1px solid ${a.correct?'rgba(0,214,143,0.2)':'rgba(255,77,109,0.2)'};border-radius:9px">
+            <span style="font-size:18px;flex-shrink:0">${a.correct?'✅':'❌'}</span>
+            <div style="flex:1;font-size:12px">
+              <div style="font-weight:700;margin-bottom:3px">س${i+1}: ${a.question||'—'}</div>
+              <div style="color:${a.correct?'var(--ok)':'var(--err)'}">إجابة الطالب: ${a.chosen||a.selected||'—'}</div>
+              ${!a.correct?`<div style="color:var(--ok);font-size:11px;margin-top:2px">الصواب: ${a.correct_answer||a.correctAnswer||'—'}</div>`:''}
             </div>
           </div>`).join('')}
       </div>
-    `:'<div style="text-align:center;color:var(--muted);font-size:12px;padding:12px">لا تفاصيل إضافية متاحة</div>'}
+    `:'<div style="text-align:center;color:var(--muted);font-size:12px;padding:16px">لا تفاصيل إضافية محفوظة لهذه الإجابة</div>'}
   `;
   openModal('mcqDetailModal');
 };
 
-window.deleteAnswer = async (id)=>{
-  if(!confirm('حذف هذه الإجابة نهائياً؟')) return;
+// ── Delete ──
+window.deleteMerged = async (id)=>{
+  if(!confirm('حذف هذا السجل نهائياً؟')) return;
   try{
     await db.collection('scores').doc(id).delete();
-    window._allAnswers = window._allAnswers.filter(a=>a.id!==id);
-    renderAnswers(); updateAnswerStats();
+    window._allMerged = window._allMerged.filter(a=>a.id!==id);
+    window._allScores = window._allMerged;
+    renderMerged(); updateMergedStats();
     toast('تم الحذف','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
+// legacy compat
+window.deleteAnswer = window.deleteMerged;
+window.deleteScore  = window.deleteMerged;
 
-window.exportAnswersCsv = ()=>{
-  const ans = window._allAnswers;
-  if(!ans.length){ toast('لا يوجد إجابات للتصدير','err'); return; }
-  const rows = [['الاسم','الصف','الامتحان','النوع','الدرجة','النسبة','الحالة','التاريخ','تعليق المصحح']];
+// ── Export CSV ──
+window.exportMergedCsv = ()=>{
+  const ans = window._allMerged;
+  if(!ans.length){ toast('لا يوجد بيانات للتصدير','err'); return; }
+  const rows=[['الاسم','الصف','الامتحان','النوع','الدرجة','النسبة','الحالة','التاريخ','تعليق المصحح']];
   ans.forEach(s=>{
     const dt  = s.submittedAt?.toDate?.()?.toLocaleDateString('ar-EG')||'—';
     const pct = s.pct??Math.round((s.score||0)/(s.total||1)*100);
     const isEssay = s.type==='essay';
     rows.push([
-      s.userName||'—',
+      s.userName||s.manualName||'—',
       GRADE_LABELS_SC[s.gradeKey]||s.userGrade||'—',
       s.examTitle||s.examId||'—',
-      isEssay?'مقالي':'MCQ',
-      isEssay?(s.essayScore??'—'):((s.score!=null&&s.total)?s.score+'/'+s.total:pct+'%'),
+      isEssay?'مقالي':s.manual?'يدوي':'MCQ',
+      isEssay?(s.essayScore!=null?s.essayScore:'—'):((s.score!=null&&s.total)?s.score+'/'+s.total:pct+'%'),
       pct+'%',
       isEssay?(s.graded?'مصحح':'لم يصحح'):(pct>=50?'ناجح':'راسب'),
       dt,
@@ -7882,12 +7863,15 @@ window.exportAnswersCsv = ()=>{
   });
   const csv = rows.map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
   const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a');
+  const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='student_answers_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.download='grades_answers_'+new Date().toISOString().slice(0,10)+'.csv';
   a.click();
-  toast('تم تصدير الإجابات ✓','ok');
+  toast('تم التصدير ✓','ok');
 };
+// legacy
+window.exportAnswersCsv = window.exportMergedCsv;
+window.exportScoresCsv  = window.exportMergedCsv;
 
 // ── تحميل المراحل عند الفتح ──
 loadDynamicGrades();
