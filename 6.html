@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملخص موسع: التربية المقارنة والدولية</title>
+    <!-- استيراد الخطوط -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #1a5f7a;
+            --secondary-color: #159895;
+            --accent-color: #ffc107;
+            --bg-color: #f4f7f6;
+            --text-color: #2c3e50;
+            --light-bg: #ffffff;
+            --border-radius: 12px;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            font-size: 18px;
+        }
+
+        /* شريط التقدم */
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #ddd;
+            z-index: 1000;
+        }
+        #progress-bar {
+            height: 6px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        /* الهيدر */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-family: 'Amiri', serif;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: 1.3em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .authors {
+            margin-top: 15px;
+            font-size: 1em;
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        /* الحاويات */
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: var(--light-bg);
+            border-radius: var(--border-radius);
+            padding: 35px;
+            margin-bottom: 35px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-right: 5px solid var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);        }
+
+        h2 {
+            color: var(--primary-color);
+            font-family: 'Amiri', serif;
+            font-size: 2em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 1.5em;
+            margin-top: 25px;
+            font-weight: 700;
+        }
+
+        h4 {
+            color: var(--primary-color);
+            font-size: 1.2em;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        ul {
+            list-style-type: none;
+            padding-right: 20px;
+        }
+
+        ul li {
+            position: relative;
+            margin-bottom: 10px;
+            padding-right: 25px;
+        }
+
+        ul li::before {
+            content: "•";
+            color: var(--secondary-color);
+            font-weight: bold;
+            font-size: 1.5em;
+            position: absolute;
+            right: 0;
+            top: -5px;
+        }
+        /* الجداول */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-family: 'Amiri', serif;
+            font-size: 1.1em;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* بنك الأسئلة */
+        .quiz-section {
+            background: #eef2f3;
+            border: 1px solid #d1d9e6;
+        }
+
+        .question-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .question-card.true-false {
+            border-left-color: var(--info-color);
+        }
+
+        .question-card.multiple-choice {
+            border-left-color: var(--success-color);
+        }
+        .question-card.essay {
+            border-left-color: var(--primary-color);
+        }
+
+        .question-text {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .options {
+            margin: 10px 0;
+            padding-right: 15px;
+        }
+
+        .options label {
+            display: block;
+            margin: 5px 0;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .options label:hover {
+            background: #f0f0f0;
+        }
+
+        .answer-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .answer-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .answer-content {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;            background-color: #f0fdf4;
+            border-radius: 5px;
+            color: #166534;
+            border-right: 3px solid var(--success-color);
+        }
+
+        .answer-content.false {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border-right-color: var(--danger-color);
+        }
+
+        .answer-content.essay {
+            background-color: #eff6ff;
+            color: #1e40af;
+            border-right-color: var(--primary-color);
+        }
+
+        /* أزرار التصفية */
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--primary-color);
+            background: white;
+            color: var(--primary-color);
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .filter-btn.all {
+            border-color: var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        .filter-btn.all.active, .filter-btn.all:hover {
+            background: var(--secondary-color);
+            color: white;        }
+
+        /* زر الطباعة */
+        .print-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            background-color: var(--accent-color);
+            color: #333;
+            padding: 15px 25px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s;
+        }
+
+        .print-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* التذييل */
+        footer {
+            text-align: center;
+            padding: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            margin-top: 50px;
+            font-size: 0.9em;
+        }
+
+        /* مؤشرات الإجابة */
+        .answer-indicator {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .answer-indicator.true {
+            background: var(--success-color);
+            color: white;
+        }
+        .answer-indicator.false {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .correct-option {
+            background: #d1fae5 !important;
+            border-right: 3px solid var(--success-color);
+            font-weight: bold;
+        }
+
+        @media print {
+            .print-btn, #progress-container, .filter-buttons { display: none; }
+            body { background: white; font-size: 14pt; }
+            .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+            .answer-content { display: block !important; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2em; }
+            .container { padding: 0 15px; }
+            .card { padding: 25px; }
+            .filter-buttons { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شريط التقدم -->
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <!-- الهيدر -->
+    <header>
+        <h1>التربية المقارنة والدولية</h1>
+        <div class="subtitle">ملخص موسع وشامل مع بنك أسئلة تفاعلي ضخم</div>
+        <div class="authors">تأليف: د. أحمد غانم / د. مريم الشراقوة وآخرون | إعداد: منصات بلس © 2026</div>
+    </header>
+
+    <div class="container">
+
+        <!-- الفصل الأول -->
+        <div class="card">
+            <h2>الفصل الأول: ماهية التربية المقارنة</h2>
+            
+            <h3>1. مفهوم التربية المقارنة: تعريفات متعددة</h3>
+            <p>لا يوجد تعريف واحد جامع مانع للتربية المقارنة، بل توجد تعاريف متعددة تعكس تطور هذا الحقل المعرفي:</p>
+                        <table>
+                <thead>
+                    <tr>
+                        <th>العالم/الباحث</th>
+                        <th>التعريف</th>
+                        <th>التركيز</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>مارك أنطوان جوليان (1817)</strong></td>
+                        <td>أول من وضع خطة منهجية لدراسة التربية باستخدام الاستبيانات</td>
+                        <td>المنهجية العلمية وجمع البيانات</td>
+                    </tr>
+                    <tr>
+                        <td><strong>مايكل سادلر</strong></td>
+                        <td>"الأشياء خارج المدرسة أهم مما بداخلها"</td>
+                        <td>العوامل الثقافية والاجتماعية المؤثرة</td>
+                    </tr>
+                    <tr>
+                        <td><strong>جورج بيريدي</strong></td>
+                        <td>دراسة تحليلية نقدية للأنظمة التعليمية للكشف عن أوجه الشبه والاختلاف</td>
+                        <td>المنهج المقارن المكون من 4 خطوات</td>
+                    </tr>
+                    <tr>
+                        <td><strong>بريان هولمز</strong></td>
+                        <td>استخدام المنهج الانتقائي لحل المشكلات التعليمية</td>
+                        <td>التطبيق العملي وحل المشكلات</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2. أهداف التربية المقارنة</h3>
+            <ul>
+                <li><strong>الوصف:</strong> جمع بيانات دقيقة عن الأنظمة التعليمية بموضوعية وشمولية.</li>
+                <li><strong>التفسير:</strong> تحليل العوامل السياسية، الاقتصادية، الاجتماعية، الثقافية المؤثرة في التعليم.</li>
+                <li><strong>المقارنة (التجاور):</strong> وضع البيانات جنباً إلى جنب للكشف عن أوجه الشبه والاختلاف المنهجية.</li>
+                <li><strong>الاستنتاج:</strong> التوصل إلى قوانين عامة ونظريات تربوية قابلة للتعميم.</li>
+                <li><strong>التنبؤ:</strong> توقع مستقبل التعليم بناءً على المعطيات الحالية والاتجاهات العالمية.</li>
+            </ul>
+
+            <h3>3. أهمية التربية المقارنة</h3>
+            <p>تتمثل الأهمية في ثلاثة مستويات:</p>
+            <ul>
+                <li><strong>المستوى النظري:</strong> إثراء المعرفة التربوية، فهم العلاقة بين التربية والمجتمع، تطوير النظريات التربوية.</li>
+                <li><strong>المستوى العملي:</strong> مساعدة صناع القرار في إصلاح التعليم، نقل الخبرات الناجحة، تجنب أخطاء الآخرين.</li>
+                <li><strong>المستوى الدولي:</strong> تعزيز التفاهم بين الشعوب، دعم أهداف التنمية المستدامة، تحقيق السلام العالمي.</li>
+            </ul>
+
+            <h3>4. مجالات الدراسة في التربية المقارنة</h3>            <table>
+                <thead>
+                    <tr>
+                        <th>نوع الدراسة</th>
+                        <th>الوصف</th>
+                        <th>مثال تطبيقي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>دراسة الحالة</td>
+                        <td>دراسة نظام تعليمي لدولة واحدة بعمق</td>
+                        <td>دراسة النظام التعليمي في سنغافورة</td>
+                    </tr>
+                    <tr>
+                        <td>الدراسة المقارنة</td>
+                        <td>مقارنة نظامين تعليميين أو أكثر</td>
+                        <td>مقارنة التعليم في فنلندا وكوريا الجنوبية</td>
+                    </tr>
+                    <tr>
+                        <td>الدراسة العالمية</td>
+                        <td>دراسة مشكلة تعليمية في كل دول العالم</td>
+                        <td>دراسة ظاهرة الأمية على المستوى العالمي</td>
+                    </tr>
+                    <tr>
+                        <td>دراسة المشكلة</td>
+                        <td>التركيز على قضية محددة في عدة دول</td>
+                        <td>دراسة إعداد المعلم في الدول العربية</td>
+                    </tr>
+                    <tr>
+                        <td>الدراسة المقطعية</td>
+                        <td>دراسة مرحلة تعليمية معينة في عدة دول</td>
+                        <td>دراسة التعليم الابتدائي في دول الخليج</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- الفصل الثاني -->
+        <div class="card">
+            <h2>الفصل الثاني: نشأة وتطور التربية المقارنة</h2>
+            
+            <h3>أولاً: في العالم الإسلامي</h3>
+            <p>سبقت الكتابات الإسلامية في وصف الأنظمة التعليمية النظريات الغربية بقرون:</p>
+            <ul>
+                <li><strong>ابن بطوطة وابن جبير:</strong> وصفوا المساجد والكتاتيب وطرق التدريس في رحلاتهم، لكن طغى الطابع الوصفي السطحي.</li>
+                <li><strong>ابن خلدون (1332-1406م):</strong> في مقدمته ربط التعليم بالعمران البشري والعوامل الاجتماعية، مما يجعله رائداً في المنهج التحليلي.</li>
+                <li><strong>نودلخ ابن خلدون:</strong> في كتابه "مقدمة ابن خلدون" قارن بين طرق تعليم القرآن في المغرب والمشرق، مبرزاً تأثير العوامل الثقافية.</li>
+            </ul>
+            <h3>ثانياً: في الغرب - المراحل التاريخية</h3>
+            
+            <h4>المرحلة الأولى: الاقتباس والنقل (حتى منتصف القرن 19)</h4>
+            <p>كان الهدف نقل النماذج التعليمية الناجحة من دولة لأخرى. اهتم الرحالة بوصف المدارس والإدارات الأجنبية دون تحليل عميق.</p>
+
+            <h4>المرحلة الثانية: العوامل والقوى المؤثرة (منتصف القرن 19 - منتصف القرن 20)</h4>
+            <p>ظهر الوعي بأن التعليم نتاج للثقافة والمجتمع. أبرز رواد هذه المرحلة:</p>
+            <ul>
+                <li><strong>فيكتور كوزان:</strong> درس التعليم في بروسيا وتأثيره على فرنسا.</li>
+                <li><strong>ماثيو أرنولد:</strong> ركز على دور الدولة في التعليم.</li>
+                <li><strong>مايكل سادلر:</strong> أكد أن فهم النظام التعليمي يتطلب فهم الثقافة المحيطة به.</li>
+            </ul>
+
+            <h4>المرحلة الثالثة: المنهج العلمي والتحليل (بعد الحرب العالمية الثانية)</h4>
+            <p>انتقلت المادة من الوصف إلى التحليل العلمي باستخدام الإحصاء وعلم الاجتماع:</p>
+            <ul>
+                <li><strong>جورج بيريدي:</strong> وضع منهجية واضحة: الوصف ← التفسير ← التجاور ← المقارنة.</li>
+                <li><strong>بريان هولمز:</strong> استخدم المنهج الانتقائي القائم على حل المشكلات.</li>
+                <li><strong>إدموند كينج:</strong> ربط التربية بالتغير الاجتماعي والتنبؤ بالمستقبل.</li>
+            </ul>
+        </div>
+
+        <!-- الفصل الثالث -->
+        <div class="card">
+            <h2>الفصل الثالث: العوامل المؤثرة في الأنظمة التعليمية</h2>
+            
+            <h3>1. العوامل الجغرافية</h3>
+            <p>تؤثر الطبيعة الجغرافية في توزيع السكان والخدمات التعليمية:</p>
+            <ul>
+                <li><strong>المساحة:</strong> الدول الشاسعة (مثل روسيا) تواجه تحديات في المركزية، بينما الدول الصغيرة (مثل سنغافورة) يسهل فيها الإشراف.</li>
+                <li><strong>المناخ:</strong> يؤثر في مواعيد الدراسة، نوع المباني، والمناهج (مثل تعليم الزراعة في المناطق الريفية).</li>
+                <li><strong>الموارد الطبيعية:</strong> الدول الغنية بالنفط تستثمر في التعليم، بينما الدول الفقيرة تعاني من نقص التمويل.</li>
+            </ul>
+
+            <h3>2. العوامل التاريخية</h3>
+            <p>الخبرة التاريخية للأمة تشكل هويتها التعليمية:</p>
+            <ul>
+                <li>الدول التي مرت باستعمار تحتفظ ببعض آثاره في مناهجها وإدارتها.</li>
+                <li>الدول ذات التاريخ العريق (مثل الصين ومصر) تحرص على تعليم التاريخ لتعزيز الانتماء.</li>
+                <li>التجارب التاريخية الناجحة (مثل إصلاحات ميجي في اليابان) تصبح نماذج يحتذى بها.</li>
+            </ul>
+
+            <h3>3. العوامل السياسية</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>نوع النظام السياسي</th>
+                        <th>أثره على التعليم</th>
+                        <th>أمثلة</th>
+                    </tr>                </thead>
+                <tbody>
+                    <tr>
+                        <td>ديمقراطي</td>
+                        <td>يركز على الحرية، المشاركة، تنوع الآراء، التفكير النقدي</td>
+                        <td>الولايات المتحدة، كندا، دول أوروبا الغربية</td>
+                    </tr>
+                    <tr>
+                        <td>شمولي</td>
+                        <td>يركز على الطاعة، أيديولوجيا الدولة، توحيد الفكر</td>
+                        <td>كوريا الشمالية، الصين (تاريخياً)</td>
+                    </tr>
+                    <tr>
+                        <td>اشتراكي</td>
+                        <td>يركز على العدالة الاجتماعية، المجانية، تكافؤ الفرص</td>
+                        <td>كوبا، فنزويلا</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4. العوامل الاقتصادية</h3>
+            <ul>
+                <li><strong>ميزانية التعليم:</strong> مستوى الدخل القومي يحدد جودة المباني، تدريب المعلمين، والتقنيات المستخدمة.</li>
+                <li><strong>طبيعة الاقتصاد:</strong> الاقتصاد الزراعي يحتاج لمهارات مختلفة عن الاقتصاد الصناعي أو المعرفي.</li>
+                <li><strong>سوق العمل:</strong> يحدد نوع المهارات المطلوبة في المناهج (مثل البرمجة في العصر الرقمي).</li>
+            </ul>
+
+            <h3>5. العوامل الدينية والاجتماعية</h3>
+            <p>الدين يشكل القيم الأخلاقية والمثل العليا في المجتمع، مما ينعكس على أهداف التربية. أما العوامل الاجتماعية (كالطبقات الاجتماعية، ودور الأسرة) فتحدد فرص الالتحاق بالتعليم ونوعيته.</p>
+
+            <h3>6. العامل اللغوي</h3>
+            <p>اللغة هي أداة التفكير والتعليم. وجود لغة رسمية موحدة يسهل عملية التعليم ويوحد الهوية، بينما تعدد اللغات قد يطرح تحديات تتطلب سياسات لغوية دقيقة (كما في الهند أو سويسرا).</p>
+        </div>
+
+        <!-- الفصل الرابع: التربية الدولية -->
+        <div class="card" style="border-right-color: var(--secondary-color);">
+            <h2 style="color: var(--secondary-color);">الفصل الرابع: التربية الدولية</h2>
+            
+            <h3>1. مفهوم التربية الدولية والفرق بينها وبين التربية المقارنة</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>وجه المقارنة</th>
+                        <th>التربية المقارنة</th>
+                        <th>التربية الدولية</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>التركيز</strong></td>                        <td>مقارنة الأنظمة التعليمية بين دولتين أو أكثر</td>
+                        <td>التعاون الدولي والقضايا التعليمية العالمية</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الهدف</strong></td>
+                        <td>فهم العوامل المؤثرة والاستفادة من التجارب</td>
+                        <td>تعزيز التفاهم العالمي وتحقيق أهداف إنسانية</td>
+                    </tr>
+                    <tr>
+                        <td><strong>النطاق</strong></td>
+                        <td>محلي/إقليمي مع مقارنة خارجية</td>
+                        <td>عالمي وشامل</td>
+                    </tr>
+                    <tr>
+                        <td><strong>المنهج</strong></td>
+                        <td>تحليلي وصفي ومقارن</td>
+                        <td>تعاوني وتطبيقي وتنموي</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2. المنظمات الدولية الفاعلة</h3>
+            
+            <h4>أ. اليونسكو (UNESCO)</h4>
+            <p>تأسست عام 1945، وهي الجهة الرائدة في التربية الدولية. من برامجها:</p>
+            <ul>
+                <li>برنامج التعليم للجميع (EFA).</li>
+                <li>أهداف التنمية المستدامة (خاصة الهدف 4: التعليم الجيد).</li>
+                <li>تعزيز التعليم من أجل المواطنة العالمية.</li>
+            </ul>
+
+            <h4>ب. اليونيسف (UNICEF)</h4>
+            <p>تركز على:</p>
+            <ul>
+                <li>تعليم الفتيات في المناطق النائية.</li>
+                <li>دعم التعليم في حالات الطوارئ والنزاعات.</li>
+                <li>مكافحة عمالة الأطفال وتسرب الطلاب.</li>
+            </ul>
+
+            <h4>ج. البنك الدولي (World Bank)</h4>
+            <p>يقدم دعماً مالياً وفنياً مع التركيز على:</p>
+            <ul>
+                <li>تحسين جودة التعليم وربطه بسوق العمل.</li>
+                <li>قياس مخرجات التعليم عبر اختبارات دولية.</li>
+                <li>دعم الإصلاحات الهيكلية في الأنظمة التعليمية.</li>
+            </ul>
+
+            <h4>د. منظمة التعاون الاقتصادي والتنمية (OECD)</h4>
+            <p>تشتهر ببرنامج <strong>PISA</strong> الذي يقيس مهارات الطلاب في القراءة والرياضيات والعلوم في أكثر من 80 دولة، مما يساعد في مقارنة الأنظمة التعليمية عالمياً.</p>
+            <h3>3. التحديات العالمية في التعليم</h3>
+            <ul>
+                <li><strong>الفجوة التعليمية:</strong> تفاوت فرص التعليم بين الدول الغنية والفقيرة، وبين الريف والحضر.</li>
+                <li><strong>نزوح اللاجئين:</strong> أكثر من 258 مليون طفل خارج المدارس عالمياً، كثير منهم من اللاجئين.</li>
+                <li><strong>جودة التعليم:</strong> التحدي ليس فقط في الالتحاق بالمدرسة، بل في جودة ما يتعلمه الطلاب.</li>
+                <li><strong>الفجوة الرقمية:</strong> تفاوت الوصول للتكنولوجيا التعليمية بين الدول.</li>
+                <li><strong>التغير المناخي:</strong> ضرورة إدماج مفاهيم الاستدامة في المناهج التعليمية.</li>
+            </ul>
+
+            <h3>4. التعليم من أجل المواطنة العالمية (GCED)</h3>
+            <p>مفهوم تتبناه اليونسكو يهدف إلى إعداد الطلاب ليكونوا مواطنين فاعلين في عالم مترابط. يرتكز على ثلاثة أبعاد:</p>
+            <ul>
+                <li><strong>البعد المعرفي:</strong> فهم القضايا العالمية مثل حقوق الإنسان، السلام، التنوع الثقافي.</li>
+                <li><strong>البعد الاجتماعي-العاطفي:</strong> تنمية قيم التعاطف، الاحترام، والمسؤولية تجاه الآخرين.</li>
+                <li><strong>البعد السلوكي:</strong> تمكين الطلاب من اتخاذ إجراءات إيجابية لمواجهة التحديات العالمية.</li>
+            </ul>
+
+            <h3>5. التعليم من أجل التنمية المستدامة (ESD)</h3>
+            <p>إطار تعليمي يهدف إلى تمكين الأفراد من اتخاذ قرارات مستنيرة ومسؤولة. يشمل:</p>
+            <ul>
+                <li>التربية البيئية والمناخية.</li>
+                <li>التربية على حقوق الإنسان والمساواة بين الجنسين.</li>
+                <li>التربية على السلام وحل النزاعات.</li>
+                <li>التربية المالية وريادة الأعمال.</li>
+            </ul>
+        </div>
+
+        <!-- بنك الأسئلة التفاعلي -->
+        <div class="card quiz-section">
+            <h2>📚 بنك الأسئلة التفاعلي الضخم</h2>
+            <p>اختبر معلوماتك حول التربية المقارنة والدولية. اضغط على الزر لإظهار الإجابة النموذجية.</p>
+            
+            <!-- أزرار التصفية -->
+            <div class="filter-buttons">
+                <button class="filter-btn all active" onclick="filterQuestions('all')">الكل</button>
+                <button class="filter-btn" onclick="filterQuestions('true-false')">صح وخطأ</button>
+                <button class="filter-btn" onclick="filterQuestions('multiple-choice')">اختيار من متعدد</button>
+                <button class="filter-btn" onclick="filterQuestions('essay')">أسئلة مقالية</button>
+            </div>
+
+            <!-- قسم صح وخطأ -->
+            <h3 style="color: var(--info-color);">✅ قسم صح وخطأ (20 سؤال)</h3>
+            
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س1: التربية المقارنة تهتم فقط بوصف الأنظمة التعليمية دون تحليل.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf1')">إظهار الإجابة</button>
+                <div id="tf1" class="answer-content false">
+                    <span class="answer-indicator false">خطأ</span>
+                    التربية المقارنة لا تكتفي بالوصف، بل تهدف إلى التحليل النقدي، تفسير العوامل المؤثرة، المقارنة المنهجية، والاستنتاج للتوصل إلى قوانين عامة. الوصف هو مجرد خطوة أولى في المنهج المقارن.
+                </div>            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س2: مايكل سادلر هو الذي قال: "الأشياء خارج المدرسة أهم مما بداخلها".</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf2')">إظهار الإجابة</button>
+                <div id="tf2" class="answer-content">
+                    <span class="answer-indicator true">صح</span>
+                    هذه المقولة الشهيرة لمايكل سادلر تؤكد أن فهم النظام التعليمي يتطلب فهم الثقافة، المجتمع، التاريخ، والسياسة المحيطة به، وليس فقط ما يحدث داخل جدران المدرسة.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س3: ابن خلدون يعتبر رائداً في المنهج التحليلي للتربية المقارنة قبل الغرب بقرون.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf3')">إظهار الإجابة</button>
+                <div id="tf3" class="answer-content">
+                    <span class="answer-indicator true">صح</span>
+                    في مقدمته، ربط ابن خلدون التعليم بالعمران البشري والعوامل الاجتماعية والاقتصادية، مما يجعله سابقاً لعلماء الغرب في تطبيق المنهج التحليلي في دراسة التربية.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س4: التربية الدولية والتربية المقارنة مصطلحان مترادفان تماماً.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf4')">إظهار الإجابة</button>
+                <div id="tf4" class="answer-content false">
+                    <span class="answer-indicator false">خطأ</span>
+                    هناك فرق جوهري: التربية المقارنة تركز على دراسة ومقارنة الأنظمة بين دول لفهم العوامل المؤثرة، بينما التربية الدولية تركز على التعاون العالمي والقضايا التعليمية التي تتجاوز الحدود لتحقيق أهداف إنسانية.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س5: برنامج PISA تابع لمنظمة اليونسكو.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf5')">إظهار الإجابة</button>
+                <div id="tf5" class="answer-content false">
+                    <span class="answer-indicator false">خطأ</span>
+                    برنامج PISA (التقييم الدولي للطلاب) تابع لمنظمة التعاون الاقتصادي والتنمية (OECD)، وليس لليونسكو. يقيس مهارات الطلاب في القراءة والرياضيات والعلوم.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س6: العوامل الاقتصادية لا تؤثر في جودة المناهج التعليمية.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf6')">إظهار الإجابة</button>
+                <div id="tf6" class="answer-content false">
+                    <span class="answer-indicator false">خطأ</span>
+                    العوامل الاقتصادية تؤثر بشكل كبير: مستوى الدخل يحدد ميزانية التعليم، جودة البنية التحتية، تدريب المعلمين، ونوع المهارات المطلوبة في المناهج وفقاً لطبيعة الاقتصاد.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س7: التعليم من أجل المواطنة العالمية (GCED) يركز فقط على الجانب المعرفي.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf7')">إظهار الإجابة</button>                <div id="tf7" class="answer-content false">
+                    <span class="answer-indicator false">خطأ</span>
+                    GCED يرتكز على ثلاثة أبعاد متكاملة: المعرفي (فهم القضايا العالمية)، الاجتماعي-العاطفي (تنمية القيم)، والسلوكي (اتخاذ إجراءات إيجابية).
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س8: دراسة الحالة في التربية المقارنة تتطلب مقارنة دولتين على الأقل.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf8')">إظهار الإجابة</button>
+                <div id="tf8" class="answer-content false">
+                    <span class="answer-indicator false">خطأ</span>
+                    دراسة الحالة تركز على نظام تعليمي لدولة واحدة فقط بالوصف والتحليل العميق. المقارنة تتطلب وجود دولتين أو أكثر.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س9: جورج بيريدي وضع منهجية التربية المقارنة المكونة من 4 خطوات.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf9')">إظهار الإجابة</button>
+                <div id="tf9" class="answer-content">
+                    <span class="answer-indicator true">صح</span>
+                    خطوات بيريدي الأربعة هي: 1) الوصف (جمع البيانات)، 2) التفسير (تحليل العوامل)، 3) التجاور (وضع البيانات جنباً إلى جنب)، 4) المقارنة (الاستنتاج).
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س10: اللغة لا تؤثر في عملية التعليم أو هوية النظام التعليمي.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf10')">إظهار الإجابة</button>
+                <div id="tf10" class="answer-content false">
+                    <span class="answer-indicator false">خطأ</span>
+                    اللغة هي أداة التفكير والتعليم. وجود لغة رسمية موحدة يسهل التعليم ويوحد الهوية، بينما تعدد اللغات يتطلب سياسات لغوية دقيقة كما في الهند أو سويسرا.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س11: التربية المقارنة تساعد في التنبؤ بمستقبل التعليم.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf11')">إظهار الإجابة</button>
+                <div id="tf11" class="answer-content">
+                    <span class="answer-indicator true">صح</span>
+                    من أهداف التربية المقارنة التنبؤ بمستقبل التعليم بناءً على تحليل الاتجاهات الحالية، والعوامل المؤثرة، والتجارب الدولية الناجحة.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س12: اليونيسف تركز فقط على التعليم في الدول المتقدمة.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf12')">إظهار الإجابة</button>
+                <div id="tf12" class="answer-content false">
+                    <span class="answer-indicator false">خطأ</span>
+                    اليونيسف تركز بشكل أساسي على تعليم الفتيات في المناطق النائية، ودعم التعليم في حالات الطوارئ والنزاعات، ومكافحة عمالة الأطفال - وهي قضايا تهم الدول النامية بشكل أكبر.
+                </div>
+            </div>
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س13: النظام السياسي الديمقراطي يشجع على التفكير النقدي في التعليم.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf13')">إظهار الإجابة</button>
+                <div id="tf13" class="answer-content">
+                    <span class="answer-indicator true">صح</span>
+                    في الأنظمة الديمقراطية، يركز التعليم على الحرية، المشاركة، تنوع الآراء، والتفكير النقدي، بخلاف الأنظمة الشمولية التي تركز على الطاعة وتوحيد الفكر.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س14: التعليم من أجل التنمية المستدامة (ESD) يهتم فقط بالبيئة.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf14')">إظهار الإجابة</button>
+                <div id="tf14" class="answer-content false">
+                    <span class="answer-indicator false">خطأ</span>
+                    ESD يشمل مجالات متعددة: التربية البيئية، حقوق الإنسان، المساواة بين الجنسين، السلام، التربية المالية، وريادة الأعمال - بهدف تنمية شاملة ومستدامة.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س15: مارك أنطوان جوليان هو أول من استخدم الاستبيانات في التربية المقارنة.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf15')">إظهار الإجابة</button>
+                <div id="tf15" class="answer-content">
+                    <span class="answer-indicator true">صح</span>
+                    في عام 1817، وضع جوليان خطة منهجية لدراسة التربية باستخدام الاستبيانات لجمع البيانات من دول مختلفة، مما يجعله رائداً في المنهجية العلمية.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س16: العوامل التاريخية لا تؤثر في المناهج التعليمية الحالية.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf16')">إظهار الإجابة</button>
+                <div id="tf16" class="answer-content false">
+                    <span class="answer-indicator false">خطأ</span>
+                    الخبرة التاريخية للأمة تشكل هويتها التعليمية. الدول التي مرت باستعمار أو لها تاريخ عريق تحرص على تعليم تاريخها لتعزيز الانتماء والهوية.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س17: الدراسة العالمية في التربية المقارنة تركز على مشكلة واحدة في كل دول العالم.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf17')">إظهار الإجابة</button>
+                <div id="tf17" class="answer-content">
+                    <span class="answer-indicator true">صح</span>
+                    الدراسة العالمية تهتم بدراسة قضية أو مشكلة تعليمية (مثل الأمية أو التسرب المدرسي) في كل دول العالم لفهم أبعادها العالمية.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س18: البنك الدولي لا يقدم دعماً للتعليم في الدول النامية.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf18')">إظهار الإجابة</button>
+                <div id="tf18" class="answer-content false">                    <span class="answer-indicator false">خطأ</span>
+                    البنك الدولي يقدم دعماً مالياً وفنياً كبيراً لبرامج التعليم في الدول النامية، مع التركيز على تحسين الجودة، ربط التعليم بسوق العمل، وقياس المخرجات.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س19: التربية المقارنة تساعد في تجنب أخطاء الآخرين عند إصلاح التعليم.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf19')">إظهار الإجابة</button>
+                <div id="tf19" class="answer-content">
+                    <span class="answer-indicator true">صح</span>
+                    من الفوائد العملية للتربية المقارنة: مساعدة صناع القرار في إصلاح التعليم من خلال التعلم من تجارب الآخرين وتجنب تكرار أخطائهم.
+                </div>
+            </div>
+
+            <div class="question-card true-false" data-type="true-false">
+                <div class="question-text">س20: العوامل الاجتماعية لا تؤثر في فرص الالتحاق بالتعليم.</div>
+                <button class="answer-btn" onclick="toggleAnswer('tf20')">إظهار الإجابة</button>
+                <div id="tf20" class="answer-content false">
+                    <span class="answer-indicator false">خطأ</span>
+                    العوامل الاجتماعية (كالطبقات الاجتماعية، دور الأسرة، العادات) تحدد بشكل كبير فرص الالتحاق بالتعليم، نوعيته، واستمرارية الطلاب فيه.
+                </div>
+            </div>
+
+            <!-- قسم اختيار من متعدد -->
+            <h3 style="color: var(--success-color); margin-top: 40px;">🔘 قسم اختيار من متعدد (25 سؤال)</h3>
+            
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س1: من هو العالم الذي وضع منهجية التربية المقارنة المكونة من 4 خطوات (الوصف، التفسير، التجاور، المقارنة)؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q1" value="a"> أ) مايكل سادلر</label>
+                    <label><input type="radio" name="q1" value="b"> ب) جورج بيريدي ✓</label>
+                    <label><input type="radio" name="q1" value="c"> ج) برايان هولمز</label>
+                    <label><input type="radio" name="q1" value="d"> د) مارك أنطوان جوليان</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc1')">إظهار الإجابة</button>
+                <div id="mc1" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) جورج بيريدي</strong><br>
+                    وضع بيريدي منهجية واضحة للتربية المقارنة تتكون من 4 خطوات متسلسلة: 1) الوصف (جمع البيانات)، 2) التفسير (تحليل العوامل المؤثرة)، 3) التجاور (وضع البيانات جنباً إلى جنب)، 4) المقارنة (الاستنتاج والتوصل لقوانين عامة).
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س2: أي من المنظمات الدولية التالية تشتهر ببرنامج PISA لتقييم الطلاب؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q2" value="a"> أ) اليونسكو</label>
+                    <label><input type="radio" name="q2" value="b"> ب) اليونيسف</label>
+                    <label><input type="radio" name="q2" value="c"> ج) البنك الدولي</label>
+                    <label><input type="radio" name="q2" value="d"> د) منظمة التعاون الاقتصادي والتنمية (OECD) ✓</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc2')">إظهار الإجابة</button>                <div id="mc2" class="answer-content">
+                    <strong>الإجابة الصحيحة: د) منظمة التعاون الاقتصادي والتنمية (OECD)</strong><br>
+                    برنامج PISA (Programme for International Student Assessment) تابع لـ OECD، ويقيس مهارات الطلاب في القراءة والرياضيات والعلوم في أكثر من 80 دولة، مما يوفر بيانات مقارنة قيمة.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س3: أي من العوامل التالية لا يؤثر في تشكيل النظام التعليمي؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q3" value="a"> أ) العوامل الجغرافية</label>
+                    <label><input type="radio" name="q3" value="b"> ب) العوامل التاريخية</label>
+                    <label><input type="radio" name="q3" value="c"> ج) العوامل السياسية</label>
+                    <label><input type="radio" name="q3" value="d"> د) جميع ما سبق يؤثر ✓</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc3')">إظهار الإجابة</button>
+                <div id="mc3" class="answer-content">
+                    <strong>الإجابة الصحيحة: د) جميع ما سبق يؤثر</strong><br>
+                    النظام التعليمي يتشكل بتفاعل معقد للعوامل الجغرافية (المساحة، المناخ)، التاريخية (الخبرة الحضارية)، السياسية (نظام الحكم)، الاقتصادية، الدينية، الاجتماعية، واللغوية.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س4: التعليم من أجل المواطنة العالمية (GCED) لا يركز على أي من الأبعاد التالية؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q4" value="a"> أ) البعد المعرفي</label>
+                    <label><input type="radio" name="q4" value="b"> ب) البعد الاجتماعي-العاطفي</label>
+                    <label><input type="radio" name="q4" value="c"> ج) البعد السلوكي</label>
+                    <label><input type="radio" name="q4" value="d"> د) البعد العسكري ✓</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc4')">إظهار الإجابة</button>
+                <div id="mc4" class="answer-content">
+                    <strong>الإجابة الصحيحة: د) البعد العسكري</strong><br>
+                    GCED يرتكز على ثلاثة أبعاد: 1) المعرفي (فهم القضايا العالمية)، 2) الاجتماعي-العاطفي (تنمية القيم مثل التعاطف)، 3) السلوكي (اتخاذ إجراءات إيجابية). البعد العسكري ليس من أبعاده.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س5: أي من العلماء المسلمين التالية أسماؤهم يعتبر رائداً في المنهج التحليلي للتربية؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q5" value="a"> أ) ابن بطوطة</label>
+                    <label><input type="radio" name="q5" value="b"> ب) ابن جبير</label>
+                    <label><input type="radio" name="q5" value="c"> ج) ابن خلدون ✓</label>
+                    <label><input type="radio" name="q5" value="d"> د) جميع ما سبق</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc5')">إظهار الإجابة</button>
+                <div id="mc5" class="answer-content">
+                    <strong>الإجابة الصحيحة: ج) ابن خلدون</strong><br>
+                    بينما ركز ابن بطوطة وابن جبير على الوصف في رحلاتهما، جاء ابن خلدون في مقدمته ليربط التعليم بالعمران البشري والعوامل الاجتماعية، مما يجعله رائداً في المنهج التحليلي قبل الغرب بقرون.
+                </div>
+            </div>
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س6: أي من أنواع الدراسات التالية في التربية المقارنة يركز على دولة واحدة فقط؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q6" value="a"> أ) الدراسة المقارنة</label>
+                    <label><input type="radio" name="q6" value="b"> ب) دراسة الحالة ✓</label>
+                    <label><input type="radio" name="q6" value="c"> ج) الدراسة العالمية</label>
+                    <label><input type="radio" name="q6" value="d"> د) دراسة المشكلة</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc6')">إظهار الإجابة</button>
+                <div id="mc6" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) دراسة الحالة</strong><br>
+                    دراسة الحالة تركز على نظام تعليمي لدولة واحدة بالوصف والتحليل العميق. وهي تعتبر الخطوة الأولى قبل الانتقال إلى الدراسات المقارنة التي تتطلب دولتين أو أكثر.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س7: أي من الأهداف التالية ليس من أهداف التربية المقارنة؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q7" value="a"> أ) الوصف</label>
+                    <label><input type="radio" name="q7" value="b"> ب) التفسير</label>
+                    <label><input type="radio" name="q7" value="c"> ج) المقارنة</label>
+                    <label><input type="radio" name="q7" value="d"> د) الترويج لأيديولوجيا سياسية معينة ✓</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc7')">إظهار الإجابة</button>
+                <div id="mc7" class="answer-content">
+                    <strong>الإجابة الصحيحة: د) الترويج لأيديولوجيا سياسية معينة</strong><br>
+                    أهداف التربية المقارنة علمية وموضوعية: الوصف، التفسير، المقارنة، الاستنتاج، والتنبؤ. الترويج لأيديولوجيا يتعارض مع مبدأ الموضوعية الذي ترتكز عليه الدراسة العلمية.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س8: أي من العوامل التالية يعتبر من العوامل الاقتصادية المؤثرة في التعليم؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q8" value="a"> أ) مستوى الدخل القومي ✓</label>
+                    <label><input type="radio" name="q8" value="b"> ب) النظام السياسي</label>
+                    <label><input type="radio" name="q8" value="c"> ج) اللغة الرسمية</label>
+                    <label><input type="radio" name="q8" value="d"> د) المعتقدات الدينية</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc8')">إظهار الإجابة</button>
+                <div id="mc8" class="answer-content">
+                    <strong>الإجابة الصحيحة: أ) مستوى الدخل القومي</strong><br>
+                    مستوى الدخل القومي يؤثر في ميزانية التعليم، جودة البنية التحتية، تدريب المعلمين، والتقنيات المستخدمة. بينما الخيارات الأخرى تنتمي لعوامل سياسية، لغوية، ودينية.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س9: أي من المنظمات التالية تركز بشكل أساسي على تعليم الفتيات في المناطق النائية؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q9" value="a"> أ) اليونسكو</label>                    <label><input type="radio" name="q9" value="b"> ب) اليونيسف ✓</label>
+                    <label><input type="radio" name="q9" value="c"> ج) البنك الدولي</label>
+                    <label><input type="radio" name="q9" value="d"> د) OECD</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc9')">إظهار الإجابة</button>
+                <div id="mc9" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) اليونيسف</strong><br>
+                    اليونيسف (منظمة الأمم المتحدة للطفولة) تركز على: تعليم الفتيات في المناطق النائية، دعم التعليم في حالات الطوارئ، ومكافحة عمالة الأطفال - وهي قضايا تهم الفئات الأكثر احتياجاً.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س10: أي من المراحل التالية في تطور التربية المقارنة تميزت بالتركيز على "العوامل والقوى المؤثرة"؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q10" value="a"> أ) مرحلة الاقتباس والنقل</label>
+                    <label><input type="radio" name="q10" value="b"> ب) مرحلة العوامل والقوى المؤثرة ✓</label>
+                    <label><input type="radio" name="q10" value="c"> ج) مرحلة المنهج العلمي</label>
+                    <label><input type="radio" name="q10" value="d"> د) مرحلة العولمة</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc10')">إظهار الإجابة</button>
+                <div id="mc10" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) مرحلة العوامل والقوى المؤثرة</strong><br>
+                    في هذه المرحلة (منتصف القرن 19 - منتصف القرن 20)، ظهر الوعي بأن التعليم نتاج للثقافة والمجتمع، ولا يمكن نقل نظام تعليمي بمعزل عن بيئته. من روادها: سادلر، كوزان، أرنولد.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س11: أي من التحديات التالية لا تواجه التعليم عالمياً؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q11" value="a"> أ) الفجوة التعليمية</label>
+                    <label><input type="radio" name="q11" value="b"> ب) نزوح اللاجئين</label>
+                    <label><input type="radio" name="q11" value="c"> ج) جودة التعليم</label>
+                    <label><input type="radio" name="q11" value="d"> د) وفرة الموارد التعليمية في كل الدول ✓</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc11')">إظهار الإجابة</button>
+                <div id="mc11" class="answer-content">
+                    <strong>الإجابة الصحيحة: د) وفرة الموارد التعليمية في كل الدول</strong><br>
+                    على العكس، من التحديات العالمية: الفجوة التعليمية بين الدول الغنية والفقيرة، نزوح اللاجئين، جودة التعليم، والفجوة الرقمية. وفرة الموارد ليست تحدياً بل هدفاً نسعى لتحقيقه.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س12: أي من العبارات التالية تعبر بشكل صحيح عن الفرق بين التربية المقارنة والدولية؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q12" value="a"> أ) لا يوجد فرق بينهما</label>
+                    <label><input type="radio" name="q12" value="b"> ب) المقارنة تركز على التحليل، والدولية على التعاون ✓</label>
+                    <label><input type="radio" name="q12" value="c"> ج) الدولية أقدم من المقارنة</label>
+                    <label><input type="radio" name="q12" value="d"> د) المقارنة تهتم بالقضايا العالمية فقط</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc12')">إظهار الإجابة</button>                <div id="mc12" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) المقارنة تركز على التحليل، والدولية على التعاون</strong><br>
+                    التربية المقارنة: تحليل ومقارنة الأنظمة لفهم العوامل المؤثرة. التربية الدولية: تعاون عالمي لمعالجة القضايا التعليمية التي تتجاوز الحدود وتحقيق أهداف إنسانية.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س13: أي من الخطوات التالية ليست من خطوات منهج بيريدي؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q13" value="a"> أ) الوصف</label>
+                    <label><input type="radio" name="q13" value="b"> ب) التفسير</label>
+                    <label><input type="radio" name="q13" value="c"> ج) التجاور</label>
+                    <label><input type="radio" name="q13" value="d"> د) التنفيذ ✓</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc13')">إظهار الإجابة</button>
+                <div id="mc13" class="answer-content">
+                    <strong>الإجابة الصحيحة: د) التنفيذ</strong><br>
+                    خطوات بيريدي الأربعة هي: 1) الوصف، 2) التفسير، 3) التجاور، 4) المقارنة. التنفيذ ليس من خطواته المنهجية، بل هو تطبيق عملي للنتائج.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س14: أي من العوامل التالية يعتبر من العوامل الثقافية المؤثرة في التعليم؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q14" value="a"> أ) المناخ</label>
+                    <label><input type="radio" name="q14" value="b"> ب) النظام السياسي</label>
+                    <label><input type="radio" name="q14" value="c"> ج) الدين والقيم ✓</label>
+                    <label><input type="radio" name="q14" value="d"> د) مستوى الدخل</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc14')">إظهار الإجابة</button>
+                <div id="mc14" class="answer-content">
+                    <strong>الإجابة الصحيحة: ج) الدين والقيم</strong><br>
+                    الدين والقيم يشكلان الثقافة التي تحدد المثل العليا والأخلاقيات في المجتمع، مما ينعكس مباشرة على أهداف التربية ومحتوى المناهج.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س15: أي من البرامج التالية يهدف إلى تعزيز التعليم من أجل المواطنة العالمية؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q15" value="a"> أ) برنامج الغذاء العالمي</label>
+                    <label><input type="radio" name="q15" value="b"> ب) برنامج اليونسكو للتربية ✓</label>
+                    <label><input type="radio" name="q15" value="c"> ج) برنامج الصحة العالمي</label>
+                    <label><input type="radio" name="q15" value="d"> د) برنامج البيئة</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc15')">إظهار الإجابة</button>
+                <div id="mc15" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) برنامج اليونسكو للتربية</strong><br>
+                    اليونسكو تتبنى مفهوم التعليم من أجل المواطنة العالمية (GCED) كأحد برامجها الرئيسية، بهدف إعداد الطلاب ليكونوا مواطنين فاعلين في عالم مترابط.
+                </div>
+            </div>
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س16: أي من الدول التالية تعتبر نموذجاً ناجحاً في التعليم وفقاً لنتائج الاختبارات الدولية؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q16" value="a"> أ) فنلندا ✓</label>
+                    <label><input type="radio" name="q16" value="b"> ب) الصومال</label>
+                    <label><input type="radio" name="q16" value="c"> ج) اليمن</label>
+                    <label><input type="radio" name="q16" value="d"> د) أفغانستان</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc16')">إظهار الإجابة</button>
+                <div id="mc16" class="answer-content">
+                    <strong>الإجابة الصحيحة: أ) فنلندا</strong><br>
+                    تحتل فنلندا باستمرار مراكز متقدمة في اختبارات PISA الدولية، بفضل نظامها التعليمي الذي يركز على الجودة، المساواة، استقلالية المعلم، والثقة في النظام.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س17: أي من العبارات التالية صحيحة حول دراسة المشكلة في التربية المقارنة؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q17" value="a"> أ) تركز على دولة واحدة فقط</label>
+                    <label><input type="radio" name="q17" value="b"> ب) تركز على قضية محددة في عدة دول ✓</label>
+                    <label><input type="radio" name="q17" value="c"> ج) تركز على جميع القضايا في جميع الدول</label>
+                    <label><input type="radio" name="q17" value="d"> د) لا تتطلب جمع بيانات</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc17')">إظهار الإجابة</button>
+                <div id="mc17" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) تركز على قضية محددة في عدة دول</strong><br>
+                    دراسة المشكلة تهتم بقضية تعليمية محددة (مثل إعداد المعلم أو التسرب المدرسي) في عدة دول، لمقارنة طرق معالجتها واستخلاص الدروس.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س18: أي من العوامل التالية يؤثر في توزيع الخدمات التعليمية داخل الدولة؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q18" value="a"> أ) العوامل الجغرافية ✓</label>
+                    <label><input type="radio" name="q18" value="b"> ب) العوامل اللغوية فقط</label>
+                    <label><input type="radio" name="q18" value="c"> ج) العوامل الدينية فقط</label>
+                    <label><input type="radio" name="q18" value="d"> د) لا شيء مما سبق</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc18')">إظهار الإجابة</button>
+                <div id="mc18" class="answer-content">
+                    <strong>الإجابة الصحيحة: أ) العوامل الجغرافية</strong><br>
+                    تؤثر العوامل الجغرافية (المساحة، التضاريس، توزيع السكان) في صعوبة أو سهولة توزيع الخدمات التعليمية. الدول الشاسعة تواجه تحديات أكبر في الوصول للمناطق النائية.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س19: أي من الأهداف التالية يعتبر هدفاً عملياً للتربية المقارنة؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q19" value="a"> أ) إثراء المعرفة النظرية فقط</label>                    <label><input type="radio" name="q19" value="b"> ب) مساعدة صناع القرار في إصلاح التعليم ✓</label>
+                    <label><input type="radio" name="q19" value="c"> ج) كتابة الكتب الأكاديمية فقط</label>
+                    <label><input type="radio" name="q19" value="d"> د) جميع ما سبق</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc19')">إظهار الإجابة</button>
+                <div id="mc19" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) مساعدة صناع القرار في إصلاح التعليم</strong><br>
+                    من الأهداف العملية: مساعدة المخططين في إصلاح التعليم، نقل الخبرات الناجحة، وتجنب أخطاء الآخرين. الأهداف النظرية تخدم هذا الهدف العملي.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س20: أي من العبارات التالية صحيحة حول التعليم من أجل التنمية المستدامة (ESD)؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q20" value="a"> أ) يهتم فقط بالبيئة</label>
+                    <label><input type="radio" name="q20" value="b"> ب) يشمل مجالات متعددة مثل حقوق الإنسان والسلام ✓</label>
+                    <label><input type="radio" name="q20" value="c"> ج) مخصص للدول المتقدمة فقط</label>
+                    <label><input type="radio" name="q20" value="d"> د) لا علاقة له بالتربية</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc20')">إظهار الإجابة</button>
+                <div id="mc20" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) يشمل مجالات متعددة مثل حقوق الإنسان والسلام</strong><br>
+                    ESD إطار تعليمي شامل يشمل: التربية البيئية، حقوق الإنسان، المساواة بين الجنسين، السلام، التربية المالية، وريادة الأعمال - بهدف تنمية مستدامة شاملة.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س21: أي من الخطوات التالية تأتي بعد "التفسير" في منهج بيريدي؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q21" value="a"> أ) الوصف</label>
+                    <label><input type="radio" name="q21" value="b"> ب) التجاور ✓</label>
+                    <label><input type="radio" name="q21" value="c"> ج) المقارنة</label>
+                    <label><input type="radio" name="q21" value="d"> د) التنفيذ</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc21')">إظهار الإجابة</button>
+                <div id="mc21" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) التجاور</strong><br>
+                    تسلسل خطوات بيريدي: 1) الوصف ← 2) التفسير ← 3) التجاور (وضع البيانات جنباً إلى جنب) ← 4) المقارنة (الاستنتاج).
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س22: أي من المنظمات التالية تقدم دعماً مالياً لبرامج التعليم في الدول النامية؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q22" value="a"> أ) اليونسكو فقط</label>
+                    <label><input type="radio" name="q22" value="b"> ب) البنك الدولي ✓</label>
+                    <label><input type="radio" name="q22" value="c"> ج) OECD فقط</label>
+                    <label><input type="radio" name="q22" value="d"> د) لا شيء مما سبق</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc22')">إظهار الإجابة</button>                <div id="mc22" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) البنك الدولي</strong><br>
+                    البنك الدولي يقدم دعماً مالياً وفنياً كبيراً لبرامج التعليم في الدول النامية، مع التركيز على تحسين الجودة وربط التعليم بسوق العمل.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س23: أي من العوامل التالية يعتبر من العوامل الاجتماعية المؤثرة في التعليم؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q23" value="a"> أ) الطبقات الاجتماعية ✓</label>
+                    <label><input type="radio" name="q23" value="b"> ب) النظام السياسي</label>
+                    <label><input type="radio" name="q23" value="c"> ج) اللغة الرسمية</label>
+                    <label><input type="radio" name="q23" value="d"> د) المناخ</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc23')">إظهار الإجابة</button>
+                <div id="mc23" class="answer-content">
+                    <strong>الإجابة الصحيحة: أ) الطبقات الاجتماعية</strong><br>
+                    العوامل الاجتماعية (كالطبقات الاجتماعية، دور الأسرة، العادات) تحدد فرص الالتحاق بالتعليم، نوعيته، واستمرارية الطلاب فيه.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س24: أي من العبارات التالية صحيحة حول دور المعلم في التربية المقارنة؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q24" value="a"> أ) لا يستفيد من التربية المقارنة</label>
+                    <label><input type="radio" name="q24" value="b"> ب) يستفيد في تطوير أساليبه التدريسية ✓</label>
+                    <label><input type="radio" name="q24" value="c"> ج) يقتصر دوره على التدريس فقط</label>
+                    <label><input type="radio" name="q24" value="d"> د) جميع ما سبق</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc24')">إظهار الإجابة</button>
+                <div id="mc24" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) يستفيد في تطوير أساليبه التدريسية</strong><br>
+                    يستفيد المعلم من التربية المقارنة في: تطوير أساليبه، فهم التلاميذ بشكل أفضل، والاستفادة من تجارب المعلمين في دول أخرى لتحسين ممارساته.
+                </div>
+            </div>
+
+            <div class="question-card multiple-choice" data-type="multiple-choice">
+                <div class="question-text">س25: أي من التحديات التالية يتعلق بالتكنولوجيا في التعليم عالمياً؟</div>
+                <div class="options">
+                    <label><input type="radio" name="q25" value="a"> أ) وفرة الأجهزة في كل المدارس</label>
+                    <label><input type="radio" name="q25" value="b"> ب) الفجوة الرقمية بين الدول ✓</label>
+                    <label><input type="radio" name="q25" value="c"> ج) عدم حاجة الطلاب للتكنولوجيا</label>
+                    <label><input type="radio" name="q25" value="d"> د) جميع ما سبق</label>
+                </div>
+                <button class="answer-btn" onclick="toggleAnswer('mc25')">إظهار الإجابة</button>
+                <div id="mc25" class="answer-content">
+                    <strong>الإجابة الصحيحة: ب) الفجوة الرقمية بين الدول</strong><br>
+                    من التحديات العالمية: الفجوة الرقمية في الوصول للتكنولوجيا التعليمية، تفاوت البنية التحتية، والحاجة لتدريب المعلمين على استخدام التقنيات الحديثة.
+                </div>
+            </div>
+            <!-- قسم الأسئلة المقالية -->
+            <h3 style="color: var(--primary-color); margin-top: 40px;">📝 قسم الأسئلة المقالية (20 سؤال)</h3>
+            
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س1: قارن بين التربية المقارنة والتربية الدولية من حيث المفهوم، الأهداف، والمنهج.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es1')">إظهار الإجابة النموذجية</button>
+                <div id="es1" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>أولاً: المفهوم</strong><br>
+                    • التربية المقارنة: دراسة تحليلية نقدية للأنظمة التعليمية في دول مختلفة للكشف عن أوجه الشبه والاختلاف.<br>
+                    • التربية الدولية: مجال يدرس القضايا التعليمية التي تتجاوز الحدود ويعزز التعاون العالمي.<br><br>
+                    <strong>ثانياً: الأهداف</strong><br>
+                    • المقارنة: فهم العوامل المؤثرة، الاستفادة من التجارب، تطوير النظريات.<br>
+                    • الدولية: تعزيز التفاهم العالمي، تحقيق أهداف التنمية المستدامة، إعداد مواطنين عالميين.<br><br>
+                    <strong>ثالثاً: المنهج</strong><br>
+                    • المقارنة: تحليلي، وصفي، مقارن (خطوات بيريدي).<br>
+                    • الدولية: تعاوني، تطبيقي، تنموي، يركز على المشاريع المشتركة.<br><br>
+                    <strong>الخلاصة:</strong> التربية المقارنة أداة تحليلية لفهم الأنظمة، بينما التربية الدولية إطار تعاوني لمعالجة القضايا العالمية.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س2: اشرح منهج جورج بيريدي في التربية المقارنة مع ذكر خطواته الأربع وتطبيقها عملياً.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es2')">إظهار الإجابة النموذجية</button>
+                <div id="es2" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>منهج بيريدي:</strong> يعتبر من أكثر المناهج منهجية في التربية المقارنة، يتكون من 4 خطوات متسلسلة:<br><br>
+                    <strong>1) الوصف (Description):</strong><br>
+                    - جمع البيانات والمعلومات الدقيقة عن الأنظمة التعليمية.<br>
+                    - استخدام مصادر أولية (زيارات ميدانية) وثانوية (تقارير، إحصائيات).<br><br>
+                    <strong>2) التفسير (Interpretation):</strong><br>
+                    - تحليل العوامل السياسية، الاقتصادية، الاجتماعية، الثقافية المؤثرة.<br>
+                    - فهم لماذا يوجد النظام التعليمي بهذه الصورة.<br><br>
+                    <strong>3) التجاور (Juxtaposition):</strong><br>
+                    - وضع البيانات من الدول المختلفة جنباً إلى جنب.<br>
+                    - استخدام الجداول والمخططات لتسهيل المقارنة.<br><br>
+                    <strong>4) المقارنة (Comparison):</strong><br>
+                    - الكشف عن أوجه الشبه والاختلاف.<br>
+                    - الاستنتاج والتوصل لقوانين عامة قابلة للتعميم.<br><br>
+                    <strong>تطبيق عملي:</strong> عند مقارنة التعليم في فنلندا ومصر:<br>
+                    - نجمع بيانات عن كل نظام (الوصف).<br>
+                    - نحلل العوامل المؤثرة (الثقافة، الاقتصاد...).<br>
+                    - نضع البيانات في جداول مقارنة (التجاور).<br>
+                    - نستنتج الدروس المستفادة لكل دولة (المقارنة).
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س3: ناقش دور العوامل الثقافية في تشكيل النظام التعليمي، مع ذكر أمثلة من الواقع.</div>                <button class="answer-btn" onclick="toggleAnswer('es3')">إظهار الإجابة النموذجية</button>
+                <div id="es3" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>أهمية العوامل الثقافية:</strong><br>
+                    الثقافة تشكل الهوية والقيم التي ينعكس عليها النظام التعليمي. لا يمكن فهم نظام تعليمي بمعزل عن ثقافته.<br><br>
+                    <strong>مظاهر التأثير:</strong><br>
+                    1) <strong>الدين:</strong> في الدول الإسلامية، تدمج المناهج القيم الإسلامية وتعليم القرآن. في الدول الغربية، قد يكون التعليم علمانياً.<br>
+                    2) <strong>اللغة:</strong> اللغة الرسمية تحدد لغة التدريس. في دول مثل الهند وسويسرا، يتطلب تعدد اللغات سياسات تعليمية خاصة.<br>
+                    3) <strong>القيم الاجتماعية:</strong> المجتمعات التي تقدر العمل الجماعي (كاليابان) تركز على المشاريع الجماعية. المجتمعات الفردية تركز على الإنجاز الشخصي.<br>
+                    4) <strong>التاريخ:</strong> الدول التي مرت باستعمار قد تحتفظ ببعض آثاره في مناهجها، أو تعمل على تعزيز الهوية الوطنية.<br><br>
+                    <strong>أمثلة واقعية:</strong><br>
+                    • <strong>اليابان:</strong> الثقافة التي تقدر الانضباط والعمل الجماعي تنعكس في نظام تعليمي يركز على القيم الأخلاقية والعمل الجماعي.<br>
+                    • <strong>الدول الإسكندنافية:</strong> الثقافة التي تقدر المساواة والحرية تنعكس في أنظمة تعليمية مجانية، لا درجات فيها في المراحل الأولى، وتركز على تنمية الشخصية.<br><br>
+                    <strong>الخلاصة:</strong> نجاح أي إصلاح تعليمي يتطلب فهم الثقافة المحلية ومواءمة التغييرات معها، وليس مجرد نقل نماذج خارجية.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س4: ما هي التحديات العالمية التي تواجه التعليم في القرن الحادي والعشرين؟ وكيف يمكن للتربية الدولية المساهمة في معالجتها؟</div>
+                <button class="answer-btn" onclick="toggleAnswer('es4')">إظهار الإجابة النموذجية</button>
+                <div id="es4" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>أولاً: التحديات العالمية الرئيسية:</strong><br>
+                    1) <strong>الفجوة التعليمية:</strong> تفاوت فرص التعليم بين الدول الغنية والفقيرة، وبين الريف والحضر.<br>
+                    2) <strong>نزوح اللاجئين:</strong> أكثر من 258 مليون طفل خارج المدارس، كثير منهم لاجئون.<br>
+                    3) <strong>جودة التعليم:</strong> التحدي ليس فقط في الالتحاق، بل في جودة المخرجات وملاءمتها لسوق العمل.<br>
+                    4) <strong>الفجوة الرقمية:</strong> تفاوت الوصول للتكنولوجيا التعليمية بين الدول.<br>
+                    5) <strong>التغير المناخي:</strong> ضرورة إدماج مفاهيم الاستدامة في المناهج.<br><br>
+                    <strong>ثانياً: دور التربية الدولية في المعالجة:</strong><br>
+                    1) <strong>تعزيز التعاون:</strong> عبر منظمات مثل اليونسكو واليونيسف لتقديم الدعم الفني والمالي.<br>
+                    2) <strong>نقل الخبرات:</strong> دراسة النماذج الناجحة (كفنلندا في الجودة، وكوريا في التكنولوجيا) وتكييفها مع السياقات المحلية.<br>
+                    3) <strong>تطوير المناهج:</strong> إدماج مفاهيم المواطنة العالمية والتنمية المستدامة في المناهج عالمياً.<br>
+                    4) <strong>بناء القدرات:</strong> تدريب المعلمين والقادة التربويين في الدول النامية.<br>
+                    5) <strong>الرصد والتقييم:</strong> استخدام أدوات مثل PISA لقياس التقدم وتحديد مجالات التحسين.<br><br>
+                    <strong>الخلاصة:</strong> التربية الدولية توفر الإطار التعاوني والمعرفي اللازم لمواجهة التحديات التعليمية العالمية التي تتجاوز الحدود الوطنية.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س5: اشرح مفهوم "التعليم من أجل المواطنة العالمية" (GCED) وأبعاده الثلاثة، مع ذكر أمثلة تطبيقية.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es5')">إظهار الإجابة النموذجية</button>
+                <div id="es5" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>مفهوم GCED:</strong><br>
+                    مبادرة تتبناها اليونسكو تهدف إلى إعداد الطلاب ليكونوا مواطنين فاعلين في عالم مترابط، قادرين على المساهمة في عالم أكثر سلاماً وعدلاً واستدامة.<br><br>
+                    <strong>الأبعاد الثلاثة:</strong><br><br>
+                    <strong>1) البعد المعرفي:</strong><br>
+                    - فهم القضايا العالمية: حقوق الإنسان، السلام، التنوع الثقافي، التغير المناخي.<br>
+                    - معرفة الهياكل العالمية: الأمم المتحدة، المنظمات الدولية، الاتفاقيات العالمية.<br>
+                    - <em>مثال:</em> دراسة أهداف التنمية المستدامة في مادة الدراسات الاجتماعية.<br><br>                    <strong>2) البعد الاجتماعي-العاطفي:</strong><br>
+                    - تنمية القيم: التعاطف، الاحترام، المسؤولية، التضامن.<br>
+                    - تطوير المهارات: التواصل، حل النزاعات، التفكير النقدي.<br>
+                    - <em>مثال:</em> أنشطة لعب الأدوار لمحاكاة مواقف اللاجئين لتعزيز التعاطف.<br><br>
+                    <strong>3) البعد السلوكي:</strong><br>
+                    - تمكين الطلاب من اتخاذ إجراءات: حملات توعوية، مشاريع مجتمعية، مشاركة مدنية.<br>
+                    - <em>مثال:</em> مشروع طلابي لإعادة التدوير في المدرسة لمكافحة التغير المناخي.<br><br>
+                    <strong>تطبيق عملي:</strong><br>
+                    مدرسة تدمج GCED عبر: منهج متعدد التخصصات، أنشطة لا صفية، شراكات مع مدارس في دول أخرى، ومشاريع خدمية مجتمعية.<br><br>
+                    <strong>الخلاصة:</strong> GCED ليس مادة منفصلة، بل منظور شامل يدمج في جميع جوانب العملية التعليمية لإعداد جيل عالمي مسؤول.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س6: قارن بين النظام التعليمي في دولة ديمقراطية ودولة شمولية من حيث الأهداف، المناهج، وطرق التدريس.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es6')">إظهار الإجابة النموذجية</button>
+                <div id="es6" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>جدول مقارنة:</strong><br>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>وجه المقارنة</th>
+                                <th>النظام الديمقراطي</th>
+                                <th>النظام الشمولي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>الأهداف</strong></td>
+                                <td>تنمية التفكير النقدي، الحرية، المشاركة، احترام التنوع</td>
+                                <td>غرس الولاء للدولة، الطاعة، توحيد الفكر، تعزيز الأيديولوجيا</td>
+                            </tr>
+                            <tr>
+                                <td><strong>المناهج</strong></td>
+                                <td>متنوعة، تشجع على البحث، تتضمن وجهات نظر متعددة</td>
+                                <td>مركزية، موحدة، تركز على تاريخ الدولة وإنجازاتها، قد تحذف آراء مخالفة</td>
+                            </tr>
+                            <tr>
+                                <td><strong>طرق التدريس</strong></td>
+                                <td>تفاعلية، تعتمد على الحوار، المشاريع، التعلم الذاتي</td>
+                                <td>تلقينية، تعتمد على الحفظ، المعلم مصدر المعرفة الوحيد</td>
+                            </tr>
+                            <tr>
+                                <td><strong>تقييم الطلاب</strong></td>
+                                <td>متنوع: مشاريع، عروض، اختبارات، تقييم ذاتي</td>
+                                <td>يركز على الاختبارات الموحدة والحفظ</td>
+                            </tr>
+                            <tr>
+                                <td><strong>دور المعلم</strong></td>                                <td>ميسر للتعلم، مشجع على الأسئلة والنقاش</td>
+                                <td>ناقل للمعرفة الرسمية، مراقب للالتزام بالأيديولوجيا</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <strong>أمثلة:</strong><br>
+                    • <strong>ديمقراطي:</strong> الولايات المتحدة، كندا، دول أوروبا الغربية - أنظمة تشجع الإبداع والنقد.<br>
+                    • <strong>شمولي:</strong> كوريا الشمالية - نظام يركز على الولاء للقيادة وتوحيد الفكر.<br><br>
+                    <strong>الخلاصة:</strong> النظام السياسي يشكل الفلسفة التربوية التي تنعكس على كل جوانب النظام التعليمي، من الأهداف إلى الممارسات اليومية.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س7: ما هي مراحل تطور التربية المقارنة في الغرب؟ اذكر خصائص كل مرحلة وأبرز روادها.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es7')">إظهار الإجابة النموذجية</button>
+                <div id="es7" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>المرحلة الأولى: الاقتباس والنقل (حتى منتصف القرن 19)</strong><br>
+                    • <strong>الخصائص:</strong> وصف الأنظمة التعليمية الأجنبية، محاولة نقل النماذج الناجحة.<br>
+                    • <strong>الرواد:</strong> الرحالة، مارك أنطوان جوليان (وضع أول خطة منهجية باستخدام الاستبيانات 1817).<br>
+                    • <strong>القصور:</strong> وصف سطحي دون تحليل للعوامل المؤثرة.<br><br>
+                    <strong>المرحلة الثانية: العوامل والقوى المؤثرة (منتصف القرن 19 - منتصف القرن 20)</strong><br>
+                    • <strong>الخصائص:</strong> الوعي بأن التعليم نتاج للثقافة والمجتمع، لا يمكن نقله بمعزل عن بيئته.<br>
+                    • <strong>الرواد:</strong><br>
+                      - مايكل سادلر: "الأشياء خارج المدرسة أهم".<br>
+                      - فيكتور كوزان: درس تأثير التعليم البروسي على فرنسا.<br>
+                      - ماثيو أرنولد: ركز على دور الدولة.<br>
+                    • <strong>الإضافة:</strong> إدخال البعد الثقافي والتحليلي.<br><br>
+                    <strong>المرحلة الثالثة: المنهج العلمي والتحليل (بعد الحرب العالمية الثانية)</strong><br>
+                    • <strong>الخصائص:</strong> استخدام الإحصاء، علم الاجتماع، منهجيات بحثية صارمة.<br>
+                    • <strong>الرواد:</strong><br>
+                      - جورج بيريدي: منهج الخطوات الأربع.<br>
+                      - برايان هولمز: المنهج الانتقائي لحل المشكلات.<br>
+                      - إدموند كينج: ربط التربية بالتغير الاجتماعي.<br>
+                    • <strong>الإضافة:</strong> تحويل التربية المقارنة إلى علم قائم بذاته.<br><br>
+                    <strong>الخلاصة:</strong> تطورت التربية المقارنة من وصف سطحي إلى تحليل علمي عميق، مما زاد من قيمتها التطبيقية في إصلاح التعليم.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س8: ناقش أهمية التربية المقارنة للمعلم، مع ذكر أمثلة عملية لكيفية استفادته منها في مهنته.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es8')">إظهار الإجابة النموذجية</button>
+                <div id="es8" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>أهمية التربية المقارنة للمعلم:</strong><br><br>
+                    <strong>1) تطوير الممارسات التدريسية:</strong><br>
+                    - الاطلاع على طرق تدريس ناجحة في دول أخرى (مثل طريقة مونتيسوري من إيطاليا، أو التعلم القائم على المشاريع من فنلندا).<br>
+                    - تكييف هذه الطرق مع السياق المحلي لتحسين تعلم طلابه.<br><br>
+                    <strong>2) فهم التنوع الثقافي:</strong><br>                    - في الفصول متعددة الثقافات، تساعد التربية المقارنة المعلم على فهم خلفيات طلابه الثقافية.<br>
+                    - تصميم أنشطة تحترم التنوع وتعزز الاندماج.<br><br>
+                    <strong>3) تطوير المناهج:</strong><br>
+                    - مقارنة المناهج الدولية (مثل البكالوريا الدولية) مع المنهج المحلي.<br>
+                    - اقتراح تحسينات تعتمد على أفضل الممارسات العالمية.<br><br>
+                    <strong>4) البحث التربوي:</strong><br>
+                    - استخدام منهجيات البحث المقارن لدراسة مشكلات فصله أو مدرسته.<br>
+                    - نشر نتائج بحثه للمساهمة في المعرفة التربوية.<br><br>
+                    <strong>5) التطور المهني:</strong><br>
+                    - المشاركة في برامج التبادل الدولي للمعلمين.<br>
+                    - حضور مؤتمرات دولية لتبادل الخبرات.<br><br>
+                    <strong>أمثلة عملية:</strong><br>
+                    • معلم رياضيات يطلع على طريقة تدريس الرياضيات في سنغافورة (التي تحتل مراكز متقدمة في PISA) ويطبق بعض استراتيجياتها.<br>
+                    • معلم لغة عربية في مدرسة دولية يستخدم مقارنة بين طرق تدريس اللغة في دول عربية مختلفة لإثراء حصته.<br>
+                    • معلم يشارك في برنامج تبادل مع مدرسة في فنلندا ليتعلم عن استقلالية المعلم وكيفية تطبيقها في سياقه.<br><br>
+                    <strong>الخلاصة:</strong> التربية المقارنة تمنح المعلم منظوراً عالمياً يثري ممارساته، ويمكنه من أن يكون معلماً أكثر فاعلية في عالم مترابط.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س9: ما هي أنواع الدراسات في التربية المقارنة؟ اشرح كل نوع مع ذكر مثال تطبيقي.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es9')">إظهار الإجابة النموذجية</button>
+                <div id="es9" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>1) دراسة الحالة (Case Study):</strong><br>
+                    • <strong>الوصف:</strong> دراسة نظام تعليمي لدولة واحدة بعمق.<br>
+                    • <strong>الهدف:</strong> فهم النظام في سياقه الثقافي والاجتماعي.<br>
+                    • <strong>مثال:</strong> دراسة النظام التعليمي في سنغافورة: كيف حققت جودة عالية بموارد محدودة؟<br><br>
+                    <strong>2) الدراسة المقارنة (Comparative Study):</strong><br>
+                    • <strong>الوصف:</strong> مقارنة نظامين تعليميين أو أكثر.<br>
+                    • <strong>الهدف:</strong> الكشف عن أوجه الشبه والاختلاف، استخلاص الدروس.<br>
+                    • <strong>مثال:</strong> مقارنة التعليم في فنلندا وكوريا الجنوبية: لماذا يتفوق طلابهما في الاختبارات الدولية بأساليب مختلفة؟<br><br>
+                    <strong>3) الدراسة العالمية (World Study):</strong><br>
+                    • <strong>الوصف:</strong> دراسة مشكلة تعليمية في كل دول العالم.<br>
+                    • <strong>الهدف:</strong> فهم الأبعاد العالمية للقضية.<br>
+                    • <strong>مثال:</strong> دراسة ظاهرة الأمية عالمياً: أسبابها، توزيعها الجغرافي، برامج المكافحة.<br><br>
+                    <strong>4) دراسة المشكلة (Problem Study):</strong><br>
+                    • <strong>الوصف:</strong> التركيز على قضية محددة في عدة دول.<br>
+                    • <strong>الهدف:</strong> مقارنة طرق معالجة نفس المشكلة.<br>
+                    • <strong>مثال:</strong> دراسة مشكلة التسرب المدرسي في الدول العربية: الأسباب والحلول المقترحة.<br><br>
+                    <strong>5) الدراسة المقطعية (Cross-sectional Study):</strong><br>
+                    • <strong>الوصف:</strong> دراسة مرحلة تعليمية معينة في عدة دول.<br>
+                    • <strong>الهدف:</strong> مقارنة ممارسات مرحلة محددة.<br>
+                    • <strong>مثال:</strong> دراسة التعليم الابتدائي في دول الخليج: المناهج، طرق التدريس، التقييم.<br><br>
+                    <strong>اختيار نوع الدراسة:</strong><br>
+                    يعتمد على: طبيعة السؤال البحثي، الموارد المتاحة، والهدف من الدراسة. دراسة الحالة مناسبة للفهم العميق، بينما الدراسة المقارنة مناسبة لاستخلاص الدروس.<br><br>
+                    <strong>الخلاصة:</strong> تعدد أنواع الدراسات في التربية المقارنة يتيح للباحث اختيار المنهج الأنسب لسؤاله البحثي، مما يزيد من دقة النتائج وقيمتها التطبيقية.
+                </div>
+            </div>
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س10: كيف يمكن للتكنولوجيا أن تساهم في تعزيز التربية الدولية؟ اذكر أمثلة واقعية.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es10')">إظهار الإجابة النموذجية</button>
+                <div id="es10" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>دور التكنولوجيا في التربية الدولية:</strong><br><br>
+                    <strong>1) التعلم عن بُعد:</strong><br>
+                    • تمكين الطلاب في المناطق النائية أو دول النزاع من الوصول للمعارف العالمية.<br>
+                    • <em>مثال:</em> منصة "كورسيرا" تقدم مساقات من جامعات عالمية مجاناً أو بتكلفة منخفضة.<br><br>
+                    <strong>2) الموارد التعليمية المفتوحة (OER):</strong><br>
+                    • توفير مناهج، كتب، فيديوهات تعليمية مجانية للجميع.<br>
+                    • <em>مثال:</em> مشروع "ويكي الكتب" التعليمي، ومكتبة "مكتبة الإسكندنية الرقمية".<br><br>
+                    <strong>3) التعاون الافتراضي:</strong><br>
+                    • ربط طلاب من دول مختلفة في مشاريع مشتركة عبر الإنترنت.<br>
+                    • <em>مثال:</em> برنامج "eTwinning" الأوروبي يربط مدارس من دول مختلفة لمشاريع تعاونية.<br><br>
+                    <strong>4) الذكاء الاصطناعي:</strong><br>
+                    • تخصيص التعلم وفقاً لاحتياجات كل طالب.<br>
+                    • تحليل البيانات التعليمية لتحسين السياسات.<br>
+                    • <em>مثال:</em> منصات مثل "Khan Academy" تستخدم خوارزميات لتكييف المحتوى مع مستوى الطالب.<br><br>
+                    <strong>5) تقييم عالمي:</strong><br>
+                    • اختبارات دولية عبر الإنترنت مثل PISA الرقمي.<br>
+                    • <em>مثال:</em> الانتقال إلى التقييم الرقمي في اختبارات PISA يسمح بجمع بيانات أكثر دقة وسرعة.<br><br>
+                    <strong>6) تدريب المعلمين:</strong><br>
+                    • برامج تطوير مهني عبر الإنترنت للمعلمين في الدول النامية.<br>
+                    • <em>مثال:</em> برامج اليونسكو للتدريب الإلكتروني للمعلمين في أفريقيا.<br><br>
+                    <strong>التحديات:</strong><br>
+                    • الفجوة الرقمية: عدم تكافؤ الوصول للتكنولوجيا.<br>
+                    • جودة المحتوى: ضرورة ضمان دقة وموثوقية الموارد المفتوحة.<br>
+                    • الخصوصية: حماية بيانات الطلاب في المنصات الدولية.<br><br>
+                    <strong>الخلاصة:</strong> التكنولوجيا أداة قوية لتعزيز التربية الدولية، لكن نجاحها يتطلب معالجة الفجوة الرقمية وضمان الجودة والإنصاف.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س11: ما هي أهداف التربية المقارنة؟ صنفها إلى أهداف نظرية وعملية، مع الشرح.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es11')">إظهار الإجابة النموذجية</button>
+                <div id="es11" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>أولاً: الأهداف النظرية</strong><br>
+                    1) <strong>إثراء المعرفة التربوية:</strong> فهم العلاقة بين التربية والمجتمع، تطوير النظريات التربوية.<br>
+                    2) <strong>فهم أفضل لأنفسنا:</strong> مقارنة نظامنا بالآخرين تساعدنا على رؤية إيجابياتنا وسلبياتنا بموضوعية.<br>
+                    3) <strong>تطوير منهجيات البحث:</strong> التربية المقارنة تساهم في تطوير أدوات ومنهجيات البحث التربوي.<br>
+                    4) <strong>اختبار الفرضيات:</strong> اختبار صحة النظريات التربوية في سياقات ثقافية مختلفة.<br><br>
+                    <strong>ثانياً: الأهداف العملية</strong><br>
+                    1) <strong>مساعدة صناع القرار:</strong> تزويد المخططين ببيانات مقارنة لإصلاح التعليم.<br>
+                    2) <strong>نقل الخبرات:</strong> دراسة النماذج الناجحة وتكييفها مع السياق المحلي.<br>
+                    3) <strong>تجنب الأخطاء:</strong> التعلم من فشل تجارب الآخرين لتجنب تكرارها.<br>
+                    4) <strong>تطوير المعلمين:</strong> إثراء ممارسات المعلمين عبر الاطلاع على تجارب عالمية.<br>
+                    5) <strong>تحسين المناهج:</strong> مقارنة المناهج الدولية لاقتراح تحسينات.<br><br>
+                    <strong>ثالثاً: الأهداف الدولية</strong><br>                    1) <strong>تعزيز التفاهم:</strong> تقريب وجهات النظر بين الشعوب عبر فهم أنظمتها التعليمية.<br>
+                    2) <strong>دعم التنمية المستدامة:</strong> المساهمة في تحقيق الهدف الرابع من أهداف التنمية المستدامة.<br>
+                    3) <strong>تحقيق السلام:</strong> التعليم الذي يعزز قيم التسامح يساهم في منع النزاعات.<br><br>
+                    <strong>التكامل بين الأهداف:</strong><br>
+                    الأهداف النظرية تغذي العملية، والعكس صحيح. مثلاً: فهم نظري أفضل للعوامل الثقافية يساعد عملياً في تصميم إصلاحات أكثر ملاءمة.<br><br>
+                    <strong>الخلاصة:</strong> التربية المقارنة تخدم أغراضاً متعددة: تطوير المعرفة، تحسين الممارسة، وتعزيز التعاون الدولي - مما يجعلها حقلًا معرفياً غنياً وذا قيمة تطبيقية عالية.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س12: اشرح مفهوم "العوامل المؤثرة في التعليم" مع تصنيفها وذكر أمثلة لكل نوع.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es12')">إظهار الإجابة النموذجية</button>
+                <div id="es12" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>مفهوم العوامل المؤثرة:</strong><br>
+                    النظام التعليمي ليس جزيرة منعزلة، بل يتشكل بتفاعل معقد لعوامل متعددة داخلية وخارجية.<br><br>
+                    <strong>تصنيف العوامل:</strong><br><br>
+                    <strong>1) العوامل الجغرافية:</strong><br>
+                    • المساحة، التضاريس، المناخ، الموارد الطبيعية.<br>
+                    • <em>مثال:</em> الدول الشاسعة (روسيا) تواجه تحديات في المركزية التعليمية.<br>
+                    • <em>مثال:</em> المناخ الحار يؤثر في مواعيد الدراسة ونوع المباني.<br><br>
+                    <strong>2) العوامل التاريخية:</strong><br>
+                    • الخبرة الحضارية، الاستعمار، الحروب، حركات الإصلاح.<br>
+                    • <em>مثال:</em> الدول التي مرت باستعمار قد تحتفظ ببعض آثاره في مناهجها.<br>
+                    • <em>مثال:</em> تجربة إصلاحات ميجي في اليابان أصبحت نموذجاً يحتذى به.<br><br>
+                    <strong>3) العوامل السياسية:</strong><br>
+                    • نظام الحكم (ديمقراطي، شمولي)، الاستقرار السياسي، السياسات التعليمية.<br>
+                    • <em>مثال:</em> الأنظمة الديمقراطية تشجع التفكير النقدي، بينما الشمولية تركز على الطاعة.<br><br>
+                    <strong>4) العوامل الاقتصادية:</strong><br>
+                    • مستوى الدخل، طبيعة الاقتصاد (زراعي، صناعي، معرفي)، الميزانية.<br>
+                    • <em>مثال:</em> الدول الغنية تستثمر أكثر في البنية التحتية التعليمية.<br>
+                    • <em>مثال:</em> الاقتصاد المعرفي يحتاج لمهارات مختلفة عن الاقتصاد الزراعي.<br><br>
+                    <strong>5) العوامل الاجتماعية:</strong><br>
+                    • الطبقات الاجتماعية، دور الأسرة، العادات، القيم.<br>
+                    • <em>مثال:</em> المجتمعات التي تقدر التعليم تحقق نسب التحاق أعلى.<br><br>
+                    <strong>6) العوامل الدينية:</strong><br>
+                    • الدين الرسمي، القيم الأخلاقية، العلاقة بين الدين والدولة.<br>
+                    • <em>مثال:</em> في الدول الإسلامية، تدمج المناهج القيم الإسلامية.<br><br>
+                    <strong>7) العوامل اللغوية:</strong><br>
+                    • اللغة الرسمية، تعدد اللغات، سياسات اللغة.<br>
+                    • <em>مثال:</em> في الهند، يتطلب تعدد اللغات سياسات تعليمية معقدة.<br><br>
+                    <strong>التفاعل بين العوامل:</strong><br>
+                    هذه العوامل لا تعمل بمعزل عن بعضها، بل تتفاعل بشكل معقد. مثلاً: العوامل التاريخية والسياسية قد تشكل العوامل الاقتصادية، التي بدورها تؤثر في التعليم.<br><br>
+                    <strong>الخلاصة:</strong> فهم هذه العوامل وتفاعلها ضروري لأي محاولة جادة لإصلاح التعليم أو نقل تجارب دولية بنجاح.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س13: ما هي التحديات التي تواجه تطبيق التربية المقارنة في الدول النامية؟ وكيف يمكن التغلب عليها؟</div>
+                <button class="answer-btn" onclick="toggleAnswer('es13')">إظهار الإجابة النموذجية</button>                <div id="es13" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>أولاً: التحديات الرئيسية</strong><br>
+                    1) <strong>نقص البيانات الموثوقة:</strong> ضعف أنظمة الإحصاء التربوي، عدم دقة التقارير.<br>
+                    2) <strong>قلة الكوادر المدربة:</strong> نقص الباحثين المتخصصين في التربية المقارنة.<br>
+                    3) <strong>العوائق اللغوية:</strong> صعوبة الوصول للمصادر بلغات أجنبية.<br>
+                    4) <strong>القيود المالية:</strong> محدودية الميزانيات للزيارات الميدانية، الاشتراك في قواعد البيانات.<br>
+                    5) <strong>السياق المختلف:</strong> صعوبة تطبيق نماذج ناجحة في دول متقدمة على سياقات نامية مختلفة.<br>
+                    6) <strong>الاعتماد على النماذج الأجنبية:</strong> خطر تقليد النماذج دون تكييف مع السياق المحلي.<br><br>
+                    <strong>ثانياً: سبل التغلب على التحديات</strong><br>
+                    1) <strong>تعزيز أنظمة البيانات:</strong><br>
+                      - الاستثمار في أنظمة إحصاء تربوي موثوقة.<br>
+                      - التعاون مع منظمات دولية (اليونسكو، البنك الدولي) لتحسين جمع البيانات.<br><br>
+                    2) <strong>بناء القدرات:</strong><br>
+                      - برامج تدريبية للباحثين في التربية المقارنة.<br>
+                      - تشجيع الدراسات العليا في هذا المجال.<br><br>
+                    3) <strong>تسهيل الوصول للمعرفة:</strong><br>
+                      - ترجمة المصادر المهمة للعربية.<br>
+                      - الاستفادة من الموارد التعليمية المفتوحة (OER).<br><br>
+                    4) <strong>التعاون الإقليمي:</strong><br>
+                      - إنشاء شبكات بحثية عربية وأفريقية في التربية المقارنة.<br>
+                      - تبادل الخبرات بين الدول النامية.<br><br>
+                    5) <strong>التكييف مع السياق:</strong><br>
+                      - دراسة النماذج الدولية مع تحليل عوامل نجاحها.<br>
+                      - تكييف الدروس المستفادة مع الواقع المحلي بدلاً من النسخ الحرفي.<br><br>
+                    6) <strong>الاستفادة من التكنولوجيا:</strong><br>
+                      - استخدام المنصات الإلكترونية للوصول للمصادر الدولية.<br>
+                      - التعاون الافتراضي مع باحثين من دول أخرى.<br><br>
+                    <strong>الخلاصة:</strong> رغم التحديات، يمكن للدول النامية الاستفادة من التربية المقارنة عبر بناء القدرات، التعاون الإقليمي، والتكييف الذكي للنماذج الدولية مع السياقات المحلية.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س14: ناقش دور المنظمات الدولية في تطوير التعليم عالمياً، مع التركيز على اليونسكو واليونيسف.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es14')">إظهار الإجابة النموذجية</button>
+                <div id="es14" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>أولاً: دور اليونسكو (منظمة الأمم المتحدة للتربية والعلم والثقافة)</strong><br>
+                    • <strong>التأسيس:</strong> 1945، مقرها باريس.<br>
+                    • <strong>الرؤية:</strong> بناء السلام عبر التعاون في التربية، العلم، الثقافة.<br>
+                    • <strong>البرامج الرئيسية:</strong><br>
+                      1) التعليم للجميع (EFA): مبادرة عالمية لضمان التعليم الأساسي للجميع.<br>
+                      2) أهداف التنمية المستدامة (الهدف 4): ضمان تعليم جيد ومنصف وشامل للجميع.<br>
+                      3) التعليم من أجل المواطنة العالمية (GCED): إعداد الطلاب لمواطنة عالمية مسؤولة.<br>
+                      4) التعليم من أجل التنمية المستدامة (ESD): دمج مفاهيم الاستدامة في المناهج.<br>
+                    • <strong>آليات العمل:</strong><br>
+                      - وضع معايير دولية (مثل تصنيف التعليم الدولي ISCED).<br>
+                      - تقديم الدعم الفني للدول الأعضاء.<br>
+                      - رصد التقدم عبر تقارير عالمية.<br><br>
+                    <strong>ثانياً: دور اليونيسف (منظمة الأمم المتحدة للطفولة)</strong><br>                    • <strong>التأسيس:</strong> 1946، مقرها نيويورك.<br>
+                    • <strong>الرؤية:</strong> حماية حقوق كل طفل، خاصة الأكثر احتياجاً.<br>
+                    • <strong>البرامج التعليمية:</strong><br>
+                      1) تعليم الفتيات: في المناطق النائية والمحرومة.<br>
+                      2) التعليم في حالات الطوارئ: للاجئين والنازحين.<br>
+                      3) مكافحة عمالة الأطفال: لضمان التحاقهم بالمدارس.<br>
+                      4) تحسين جودة التعليم: تدريب المعلمين، تطوير المناهج.<br>
+                    • <strong>آليات العمل:</strong><br>
+                      - برامج ميدانية مباشرة في أكثر من 190 دولة.<br>
+                      - شراكات مع الحكومات والمجتمع المدني.<br>
+                      - الدعوة والمناصرة لسياسات صديقة للطفل.<br><br>
+                    <strong>ثالثاً: التكامل بين المنظمات</strong><br>
+                    • اليونسكو تركز على السياسات والمعايير العالمية.<br>
+                    • اليونيسف تركز على التنفيذ الميداني والفئات الأكثر احتياجاً.<br>
+                    • التعاون بينهما يضمن شمولية التدخل: من وضع السياسات إلى التنفيذ.<br><br>
+                    <strong>رابعاً: التحديات</strong><br>
+                    • نقص التمويل المزمن للبرامج التعليمية.<br>
+                    • صعوبة الوصول للمناطق المتأثرة بالنزاعات.<br>
+                    • الحاجة لتكييف البرامج مع السياقات المحلية.<br><br>
+                    <strong>الخلاصة:</strong> تلعب اليونسكو واليونيسف أدواراً مكملة في تطوير التعليم عالمياً: اليونسكو تضع الأطر والمعايير، واليونيسف تنفذ البرامج الميدانية. نجاحهما يتطلب تعاوناً وثيقاً وتمويلاً كافياً.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س15: ما هي خصائص النظام التعليمي الناجح وفقاً للدراسات الدولية؟ اذكر أمثلة من دول حققت نجاحاً.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es15')">إظهار الإجابة النموذجية</button>
+                <div id="es15" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>خصائص النظام التعليمي الناجح (وفقاً لدراسات مثل PISA و TIMSS):</strong><br><br>
+                    <strong>1) الجودة والمساواة:</strong><br>
+                    • توفير تعليم عالي الجودة لجميع الطلاب بغض النظر عن خلفياتهم.<br>
+                    • <em>مثال:</em> فنلندا: لا مدارس خاصة، تمويل عادل، نتائج عالية ومتساوية.<br><br>
+                    <strong>2) المعلمون المؤهلون:</strong><br>
+                    • اختيار المعلمين من أفضل الخريجين، تدريب عالٍ، رواتب مجزية، مكانة اجتماعية.<br>
+                    • <em>مثال:</em> سنغافورة: المعلمون من أفضل 30% من الخريجين، تدريب مستمر.<br><br>
+                    <strong>3) المناهج المتمركزة حول الطالب:</strong><br>
+                    • التركيز على الفهم العميق، التفكير النقدي، المهارات الحياتية بدلاً من الحفظ.<br>
+                    • <em>مثال:</em> كندا: مناهج مرنة تشجع الإبداع وحل المشكلات.<br><br>
+                    <strong>4) التقييم من أجل التعلم:</strong><br>
+                    • استخدام التقييم لتشخيص نقاط القوة والضعف وتحسين التعلم، ليس فقط للترتيب.<br>
+                    • <em>مثال:</em> نيوزيلندا: تقييم تكويني مستمر بدلاً من اختبارات موحدة مكثفة.<br><br>
+                    <strong>5) الاستقلالية والمساءلة:</strong><br>
+                    • منح المدارس استقلالية في إدارة شؤونها مع محاسبتها على النتائج.<br>
+                    • <em>مثال:</em> هولندا: مدارس مستقلة مالياً وإدارياً مع معايير جودة وطنية.<br><br>
+                    <strong>6) الدعم للطلاب المحتاجين:</strong><br>
+                    • برامج تدخل مبكر، دعم إضافي للطلاب المتعثرين.<br>
+                    • <em>مثال:</em> كوريا الجنوبية: دروس تقوية مجانية، دعم نفسي واجتماعي.<br><br>
+                    <strong>7) المشاركة المجتمعية:</strong><br>
+                    • إشراك أولياء الأمور والمجتمع المحلي في دعم التعليم.<br>
+                    • <em>مثال:</em> اليابان: مشاركة قوية للأهالي في أنشطة المدرسة.<br><br>                    <strong>8) الاستثمار المستدام:</strong><br>
+                    • تخصيص نسبة كافية من الناتج المحلي للتعليم (4-6%).<br>
+                    • <em>مثال:</em> دول الشمال الأوروبي: استثمار عالٍ في التعليم يعطي عوائد اقتصادية كبيرة.<br><br>
+                    <strong>ملاحظة:</strong> لا توجد "وصفة سحرية" واحدة. النجاح يعتمد على تكييف هذه الخصائص مع السياق الثقافي والاجتماعي لكل دولة.<br><br>
+                    <strong>الخلاصة:</strong> الأنظمة الناجحة تجمع بين الجودة والمساواة، المعلمين الأكفاء، المناهج الحديثة، التقييم البنّاء، والاستثمار المستدام - مع مراعاة الخصوصية المحلية.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س16: كيف يمكن للتربية المقارنة أن تساهم في تحقيق أهداف التنمية المستدامة (خاصة الهدف 4)؟</div>
+                <button class="answer-btn" onclick="toggleAnswer('es16')">إظهار الإجابة النموذجية</button>
+                <div id="es16" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>الهدف 4 من أهداف التنمية المستدامة:</strong><br>
+                    "ضمان تعليم جيد ومنصف وشامل للجميع وتعزيز فرص التعلم مدى الحياة للجميع بحلول 2030".<br><br>
+                    <strong>مساهمات التربية المقارنة في تحقيق الهدف 4:</strong><br><br>
+                    <strong>1) رصد التقدم:</strong><br>
+                    • مقارنة مؤشرات التعليم بين الدول (معدلات الالتحاق، الجودة، المساواة).<br>
+                    • تحديد الدول المتأخرة لتحديد أولويات الدعم.<br>
+                    • <em>أداة:</em> تقارير اليونسكو العالمية لرصد التعليم.<br><br>
+                    <strong>2) تبادل أفضل الممارسات:</strong><br>
+                    • دراسة النماذج الناجحة في تحقيق أهداف فرعية (مثل تعليم الفتيات، دمج ذوي الإعاقة).<br>
+                    • تكييف هذه الممارسات مع السياقات المحلية.<br>
+                    • <em>مثال:</em> دراسة تجربة بنغلاديش في تعليم الفتيات لتطبيق دروسها في دول مماثلة.<br><br>
+                    <strong>3) تطوير السياسات:</strong><br>
+                    • تحليل عوامل نجاح السياسات التعليمية في دول مختلفة.<br>
+                    • تقديم توصيات مبنية على الأدلة لصناع القرار.<br>
+                    • <em>مثال:</em> تحليل سياسات التمويل العادل في دول أمريكا اللاتينية.<br><br>
+                    <strong>4) بناء القدرات:</strong><br>
+                    • تدريب الكوادر الوطنية على منهجيات البحث المقارن.<br>
+                    • تعزيز قدرات أنظمة الرصد والتقييم الوطنية.<br><br>
+                    <strong>5) تعزيز التعاون:</strong><br>
+                    • تسهيل الشراكات بين الدول لمواجهة تحديات مشتركة (مثل التعليم في حالات الطوارئ).<br>
+                    • <em>مثال:</em> شبكات بحثية إقليمية في أفريقيا لتبادل الخبرات.<br><br>
+                    <strong>6) الدعوة والمناصرة:</strong><br>
+                    • استخدام البيانات المقارنة للدعوة لزيادة الاستثمار في التعليم.<br>
+                    • تسليط الضوء على أوجه عدم المساواة لتحفيز الإصلاح.<br><br>
+                    <strong>7) الابتكار والتكيف:</strong><br>
+                    • دراسة تجارب الابتكار التعليمي (مثل التعلم الرقمي، المدارس المجتمعية).<br>
+                    • تقييم قابلية تطبيقها في سياقات مختلفة.<br><br>
+                    <strong>تحديات:</strong><br>
+                    • صعوبة مقارنة بيانات من أنظمة إحصائية مختلفة.<br>
+                    • خطر تطبيق حلول "جاهزة" دون تكييف مع السياق.<br>
+                    • نقص التمويل للبحوث المقارنة التطبيقية.<br><br>
+                    <strong>الخلاصة:</strong> التربية المقارنة توفر الأدوات المعرفية والمنهجية اللازمة لرصد التقدم، تبادل الخبرات، وتطوير سياسات تعليمية فعالة لتحقيق الهدف 4 - لكن نجاحها يتطلب تكييفاً ذكياً مع السياقات المحلية واستثماراً في بناء القدرات الوطنية.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س17: ناقش أهمية اللغة في التربية المقارنة، وكيف يمكن للتعددية اللغوية أن تكون فرصة وتحدياً في نفس الوقت.</div>                <button class="answer-btn" onclick="toggleAnswer('es17')">إظهار الإجابة النموذجية</button>
+                <div id="es17" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>أهمية اللغة في التربية المقارنة:</strong><br>
+                    اللغة ليست مجرد أداة اتصال، بل هي حاملة للثقافة، الهوية، وطرق التفكير. فهم النظام التعليمي يتطلب فهم لغته وسياقه الثقافي.<br><br>
+                    <strong>اللغة كتحدي:</strong><br>
+                    1) <strong>عائق في جمع البيانات:</strong><br>
+                      - صعوبة الوصول للمصادر الأولية بلغات أجنبية.<br>
+                      - خطر سوء الفهم في الترجمة للمفاهيم التربوية.<br>
+                    2) <strong>تعقيد في المقارنة:</strong><br>
+                      - مصطلحات تربوية قد لا يكون لها مقابل دقيق في لغات أخرى (مثل "Bildung" الألمانية).<br>
+                      - اختلاف دلالات المصطلحات بين الثقافات.<br>
+                    3) <strong>تحدي في التطبيق:</strong><br>
+                      - صعوبة نقل نماذج تعليمية من لغة لأخرى دون فقدان السياق.<br><br>
+                    <strong>اللغة كفرصة:</strong><br>
+                    1) <strong>إثراء المعرفة:</strong><br>
+                      - التعددية اللغوية تتيح الوصول لوجهات نظر متنوعة.<br>
+                      - مقارنة مفاهيم تربوية عبر اللغات تثري الفهم.<br>
+                    2) <strong>تعزيز الكفاءة العالمية:</strong><br>
+                      - تعلم لغات متعددة يعد الطلاب لعالم مترابط.<br>
+                      - <em>مثال:</em> برامج الغمر اللغوي في كندا (فرنسي/إنجليزي).<br>
+                    3) <strong>الحفاظ على التنوع:</strong><br>
+                      - التعليم بلغات الأقليات يحفظ التراث الثقافي.<br>
+                      - <em>مثال:</em> تعليم اللغة الأمازيغية في المغرب.<br><br>
+                    <strong>سياسات للتعامل مع التعددية اللغوية:</strong><br>
+                    1) <strong>نموذج اللغة الواحدة:</strong><br>
+                      - لغة رسمية واحدة للتعليم (تبسيط إداري، لكن قد يهمش لغات الأقليات).<br>
+                    2) <strong>نموذج التعددية:</strong><br>
+                      - تدريس بلغات متعددة (يحفظ التنوع، لكن يتطلب موارد أكثر).<br>
+                      - <em>مثال:</em> سويسرا: تعليم بأربع لغات رسمية.<br>
+                    3) <strong>نموذج الانتقال:</strong><br>
+                      - بدء التعليم بلغة الأم ثم الانتقال للغة الرسمية.<br>
+                      - <em>مثال:</em> برامج التعليم ثنائي اللغة في بعض الدول الأفريقية.<br><br>
+                    <strong>دور الباحث في التربية المقارنة:</strong><br>
+                    • إتقان لغات متعددة أو العمل مع مترجمين متخصصين.<br>
+                    • التوعية بفروق الدلالة بين اللغات عند المقارنة.<br>
+                    • توثيق المصطلحات الأصلية مع ترجمتها لتجنب سوء الفهم.<br><br>
+                    <strong>الخلاصة:</strong> اللغة تحدي وفرصة في التربية المقارنة. النجاح يتطلب وعياً بفروق الدلالة، استثماراً في الترجمة المتخصصة، وسياسات لغوية مرنة تحترم التنوع مع ضمان الجودة.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س18: ما هي مبادئ "التعليم من أجل التنمية المستدامة" (ESD)؟ وكيف يمكن تطبيقها في المناهج الدراسية؟</div>
+                <button class="answer-btn" onclick="toggleAnswer('es18')">إظهار الإجابة النموذجية</button>
+                <div id="es18" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>مبادئ التعليم من أجل التنمية المستدامة (وفقاً لليونسكو):</strong><br><br>
+                    <strong>1) الشمولية:</strong><br>
+                    • دمج الاستدامة في جميع المواد، ليس فقط العلوم.<br>
+                    • ربط القضايا المحلية بالعالمية.<br><br>                    <strong>2) التفكير النظمي:</strong><br>
+                    • فهم الترابط بين البيئة، الاقتصاد، المجتمع.<br>
+                    • تحليل العواقب طويلة المدى للقرارات.<br><br>
+                    <strong>3) المشاركة الفعالة:</strong><br>
+                    • إشراك الطلاب في حل مشكلات مجتمعية حقيقية.<br>
+                    • تعلم عبر الممارسة والمشاريع.<br><br>
+                    <strong>4) القيم والأخلاق:</strong><br>
+                    • تعزيز قيم العدالة، المسؤولية، الاحترام للطبيعة.<br>
+                    • تنمية الضمير البيئي والاجتماعي.<br><br>
+                    <strong>5) التفكير النقدي:</strong><br>
+                    • تحليل المعلومات، تقييم المصادر، اتخاذ قرارات مستنيرة.<br>
+                    • مواجهة التضليل في قضايا الاستدامة.<br><br>
+                    <strong>6) الأمل والعمل:</strong><br>
+                    • التركيز على الحلول والإمكانيات، ليس فقط المشكلات.<br>
+                    • تمكين الطلاب من أن يكونوا عوامل تغيير إيجابي.<br><br>
+                    <strong>كيفية التطبيق في المناهج:</strong><br><br>
+                    <strong>1) التكامل الأفقي:</strong><br>
+                    • إدماج مفاهيم الاستدامة في مواد مختلفة:<br>
+                      - العلوم: التغير المناخي، التنوع البيولوجي.<br>
+                      - الدراسات الاجتماعية: العدالة، الفقر، الهجرة.<br>
+                      - اللغة: كتابة عن قضايا بيئية، تحليل نصوص.<br>
+                      - الرياضيات: تحليل بيانات بيئية، نمذجة.<br><br>
+                    <strong>2) المشاريع متعددة التخصصات:</strong><br>
+                    • مشاريع تجمع بين مواد متعددة لمعالجة قضية:<br>
+                      - مثال: مشروع "مدرستي الخضراء": علوم (طاقة متجددة)، رياضيات (حساب التوفير)، فن (تصميم ملصقات).<br><br>
+                    <strong>3) التعلم القائم على المكان:</strong><br>
+                    • ربط التعلم بالبيئة المحلية:<br>
+                      - زيارة محميات طبيعية، مصانع إعادة تدوير.<br>
+                      - مشاريع خدمة مجتمعية: تنظيف شاطئ، زراعة أشجار.<br><br>
+                    <strong>4) تقييم يركز على الكفايات:</strong><br>
+                    • تقييم القدرة على حل مشكلات، ليس فقط حفظ معلومات.<br>
+                    • استخدام ملفات الإنجاز، العروض، المشاريع.<br><br>
+                    <strong>5) تطوير المعلمين:</strong><br>
+                    • تدريب المعلمين على مفاهيم الاستدامة وطرق تدريسها.<br>
+                    • توفير موارد تعليمية مفتوحة حول الاستدامة.<br><br>
+                    <strong>تحديات التطبيق:</strong><br>
+                    • ازدحام المناهج الحالية.<br>
+                    • نقص تدريب المعلمين.<br>
+                    • صعوبة قياس مخرجات التعلم المعقدة.<br><br>
+                    <strong>الخلاصة:</strong> تطبيق مبادئ ESD يتطلب تحولاً في فلسفة التعليم: من نقل المعرفة إلى تنمية الكفايات، ومن التعلم الفردي إلى العمل الجماعي، ومن التركيز على الحاضر إلى التفكير في المستقبل. النجاح يتطلب تعاوناً بين واضعي المناهج، المعلمين، والمجتمع.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س19: قارن بين نظامي التعليم في فنلندا وكوريا الجنوبية من حيث الفلسفة، الممارسات، والنتائج.</div>
+                <button class="answer-btn" onclick="toggleAnswer('es19')">إظهار الإجابة النموذجية</button>
+                <div id="es19" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>جدول مقارنة بين فنلندا وكوريا الجنوبية:</strong><br>
+                    <table>                        <thead>
+                            <tr>
+                                <th>وجه المقارنة</th>
+                                <th>فنلندا</th>
+                                <th>كوريا الجنوبية</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>الفلسفة</strong></td>
+                                <td>المساواة، الثقة، التعلم عبر اللعب، تقليل الضغط</td>
+                                <td>الجدية، المنافسة، الاستثمار في التعليم كطريق للنجاح</td>
+                            </tr>
+                            <tr>
+                                <td><strong>بداية التعليم الرسمي</strong></td>
+                                <td>7 سنوات (بعد مرحلة لعب طويلة)</td>
+                                <td>6 سنوات (بداية مبكرة مع تركيز أكاديمي)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الواجبات المنزلية</strong></td>
+                                <td>قليلة جداً أو معدومة في المراحل الأولى</td>
+                                <td>كثيرة، مع دروس خصوصية مكثفة بعد المدرسة</td>
+                            </tr>
+                            <tr>
+                                <td><strong>التقييم</strong></td>
+                                <td>تقييم تكويني، لا درجات حتى سن 10، تركيز على التقدم</td>
+                                <td>اختبارات موحدة مكثفة، منافسة عالية على الجامعات</td>
+                            </tr>
+                            <tr>
+                                <td><strong>المعلمون</strong></td>
+                                <td>من أفضل الخريجين، ماجستير إلزامي، استقلالية عالية</td>
+                                <td>مكانة اجتماعية عالية، رواتب جيدة، تدريب صارم</td>
+                            </tr>
+                            <tr>
+                                <td><strong>النتائج (PISA)</strong></td>
+                                <td>مراكز عليا مع مساواة عالية في النتائج</td>
+                                <td>مراكز عليا مع فجوات أكبر بين الطلاب</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الرفاهية</strong></td>
+                                <td>تركيز عالٍ على رفاهية الطالب، استراحات متكررة</td>
+                                <td>ضغط عالٍ، ساعات دراسة طويلة، مخاوف من الإرهاق</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <strong>دروس مستفادة:</strong><br>
+                    • <strong>من فنلندا:</strong> أهمية الثقة في المعلم، تقليل الضغط، التركيز على الجودة لا الكمية.<br>
+                    • <strong>من كوريا:</strong> أهمية الاستثمار في المعلم، مشاركة الأسرة، ربط التعليم بفرص الحياة.<br><br>
+                    <strong>تحذير:</strong><br>                    لا يمكن نسخ نموذج حرفياً. نجاح كل نظام مرتبط بسياقه الثقافي والاجتماعي:<br>
+                    • فنلندا: مجتمع صغير، متجانس، يثق في المؤسسات.<br>
+                    • كوريا: مجتمع كبير، تنافسي، يرى التعليم كطريق للحراك الاجتماعي.<br><br>
+                    <strong>الخلاصة:</strong> كلا النظامين ناجحان لكن بطرق مختلفة. المفتاح هو فهم المبادئ الكامنة وراء النجاح (جودة المعلم، الدعم للطلاب، وضوح الأهداف) وتكييفها مع السياق المحلي، وليس تقليد الممارسات السطحية.
+                </div>
+            </div>
+
+            <div class="question-card essay" data-type="essay">
+                <div class="question-text">س20: ما هي مستقبل التربية المقارنة في عصر العولمة والرقمنة؟ وما هي الفرص والتحديات الجديدة؟</div>
+                <button class="answer-btn" onclick="toggleAnswer('es20')">إظهار الإجابة النموذجية</button>
+                <div id="es20" class="answer-content essay">
+                    <strong>الإجابة النموذجية:</strong><br><br>
+                    <strong>مستقبل التربية المقارنة في العصر الرقمي:</strong><br><br>
+                    <strong>أولاً: الفرص الجديدة</strong><br>
+                    1) <strong>وفرة البيانات:</strong><br>
+                      - قواعد بيانات دولية ضخمة (PISA, TIMSS, UNESCO Stats).<br>
+                      - بيانات ضخمة (Big Data) من منصات التعلم الإلكتروني.<br>
+                      - إمكانية تحليلات أكثر دقة وسرعة.<br><br>
+                    2) <strong>تعاون عالمي:</strong><br>
+                      - باحثون من دول مختلفة يعملون على مشاريع مشتركة عبر الإنترنت.<br>
+                      - مؤتمرات افتراضية تخفض تكاليف المشاركة وتوسع النطاق.<br><br>
+                    3) <strong>منهجيات مبتكرة:</strong><br>
+                      - استخدام الذكاء الاصطناعي لتحليل النصوص التربوية بلغات متعددة.<br>
+                      - محاكاة سياسات تعليمية عبر نماذج حاسوبية قبل التطبيق.<br><br>
+                    4) <strong>وصول أوسع:</strong><br>
+                      - موارد تعليمية مفتوحة (OER) تتيح للباحثين في الدول النامية الوصول للمعرفة.<br>
+                      - منصات مثل "ResearchGate" تسهل تبادل الأبحاث.<br><br>
+                    5) <strong>تركيز على القضايا العالمية:</strong><br>
+                      - التربية المقارنة كأداة لمواجهة تحديات مشتركة: التغير المناخي، الهجرة، الأوبئة.<br>
+                      - دمج مفاهيم المواطنة العالمية والتنمية المستدامة في البحوث.<br><br>
+                    <strong>ثانياً: التحديات الجديدة</strong><br>
+                    1) <strong>الفجوة الرقمية:</strong><br>
+                      - خطر استبعاد باحثين من دول فقيرة لا تملك بنية رقمية كافية.<br>
+                      - تفاوت في جودة البيانات بين الدول.<br><br>
+                    2) <strong>جودة البيانات:</strong><br>
+                      - خطر الاعتماد على بيانات غير موثوقة أو منحازة.<br>
+                      - صعوبة التحقق من صحة البيانات في العصر الرقمي.<br><br>
+                    3) <strong>الأخلاقيات والخصوصية:</strong><br>
+                      - حماية بيانات الطلاب في البحوث الدولية.<br>
+                      - تجنب استخدام البيانات لأغراض تجارية أو سياسية منحازة.<br><br>
+                    4) <strong>تعقيد العولمة:</strong><br>
+                      - صعوبة عزل تأثير العوامل المحلية في عالم مترابط.<br>
+                      - خطر "عولمة" النماذج التعليمية على حساب التنوع.<br><br>
+                    5) <strong>تطور سريع:</strong><br>
+                      - صعوبة مواكبة التغيرات السريعة في التكنولوجيا والسياسات.<br>
+                      - الحاجة لتحديث مستمر للمناهج والمنهجيات.<br><br>
+                    <strong>ثالثاً: توصيات للمستقبل</strong><br>
+                    1) <strong>استثمار في البنية التحتية:</strong><br>
+                      - دعم الدول النامية لبناء أنظمة بيانات رقمية موثوقة.<br>
+                      - تدريب الباحثين على أدوات البحث الرقمي.<br><br>                    2) <strong>تطوير معايير أخلاقية:</strong><br>
+                      - وضع مبادئ توجيهية لأخلاقيات البحث التربوي الرقمي.<br>
+                      - ضمان الشفافية في جمع وتحليل البيانات.<br><br>
+                    3) <strong>تعزيز التنوع:</strong><br>
+                      - تشجيع بحوث من منظور الجنوب العالمي، ليس فقط الشمال.<br>
+                      - احترام السياقات المحلية في المقارنات الدولية.<br><br>
+                    4) <strong>التركيز على التطبيق:</strong><br>
+                      - ربط البحوث المقارنة بصنع السياسات التعليمية.<br>
+                      - تطوير أدوات عملية لصناع القرار.<br><br>
+                    <strong>الخلاصة:</strong> العولمة والرقمنة تفتحان آفاقاً واسعة للتربية المقارنة، لكن نجاحها في المستقبل يتطلب معالجة التحديات الأخلاقية والتقنية، مع الحفاظ على التنوع والعدالة في إنتاج المعرفة التربوية العالمية.
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- زر الطباعة -->
+    <button class="print-btn" onclick="window.print()">
+        <span>🖨️</span> حفظ كملف PDF / طباعة
+    </button>
+
+    <footer>
+        <p>جميع الحقوق محفوظة © 2026 منصات بلس | تم إعداد هذا الملخص الموسع بناءً على كتاب "التربية المقارنة والدولية" مع إضافة بنك أسئلة تفاعلي ضخم</p>
+        <p style="margin-top: 10px; font-size: 0.85em;">عدد الأسئلة: 20 صح/خطأ | 25 اختيار من متعدد | 20 سؤال مقالي</p>
+    </footer>
+
+    <script>
+        // شريط التقدم
+        window.onscroll = function() {myFunction()};
+
+        function myFunction() {
+          var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+          var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+          var scrolled = (winScroll / height) * 100;
+          document.getElementById("progress-bar").style.width = scrolled + "%";
+        }
+
+        // إظهار/إخفاء الإجابات
+        function toggleAnswer(id) {
+            var x = document.getElementById(id);
+            if (x.style.display === "block") {
+                x.style.display = "none";
+            } else {
+                x.style.display = "block";
+            }
+        }
+
+        // تصفية الأسئلة
+        function filterQuestions(type) {            // تحديث الأزرار النشطة
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // إظهار/إخفاء الأسئلة حسب النوع
+            document.querySelectorAll('.question-card').forEach(card => {
+                if (type === 'all' || card.dataset.type === type) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
