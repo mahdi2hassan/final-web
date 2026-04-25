@@ -345,6 +345,46 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
 .nm-list li .nm-done{color:var(--ok)}
 .nm-list li .nm-not{color:var(--muted);opacity:.5}
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script>
+// Firebase compat adapter - expose modular API functions
+const _fbApp  = firebase.initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
+const _fbAuth = firebase.auth();
+const _fbDb   = firebase.firestore();
+
+// Modular API shims
+function initializeApp(cfg){ return _fbApp; }
+function getAuth(app){ return _fbAuth; }
+function getFirestore(app){ return _fbDb; }
+function onAuthStateChanged(auth, cb){ return auth.onAuthStateChanged(cb); }
+function signOut(auth){ return auth.signOut(); }
+function doc(db, ...path){ 
+  let ref = db;
+  for(let i=0;i<path.length;i+=2) ref = ref.collection(path[i]).doc(path[i+1]);
+  return ref;
+}
+function collection(db, col){ return db.collection(col); }
+function getDoc(ref){ return ref.get().then(s=>({exists:()=>s.exists,data:()=>s.data(),id:s.id})); }
+function getDocs(q){ return q.get().then(s=>({docs:s.docs.map(d=>({id:d.id,data:()=>d.data(),exists:d.exists})),empty:s.empty,size:s.size})); }
+function setDoc(ref, data, opts){ return opts&&opts.merge ? ref.set(data,{merge:true}) : ref.set(data); }
+function addDoc(colRef, data){ return colRef.add(data); }
+function updateDoc(ref, data){ return ref.update(data); }
+function deleteDoc(ref){ return ref.delete(); }
+function query(colRef, ...constraints){ let q=colRef; constraints.forEach(c=>q=c(q)); return q; }
+function where(field, op, val){ return (q)=>q.where(field,op,val); }
+function orderBy(field, dir){ return (q)=>q.orderBy(field,dir||'asc'); }
+function limit(n){ return (q)=>q.limit(n); }
+function serverTimestamp(){ return firebase.firestore.FieldValue.serverTimestamp(); }
+function increment(n){ return firebase.firestore.FieldValue.increment(n); }
+
+// Expose to window
+window.doc=doc; window.collection=collection; window.getDoc=getDoc;
+window.getDocs=getDocs; window.setDoc=setDoc; window.addDoc=addDoc;
+window.updateDoc=updateDoc; window.deleteDoc=deleteDoc; window.query=query;
+window.where=where; window.serverTimestamp=serverTimestamp; window.increment=increment;
+</script>
 </head>
 <body>
 <div class="bg-grid"></div>
@@ -838,14 +878,13 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, collection, setDoc, addDoc, updateDoc, increment, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<script>
 
-const app  = initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
-const auth = getAuth(app);
-const db   = getFirestore(app);
+
+// Firebase already initialized via CDN compat
+const app  = null; // initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
+const auth = getAuth();
+const db   = getFirestore();
 window._db = db;
 window._getDocs = getDocs;
 window._collection = collection;
@@ -874,14 +913,14 @@ onAuthStateChanged(auth,async(user)=>{
   if(!user){window.location.href='plus-math-auth.html';return;}
   _user=user;
   try{
-    const ud=await window.getDoc(window.doc(db,'users',user.uid));
+    const ud=await getDoc(doc(db,'users',user.uid));
     if(!ud.exists()||!ud.data().subscriptionActive){window.location.href='plus-math-auth.html';return;}
     _userData=ud.data();
     if(_userData.expiresAt){
       const exp=_userData.expiresAt.toDate?_userData.expiresAt.toDate():new Date(_userData.expiresAt);
       if(new Date()>exp){
         // ── انتهى الاشتراك: امسح الكود والاشتراك، الحساب والصف يفضل ──
-        window.setDoc(window.doc(db,'users',user.uid),{
+        setDoc(doc(db,'users',user.uid),{
           subscriptionActive:false,
           subscriptionCode:'',
           expiresAt:null,
@@ -899,45 +938,45 @@ onAuthStateChanged(auth,async(user)=>{
     document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
     window._userData = _userData;
     // ── آخر وقت دخول ──
-    window.updateDoc(window.doc(db,'users',user.uid),{
-      lastSeen: window.serverTimestamp(),
+    updateDoc(doc(db,'users',user.uid),{
+      lastSeen: serverTimestamp(),
       lastSeenDate: new Date().toLocaleDateString('ar-EG')
     }).catch(()=>{});
     // Countdown
-    if(_userData.expiresAt) window.startCountdown(_userData.expiresAt);
+    if(_userData.expiresAt) startCountdown(_userData.expiresAt);
     // ── إشعار تلقائي قرب انتهاء الاشتراك ──
-    window.checkSubscriptionExpiry(_userData, user.uid);
-    window.sendWelcomeNotif(_userData, user.uid);
+    checkSubscriptionExpiry(_userData, user.uid);
+    sendWelcomeNotif(_userData, user.uid);
     // Check teacher replies on video comments
-    setTimeout(()=>{ if(typeof checkCommentReplies==='function') window.checkCommentReplies(); }, 2000);
+    setTimeout(()=>{ if(typeof checkCommentReplies==='function') checkCommentReplies(); }, 2000);
     // Check if any essay was graded
-    setTimeout(()=>{ if(typeof checkEssayGradeNotif==='function') window.checkEssayGradeNotif(); }, 3000);
+    setTimeout(()=>{ if(typeof checkEssayGradeNotif==='function') checkEssayGradeNotif(); }, 3000);
     // Teacher note
-    if(_userData.notes) window.showTeacherNote(_userData.notes, _userData.noteColor);
+    if(_userData.notes) showTeacherNote(_userData.notes, _userData.noteColor);
     // ── رد على الشكاوى ──
-    window.loadTicketReply(user.uid);
+    loadTicketReply(user.uid);
     // ── نقطة الإشعارات ──
-    window.checkNotifDot();
+    checkNotifDot();
     // Set video watermark with student info
     setTimeout(()=>{ if(window.setWatermark) window.setWatermark(_userData.name||'طالب', _userData.phone||''); }, 500);
-    try{const ann=await window.getDoc(window.doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
-    try{const pr=await window.getDoc(window.doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={};}
+    try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
+    try{const pr=await getDoc(doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={};}
     // ── تحميل المراحل الديناميكية ──
-    await window.loadDynamicGrades();
-    window.buildGrades();
+    await loadDynamicGrades();
+    buildGrades();
     // ── تحميل أبحاث الطالب ──
-    window.loadMyResearches();
+    loadMyResearches();
     // ── AUTO-OPEN صف الطالب ──
     if(_userData.gradeKey){
       const g=window._GM[_userData.gradeKey];
-      if(g) setTimeout(()=>window.openCourse(_userData.gradeKey,g.label,g.stage),600);
+      if(g) setTimeout(()=>openCourse(_userData.gradeKey,g.label,g.stage),600);
     }
   }catch(e){
     console.error(e);
     document.getElementById('loadingScreen').style.display='none';
     document.getElementById('navbar').style.display='flex';
     document.getElementById('mainContent').style.display='block';
-    window.buildGrades();
+    buildGrades();
   }
 });
 
@@ -947,7 +986,7 @@ window.openCourse=async(gradeKey,label,stage)=>{
   document.getElementById('courseView').style.display='block';
   document.getElementById('courseView').classList.add('open');
   // لا نحجب الـ body scroll — الـ courseView عنده overflow-y:auto
-  window.switchTab('videos',document.querySelector('.cv-tab'));
+  switchTab('videos',document.querySelector('.cv-tab'));
   window._openGrade=gradeKey;
   const isMine=gradeKey===_userData?.gradeKey;
   const gp=_progress[gradeKey]||{};
@@ -963,16 +1002,16 @@ window.openCourse=async(gradeKey,label,stage)=>{
   try{ loadPlaylistsTab(gradeKey); }catch(e){ console.warn('playlist load:',e); }
   setTimeout(()=>{setProg('pv','pvt',vids.length,dV.length);setProg('pe','pet',exams.length,dE.length);setProg('ph','pht',hw.length,dH.length);},400);
   // Night mode
-  if(isMine) window.buildNightMode(vids, dV);
+  if(isMine) buildNightMode(vids, dV);
   // ── اعرض الملاحظة والرد عند فتح الصف ──
   if(isMine){
-    if(_userData?.notes) window.showTeacherNote(_userData.notes, _userData.noteColor);
-    if(_user) window.loadTicketReply(_user.uid);
+    if(_userData?.notes) showTeacherNote(_userData.notes, _userData.noteColor);
+    if(_user) loadTicketReply(_user.uid);
   }
 };
 
 async function loadList(grade,tab){
-  try{const s=await window.getDocs(window.collection(db,'content',grade,tab));return s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));}catch(e){return[];}
+  try{const s=await getDocs(collection(db,'content',grade,tab));return s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(a.order||0)-(b.order||0));}catch(e){return[];}
 }
 
 function renderVideos(videos,done,gradeKey,isMine){
@@ -1120,14 +1159,14 @@ window.handleExam=async(el)=>{
   // التحقق من تاريخ الانتهاء
   if(e.expiresAt){
     const exp=e.expiresAt.toDate?e.expiresAt.toDate():new Date(e.expiresAt);
-    if(new Date()>exp){window.showToast('انتهى وقت هذا الامتحان ⛔','err');return;}
+    if(new Date()>exp){showToast('انتهى وقت هذا الامتحان ⛔','err');return;}
   }
 
   // التحقق من المحاولات
   const gp=_progress[gradeKey]||{};
   const attempts=(gp.examAttempts||{})[e.id]||0;
   const maxAtt=e.maxAttempts||null;
-  if(maxAtt&&attempts>=maxAtt){window.showToast(`انتهت محاولاتك (${attempts}/${maxAtt}) 🚫`,'err');return;}
+  if(maxAtt&&attempts>=maxAtt){showToast(`انتهت محاولاتك (${attempts}/${maxAtt}) 🚫`,'err');return;}
 
   // هل هذه آخر محاولة؟ → بعد التسليم تظهر الإجابات
   const isLastAttempt=maxAtt?attempts===maxAtt-1:true;
@@ -1277,17 +1316,17 @@ async function recordAttemptAndDone(gradeKey,examId,score,total,pct){
     const att=(gp.examAttempts||{});
     att[examId]=(att[examId]||0)+1;
     _progress[gradeKey]={...gp,examAttempts:att};
-    await window.setDoc(window.doc(db,'progress',_user.uid),_progress,{merge:true});
+    await setDoc(doc(db,'progress',_user.uid),_progress,{merge:true});
   }catch(e){console.warn('recordAttempt:',e);}
   // حفظ الدرجة لو MCQ
   if(score!=null&&_user){
     const examTitle=document.getElementById('iep-title')?.textContent||examId;
     const att=((_progress[gradeKey]||{}).examAttempts||{})[examId]||1;
-    window.setDoc(window.doc(db,'scores',_user.uid+'_'+examId+'_'+att),{
+    setDoc(doc(db,'scores',_user.uid+'_'+examId+'_'+att),{
       userId:_user.uid, userName:_userData?.name||'',
       userGrade:_userData?.grade||'', gradeKey, examId, examTitle,
       score, total, pct, attempt:att,
-      submittedAt:window.serverTimestamp()
+      submittedAt:serverTimestamp()
     }).catch(()=>{});
   }
   // markDone
@@ -1372,7 +1411,7 @@ window.openVidWithTracking=(id,ytId,gradeKey)=>{
     const vv=gp.videoViews||{};
     vv[id]=(vv[id]||0)+1;
     _progress[gradeKey]={...gp,videoViews:vv};
-    window.setDoc(window.doc(db,'progress',_user.uid),_progress,{merge:true}).catch(()=>{});
+    setDoc(doc(db,'progress',_user.uid),_progress,{merge:true}).catch(()=>{});
   }
   // إخفاء باقي الفيديوهات
   document.querySelectorAll('[id^="vp-"]').forEach(w=>{
@@ -1490,14 +1529,14 @@ window.openNextContent = (gradeKey, type, currentId)=>{
   // find current index
   const idx = all.findIndex(x=>x.id===currentId);
   if(idx===-1||idx>=all.length-1){
-    window.showToast('🎉 أحسنت! انتهيت من كل الدروس','ok');
+    showToast('🎉 أحسنت! انتهيت من كل الدروس','ok');
     return;
   }
   const next = all[idx+1];
   if(!next) return;
 
   // show toast
-  window.showToast('التالي: '+( next.title||'درس'),'ok');
+  showToast('التالي: '+( next.title||'درس'),'ok');
 
   setTimeout(()=>{
     if(next._type==='video'){
@@ -1514,7 +1553,7 @@ window.openNextContent = (gradeKey, type, currentId)=>{
       if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); }
       if(typeof handleExam==='function') handleExam(next.id, gradeKey);
     } else if(next._type==='hw'){
-      window.switchTab('homework', document.querySelector('[onclick*="homework"]'));
+      switchTab('homework', document.querySelector('[onclick*="homework"]'));
     }
   }, 800);
 };
@@ -1527,7 +1566,7 @@ window.markHwDone=async(gradeKey,hwId)=>{
     const subs=(gp.hwSubmissions||{});
     subs[hwId]=(subs[hwId]||0)+1;
     _progress[gradeKey]={...gp,hwSubmissions:subs};
-    await window.setDoc(window.doc(db,'progress',_user.uid),_progress,{merge:true});
+    await setDoc(doc(db,'progress',_user.uid),_progress,{merge:true});
   }catch(e){console.warn('markHwDone:',e);}
   markDone(gradeKey,'homework',hwId);
 };
@@ -1535,17 +1574,17 @@ window.markHwDone=async(gradeKey,hwId)=>{
 window.rateVideo=async(gradeKey,videoId,rating)=>{
   if(!_user) return;
   try{
-    await window.setDoc(window.doc(db,'videoRatings',_user.uid+'_'+videoId),{
+    await setDoc(doc(db,'videoRatings',_user.uid+'_'+videoId),{
       userId:_user.uid, videoId, gradeKey,
       rating, // 1=like, 0=dislike
-      ratedAt:window.serverTimestamp()
+      ratedAt:serverTimestamp()
     });
     const likeBtn=document.getElementById('like-'+videoId);
     const dislikeBtn=document.getElementById('dislike-'+videoId);
     if(likeBtn) likeBtn.style.background=rating===1?'rgba(0,214,143,0.25)':'transparent';
     if(dislikeBtn) dislikeBtn.style.background=rating===0?'rgba(255,77,109,0.25)':'transparent';
-    window.showToast(rating===1?'شكراً! سعدنا إنك استفدت 🎉':'شكراً على رأيك ، هنعمل على التحسين 💪','ok');
-  }catch(e){ window.showToast('خطأ في التقييم','err'); }
+    showToast(rating===1?'شكراً! سعدنا إنك استفدت 🎉':'شكراً على رأيك ، هنعمل على التحسين 💪','ok');
+  }catch(e){ showToast('خطأ في التقييم','err'); }
 };
 
 let _mcq={questions:[],answers:{},gradeKey:'',examId:''};
@@ -1596,12 +1635,12 @@ function openEssay(examId,gradeKey,title,text){
   const btn=document.getElementById('mcqBtn');btn.textContent='تسليم ✓';btn.style.display='block';
   btn.onclick=async()=>{
     const answer=document.getElementById('essay-answer-'+examId)?.value.trim();
-    if(!answer){window.showToast('⚠️ اكتب إجابتك أولاً','err');return;}
+    if(!answer){showToast('⚠️ اكتب إجابتك أولاً','err');return;}
     // Save essay answer to Firebase
     if(_user){
       try{
         const att=((_progress[gradeKey]||{}).examAttempts||{})[examId]||0;
-        await window.setDoc(window.doc(db,'scores',_user.uid+'_'+examId+'_'+(att+1)),{
+        await setDoc(doc(db,'scores',_user.uid+'_'+examId+'_'+(att+1)),{
           userId:_user.uid,
           userName:_userData?.name||'',
           userGrade:_userData?.grade||'',
@@ -1611,7 +1650,7 @@ function openEssay(examId,gradeKey,title,text){
           essayAnswer:answer,
           type:'essay',
           attempt:att+1,
-          submittedAt:window.serverTimestamp()
+          submittedAt:serverTimestamp()
         });
       }catch(e){console.warn('essay save:',e);}
     }
@@ -1669,17 +1708,17 @@ window.submitTicket=async()=>{
     msgEl.style.display='block';msgEl.style.color='var(--err)';msgEl.textContent='⚠️ ادخل الموضوع والتفاصيل';return;
   }
   try{
-    await window.addDoc(window.collection(db,'tickets'),{
+    await addDoc(collection(db,'tickets'),{
       userId:_user.uid,
       userName:_userData?.name||'—',
       userPhone:_userData?.phone||'',
       userGrade:_userData?.grade||'',
       subject,message,category,
       status:'open',
-      createdAt:window.serverTimestamp()
+      createdAt:serverTimestamp()
     });
     msgEl.style.display='block';msgEl.style.color='var(--ok)';msgEl.textContent='✅ تم الإرسال — سيتم الرد قريباً';
-    window.notifyAdmin('🎫','شكوى جديدة من '+(_userData?.name||'طالب'), subject);
+    notifyAdmin('🎫','شكوى جديدة من '+(_userData?.name||'طالب'), subject);
     setTimeout(()=>document.getElementById('ticketModal').classList.remove('open'),2000);
   }catch(e){
     msgEl.style.display='block';msgEl.style.color='var(--err)';msgEl.textContent='خطأ: '+e.message;
@@ -1695,7 +1734,7 @@ async function markDone(gradeKey, type, id){
     const arr = [...(gp[type]||[])];
     if(!arr.includes(id)) arr.push(id);
     _progress[gradeKey] = {...gp, [type]:arr};
-    await window.setDoc(window.doc(db,'progress',_user.uid), _progress, {merge:true});
+    await setDoc(doc(db,'progress',_user.uid), _progress, {merge:true});
     const vids  = window._allVideos||[];
     const exams = window._allExams||[];
     const hw    = window._allHw||[];
@@ -1751,55 +1790,8 @@ function updateCourseProgressBar(gradeKey){
   }
 }
 
-
 </script>
-
 <script>
-// ── Expose to window for module access ──
-window.getDb = getDb;
-window.getDocs = getDocs;
-window.collection = collection;
-window.doc = doc;
-window.getDoc = getDoc;
-window.addDoc = addDoc;
-window.setDoc = setDoc;
-window.updateDoc = updateDoc;
-window.query = query;
-window.where = where;
-window.serverTimestamp = serverTimestamp;
-window.increment = increment;
-window.loadDynamicGrades = loadDynamicGrades;
-window.buildGrades = buildGrades;
-window.closeCourse = closeCourse;
-window.switchTab = switchTab;
-window.setWatermark = setWatermark;
-window.startCountdown = startCountdown;
-window._printResearch = _printResearch;
-window.showTeacherNote = showTeacherNote;
-window.toggleNotifPanel = toggleNotifPanel;
-window.sendWelcomeNotif = sendWelcomeNotif;
-window.checkSubscriptionExpiry = checkSubscriptionExpiry;
-window.loadTicketReply = loadTicketReply;
-window.setTheme = setTheme;
-window.toggleThemePanel = toggleThemePanel;
-window.dismissTicketReply = dismissTicketReply;
-window.searchContent = searchContent;
-window.buildNightMode = buildNightMode;
-window.loadBooksTab = loadBooksTab;
-window.renderBooksTab = renderBooksTab;
-window.openBookSheet = openBookSheet;
-window.closeBookSheet = closeBookSheet;
-window.handleSheetClick = handleSheetClick;
-window.copyNum = copyNum;
-window.applyBookCoupon = applyBookCoupon;
-window.confirmBookOnWA = confirmBookOnWA;
-window.showToast = showToast;
-window.buildCommentVideoSelector = buildCommentVideoSelector;
-window.loadVideoComments = loadVideoComments;
-window.submitComment = submitComment;
-window.checkCommentReplies = checkCommentReplies;
-window.checkEssayGradeNotif = checkEssayGradeNotif;
-
 // ── Firebase aliases من الـ module — لازم يتاخدوا بعد ما الـ module يشتغل ──
 // كل دالة في السكريبت ده بتستخدم getter عشان تاخد القيمة المحدثة
 function getDb(){ return window._db; }
@@ -2251,7 +2243,7 @@ document.addEventListener('click', function(e){
     if(p) p.style.display = 'none';
   }
 });
-async async function loadNotifications(){
+async function loadNotifications(){
   if(!_user) return;
   var list = document.getElementById('notifList');
   list.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">جاري التحميل...</div>';
@@ -2277,7 +2269,7 @@ async async function loadNotifications(){
     dot.style.display = 'flex';
   }catch(e){ list.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--err);padding:8px">خطأ في التحميل</div>'; }
 }
-async async function markNotifRead(notifId){
+async function markNotifRead(notifId){
   if(!_user) return;
   try{
     await updateDoc(doc(db,'notifications',_user.uid,'items',notifId),{read:true});
@@ -2327,7 +2319,7 @@ async function checkSubscriptionExpiry(userData, uid){
   }catch(e){}
 }
 
-async async function checkNotifDot(){
+async function checkNotifDot(){
   if(!_user) return;
   try{
     var snap = await getDocs(query(collection(db,'notifications',_user.uid,'items'), where('read','==',false)));
@@ -2407,7 +2399,7 @@ function toggleThemePanel(){
 // ── ACTION NOTIFICATIONS TO ADMIN ──
 // إشعار للأدمن لما الطالب يعمل حاجة مهمة
 // ══════════════════════════════════════
-async async function notifyAdmin(icon, title, body){
+async function notifyAdmin(icon, title, body){
   if(!_user) return;
   try{
     await addDoc(collection(db,'adminNotifications'),{
@@ -2824,9 +2816,7 @@ async function checkEssayGradeNotif(){
   }catch(e){ console.warn('checkEssayGradeNotif:',e); }
 }
 
-
 </script>
-
 <script>
 // تسجيل Service Worker للتثبيت على الموبايل
 let _deferredInstall=null;
