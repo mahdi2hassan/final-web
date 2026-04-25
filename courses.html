@@ -917,7 +917,7 @@ onAuthStateChanged(auth,async(user)=>{
     // ── رد على الشكاوى ──
     window.loadTicketReply(user.uid);
     // ── نقطة الإشعارات ──
-    checkNotifDot();
+    window.checkNotifDot();
     // Set video watermark with student info
     setTimeout(()=>{ if(window.setWatermark) window.setWatermark(_userData.name||'طالب', _userData.phone||''); }, 500);
     try{const ann=await window.getDoc(window.doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
@@ -926,11 +926,11 @@ onAuthStateChanged(auth,async(user)=>{
     await window.loadDynamicGrades();
     window.buildGrades();
     // ── تحميل أبحاث الطالب ──
-    loadMyResearches();
+    window.loadMyResearches();
     // ── AUTO-OPEN صف الطالب ──
     if(_userData.gradeKey){
       const g=window._GM[_userData.gradeKey];
-      if(g) setTimeout(()=>openCourse(_userData.gradeKey,g.label,g.stage),600);
+      if(g) setTimeout(()=>window.openCourse(_userData.gradeKey,g.label,g.stage),600);
     }
   }catch(e){
     console.error(e);
@@ -1679,7 +1679,7 @@ window.submitTicket=async()=>{
       createdAt:window.serverTimestamp()
     });
     msgEl.style.display='block';msgEl.style.color='var(--ok)';msgEl.textContent='✅ تم الإرسال — سيتم الرد قريباً';
-    notifyAdmin('🎫','شكوى جديدة من '+(_userData?.name||'طالب'), subject);
+    window.notifyAdmin('🎫','شكوى جديدة من '+(_userData?.name||'طالب'), subject);
     setTimeout(()=>document.getElementById('ticketModal').classList.remove('open'),2000);
   }catch(e){
     msgEl.style.display='block';msgEl.style.color='var(--err)';msgEl.textContent='خطأ: '+e.message;
