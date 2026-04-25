@@ -1007,7 +1007,7 @@ function renderVideos(videos,done,gradeKey,isMine){
     if(noViewsLeft) metaExtra+=`<span style="color:var(--err);font-size:10px">استُنفد 🚫</span>`;
 
     const canPlay=!isLocked&&!isVideoBlocked&&(ytId||v.url);
-    return `<div class="video-item" data-vid-id="${v.id}">
+    return `<div class="video-item">
       <div id="vp-${v.id}" class="video-player">
         <iframe id="vf-${v.id}" src="" allowfullscreen allow="autoplay"></iframe>
         <div class="video-player-bar">
@@ -1096,7 +1096,7 @@ function renderExams(exams,done,gradeKey,isMine){
       metaExtra+=` · ⏰ ${exp.toLocaleDateString('ar-EG')}`;
     }
 
-    return `<div class="exam-item" data-exam-id="${e.id}" style="${isLocked||isBlocked?'opacity:.6;cursor:not-allowed':''}"
+    return `<div class="exam-item" style="${isLocked||isBlocked?'opacity:.6;cursor:not-allowed':''}"
       ${clickable?`data-eidx="${i}" onclick="handleExam(this)"`:''}
     >
       <div class="exam-ico" style="background:${tc}18;color:${tc}">
@@ -1261,12 +1261,8 @@ function submitInlineMcq(){
     </div>`;
   document.getElementById('iep-submit').style.display='none';
   
-  // فتح المحتوى التالي بدل reload
-  const {gradeKey, examId} = _inlineExam;
-  setTimeout(()=>{
-    if(typeof openNextContent==='function')
-      openNextContent(gradeKey,'exams',examId);
-  }, 2500);
+  // Reload page after 2 seconds to update progress
+  setTimeout(()=>location.reload(),2000);
 }
 
 // تسجيل المحاولة + الدرجة + markDone
@@ -1361,12 +1357,8 @@ window.openVid=(id,ytId)=>{
   const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);
   if(w&&f){w.style.display='block';f.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;}
 };
-window._ytPlayers  = {};
-window._ytWatched  = {};
-window._ytTimers   = {};
-
 window.openVidWithTracking=(id,ytId,gradeKey)=>{
-  // تسجيل المشاهدة في progress
+  // تسجيل المشاهدة
   if(_user&&gradeKey){
     const gp=_progress[gradeKey]||{};
     const vv=gp.videoViews||{};
@@ -1374,149 +1366,14 @@ window.openVidWithTracking=(id,ytId,gradeKey)=>{
     _progress[gradeKey]={...gp,videoViews:vv};
     setDoc(doc(db,'progress',_user.uid),_progress,{merge:true}).catch(()=>{});
   }
-  // إخفاء باقي الفيديوهات
-  document.querySelectorAll('[id^="vp-"]').forEach(w=>{
-    w.style.display='none';
-    const f=w.querySelector('iframe');
-    if(f) f.src='';
-  });
-  const wrap=document.getElementById('vp-'+id);
-  if(wrap) wrap.style.display='block';
-
-  // تهيئة YT Player لتتبع الثلث
-  if(ytId && typeof YT!=='undefined' && YT.Player){
-    _initYTPlayer(id,ytId,gradeKey);
-  } else {
-    // fallback بدون tracking
-    const f=document.getElementById('vf-'+id);
-    if(f) f.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0&enablejsapi=1`;
-    window._ytPendingInit=window._ytPendingInit||[];
-    window._ytPendingInit.push({id,ytId,gradeKey});
-  }
+  window.openVid(id,ytId);
 };
-
-window.onYouTubeIframeAPIReady=function(){
-  (window._ytPendingInit||[]).forEach(p=>_initYTPlayer(p.id,p.ytId,p.gradeKey));
-  window._ytPendingInit=[];
-};
-
-function _initYTPlayer(id,ytId,gradeKey){
-  clearInterval(window._ytTimers[id]);
-  if(window._ytPlayers[id]){ try{window._ytPlayers[id].destroy();}catch(e){} }
-  const container=document.getElementById('vp-'+id);
-  if(!container) return;
-  const old=document.getElementById('vf-'+id);
-  if(old) old.remove();
-  const div=document.createElement('div');
-  div.id='vf-'+id;
-  container.insertBefore(div,container.firstChild);
-  window._ytPlayers[id]=new YT.Player('vf-'+id,{
-    videoId:ytId,
-    playerVars:{autoplay:1,rel:0,modestbranding:1},
-    events:{
-      onReady:e=>e.target.playVideo(),
-      onStateChange:e=>{
-        if(e.data===YT.PlayerState.PLAYING) _trackThird(id,gradeKey,e.target);
-        // لو الفيديو خلص تلقائياً — افتح التالي
-        if(e.data===YT.PlayerState.ENDED){
-          if(!window._ytWatched[id]){
-            window._ytWatched[id]=true;
-            markDone(gradeKey,'videos',id);
-          }
-          _showNextVideoBtn(id,gradeKey);
-          setTimeout(()=>openNextContent(gradeKey,'videos',id),2000);
-        }
-      }
-    }
-  });
-}
-
-function _trackThird(id,gradeKey,player){
-  if(window._ytWatched[id]) return;
-  clearInterval(window._ytTimers[id]);
-  window._ytTimers[id]=setInterval(()=>{
-    try{
-      if(window._ytWatched[id]){clearInterval(window._ytTimers[id]);return;}
-      const cur=player.getCurrentTime();
-      const dur=player.getDuration();
-      if(dur>0 && cur>=dur*0.33){
-        window._ytWatched[id]=true;
-        clearInterval(window._ytTimers[id]);
-        markDone(gradeKey,'videos',id);
-        _showNextVideoBtn(id,gradeKey);
-      }
-    }catch(e){clearInterval(window._ytTimers[id]);}
-  },3000);
-}
-
-function _showNextVideoBtn(id,gradeKey){
-  const btn=document.querySelector('#vp-'+id+' .pbtn.ok');
-  if(!btn) return;
-  btn.textContent='▶ الدرس التالي';
-  btn.style.background='linear-gradient(135deg,var(--ok),#00a870)';
-  btn.style.borderColor='transparent';
-  btn.style.color='#fff';
-  btn.onclick=()=>{ closeVid(id); openNextContent(gradeKey,'videos',id); };
-  btn.style.cursor='pointer';
-  // rating
-  const rDiv=document.getElementById('rating-'+id);
-  if(rDiv) rDiv.style.display='flex';
-}
-
 window.closeVid=(id)=>{const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);if(w)w.style.display='none';if(f)f.src='';};
 window.markVDone=(g,id)=>{
   markDone(g,'videos',id);
   closeVid(id);
   const rDiv=document.getElementById('rating-'+id);
   if(rDiv) rDiv.style.display='flex';
-  // فتح الفيديو التالي تلقائياً
-  setTimeout(()=>openNextContent(g,'videos',id), 600);
-};
-
-// ══════════════════════════════════════════════
-// OPEN NEXT VIDEO/EXAM AUTOMATICALLY
-// ══════════════════════════════════════════════
-window.openNextContent = (gradeKey, type, currentId)=>{
-  // get ordered list
-  const vids  = window._allVideos  || [];
-  const exams = window._allExams   || [];
-  const hw    = window._allHw      || [];
-  const all   = [
-    ...vids.map(v=>({...v, _type:'video'})),
-    ...exams.map(e=>({...e, _type:'exam'})),
-    ...hw.map(h=>({...h, _type:'hw'}))
-  ].sort((a,b)=>(a.order||0)-(b.order||0));
-
-  // find current index
-  const idx = all.findIndex(x=>x.id===currentId);
-  if(idx===-1||idx>=all.length-1){
-    showToast('🎉 أحسنت! انتهيت من كل الدروس','ok');
-    return;
-  }
-  const next = all[idx+1];
-  if(!next) return;
-
-  // show toast
-  showToast('التالي: '+( next.title||'درس'),'ok');
-
-  setTimeout(()=>{
-    if(next._type==='video'){
-      // scroll to it and open
-      const el = document.querySelector(`[data-vid-id="${next.id}"]`);
-      if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); }
-      const ytId = getYtId(next.url||'');
-      if(typeof openVidWithTracking==='function')
-        openVidWithTracking(next.id, ytId, gradeKey);
-      else if(typeof openVid==='function')
-        openVid(next.id, ytId);
-    } else if(next._type==='exam'){
-      const el = document.querySelector(`[data-exam-id="${next.id}"]`);
-      if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); }
-      if(typeof handleExam==='function') handleExam(next.id, gradeKey);
-    } else if(next._type==='hw'){
-      switchTab('homework', document.querySelector('[onclick*="homework"]'));
-    }
-  }, 800);
 };
 
 // تسجيل تسليم الواجب مع عد المرات
@@ -1646,10 +1503,9 @@ window.closeImg=()=>{document.getElementById('imgModal').classList.remove('open'
 window.closePlayer=()=>{document.getElementById('playerFrame').src='';document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';};
 window.playerDone=()=>{
   if(_playerData){
-    const {gradeKey, id} = _playerData;
-    markDone(gradeKey,'videos',id);
+    markDone(_playerData.gradeKey,'videos',_playerData.id);
     closePlayer();
-    setTimeout(()=>openNextContent(gradeKey,'videos',id), 600);
+    setTimeout(()=>location.reload(),500);
   }
 };
 
@@ -1750,10 +1606,7 @@ function updateCourseProgressBar(gradeKey){
     achEl.innerHTML=badges.map(b=>`<div style="display:flex;align-items:center;gap:5px;padding:5px 10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:20px"><span style="font-size:14px">${b.icon}</span><span style="font-size:11px;font-weight:700;color:var(--text2)">${b.label}</span></div>`).join('');
   }
 }
-
-
 </script>
-
 <script>
 // ── Firebase aliases من الـ module — لازم يتاخدوا بعد ما الـ module يشتغل ──
 // كل دالة في السكريبت ده بتستخدم getter عشان تاخد القيمة المحدثة
@@ -2779,9 +2632,7 @@ async function checkEssayGradeNotif(){
   }catch(e){ console.warn('checkEssayGradeNotif:',e); }
 }
 
-
 </script>
-
 <script>
 // تسجيل Service Worker للتثبيت على الموبايل
 let _deferredInstall=null;
