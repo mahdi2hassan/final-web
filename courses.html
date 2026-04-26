@@ -956,9 +956,13 @@ window.openCourse=async(gradeKey,label,stage)=>{
   const[vids,exams,hw]=await Promise.all([loadList(gradeKey,'videos'),loadList(gradeKey,'exams'),loadList(gradeKey,'homework')]);
   // Store for search
   _allVideos = vids; _allExams = exams;
+  window._allVideos=vids;
+  window._allExams=exams;
+  window._allHw=hw;
   renderVideos(vids,dV,gradeKey,isMine);
   renderExams(exams,dE,gradeKey,isMine);
   renderHw(hw,dH,gradeKey,isMine);
+  setTimeout(buildCommentVideoSelector,400);
   // تحميل البلايلست في الخلفية — مش بيوقف باقي التحميل
   try{ loadPlaylistsTab(gradeKey); }catch(e){ console.warn('playlist load:',e); }
   setTimeout(()=>{setProg('pv','pvt',vids.length,dV.length);setProg('pe','pet',exams.length,dE.length);setProg('ph','pht',hw.length,dH.length);},400);
@@ -1007,7 +1011,7 @@ function renderVideos(videos,done,gradeKey,isMine){
     if(noViewsLeft) metaExtra+=`<span style="color:var(--err);font-size:10px">استُنفد 🚫</span>`;
 
     const canPlay=!isLocked&&!isVideoBlocked&&(ytId||v.url);
-    return `<div class="video-item">
+    return `<div class="video-item" data-vid-id="${v.id}">
       <div id="vp-${v.id}" class="video-player">
         <iframe id="vf-${v.id}" src="" allowfullscreen allow="autoplay"></iframe>
         <div class="video-player-bar">
@@ -1096,7 +1100,7 @@ function renderExams(exams,done,gradeKey,isMine){
       metaExtra+=` · ⏰ ${exp.toLocaleDateString('ar-EG')}`;
     }
 
-    return `<div class="exam-item" style="${isLocked||isBlocked?'opacity:.6;cursor:not-allowed':''}"
+    return `<div class="exam-item" data-exam-id="${e.id}" style="${isLocked||isBlocked?'opacity:.6;cursor:not-allowed':''}"
       ${clickable?`data-eidx="${i}" onclick="handleExam(this)"`:''}
     >
       <div class="exam-ico" style="background:${tc}18;color:${tc}">
@@ -1261,8 +1265,9 @@ function submitInlineMcq(){
     </div>`;
   document.getElementById('iep-submit').style.display='none';
   
-  // Reload page after 2 seconds to update progress
-  setTimeout(()=>location.reload(),2000);
+  // فتح المحتوى التالي
+  const {gradeKey:gk, examId:eid} = _inlineExam;
+  setTimeout(()=>{ if(window.openNextContent) openNextContent(gk,'exams',eid); },2500);
 }
 
 // تسجيل المحاولة + الدرجة + markDone
@@ -1366,7 +1371,31 @@ window.openVidWithTracking=(id,ytId,gradeKey)=>{
     _progress[gradeKey]={...gp,videoViews:vv};
     setDoc(doc(db,'progress',_user.uid),_progress,{merge:true}).catch(()=>{});
   }
-  window.openVid(id,ytId);
+  // إخفاء باقي الفيديوهات
+  document.querySelectorAll('[id^="vp-"]').forEach(w=>{
+    w.style.display='none';
+    const f=w.querySelector('iframe');
+    if(f) f.src='';
+  });
+  const wrap=document.getElementById('vp-'+id);
+  if(wrap) wrap.style.display='block';
+  // YT API tracking
+  if(ytId&&typeof YT!=='undefined'&&YT.Player){
+    _initYTPlayer(id,ytId,gradeKey);
+  } else if(ytId){
+    const f=document.getElementById('vf-'+id);
+    if(f) f.src='https://www.youtube.com/embed/'+ytId+'?autoplay=1&rel=0&enablejsapi=1';
+    window._ytPendingInit=window._ytPendingInit||[];
+    window._ytPendingInit.push({id,ytId,gradeKey});
+  }
+  // تحديث selector التعليقات
+  const sel=document.getElementById('comment-video-select');
+  if(sel){ sel.value=id; loadVideoComments(id); }
+  const nameEl=document.getElementById('comments-video-name');
+  if(nameEl){
+    const v=(window._allVideos||[]).find(x=>x.id===id);
+    if(v) nameEl.textContent=v.title||'فيديو';
+  }
 };
 window.closeVid=(id)=>{const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);if(w)w.style.display='none';if(f)f.src='';};
 window.markVDone=(g,id)=>{
@@ -1374,7 +1403,105 @@ window.markVDone=(g,id)=>{
   closeVid(id);
   const rDiv=document.getElementById('rating-'+id);
   if(rDiv) rDiv.style.display='flex';
+  setTimeout(()=>openNextContent(g,'videos',id), 600);
 };
+
+// ── Open Next Content ──
+window.openNextContent=(gradeKey,type,currentId)=>{
+  const vids  = window._allVideos||[];
+  const exams = window._allExams||[];
+  const hw    = window._allHw||[];
+  const all   = [
+    ...vids.map(v=>({...v,_type:'video'})),
+    ...exams.map(e=>({...e,_type:'exam'})),
+    ...hw.map(h=>({...h,_type:'hw'}))
+  ].sort((a,b)=>(a.order||0)-(b.order||0));
+  const idx = all.findIndex(x=>x.id===currentId);
+  if(idx===-1||idx>=all.length-1){ showToast('🎉 أحسنت! انتهيت من كل الدروس','ok'); return; }
+  const next = all[idx+1];
+  if(!next) return;
+  showToast('التالي: '+(next.title||'درس'),'ok');
+  setTimeout(()=>{
+    if(next._type==='video'){
+      const el=document.querySelector('[data-vid-id="'+next.id+'"]');
+      if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+      const ytId=getYtId(next.url||'');
+      openVidWithTracking(next.id,ytId,gradeKey);
+    } else if(next._type==='exam'){
+      const el=document.querySelector('[data-exam-id="'+next.id+'"]');
+      if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
+      if(window.handleExam) window.handleExam(next.id,gradeKey);
+    } else {
+      switchTab('homework',document.querySelector('[onclick*="homework"]'));
+    }
+  },800);
+};
+
+// ── YouTube IFrame API Tracking ──
+window._ytPlayers={};
+window._ytWatched={};
+window._ytTimers={};
+
+window.onYouTubeIframeAPIReady=function(){
+  (window._ytPendingInit||[]).forEach(p=>_initYTPlayer(p.id,p.ytId,p.gradeKey));
+  window._ytPendingInit=[];
+};
+
+function _initYTPlayer(id,ytId,gradeKey){
+  clearInterval(window._ytTimers[id]);
+  if(window._ytPlayers[id]){ try{window._ytPlayers[id].destroy();}catch(e){} }
+  const container=document.getElementById('vp-'+id);
+  if(!container) return;
+  const old=document.getElementById('vf-'+id);
+  if(old) old.remove();
+  const div=document.createElement('div');
+  div.id='vf-'+id;
+  container.insertBefore(div,container.firstChild);
+  window._ytPlayers[id]=new YT.Player('vf-'+id,{
+    videoId:ytId,
+    playerVars:{autoplay:1,rel:0,modestbranding:1},
+    events:{
+      onReady:e=>e.target.playVideo(),
+      onStateChange:e=>{
+        if(e.data===YT.PlayerState.PLAYING) _trackThird(id,gradeKey,e.target);
+        if(e.data===YT.PlayerState.ENDED){
+          if(!window._ytWatched[id]){ window._ytWatched[id]=true; markDone(gradeKey,'videos',id); }
+          _showNextBtn(id,gradeKey);
+          setTimeout(()=>openNextContent(gradeKey,'videos',id),2000);
+        }
+      }
+    }
+  });
+}
+
+function _trackThird(id,gradeKey,player){
+  if(window._ytWatched[id]) return;
+  clearInterval(window._ytTimers[id]);
+  window._ytTimers[id]=setInterval(()=>{
+    try{
+      if(window._ytWatched[id]){clearInterval(window._ytTimers[id]);return;}
+      const cur=player.getCurrentTime(), dur=player.getDuration();
+      if(dur>0&&cur>=dur*0.33){
+        window._ytWatched[id]=true;
+        clearInterval(window._ytTimers[id]);
+        markDone(gradeKey,'videos',id);
+        _showNextBtn(id,gradeKey);
+      }
+    }catch(e){clearInterval(window._ytTimers[id]);}
+  },3000);
+}
+
+function _showNextBtn(id,gradeKey){
+  const btn=document.querySelector('#vp-'+id+' .pbtn.ok');
+  if(!btn) return;
+  btn.textContent='▶ الدرس التالي';
+  btn.style.background='linear-gradient(135deg,var(--ok),#00a870)';
+  btn.style.color='#fff';
+  btn.style.borderColor='transparent';
+  btn.onclick=()=>{ closeVid(id); openNextContent(gradeKey,'videos',id); };
+  const rDiv=document.getElementById('rating-'+id);
+  if(rDiv) rDiv.style.display='flex';
+}
 
 // تسجيل تسليم الواجب مع عد المرات
 window.markHwDone=async(gradeKey,hwId)=>{
@@ -1503,9 +1630,10 @@ window.closeImg=()=>{document.getElementById('imgModal').classList.remove('open'
 window.closePlayer=()=>{document.getElementById('playerFrame').src='';document.getElementById('playerModal').classList.remove('open');document.body.style.overflow='';};
 window.playerDone=()=>{
   if(_playerData){
-    markDone(_playerData.gradeKey,'videos',_playerData.id);
+    const {gradeKey,id}=_playerData;
+    markDone(gradeKey,'videos',id);
     closePlayer();
-    setTimeout(()=>location.reload(),500);
+    setTimeout(()=>openNextContent(gradeKey,'videos',id),600);
   }
 };
 
@@ -1789,6 +1917,10 @@ function switchTab(name,btn){
   }
   if(name==='books') loadBooksTab();
   if(name==='research') loadMyResearches();
+  if(name==='comments'){
+    buildCommentVideoSelector();
+    if(window._currentCommentVideoId) loadVideoComments(window._currentCommentVideoId);
+  }
   if(name==='playlists'&&window._openGrade) loadPlaylistsTab(window._openGrade);
   // Show/hide search bar (only for videos/exams)
   const srch = document.getElementById('cvSearch');
