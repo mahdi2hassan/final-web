@@ -871,8 +871,9 @@ const _authTimeout = setTimeout(()=>{
 
 onAuthStateChanged(auth,async(user)=>{
   clearTimeout(_authTimeout);
-  if(!user){window.location.href='plus-math-auth.html';return;}
+  if(!user){window._user=null;window.location.href='plus-math-auth.html';return;}
   _user=user;
+  window._user=user;
   try{
     const ud=await getDoc(doc(db,'users',user.uid));
     if(!ud.exists()||!ud.data().subscriptionActive){window.location.href='plus-math-auth.html';return;}
@@ -2704,8 +2705,8 @@ async function loadVideoComments(videoId){
 }
 
 async function submitComment(){
-  const _user=window._user;
-  if(!_user){ showToast('سجل دخول أولاً','err'); return; }
+  const _user=window._user||window._userData&&{uid:window._userData.uid||''};
+  if(!_user||!_user.uid){ showToast('سجل دخول أولاً','err'); return; }
   const videoId=window._currentCommentVideoId;
   const text=(document.getElementById('comment-text')?.value||'').trim();
   if(!videoId){ showToast('اختار الفيديو أولاً','err'); return; }
