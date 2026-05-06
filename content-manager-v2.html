@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Plus — إدارة المحتوى v2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<!-- Google Drive API -->
+<script src="https://apis.google.com/js/api.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#04060f;--s1:rgba(8,13,28,0.95);--s2:rgba(12,18,40,0.8);--s3:rgba(16,24,52,0.6);
+  --b1:rgba(74,127,212,0.22);--b2:rgba(74,127,212,0.12);--b3:rgba(74,127,212,0.06);
+  --blue:#4a7fd4;--navy:#1a3270;--gold:#c9a84c;--gold2:#f0d080;
+  --text:#eef2ff;--muted:#6a7a9e;--muted2:#4a5a7e;
+  --ok:#00d68f;--err:#ff4d6d;--warn:#f5a623;--purple:#a78bfa;
+  --inp:rgba(6,10,22,0.8);
+  --r:14px;--r2:10px;
+  --sh:0 4px 24px rgba(0,0,0,0.4);
+}
+html,body{min-height:100dvh;overflow-x:hidden}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(74,127,212,0.03) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(74,127,212,0.03) 1px,transparent 1px);background-size:44px 44px}
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+.o1{width:500px;height:500px;background:rgba(26,50,112,0.35);top:-150px;right:-150px}
+.o2{width:350px;height:350px;background:rgba(110,75,10,0.2);bottom:-80px;left:-80px}
+
+/* ── LOGIN ── */
+#loginWrap{position:fixed;inset:0;z-index:200;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;padding:16px}
+.lcard{background:var(--s2);backdrop-filter:blur(24px);border:1px solid var(--b1);
+  border-radius:24px;padding:36px 32px;width:100%;max-width:360px;text-align:center;
+  box-shadow:0 40px 100px rgba(0,0,0,0.7);animation:popIn .5s ease both}
+@keyframes popIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.lcard img{width:58px;height:58px;object-fit:contain;margin-bottom:12px;filter:drop-shadow(0 4px 16px rgba(74,127,212,0.5))}
+.lcard h2{font-size:17px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:2px}
+.lcard p{font-size:11px;color:var(--muted);margin-bottom:22px}
+.lf{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;text-align:right}
+.lf label{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.8px;text-transform:uppercase}
+.lf input{padding:12px 14px;background:var(--inp);border:1.5px solid var(--b1);border-radius:11px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
+.lf input:focus{border-color:var(--blue)}
+.lbtn{width:100%;padding:13px;border:none;border-radius:11px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;transition:all .2s;margin-top:6px;box-shadow:0 6px 20px rgba(74,127,212,0.3)}
+.lbtn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(74,127,212,0.4)}
+.lerr{font-size:12px;color:var(--err);margin-top:8px;display:none}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:50;height:58px;display:flex;align-items:center;gap:12px;
+  padding:0 clamp(14px,4vw,26px);background:var(--s1);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--b2);box-shadow:0 2px 20px rgba(0,0,0,0.3)}
+.tb-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.tb-logo img{width:32px;height:32px;object-fit:contain}
+.tb-logo h2{font-size:14px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tb-title{font-size:13px;font-weight:700;color:var(--muted);padding:0 8px;border-right:1px solid var(--b2);margin-right:4px}
+.tb-acts{display:flex;gap:7px;margin-right:auto}
+.tbtn{padding:7px 13px;border:1px solid var(--b1);border-radius:10px;background:transparent;
+  color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:5px;text-decoration:none}
+.tbtn:hover{border-color:var(--blue);color:var(--text);background:var(--b3)}
+.tbtn svg{width:13px;height:13px}
+.tbtn.on{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(74,127,212,0.35)}
+
+/* ── MAIN ── */
+.main{position:relative;z-index:1;padding:clamp(14px,3vw,20px) clamp(14px,4vw,24px);max-width:920px;margin:0 auto}
+
+/* ── GRADE BAR ── */
+.grade-bar{background:linear-gradient(135deg,rgba(12,18,40,0.9),rgba(16,24,52,0.7));border:1px solid var(--b1);
+  border-radius:var(--r);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  box-shadow:var(--sh)}
+.grade-bar label{font-size:12px;font-weight:800;color:var(--muted);white-space:nowrap}
+.gsel{padding:9px 14px;background:var(--inp);border:1.5px solid var(--b1);border-radius:10px;
+  color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none;
+  appearance:none;cursor:pointer;min-width:200px;transition:border-color .2s}
+.gsel:focus{border-color:var(--blue)}
+.grade-info{font-size:12px;color:var(--ok);font-weight:700;display:none}
+
+/* ── STATS BADGES ── */
+#gStats span{transition:all .3s}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:7px;margin-bottom:16px;flex-wrap:wrap;padding:4px 0}
+
+/* ── CARD ── */
+.card{background:linear-gradient(135deg,rgba(12,18,40,0.85),rgba(8,13,28,0.7));border:1px solid var(--b2);
+  border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--sh);backdrop-filter:blur(12px)}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--b2)}
+.card-head h3{font-size:14px;font-weight:800;flex:1;display:flex;align-items:center;gap:7px}
+.card-head h3 svg{width:14px;height:14px;color:var(--blue)}
+
+/* ── FORM ── */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:580px){.fgrid{grid-template-columns:1fr}}
+.ff{display:flex;flex-direction:column;gap:5px}
+.ff>label:first-child:not(.ff-check){font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
+.ff-check{font-size:13px !important;text-transform:none !important;letter-spacing:0 !important;color:var(--text) !important;font-weight:500 !important;display:flex;align-items:center;gap:8px;cursor:pointer}
+.ff input,.ff select,.ff textarea{padding:10px 12px;background:var(--inp);border:1.5px solid var(--b1);
+  border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;appearance:none;width:100%;resize:vertical}
+.ff input:focus,.ff select:focus,.ff textarea:focus{border-color:var(--blue)}
+.ff.full{grid-column:1/-1}
+
+/* ── NEW: Google Drive Picker Button ── */
+.drive-btn{padding:9px 16px;border:1px solid rgba(66,133,244,0.4);border-radius:10px;
+  background:linear-gradient(135deg,rgba(66,133,244,0.12),rgba(66,133,244,0.05));
+  color:#4285f4;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.drive-btn:hover{border-color:#4285f4;background:rgba(66,133,244,0.15);transform:translateY(-1px)}
+.drive-btn svg{width:13px;height:13px}
+.drive-file-preview{margin-top:10px;padding:10px;background:rgba(66,133,244,0.06);border:1px solid rgba(66,133,244,0.2);border-radius:10px;display:none;align-items:center;gap:10px}
+.drive-file-preview.show{display:flex}
+.drive-file-preview img{width:36px;height:36px;border-radius:6px;object-fit:cover}
+.drive-file-info{flex:1;min-width:0}
+.drive-file-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drive-file-size{font-size:10px;color:var(--muted)}
+
+/* ── IMAGE URL INPUT ── */
+.img-url-input{display:flex;gap:8px;align-items:stretch}
+.img-url-input input{flex:1}
+.img-url-input button{padding:10px 14px;border:1px solid var(--b1);border-radius:10px;background:transparent;color:var(--blue);cursor:pointer;font-size:12px;font-weight:700;transition:all .2s}
+.img-url-input button:hover{border-color:var(--blue);background:rgba(74,127,212,0.1)}
+
+/* ── ENHANCED EXAM BUILDER ── */
+.exam-builder{margin-top:14px}
+.question-item{background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;
+  padding:14px;margin-bottom:10px}
+.question-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.question-num{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--navy));
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff}
+.question-type-select{padding:6px 10px;background:rgba(6,10,22,0.6);border:1px solid var(--b2);
+  border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer}
+.del-question-btn{margin-right:auto;padding:5px 10px;border:1px solid rgba(255,77,109,0.3);
+  border-radius:7px;background:rgba(255,77,109,0.08);color:var(--err);cursor:pointer;font-size:11px}
+
+/* ── ANSWER OPTIONS ── */
+.answer-options{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.answer-option{display:flex;align-items:center;gap:8px}
+.answer-option input[type="radio"],.answer-option input[type="checkbox"]{width:15px;height:15px;accent-color:var(--ok)}
+.answer-option input[type="text"]{flex:1}
+.answer-option button{padding:4px 8px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--err);cursor:pointer;font-size:11px}
+
+/* ── UPLOAD ZONE ── */
+.upload-zone{border:2px dashed var(--b1);border-radius:12px;padding:clamp(18px,4vw,28px) 16px;
+  text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--blue);background:rgba(74,127,212,0.05)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone-ico{width:44px;height:44px;border-radius:12px;background:rgba(74,127,212,0.1);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.upload-zone-ico svg{width:22px;height:22px;color:var(--blue)}
+.upload-zone h4{font-size:14px;font-weight:700;margin-bottom:4px}
+.upload-zone p{font-size:12px;color:var(--muted)}
+
+/* ── NOTE ── */
+.note{font-size:11px;color:var(--muted);background:rgba(74,127,212,0.06);
+  border:1px solid var(--b2);border-radius:8px;padding:8px 12px;margin-bottom:12px;line-height:1.8}
+.note strong{color:var(--blue)}
+.note.new{background:rgba(0,214,143,0.08);border-color:rgba(0,214,143,0.2)}
+.note.new strong{color:var(--ok)}
+
+/* ── ITEMS LIST ── */
+.items{display:flex;flex-direction:column;gap:8px}
+.item{background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;
+  padding:12px 14px;display:flex;align-items:center;gap:10px;transition:all .2s}
+.item:hover{border-color:var(--b1)}
+.item-num{width:26px;height:26px;border-radius:7px;
+  background:linear-gradient(135deg,var(--blue),var(--navy));
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.item-info{flex:1;min-width:0}
+.item-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item-meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.item-acts{display:flex;gap:5px;flex-shrink:0}
+.ia{width:28px;height:28px;border-radius:8px;border:1px solid var(--b2);background:transparent;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--muted)}
+.ia:hover{border-color:var(--blue);background:rgba(74,127,212,0.1);color:var(--text)}
+.ia.del:hover{border-color:var(--err);background:rgba(255,77,109,0.1);color:var(--err)}
+.ia svg{width:12px;height:12px}
+.tag{display:inline-flex;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.tag.v{background:rgba(74,127,212,0.1);color:var(--blue)}
+.tag.e{background:rgba(201,168,76,0.1);color:var(--gold)}
+.tag.h{background:rgba(167,139,250,0.1);color:var(--purple)}
+.tag.ok{background:rgba(0,214,143,0.1);color:var(--ok)}
+
+/* ── BTNS ── */
+.btn{padding:9px 16px;border:none;border-radius:10px;cursor:pointer;font-family:'Tajawal',sans-serif;
+  font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn svg{width:13px;height:13px}
+.btn.primary{background:linear-gradient(135deg,var(--blue),var(--navy));color:#fff;box-shadow:0 4px 14px rgba(74,127,212,0.25)}
+.btn.ok{background:linear-gradient(135deg,var(--ok),#006040);color:#fff;box-shadow:0 4px 14px rgba(0,214,143,0.2)}
+.btn.gold{background:linear-gradient(135deg,var(--gold),#7a5810);color:#fff}
+.btn.purple{background:linear-gradient(135deg,var(--purple),#5b21b6);color:#fff}
+.btn.ghost{background:transparent;border:1px solid var(--b1);color:var(--muted)}
+.btn.ghost:hover{border-color:var(--blue);color:var(--text)}
+.btn.sm{padding:7px 12px;font-size:12px}
+.btn.w100{width:100%;justify-content:center}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:28px 20px;color:var(--muted)}
+.empty svg{width:30px;height:30px;opacity:.2;display:block;margin:0 auto 10px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:rgba(10,15,34,0.97);backdrop-filter:blur(16px);border:1px solid var(--b1);
+  border-radius:11px;padding:10px 18px;font-size:13px;font-weight:600;
+  display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  transition:transform .3s cubic-bezier(.22,1,.36,1);z-index:999;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{color:var(--ok);border-color:rgba(0,214,143,0.3)}
+.toast.err{color:var(--err);border-color:rgba(255,77,109,0.3)}
+.toast.info{color:var(--blue);border-color:rgba(74,127,212,0.3)}
+.toast svg{width:14px;height:14px}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+
+/* ── NEW BADGE ── */
+.new-badge{position:absolute;top:-8px;right:-8px;background:linear-gradient(135deg,var(--ok),#006040);
+  color:#fff;font-size:9px;font-weight:900;padding:3px 8px;border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,214,143,0.4);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+</style>
+</head>
+<body>
+
+<svg style="display:none">
+  <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+  <symbol id="i-drive" viewBox="0 0 24 24" fill="currentColor"><path d="M12.01 1.485l-8.48 4.9v9.8l8.48 4.899 8.48-4.9v-9.8l-8.48-4.9zm6.84 13.816l-6.84 3.95-6.84-3.95V6.51l6.84-3.95 6.84 3.95v8.79z"/><path d="M14.385 12.89l-1.41-1.41-1.975 1.975-1.975-1.975-1.41 1.41 1.975 1.975-1.975 1.975 1.41 1.41 1.975-1.975 1.975 1.975 1.41-1.41-1.975-1.975z"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23,4 23,10 17,10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></symbol>
+</svg>
+
+<div class="bg-grid"></div>
+<div class="o1 orb"></div>
+<div class="o2 orb"></div>
+
+<!-- LOGIN -->
+<div id="loginWrap">
+  <div class="lcard">
+    <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.opacity='.5'"/>
+    <h2>إدارة المحتوى v2.0</h2>
+    <p>Plus Mathematics · 2026</p>
+    <div class="lf"><label>كلمة المرور</label>
+      <input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <button class="lbtn" onclick="doLogin()">دخول</button>
+    <div class="lerr" id="lerr">كلمة المرور غلط</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+
+  <div class="topbar">
+    <a href="index.html" class="tb-logo">
+      <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.display='none'"/>
+      <h2>Plus Math</h2>
+    </a>
+    <div class="tb-title">
+      إدارة المحتوى v2.0
+      <span class="new-badge">NEW</span>
+    </div>
+    <div class="tb-acts">
+      <a href="plus-math-admin.html" class="tbtn"><svg><use href="#i-home"/></svg>الداشبورد</a>
+      <a href="student-submissions.html" class="tbtn" style="position:relative">
+        <svg><use href="#i-eye"/></svg>إجابات الطلاب
+        <span class="new-badge">NEW</span>
+      </a>
+      <button class="tbtn" onclick="doLogout()"><svg><use href="#i-out"/></svg>خروج</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Grade selector -->
+    <div class="grade-bar">
+      <label>📚 الصف:</label>
+      <select class="gsel" id="gSel" onchange="onGrade()">
+        <option value="">— اختار الصف —</option>
+        <optgroup label="ابتدائي">
+          <option value="primary-4">الصف الرابع الابتدائي</option>
+          <option value="primary-5">الصف الخامس الابتدائي</option>
+          <option value="primary-6">الصف السادس الابتدائي</option>
+        </optgroup>
+        <optgroup label="إعدادي">
+          <option value="prep-1">الصف الأول الإعدادي</option>
+          <option value="prep-2">الصف الثاني الإعدادي</option>
+          <option value="prep-3">الصف الثالث الإعدادي</option>
+        </optgroup>
+        <optgroup label="ثانوي">
+          <option value="sec-1">الصف الأول الثانوي</option>
+          <option value="sec-2">الصف الثاني الثانوي</option>
+          <option value="sec-3">الصف الثالث الثانوي</option>
+        </optgroup>
+        <optgroup label="جامعة">
+          <option value="univ-1">السنة الأولى جامعة</option>
+          <option value="univ-2">السنة الثانية جامعة</option>
+          <option value="univ-3">السنة الثالثة جامعة</option>
+          <option value="univ-4">السنة الرابعة جامعة</option>
+        </optgroup>
+      </select>
+      <span class="grade-info" id="gInfo"></span>
+      <div id="gStats" style="display:none;display:flex;gap:10px;margin-right:auto;flex-wrap:wrap">
+        <span id="gst-v" style="font-size:11px;color:var(--blue);font-weight:700;padding:3px 8px;background:rgba(74,127,212,0.1);border-radius:6px">—</span>
+        <span id="gst-e" style="font-size:11px;color:var(--gold);font-weight:700;padding:3px 8px;background:rgba(201,168,76,0.1);border-radius:6px">—</span>
+        <span id="gst-h" style="font-size:11px;color:var(--purple);font-weight:700;padding:3px 8px;background:rgba(167,139,250,0.1);border-radius:6px">—</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tbtn on" id="tv" onclick="switchTab('v')">
+        <svg><use href="#i-play"/></svg>الفيديوهات
+      </button>
+      <button class="tbtn" id="te" onclick="switchTab('e')" style="position:relative">
+        <svg><use href="#i-check"/></svg>الامتحانات
+        <span class="new-badge">v2</span>
+      </button>
+      <button class="tbtn" id="th" onclick="switchTab('h')">
+        <svg><use href="#i-file"/></svg>الواجبات
+      </button>
+    </div>
+
+    <!-- Placeholder -->
+    <div id="cmPlaceholder" style="text-align:center;padding:48px 20px;color:var(--muted)">
+      <div style="font-size:48px;margin-bottom:14px;opacity:.5">📚</div>
+      <div style="font-size:15px;font-weight:800;color:var(--text);margin-bottom:6px">اختار الصف أولاً</div>
+      <div style="font-size:13px;line-height:1.7">اختار الصف من القائمة بالأعلى<br/>ثم اضغط على التاب اللي تريد تضيف فيه</div>
+    </div>
+
+    <!-- ══════════════════ VIDEOS ══════════════════ -->
+    <div id="sv" style="display:none">
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-play"/></svg>إضافة فيديو</h3>
+          <button class="btn sm ghost" onclick="clearV()">مسح</button>
+          <button class="btn sm primary" onclick="saveVideo()"><svg><use href="#i-save"/></svg>حفظ</button>
+        </div>
+
+        <div class="note new">
+          <strong>جديد!</strong> دلوقتي تقدر ترفع الفيديو من Google Drive مباشرة أو تحط رابط صورة للثامبنيل 🎬
+        </div>
+
+        <div class="fgrid">
+          <!-- YouTube URL -->
+          <div class="ff full">
+            <label>رابط يوتيوب</label>
+            <input type="url" id="vUrl" placeholder="https://youtube.com/watch?v=..."/>
+          </div>
+
+          <!-- OR Google Drive -->
+          <div class="ff full">
+            <label>أو ارفع من Google Drive</label>
+            <button class="drive-btn" onclick="openDrivePicker('video')">
+              <svg><use href="#i-drive"/></svg>
+              اختار من Drive
+            </button>
+            <div class="drive-file-preview" id="vDrivePreview">
+              <img id="vDriveThumb" src="" alt=""/>
+              <div class="drive-file-info">
+                <div class="drive-file-name" id="vDriveName">—</div>
+                <div class="drive-file-size" id="vDriveSize">—</div>
+              </div>
+              <button onclick="clearDrive('video')" style="padding:4px 8px;border:1px solid var(--err);border-radius:6px;background:transparent;color:var(--err);cursor:pointer">×</button>
+            </div>
+            <input type="hidden" id="vDriveId"/>
+            <input type="hidden" id="vDriveUrl"/>
+          </div>
+
+          <!-- Thumbnail Image URL -->
+          <div class="ff full">
+            <label>رابط صورة الثامبنيل (اختياري)</label>
+            <div class="img-url-input">
+              <input type="url" id="vThumbUrl" placeholder="https://example.com/image.jpg"/>
+              <button onclick="previewImageUrl('vThumbUrl')">معاينة</button>
+            </div>
+          </div>
+
+          <div class="ff full">
+            <label>عنوان الفيديو</label>
+            <input type="text" id="vTitle" placeholder="مثال: الدرس الأول — المعادلات"/>
+          </div>
+          <div class="ff">
+            <label>وصف مختصر</label>
+            <input type="text" id="vDesc" placeholder="موضوع الفيديو"/>
+          </div>
+          <div class="ff">
+            <label>المدة</label>
+            <input type="text" id="vDur" placeholder="مثال: 45 دقيقة"/>
+          </div>
+          <div class="ff">
+            <label>الترتيب</label>
+            <input type="number" id="vOrder" placeholder="1" min="1"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-play"/></svg>الفيديوهات المضافة</h3>
+          <button class="btn sm ghost" onclick="loadVideos()"><svg><use href="#i-refresh"/></svg></button>
+        </div>
+        <div id="vList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ EXAMS v2 ══════════════════ -->
+    <div id="se" style="display:none">
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-check"/></svg>إضافة امتحان متطور</h3>
+          <button class="btn sm ghost" onclick="clearE()">مسح</button>
+          <button class="btn sm gold" onclick="saveExam()"><svg><use href="#i-save"/></svg>حفظ</button>
+        </div>
+
+        <div class="note new">
+          <strong>النظام الجديد!</strong> امتحانات متنوعة: اختيار متعدد، صح/خطأ، مقالي — كلهم في امتحان واحد! 🎯
+        </div>
+
+        <div class="fgrid">
+          <div class="ff full">
+            <label>عنوان الامتحان</label>
+            <input type="text" id="eTitle" placeholder="مثال: امتحان الفصل الأول"/>
+          </div>
+          <div class="ff">
+            <label>المدة (دقيقة)</label>
+            <input type="number" id="eDur" placeholder="60"/>
+          </div>
+          <div class="ff">
+            <label>الدرجة الكلية</label>
+            <input type="number" id="eTotalScore" placeholder="100"/>
+          </div>
+          <div class="ff">
+            <label>الترتيب</label>
+            <input type="number" id="eOrder" placeholder="1" min="1"/>
+          </div>
+        </div>
+
+        <!-- Exam Builder -->
+        <div class="exam-builder">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <label style="font-size:12px;font-weight:700;color:var(--muted)">الأسئلة</label>
+            <button class="btn sm ok" onclick="addQuestion()">
+              <svg><use href="#i-plus"/></svg>
+              إضافة سؤال
+            </button>
+          </div>
+          <div id="questionsContainer">
+            <!-- Questions will be added here dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-check"/></svg>الامتحانات المضافة</h3>
+          <button class="btn sm ghost" onclick="loadExams()"><svg><use href="#i-refresh"/></svg></button>
+        </div>
+        <div id="eList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ HOMEWORK ══════════════════ -->
+    <div id="sh" style="display:none">
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-file"/></svg>إضافة واجب</h3>
+          <button class="btn sm ghost" onclick="clearH()">مسح</button>
+          <button class="btn sm purple" onclick="saveHomework()"><svg><use href="#i-save"/></svg>حفظ</button>
+        </div>
+
+        <div class="note new">
+          <strong>جديد!</strong> ارفع ملفات الواجب من Google Drive أو حط رابط صورة مباشرة 📝
+        </div>
+
+        <div class="fgrid">
+          <div class="ff full">
+            <label>عنوان الواجب</label>
+            <input type="text" id="hTitle" placeholder="مثال: واجب الدرس الأول"/>
+          </div>
+          <div class="ff full">
+            <label>وصف الواجب</label>
+            <textarea id="hDesc" rows="3" placeholder="اشرح المطلوب..."></textarea>
+          </div>
+
+          <!-- Image URL -->
+          <div class="ff full">
+            <label>رابط صورة الواجب (اختياري)</label>
+            <div class="img-url-input">
+              <input type="url" id="hImgUrl" placeholder="https://example.com/homework.jpg"/>
+              <button onclick="previewImageUrl('hImgUrl')">معاينة</button>
+            </div>
+          </div>
+
+          <!-- OR Google Drive -->
+          <div class="ff full">
+            <label>أو ارفع من Google Drive</label>
+            <button class="drive-btn" onclick="openDrivePicker('homework')">
+              <svg><use href="#i-drive"/></svg>
+              اختار من Drive
+            </button>
+            <div class="drive-file-preview" id="hDrivePreview">
+              <img id="hDriveThumb" src="" alt=""/>
+              <div class="drive-file-info">
+                <div class="drive-file-name" id="hDriveName">—</div>
+                <div class="drive-file-size" id="hDriveSize">—</div>
+              </div>
+              <button onclick="clearDrive('homework')" style="padding:4px 8px;border:1px solid var(--err);border-radius:6px;background:transparent;color:var(--err);cursor:pointer">×</button>
+            </div>
+            <input type="hidden" id="hDriveId"/>
+            <input type="hidden" id="hDriveUrl"/>
+          </div>
+
+          <div class="ff">
+            <label>آخر موعد للتسليم</label>
+            <input type="datetime-local" id="hDeadline"/>
+          </div>
+          <div class="ff">
+            <label>الترتيب</label>
+            <input type="number" id="hOrder" placeholder="1" min="1"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3><svg><use href="#i-file"/></svg>الواجبات المضافة</h3>
+          <button class="btn sm ghost" onclick="loadHomework()"><svg><use href="#i-refresh"/></svg></button>
+        </div>
+        <div id="hList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script type="module">
+// ══════════════════════════════════════════════════════
+// FIREBASE SETUP
+// ══════════════════════════════════════════════════════
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, serverTimestamp, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAGgbqb7-kkPkz8dCGq4-_QlVIJ9fJIMok",
+  authDomain: "plusinmath-web.firebaseapp.com",
+  projectId: "plusinmath-web",
+  storageBucket: "plusinmath-web.firebasestorage.app",
+  messagingSenderId: "1006834166524",
+  appId: "1:1006834166524:web:a0f73f1f5c8a4c8f1f7f4f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+// Expose to window for easy access
+window._db = db;
+window._storage = storage;
+window._collection = collection;
+window._addDoc = addDoc;
+window._getDocs = getDocs;
+window._doc = doc;
+window._updateDoc = updateDoc;
+window._deleteDoc = deleteDoc;
+window._serverTimestamp = serverTimestamp;
+window._query = query;
+window._where = where;
+window._orderBy = orderBy;
+window._ref = ref;
+window._uploadBytes = uploadBytes;
+window._getDownloadURL = getDownloadURL;
+
+// ══════════════════════════════════════════════════════
+// GOOGLE DRIVE PICKER API
+// ══════════════════════════════════════════════════════
+const DRIVE_API_KEY = 'AIzaSyAGgbqb7-kkPkz8dCGq4-_QlVIJ9fJIMok'; // Use your API key
+const DRIVE_CLIENT_ID = '1006834166524-YOUR_CLIENT_ID.apps.googleusercontent.com'; // Replace with your OAuth Client ID
+const DRIVE_SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
+
+let pickerInited = false;
+let pickerType = null;
+
+window.gapi.load('picker', () => {
+  pickerInited = true;
+});
+
+window.openDrivePicker = (type) => {
+  if (!pickerInited) {
+    toast('Google Drive API لسه بيحمّل...', 'info');
+    return;
+  }
+  pickerType = type;
+  // For simplicity, we'll use API key only (no OAuth)
+  // This works for public files or if you have proper setup
+  const picker = new google.picker.PickerBuilder()
+    .addView(google.picker.ViewId.DOCS)
+    .setOAuthToken(null) // Simplified - in production use OAuth
+    .setDeveloperKey(DRIVE_API_KEY)
+    .setCallback(pickerCallback)
+    .build();
+  picker.setVisible(true);
+};
+
+function pickerCallback(data) {
+  if (data.action === google.picker.Action.PICKED) {
+    const file = data.docs[0];
+    const prefix = pickerType === 'video' ? 'v' : 'h';
+    
+    document.getElementById(`${prefix}DriveId`).value = file.id;
+    document.getElementById(`${prefix}DriveUrl`).value = file.url;
+    document.getElementById(`${prefix}DriveName`).textContent = file.name;
+    document.getElementById(`${prefix}DriveSize`).textContent = formatBytes(file.sizeBytes || 0);
+    document.getElementById(`${prefix}DriveThumb`).src = file.iconUrl;
+    document.getElementById(`${prefix}DrivePreview`).classList.add('show');
+    
+    toast('تم اختيار الملف من Drive ✓', 'ok');
+  }
+}
+
+window.clearDrive = (type) => {
+  const prefix = type === 'video' ? 'v' : 'h';
+  document.getElementById(`${prefix}DriveId`).value = '';
+  document.getElementById(`${prefix}DriveUrl`).value = '';
+  document.getElementById(`${prefix}DrivePreview`).classList.remove('show');
+};
+
+function formatBytes(bytes) {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+// ══════════════════════════════════════════════════════
+// IMAGE URL PREVIEW
+// ══════════════════════════════════════════════════════
+window.previewImageUrl = (inputId) => {
+  const url = document.getElementById(inputId).value.trim();
+  if (!url) {
+    toast('حط رابط الصورة الأول', 'err');
+    return;
+  }
+  
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML = `
+    <div style="max-width:600px;width:100%">
+      <img src="${url}" style="width:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)" onerror="this.src='';this.alt='خطأ في تحميل الصورة'"/>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="margin-top:12px;padding:9px 20px;border:none;border-radius:9px;background:rgba(255,77,109,.2);border:1px solid rgba(255,77,109,.3);color:#ff4d6d;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;font-weight:700;width:100%">✕ إغلاق</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+};
+
+// ══════════════════════════════════════════════════════
+// EXAM BUILDER v2 - MIXED QUESTIONS
+// ══════════════════════════════════════════════════════
+let questions = [];
+
+window.addQuestion = () => {
+  const questionNum = questions.length + 1;
+  const questionId = `q${Date.now()}`;
+  
+  const question = {
+    id: questionId,
+    type: 'mcq', // default
+    text: '',
+    points: 1,
+    options: ['', '', '', ''],
+    correctAnswer: 0
+  };
+  
+  questions.push(question);
+  renderQuestions();
+};
+
+window.removeQuestion = (id) => {
+  questions = questions.filter(q => q.id !== id);
+  renderQuestions();
+};
+
+window.updateQuestionType = (id, type) => {
+  const q = questions.find(x => x.id === id);
+  if (!q) return;
+  
+  q.type = type;
+  if (type === 'truefalse') {
+    q.options = ['صح', 'خطأ'];
+    q.correctAnswer = 0;
+  } else if (type === 'essay') {
+    q.options = [];
+    q.correctAnswer = null;
+  } else if (type === 'mcq' && q.options.length < 2) {
+    q.options = ['', '', '', ''];
+    q.correctAnswer = 0;
+  }
+  
+  renderQuestions();
+};
+
+window.addOption = (questionId) => {
+  const q = questions.find(x => x.id === questionId);
+  if (!q) return;
+  q.options.push('');
+  renderQuestions();
+};
+
+window.removeOption = (questionId, index) => {
+  const q = questions.find(x => x.id === questionId);
+  if (!q || q.options.length <= 2) return;
+  q.options.splice(index, 1);
+  if (q.correctAnswer >= q.options.length) q.correctAnswer = 0;
+  renderQuestions();
+};
+
+function renderQuestions() {
+  const container = document.getElementById('questionsContainer');
+  if (!questions.length) {
+    container.innerHTML = '<div class="empty"><p>اضغط "إضافة سؤال" لبدء الامتحان</p></div>';
+    return;
+  }
+  
+  container.innerHTML = questions.map((q, index) => {
+    const typeLabel = {mcq: 'اختيار متعدد', truefalse: 'صح/خطأ', essay: 'مقالي'};
+    
+    let optionsHTML = '';
+    if (q.type === 'mcq' || q.type === 'truefalse') {
+      optionsHTML = `
+        <div class="answer-options">
+          ${q.options.map((opt, i) => `
+            <div class="answer-option">
+              <input type="radio" name="${q.id}" ${q.correctAnswer === i ? 'checked' : ''} 
+                onchange="questions.find(x=>x.id==='${q.id}').correctAnswer=${i}"/>
+              <input type="text" value="${opt}" placeholder="الإجابة ${i + 1}" 
+                oninput="questions.find(x=>x.id==='${q.id}').options[${i}]this.value"/>
+              ${q.type === 'mcq' && q.options.length > 2 ? `<button onclick="removeOption('${q.id}',${i})">×</button>` : ''}
+            </div>
+          `).join('')}
+          ${q.type === 'mcq' ? `<button class="btn sm ghost" onclick="addOption('${q.id}')">+ إضافة خيار</button>` : ''}
+        </div>
+      `;
+    } else if (q.type === 'essay') {
+      optionsHTML = '<p style="font-size:11px;color:var(--muted);padding:8px">سؤال مقالي — الطالب هيكتب إجابة نصية</p>';
+    }
+    
+    return `
+      <div class="question-item">
+        <div class="question-header">
+          <div class="question-num">${index + 1}</div>
+          <select class="question-type-select" onchange="updateQuestionType('${q.id}', this.value)">
+            <option value="mcq" ${q.type === 'mcq' ? 'selected' : ''}>اختيار متعدد</option>
+            <option value="truefalse" ${q.type === 'truefalse' ? 'selected' : ''}>صح/خطأ</option>
+            <option value="essay" ${q.type === 'essay' ? 'selected' : ''}>مقالي</option>
+          </select>
+          <input type="number" value="${q.points}" min="1" placeholder="نقاط" 
+            style="width:60px;padding:6px 8px;background:rgba(6,10,22,0.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-size:12px"
+            oninput="questions.find(x=>x.id==='${q.id}').points=parseInt(this.value)||1"/>
+          <button class="del-question-btn" onclick="removeQuestion('${q.id}')">حذف</button>
+        </div>
+        <textarea placeholder="نص السؤال..." rows="2" 
+          style="width:100%;padding:10px;background:rgba(6,10,22,0.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;margin-bottom:8px"
+          oninput="questions.find(x=>x.id==='${q.id}').text=this.value">${q.text}</textarea>
+        ${optionsHTML}
+      </div>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════
+window.doLogin = () => {
+  const pass = document.getElementById('lp').value.trim();
+  const ADMIN_PASS = 'plusmath2026'; // Change this!
+  
+  if (pass === ADMIN_PASS) {
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    localStorage.setItem('cm_logged', '1');
+    toast('أهلاً بيك! 👋', 'ok');
+  } else {
+    document.getElementById('lerr').style.display = 'block';
+  }
+};
+
+window.doLogout = () => {
+  localStorage.removeItem('cm_logged');
+  location.reload();
+};
+
+// Auto-login if already logged
+if (localStorage.getItem('cm_logged') === '1') {
+  document.getElementById('loginWrap').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+// ══════════════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════════════
+let currentTab = 'v';
+
+window.switchTab = (tab) => {
+  currentTab = tab;
+  document.querySelectorAll('.tabs .tbtn').forEach(b => b.classList.remove('on'));
+  document.getElementById('t' + tab).classList.add('on');
+  
+  document.getElementById('sv').style.display = tab === 'v' ? 'block' : 'none';
+  document.getElementById('se').style.display = tab === 'e' ? 'block' : 'none';
+  document.getElementById('sh').style.display = tab === 'h' ? 'block' : 'none';
+};
+
+window.onGrade = () => {
+  const grade = document.getElementById('gSel').value;
+  if (!grade) {
+    document.getElementById('cmPlaceholder').style.display = 'block';
+    document.getElementById('sv').style.display = 'none';
+    document.getElementById('se').style.display = 'none';
+    document.getElementById('sh').style.display = 'none';
+    return;
+  }
+  
+  document.getElementById('cmPlaceholder').style.display = 'none';
+  switchTab(currentTab);
+  
+  // Load counts
+  loadCounts(grade);
+};
+
+async function loadCounts(grade) {
+  try {
+    const [vSnap, eSnap, hSnap] = await Promise.all([
+      getDocs(collection(db, 'content', grade, 'videos')),
+      getDocs(collection(db, 'content', grade, 'exams')),
+      getDocs(collection(db, 'content', grade, 'homework'))
+    ]);
+    
+    document.getElementById('gst-v').textContent = `📹 ${vSnap.size}`;
+    document.getElementById('gst-e').textContent = `📝 ${eSnap.size}`;
+    document.getElementById('gst-h').textContent = `📄 ${hSnap.size}`;
+    document.getElementById('gStats').style.display = 'flex';
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// SAVE FUNCTIONS
+// ══════════════════════════════════════════════════════
+window.saveVideo = async () => {
+  const grade = document.getElementById('gSel').value;
+  if (!grade) { toast('اختار صف أولاً', 'err'); return; }
+  
+  const url = document.getElementById('vUrl').value.trim();
+  const driveUrl = document.getElementById('vDriveUrl').value.trim();
+  const thumbUrl = document.getElementById('vThumbUrl').value.trim();
+  const title = document.getElementById('vTitle').value.trim();
+  
+  if (!title) { toast('اكتب عنوان الفيديو', 'err'); return; }
+  if (!url && !driveUrl) { toast('اختار فيديو من يوتيوب أو Drive', 'err'); return; }
+  
+  try {
+    const data = {
+      title,
+      url: url || driveUrl,
+      description: document.getElementById('vDesc').value.trim(),
+      duration: document.getElementById('vDur').value.trim(),
+      order: parseInt(document.getElementById('vOrder').value) || 1,
+      thumbnailUrl: thumbUrl,
+      driveId: document.getElementById('vDriveId').value.trim(),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+    
+    await addDoc(collection(db, 'content', grade, 'videos'), data);
+    toast('تم حفظ الفيديو ✓', 'ok');
+    clearV();
+    loadVideos();
+  } catch (e) {
+    toast('خطأ: ' + e.message, 'err');
+  }
+};
+
+window.saveExam = async () => {
+  const grade = document.getElementById('gSel').value;
+  if (!grade) { toast('اختار صف أولاً', 'err'); return; }
+  
+  const title = document.getElementById('eTitle').value.trim();
+  if (!title) { toast('اكتب عنوان الامتحان', 'err'); return; }
+  if (!questions.length) { toast('اضف أسئلة للامتحان', 'err'); return; }
+  
+  try {
+    const data = {
+      title,
+      duration: parseInt(document.getElementById('eDur').value) || 60,
+      totalScore: parseInt(document.getElementById('eTotalScore').value) || 100,
+      order: parseInt(document.getElementById('eOrder').value) || 1,
+      type: 'mixed', // NEW: mixed question types
+      questions: questions.map(q => ({
+        id: q.id,
+        type: q.type,
+        text: q.text,
+        points: q.points,
+        options: q.options,
+        correctAnswer: q.correctAnswer
+      })),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+    
+    await addDoc(collection(db, 'content', grade, 'exams'), data);
+    toast('تم حفظ الامتحان ✓', 'ok');
+    clearE();
+    loadExams();
+  } catch (e) {
+    toast('خطأ: ' + e.message, 'err');
+  }
+};
+
+window.saveHomework = async () => {
+  const grade = document.getElementById('gSel').value;
+  if (!grade) { toast('اختار صف أولاً', 'err'); return; }
+  
+  const title = document.getElementById('hTitle').value.trim();
+  if (!title) { toast('اكتب عنوان الواجب', 'err'); return; }
+  
+  try {
+    const data = {
+      title,
+      description: document.getElementById('hDesc').value.trim(),
+      imageUrl: document.getElementById('hImgUrl').value.trim(),
+      driveId: document.getElementById('hDriveId').value.trim(),
+      driveUrl: document.getElementById('hDriveUrl').value.trim(),
+      deadline: document.getElementById('hDeadline').value,
+      order: parseInt(document.getElementById('hOrder').value) || 1,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+    
+    await addDoc(collection(db, 'content', grade, 'homework'), data);
+    toast('تم حفظ الواجب ✓', 'ok');
+    clearH();
+    loadHomework();
+  } catch (e) {
+    toast('خطأ: ' + e.message, 'err');
+  }
+};
+
+// ══════════════════════════════════════════════════════
+// LOAD FUNCTIONS
+// ══════════════════════════════════════════════════════
+window.loadVideos = async () => {
+  const grade = document.getElementById('gSel').value;
+  if (!grade) return;
+  
+  const list = document.getElementById('vList');
+  list.innerHTML = '<div class="empty"><div class="spin"></div></div>';
+  
+  try {
+    const snap = await getDocs(collection(db, 'content', grade, 'videos'));
+    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    items.sort((a, b) => (a.order || 0) - (b.order || 0));
+    
+    renderItems('videos', items, 'vList');
+  } catch (e) {
+    list.innerHTML = `<div class="empty"><p>خطأ: ${e.message}</p></div>`;
+  }
+};
+
+window.loadExams = async () => {
+  const grade = document.getElementById('gSel').value;
+  if (!grade) return;
+  
+  const list = document.getElementById('eList');
+  list.innerHTML = '<div class="empty"><div class="spin"></div></div>';
+  
+  try {
+    const snap = await getDocs(collection(db, 'content', grade, 'exams'));
+    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    items.sort((a, b) => (a.order || 0) - (b.order || 0));
+    
+    renderItems('exams', items, 'eList');
+  } catch (e) {
+    list.innerHTML = `<div class="empty"><p>خطأ: ${e.message}</p></div>`;
+  }
+};
+
+window.loadHomework = async () => {
+  const grade = document.getElementById('gSel').value;
+  if (!grade) return;
+  
+  const list = document.getElementById('hList');
+  list.innerHTML = '<div class="empty"><div class="spin"></div></div>';
+  
+  try {
+    const snap = await getDocs(collection(db, 'content', grade, 'homework'));
+    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    items.sort((a, b) => (a.order || 0) - (b.order || 0));
+    
+    renderItems('homework', items, 'hList');
+  } catch (e) {
+    list.innerHTML = `<div class="empty"><p>خطأ: ${e.message}</p></div>`;
+  }
+};
+
+function renderItems(type, items, listId) {
+  const list = document.getElementById(listId);
+  if (!items.length) {
+    list.innerHTML = '<div class="empty"><p>لا يوجد محتوى بعد</p></div>';
+    return;
+  }
+  
+  const tagClass = type === 'videos' ? 'v' : type === 'exams' ? 'e' : 'h';
+  
+  list.innerHTML = '<div class="items">' + items.map((item, i) => `
+    <div class="item">
+      <div class="item-num">${item.order || i + 1}</div>
+      <div class="item-info">
+        <div class="item-title">${item.title || '—'}</div>
+        <div class="item-meta">
+          <span class="tag ${tagClass}">${type === 'videos' ? 'فيديو' : type === 'exams' ? 'امتحان' : 'واجب'}</span>
+          ${item.duration ? `<span>⏱ ${item.duration}</span>` : ''}
+          ${item.questions ? `<span>📝 ${item.questions.length} سؤال</span>` : ''}
+          ${item.totalScore ? `<span>🎯 ${item.totalScore} درجة</span>` : ''}
+          ${item.type === 'mixed' ? `<span class="tag ok">متنوع</span>` : ''}
+        </div>
+      </div>
+      <div class="item-acts">
+        <button class="ia del" onclick="deleteItem('${type}','${item.id}','${item.title}')">
+          <svg><use href="#i-trash"/></svg>
+        </button>
+      </div>
+    </div>
+  `).join('') + '</div>';
+}
+
+window.deleteItem = async (type, id, title) => {
+  if (!confirm(`حذف "${title}"؟`)) return;
+  
+  const grade = document.getElementById('gSel').value;
+  if (!grade) return;
+  
+  try {
+    await deleteDoc(doc(db, 'content', grade, type, id));
+    toast('تم الحذف ✓', 'ok');
+    
+    if (type === 'videos') loadVideos();
+    else if (type === 'exams') loadExams();
+    else if (type === 'homework') loadHomework();
+  } catch (e) {
+    toast('خطأ: ' + e.message, 'err');
+  }
+};
+
+// ══════════════════════════════════════════════════════
+// CLEAR FORMS
+// ══════════════════════════════════════════════════════
+window.clearV = () => {
+  ['vUrl', 'vTitle', 'vDesc', 'vDur', 'vOrder', 'vThumbUrl', 'vDriveId', 'vDriveUrl'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('vDrivePreview').classList.remove('show');
+};
+
+window.clearE = () => {
+  ['eTitle', 'eDur', 'eTotalScore', 'eOrder'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  questions = [];
+  renderQuestions();
+};
+
+window.clearH = () => {
+  ['hTitle', 'hDesc', 'hImgUrl', 'hDeadline', 'hOrder', 'hDriveId', 'hDriveUrl'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('hDrivePreview').classList.remove('show');
+};
+
+// ══════════════════════════════════════════════════════
+// TOAST NOTIFICATIONS
+// ══════════════════════════════════════════════════════
+window.toast = (msg, type = 'info') => {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+};
+
+console.log('🎓 Plus Math Content Manager v2.0 loaded!');
+</script>
+
+</body>
+</html>
