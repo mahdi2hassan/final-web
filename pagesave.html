@@ -602,6 +602,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="sb-item" onclick="goPage('content')" data-perm="content">
         <svg><use href="#ic-book"/></svg><span>المحتوى</span>
       </div>
+      <div class="sb-item" onclick="openStudentSubmissions()" data-perm="scores">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><polyline points="9,12 9,17 15,17"/><polyline points="12,12 15,12"/></svg>
+        <span>إجابات الطلاب المفصلة</span>
+      </div>
       <div class="sb-item" onclick="goPage('research')" data-perm="research">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
         <span>الأبحاث</span>
@@ -897,18 +901,28 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <!-- ══ CONTENT ══ -->
       <div class="page" id="page-content">
         <div class="sh">
-          <div class="sh-title"><svg><use href="#ic-book"/></svg>إدارة المحتوى</div>
+          <div class="sh-title"><svg><use href="#ic-book"/></svg>أدوات المحتوى والطلاب</div>
         </div>
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;gap:16px">
-          <div style="width:72px;height:72px;border-radius:20px;background:rgba(74,127,212,0.1);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:32px">📚</div>
-          <h3 style="font-size:18px;font-weight:900">صفحة إدارة المحتوى</h3>
-          <p style="font-size:13px;color:var(--muted);line-height:1.7;max-width:300px">جاري تحويلك لصفحة إدارة المحتوى...</p>
-          <div style="width:40px;height:4px;background:rgba(74,127,212,0.2);border-radius:2px;overflow:hidden">
-            <div id="cmLoadBar" style="height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:2px;animation:cmSlide 1s ease forwards"></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:8px">
+          <div style="background:var(--s2);border:1px solid var(--b1);border-radius:18px;padding:24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px">
+            <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,rgba(74,127,212,0.2),rgba(26,50,112,0.2));border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:28px">📚</div>
+            <h3 style="font-size:16px;font-weight:900">إدارة المحتوى</h3>
+            <p style="font-size:12px;color:var(--muted);line-height:1.7;max-width:220px">إضافة وتعديل فيديوهات، امتحانات، واجبات، كتب، وبلايلست لكل الصفوف</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+              <a href="content-manager.html" target="_blank" class="btn primary sm"><svg><use href="#ic-book"/></svg>الإصدار الأصلي</a>
+              <a href="content-manager-v2.html" target="_blank" class="btn sm" style="background:linear-gradient(135deg,var(--ok),#006040);color:#fff">v2.0 المطور</a>
+            </div>
           </div>
-          <a href="content-manager.html" target="_blank" class="btn primary" style="margin-top:8px">
-            <svg><use href="#ic-book"/></svg>فتح إدارة المحتوى
-          </a>
+          <div style="background:var(--s2);border:1px solid rgba(167,139,250,0.3);border-radius:18px;padding:24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;overflow:hidden">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),#5b21b6)"></div>
+            <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,rgba(167,139,250,0.2),rgba(91,33,182,0.2));border:1px solid rgba(167,139,250,0.3);display:flex;align-items:center;justify-content:center;font-size:28px">📊</div>
+            <h3 style="font-size:16px;font-weight:900">إجابات الطلاب المفصلة</h3>
+            <p style="font-size:12px;color:var(--muted);line-height:1.7;max-width:220px">عرض وتصحيح إجابات الامتحانات المقالية والـ MCQ بشكل مفصل لكل طالب</p>
+            <button onclick="openStudentSubmissions()" class="btn sm" style="background:linear-gradient(135deg,var(--purple),#5b21b6);color:#fff">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+              فتح صفحة الإجابات
+            </button>
+          </div>
         </div>
       </div>
 
@@ -3790,7 +3804,9 @@ function goPage(p){
   if(p==='tickets') loadTickets();
   if(p==='sessions') loadSessions();
   if(p==='overview') buildOverviewWidgets();
-  if(p==='content'){ window.open('content-manager.html','_blank'); }
+  if(p==='content'){ /* show content tools page */ }
+  // student submissions shortcut
+  window.openStudentSubmissions = ()=>{ window.open('student-submissions.html','_blank'); };
   if(window.innerWidth<=768) closeSidebar();
 }
 
