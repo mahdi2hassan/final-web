@@ -602,10 +602,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="sb-item" onclick="goPage('content')" data-perm="content">
         <svg><use href="#ic-book"/></svg><span>المحتوى</span>
       </div>
-      <div class="sb-item" onclick="openStudentSubmissions()" data-perm="scores">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><polyline points="9,12 9,17 15,17"/><polyline points="12,12 15,12"/></svg>
-        <span>إجابات الطلاب المفصلة</span>
-      </div>
       <div class="sb-item" onclick="goPage('research')" data-perm="research">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
         <span>الأبحاث</span>
@@ -901,28 +897,18 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <!-- ══ CONTENT ══ -->
       <div class="page" id="page-content">
         <div class="sh">
-          <div class="sh-title"><svg><use href="#ic-book"/></svg>أدوات المحتوى والطلاب</div>
+          <div class="sh-title"><svg><use href="#ic-book"/></svg>إدارة المحتوى</div>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:8px">
-          <div style="background:var(--s2);border:1px solid var(--b1);border-radius:18px;padding:24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px">
-            <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,rgba(74,127,212,0.2),rgba(26,50,112,0.2));border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:28px">📚</div>
-            <h3 style="font-size:16px;font-weight:900">إدارة المحتوى</h3>
-            <p style="font-size:12px;color:var(--muted);line-height:1.7;max-width:220px">إضافة وتعديل فيديوهات، امتحانات، واجبات، كتب، وبلايلست لكل الصفوف</p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-              <a href="content-manager.html" target="_blank" class="btn primary sm"><svg><use href="#ic-book"/></svg>الإصدار الأصلي</a>
-              <a href="content-manager-v2.html" target="_blank" class="btn sm" style="background:linear-gradient(135deg,var(--ok),#006040);color:#fff">v2.0 المطور</a>
-            </div>
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;gap:16px">
+          <div style="width:72px;height:72px;border-radius:20px;background:rgba(74,127,212,0.1);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:32px">📚</div>
+          <h3 style="font-size:18px;font-weight:900">صفحة إدارة المحتوى</h3>
+          <p style="font-size:13px;color:var(--muted);line-height:1.7;max-width:300px">جاري تحويلك لصفحة إدارة المحتوى...</p>
+          <div style="width:40px;height:4px;background:rgba(74,127,212,0.2);border-radius:2px;overflow:hidden">
+            <div id="cmLoadBar" style="height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:2px;animation:cmSlide 1s ease forwards"></div>
           </div>
-          <div style="background:var(--s2);border:1px solid rgba(167,139,250,0.3);border-radius:18px;padding:24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;overflow:hidden">
-            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--purple),#5b21b6)"></div>
-            <div style="width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,rgba(167,139,250,0.2),rgba(91,33,182,0.2));border:1px solid rgba(167,139,250,0.3);display:flex;align-items:center;justify-content:center;font-size:28px">📊</div>
-            <h3 style="font-size:16px;font-weight:900">إجابات الطلاب المفصلة</h3>
-            <p style="font-size:12px;color:var(--muted);line-height:1.7;max-width:220px">عرض وتصحيح إجابات الامتحانات المقالية والـ MCQ بشكل مفصل لكل طالب</p>
-            <button onclick="openStudentSubmissions()" class="btn sm" style="background:linear-gradient(135deg,var(--purple),#5b21b6);color:#fff">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
-              فتح صفحة الإجابات
-            </button>
-          </div>
+          <a href="content-manager.html" target="_blank" class="btn primary" style="margin-top:8px">
+            <svg><use href="#ic-book"/></svg>فتح إدارة المحتوى
+          </a>
         </div>
       </div>
 
@@ -1011,6 +997,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <div class="ftab"    id="atab-mcq"   onclick="setAnsTab('mcq')">✅ MCQ</div>
           <div class="ftab"    id="atab-essay" onclick="setAnsTab('essay')">📝 مقالي</div>
           <div class="ftab"    id="atab-manual" onclick="setAnsTab('manual')">✏️ يدوي</div>
+          <div class="ftab"    id="atab-detailed" onclick="setAnsTab('detailed')" style="border-color:rgba(167,139,250,0.4);color:var(--purple)">📊 إجابات مفصلة</div>
         </div>
 
         <!-- Stats row -->
@@ -1069,6 +1056,53 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
         <!-- List -->
         <div id="mergedList"><div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg><p>اضغط تحديث لتحميل البيانات</p></div></div>
+
+        <!-- ═══ DETAILED SUBMISSIONS PANEL ═══ -->
+        <div id="detailedSubmissionsPanel" style="display:none">
+          <div class="stats-row" style="margin-bottom:14px">
+            <div class="sc go"><div class="sc-ico" style="background:rgba(201,168,76,0.15);color:var(--gold)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg></div><div class="sc-val" id="ds-total">0</div><div class="sc-lbl">إجمالي الإجابات</div></div>
+            <div class="sc bl"><div class="sc-ico"><svg><use href="#ic-users"/></svg></div><div class="sc-val" id="ds-students">0</div><div class="sc-lbl">عدد الطلاب</div></div>
+            <div class="sc gr"><div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20,6 9,17 4,12"/></svg></div><div class="sc-val" id="ds-avg">—</div><div class="sc-lbl">متوسط الدرجات</div></div>
+            <div class="sc pu"><div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="sc-val" id="ds-pending">0</div><div class="sc-lbl">لم تُصحح بعد</div></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+            <select id="ds-grade-filter" onchange="dsApplyFilters()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
+              <option value="">كل الصفوف</option>
+              <optgroup label="ابتدائي"><option value="primary-4">الرابع الابتدائي</option><option value="primary-5">الخامس الابتدائي</option><option value="primary-6">السادس الابتدائي</option></optgroup>
+              <optgroup label="إعدادي"><option value="prep-1">الأول الإعدادي</option><option value="prep-2">الثاني الإعدادي</option><option value="prep-3">الثالث الإعدادي</option></optgroup>
+              <optgroup label="ثانوي"><option value="sec-1">الأول الثانوي</option><option value="sec-2">الثاني الثانوي</option><option value="sec-3">الثالث الثانوي</option></optgroup>
+            </select>
+            <select id="ds-exam-filter" onchange="dsApplyFilters()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"><option value="">كل الامتحانات</option></select>
+            <select id="ds-status-filter" onchange="dsApplyFilters()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"><option value="">كل الحالات</option><option value="graded">مُصحح</option><option value="pending">في الانتظار</option></select>
+            <div style="flex:1;min-width:180px;display:flex;align-items:center;gap:8px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;padding:7px 12px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--muted);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="ds-search" placeholder="ابحث باسم الطالب أو الكود..." oninput="dsApplyFilters()" style="background:transparent;border:none;outline:none;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;width:100%"/>
+            </div>
+            <button onclick="dsExportCsv()" class="btn gold sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>CSV</button>
+            <button onclick="dsLoadSubmissions()" class="btn ghost sm"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+          </div>
+          <div style="background:rgba(8,13,28,0.7);border:1px solid var(--b2);border-radius:14px;overflow:hidden">
+            <div style="background:rgba(6,10,22,0.8);padding:12px 16px;border-bottom:1px solid var(--b2);display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" style="width:14px;height:14px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/></svg>
+              الإجابات المُرسلة
+            </div>
+            <div style="overflow-x:auto">
+              <table style="width:100%;border-collapse:collapse">
+                <thead><tr style="background:rgba(16,24,52,0.6)">
+                  <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:800;color:var(--muted);border-bottom:1px solid var(--b2)">الطالب</th>
+                  <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:800;color:var(--muted);border-bottom:1px solid var(--b2)">الامتحان</th>
+                  <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:800;color:var(--muted);border-bottom:1px solid var(--b2)">الصف</th>
+                  <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:800;color:var(--muted);border-bottom:1px solid var(--b2)">الدرجة</th>
+                  <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:800;color:var(--muted);border-bottom:1px solid var(--b2)">الحالة</th>
+                  <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:800;color:var(--muted);border-bottom:1px solid var(--b2)">التاريخ</th>
+                  <th style="padding:10px 14px;text-align:right;font-size:11px;font-weight:800;color:var(--muted);border-bottom:1px solid var(--b2)">إجراءات</th>
+                </tr></thead>
+                <tbody id="dsSubmissionsBody"><tr><td colspan="7"><div class="empty"><p>اضغط تحديث لتحميل البيانات</p></div></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- ═══ END DETAILED PANEL ═══ -->
       </div>
 
       <!-- Essay Grade Modal -->
@@ -1108,6 +1142,40 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             تفاصيل إجابة MCQ
           </h3>
           <div id="mcqDetailContent"></div>
+        </div>
+      </div>
+
+
+      <!-- DS Detail Modal -->
+      <div id="dsDetailModal" class="mbg">
+        <div class="mbx" style="max-width:800px;max-height:90vh;overflow-y:auto;position:relative">
+          <button onclick="closeModal('dsDetailModal')" style="position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:50%;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:18px">×</button>
+          <h3 id="dsModalTitle" style="font-size:16px;font-weight:800;margin-bottom:16px;padding-left:40px">تفاصيل الإجابة</h3>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--b2)">
+            <div style="background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;padding:12px">
+              <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">الطالب</div>
+              <div id="dsDetailStudentName" style="font-size:14px;font-weight:700"></div>
+              <div id="dsDetailStudentId" style="font-size:11px;color:var(--muted);margin-top:4px"></div>
+            </div>
+            <div style="background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;padding:12px">
+              <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">الامتحان</div>
+              <div id="dsDetailExamTitle" style="font-size:14px;font-weight:700"></div>
+              <div id="dsDetailExamGrade" style="font-size:11px;color:var(--muted);margin-top:4px"></div>
+            </div>
+            <div style="background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;padding:12px">
+              <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">الدرجة</div>
+              <div style="font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent"><span id="dsDetailScore">—</span> / <span id="dsDetailTotal">—</span></div>
+            </div>
+            <div style="background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;padding:12px">
+              <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">وقت التسليم</div>
+              <div id="dsDetailTime" style="font-size:13px;font-weight:700"></div>
+            </div>
+          </div>
+          <div id="dsAnswersContainer"></div>
+          <button onclick="dsSaveGrade()" class="btn ok" style="width:100%;justify-content:center;margin-top:14px;padding:13px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><polyline points="20,6 9,17 4,12"/></svg>
+            حفظ الدرجات
+          </button>
         </div>
       </div>
 
@@ -3804,9 +3872,7 @@ function goPage(p){
   if(p==='tickets') loadTickets();
   if(p==='sessions') loadSessions();
   if(p==='overview') buildOverviewWidgets();
-  if(p==='content'){ /* show content tools page */ }
-  // student submissions shortcut
-  window.openStudentSubmissions = ()=>{ window.open('student-submissions.html','_blank'); };
+  if(p==='content'){ window.open('content-manager.html','_blank'); }
   if(window.innerWidth<=768) closeSidebar();
 }
 
@@ -7707,10 +7773,22 @@ window.updateMergedStats = ()=>{
 
 window.setAnsTab = (t)=>{
   window._ansTab = t;
-  ['all','mcq','essay','manual'].forEach(x=>{
+  ['all','mcq','essay','manual','detailed'].forEach(x=>{
     document.getElementById('atab-'+x)?.classList.toggle('on',x===t);
   });
-  renderMerged();
+  const detailedPanel = document.getElementById('detailedSubmissionsPanel');
+  const mergedList = document.getElementById('mergedList');
+  if(t === 'detailed'){
+    if(mergedList) mergedList.style.display = 'none';
+    document.querySelectorAll('[id="answersChart"]').forEach(el=>el.style.display='none');
+    if(detailedPanel) detailedPanel.style.display = '';
+    if(!window._dsLoaded) dsLoadSubmissions();
+  } else {
+    if(detailedPanel) detailedPanel.style.display = 'none';
+    if(mergedList) mergedList.style.display = '';
+    document.querySelectorAll('[id="answersChart"]').forEach(el=>el.style.display='');
+    renderMerged();
+  }
 };
 
 window.setMgFilter = (f)=>{
@@ -8151,8 +8229,279 @@ window.exportScoresCsv  = window.exportMergedCsv;
 // ── تحميل المراحل عند الفتح ──
 loadDynamicGrades();
 
+// ══════════════════════════════════════════════════════════
+// DETAILED SUBMISSIONS (from student-submissions.html)
+// ══════════════════════════════════════════════════════════
+window._dsAllSubmissions = [];
+window._dsCurrentSub = null;
+window._dsLoaded = false;
+
+window.dsLoadSubmissions = async () => {
+  const tbody = document.getElementById('dsSubmissionsBody');
+  if(!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><div class="spin"></div></div></td></tr>';
+  try {
+    const snap = await db.collection('examSubmissions').get();
+    window._dsAllSubmissions = snap.docs.map(d=>({id:d.id,...d.data()}));
+    window._dsAllSubmissions.sort((a,b)=>(b.submittedAt?.seconds||0)-(a.submittedAt?.seconds||0));
+    window._dsLoaded = true;
+    dsUpdateStats();
+    dsPopulateExamFilter();
+    dsRenderTable(window._dsAllSubmissions);
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><p>خطأ: '+e.message+'</p></div></td></tr>';
+  }
+};
+
+function dsUpdateStats(){
+  const subs = window._dsAllSubmissions;
+  document.getElementById('ds-total').textContent = subs.length;
+  document.getElementById('ds-students').textContent = new Set(subs.map(s=>s.studentId||s.studentName||s.userId)).size;
+  const graded = subs.filter(s=>s.finalScore!=null);
+  if(graded.length){
+    const avg = graded.reduce((sum,s)=>sum+(s.finalScore||0),0)/graded.length;
+    document.getElementById('ds-avg').textContent = Math.round(avg)+'%';
+  } else {
+    document.getElementById('ds-avg').textContent='—';
+  }
+  const pending = subs.filter(s=>s.finalScore==null&&s.answers?.some(a=>a.type==='essay'));
+  document.getElementById('ds-pending').textContent = pending.length;
+}
+
+function dsPopulateExamFilter(){
+  const examSet = new Set();
+  window._dsAllSubmissions.forEach(s=>{ if(s.examTitle) examSet.add(s.examTitle); });
+  const sel = document.getElementById('ds-exam-filter');
+  if(!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">كل الامتحانات</option>';
+  Array.from(examSet).sort().forEach(e=>{
+    const o=document.createElement('option'); o.value=e; o.textContent=e; sel.appendChild(o);
+  });
+  sel.value=cur;
+}
+
+window.dsApplyFilters = ()=>{
+  const gradeF = (document.getElementById('ds-grade-filter')?.value||'').toLowerCase();
+  const examF  = (document.getElementById('ds-exam-filter')?.value||'').toLowerCase();
+  const statF  = document.getElementById('ds-status-filter')?.value||'';
+  const q      = (document.getElementById('ds-search')?.value||'').toLowerCase();
+  const filtered = window._dsAllSubmissions.filter(s=>{
+    if(gradeF && (s.grade||'').toLowerCase()!==gradeF) return false;
+    if(examF  && (s.examTitle||'').toLowerCase()!==examF) return false;
+    if(statF==='graded'  && s.finalScore==null) return false;
+    if(statF==='pending' && s.finalScore!=null) return false;
+    if(q){
+      const n=(s.studentName||'').toLowerCase();
+      const id=(s.studentId||s.userId||'').toLowerCase();
+      if(!n.includes(q)&&!id.includes(q)) return false;
+    }
+    return true;
+  });
+  dsRenderTable(filtered);
+};
+
+function dsRenderTable(subs){
+  const tbody = document.getElementById('dsSubmissionsBody');
+  if(!tbody) return;
+  if(!subs.length){
+    tbody.innerHTML='<tr><td colspan="7"><div class="empty"><div class="empty-icon" style="font-size:32px;opacity:.3">🔍</div><p>لا يوجد نتائج تطابق البحث</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = subs.map(sub=>{
+    const nm = sub.studentName||'طالب';
+    const sid= sub.studentId||sub.userId||'—';
+    const init= nm.split(' ').map(n=>n[0]||'').join('').substring(0,2).toUpperCase()||'ط';
+    const et = sub.examTitle||'امتحان';
+    const gr = sub.grade||'—';
+    let scoreHTML='', scoreClass='pending';
+    if(sub.finalScore!=null){
+      const pct=sub.totalScore?Math.round((sub.finalScore/sub.totalScore)*100):0;
+      scoreClass=pct>=85?'excellent':pct>=70?'good':pct>=50?'average':'poor';
+      scoreHTML=`${sub.finalScore} / ${sub.totalScore} <span style="opacity:.6">(${pct}%)</span>`;
+    } else { scoreHTML='⏳ في الانتظار'; }
+    const statusLabel = sub.finalScore!=null ? 'مُصحح':'في انتظار التصحيح';
+    const statusCls   = sub.finalScore!=null ? 'ok':'pending';
+    const dateStr = sub.submittedAt?.toDate ? dsFormatDate(sub.submittedAt.toDate()) : '—';
+    return `<tr style="border-bottom:1px solid var(--b2);transition:background .15s;cursor:pointer" onclick="dsViewDetails('${sub.id}')" onmouseover="this.style.background='rgba(74,127,212,0.05)'" onmouseout="this.style.background=''">
+      <td style="padding:13px 14px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;flex-shrink:0">${init}</div>
+          <div><div style="font-weight:700;font-size:13px">${nm}</div><div style="font-size:11px;color:var(--muted)">كود: ${sid}</div></div>
+        </div>
+      </td>
+      <td style="padding:13px 14px"><div style="font-weight:700;font-size:13px">${et}</div><div style="font-size:11px;color:var(--muted)">${sub.questions?.length||0} سؤال</div></td>
+      <td style="padding:13px 14px;font-size:13px">${gr}</td>
+      <td style="padding:13px 14px"><div style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:8px;font-weight:800;font-size:12px;background:${scoreClass==='excellent'?'rgba(0,214,143,0.12)':scoreClass==='good'?'rgba(74,127,212,0.12)':scoreClass==='average'?'rgba(245,166,35,0.12)':scoreClass==='poor'?'rgba(255,77,109,0.12)':'rgba(167,139,250,0.12)'};color:${scoreClass==='excellent'?'var(--ok)':scoreClass==='good'?'var(--blue)':scoreClass==='average'?'var(--warn)':scoreClass==='poor'?'var(--err)':'var(--purple)'};border:1px solid ${scoreClass==='excellent'?'rgba(0,214,143,0.2)':scoreClass==='good'?'rgba(74,127,212,0.2)':scoreClass==='average'?'rgba(245,166,35,0.2)':scoreClass==='poor'?'rgba(255,77,109,0.2)':'rgba(167,139,250,0.2)'}">${scoreHTML}</div></td>
+      <td style="padding:13px 14px"><span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:7px;font-size:11px;font-weight:700;background:${statusCls==='ok'?'rgba(0,214,143,0.12)':'rgba(167,139,250,0.12)'};color:${statusCls==='ok'?'var(--ok)':'var(--purple)'};border:1px solid ${statusCls==='ok'?'rgba(0,214,143,0.2)':'rgba(167,139,250,0.2)'}">${statusLabel}</span></td>
+      <td style="padding:13px 14px;font-size:12px;color:var(--muted)">${dateStr}</td>
+      <td style="padding:13px 14px">
+        <button onclick="event.stopPropagation();dsViewDetails('${sub.id}')" style="width:32px;height:32px;border-radius:8px;border:1px solid var(--b2);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .2s" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='';this.style.color=''">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function dsFormatDate(d){
+  const now=new Date(), diff=now-d;
+  const mins=Math.floor(diff/60000), hrs=Math.floor(diff/3600000), days=Math.floor(diff/86400000);
+  if(mins<1) return 'الآن';
+  if(mins<60) return `منذ ${mins} دقيقة`;
+  if(hrs<24)  return `منذ ${hrs} ساعة`;
+  if(days<7)  return `منذ ${days} يوم`;
+  return d.toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'});
+}
+
+window.dsViewDetails = (id)=>{
+  const sub = window._dsAllSubmissions.find(s=>s.id===id);
+  if(!sub) return;
+  window._dsCurrentSub = sub;
+  // populate modal
+  document.getElementById('dsModalTitle').textContent = (sub.studentName||'طالب') + ' · تفاصيل الإجابة';
+  document.getElementById('dsDetailStudentName').textContent = sub.studentName||'طالب';
+  document.getElementById('dsDetailStudentId').textContent = 'كود: '+(sub.studentId||sub.userId||'—');
+  document.getElementById('dsDetailExamTitle').textContent = sub.examTitle||'امتحان';
+  document.getElementById('dsDetailExamGrade').textContent = sub.grade||'—';
+  document.getElementById('dsDetailTotal').textContent = sub.totalScore||'—';
+  const t = sub.submittedAt?.toDate ? sub.submittedAt.toDate().toLocaleString('ar-EG') : '—';
+  document.getElementById('dsDetailTime').textContent = t;
+  // render answers
+  dsRenderAnswers(sub);
+  dsCalcScore(sub);
+  // open modal
+  openModal('dsDetailModal');
+};
+
+function dsRenderAnswers(sub){
+  const c = document.getElementById('dsAnswersContainer');
+  if(!c) return;
+  if(!sub.answers?.length){ c.innerHTML='<div class="empty"><p>لا توجد إجابات</p></div>'; return; }
+  c.innerHTML = sub.answers.map((ans,i)=>{
+    const q = sub.questions?.[i]||{};
+    const qType = q.type||ans.type||'mcq';
+    const qLabel = {mcq:'اختيار متعدد',truefalse:'صح/خطأ',essay:'مقالي'}[qType]||qType;
+    const qCls   = qType==='essay'?'essay':qType==='truefalse'?'tf':'mcq';
+    let ansHTML='', corrHTML='', badge='';
+    if(qType==='mcq'||qType==='truefalse'){
+      const isOk = ans.answer===q.correctAnswer;
+      badge = isOk ? '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;background:rgba(0,214,143,0.12);color:var(--ok)">✓ صحيحة</span>'
+                   : '<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;background:rgba(255,77,109,0.12);color:var(--err)">✗ خاطئة</span>';
+      ansHTML = `<div style="padding:10px;background:rgba(6,10,22,0.6);border:1.5px solid var(--b2);border-radius:9px;margin-bottom:8px"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:5px">إجابة الطالب</div><div style="font-size:13px">${q.options?.[ans.answer]||ans.answer||'—'}</div></div>`;
+      corrHTML= `<div style="padding:9px;background:rgba(0,214,143,0.08);border:1px solid rgba(0,214,143,0.2);border-radius:8px;font-size:12px"><strong style="color:var(--ok)">الإجابة الصحيحة:</strong> ${q.options?.[q.correctAnswer]||q.correctAnswer||'—'}</div>`;
+    } else {
+      ansHTML = `<div style="padding:10px;background:rgba(6,10,22,0.6);border:1.5px solid var(--b2);border-radius:9px;margin-bottom:8px"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:5px">إجابة الطالب</div><div style="font-size:13px;line-height:1.7">${ans.answer||'لم يجب الطالب'}</div></div>`;
+      badge='<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;background:rgba(167,139,250,0.12);color:var(--purple)">⏳ يحتاج تصحيح يدوي</span>';
+    }
+    const ep = ans.earnedPoints!==undefined ? ans.earnedPoints : ((qType!=='essay'&&ans.answer===q.correctAnswer)?(q.points||1):0);
+    return `<div style="background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:11px;padding:14px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">${i+1}</div>
+        <span style="font-size:10px;padding:3px 8px;border-radius:6px;font-weight:700;background:${qCls==='essay'?'rgba(245,166,35,0.1)':qCls==='tf'?'rgba(167,139,250,0.1)':'rgba(74,127,212,0.1)'};color:${qCls==='essay'?'var(--warn)':qCls==='tf'?'var(--purple)':'var(--blue)'}">${qLabel}</span>
+        ${badge}
+        <div style="margin-right:auto;display:flex;align-items:center;gap:6px">
+          <input type="number" value="${ep}" min="0" max="${q.points||1}" onchange="window._dsCurrentSub.answers[${i}].earnedPoints=parseFloat(this.value)||0;dsCalcScore(window._dsCurrentSub)" ${qType!=='essay'?'readonly':''} style="width:52px;padding:4px 7px;background:rgba(6,10,22,0.8);border:1.5px solid var(--b1);border-radius:6px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;text-align:center"/>
+          <span style="font-size:11px;color:var(--muted)">/ ${q.points||1}</span>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;padding:9px;background:rgba(74,127,212,0.05);border-radius:8px;border-right:3px solid var(--blue);line-height:1.6">${q.text||'السؤال غير متوفر'}</div>
+      ${ansHTML}${corrHTML}
+    </div>`;
+  }).join('');
+}
+
+function dsCalcScore(sub){
+  if(!sub.answers) return;
+  sub.answers.forEach((ans,i)=>{
+    const q=sub.questions?.[i]||{};
+    const t=q.type||ans.type||'mcq';
+    if(t==='mcq'||t==='truefalse') ans.earnedPoints = ans.answer===q.correctAnswer?(q.points||1):0;
+  });
+  const earned=sub.answers.reduce((s,a)=>s+(a.earnedPoints||0),0);
+  const total=sub.questions?.reduce((s,q)=>s+(q.points||1),0)||sub.totalScore||100;
+  sub.finalScore=earned; sub.totalScore=total;
+  document.getElementById('dsDetailScore').textContent=earned;
+  document.getElementById('dsDetailTotal').textContent=total;
+}
+
+window.dsSaveGrade = async ()=>{
+  const sub = window._dsCurrentSub;
+  if(!sub) return;
+  try {
+    await db.collection('examSubmissions').doc(sub.id).update({
+      finalScore: sub.finalScore,
+      totalScore: sub.totalScore,
+      answers: sub.answers,
+      gradedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      gradedBy: 'admin'
+    });
+    toast('تم حفظ الدرجة ✓','ok');
+    closeModal('dsDetailModal');
+    dsLoadSubmissions();
+  } catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.dsExportCsv = ()=>{
+  const subs = window._dsAllSubmissions;
+  if(!subs.length){ toast('لا توجد بيانات','err'); return; }
+  const headers=['اسم الطالب','كود الطالب','الامتحان','الصف','الدرجة','الإجمالي','النسبة%','الحالة','التاريخ'];
+  const rows = subs.map(s=>{
+    const score = s.finalScore!=null?s.finalScore:'—';
+    const total = s.totalScore||100;
+    const pct   = s.finalScore!=null?Math.round((s.finalScore/total)*100):'—';
+    const status= s.finalScore!=null?'مُصحح':'في الانتظار';
+    const date  = s.submittedAt?.toDate?s.submittedAt.toDate().toLocaleDateString('ar-EG'):'—';
+    return [s.studentName||'—',s.studentId||s.userId||'—',s.examTitle||'—',s.grade||'—',score,total,pct,status,date];
+  });
+  const csv=[headers,...rows].map(r=>r.join(',')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`submissions_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  toast('تم التصدير ✓','ok');
+};
+// ══════════════════════════════════════════════════════════
+// END DETAILED SUBMISSIONS
+// ══════════════════════════════════════════════════════════
+
 
 
 </script>
+
+<!-- ══ DS DETAIL MODAL ══ -->
+<div id="dsDetailModal" class="mbg">
+  <div class="mbx" style="max-width:800px;max-height:90vh;overflow-y:auto;position:relative">
+    <button onclick="closeModal('dsDetailModal')" style="position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:50%;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:18px">×</button>
+    <h3 id="dsModalTitle" style="font-size:16px;font-weight:800;margin-bottom:16px;padding-left:44px">تفاصيل الإجابة</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--b2)">
+      <div style="background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;padding:12px">
+        <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">الطالب</div>
+        <div id="dsDetailStudentName" style="font-size:14px;font-weight:700"></div>
+        <div id="dsDetailStudentId" style="font-size:11px;color:var(--muted);margin-top:4px"></div>
+      </div>
+      <div style="background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;padding:12px">
+        <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">الامتحان</div>
+        <div id="dsDetailExamTitle" style="font-size:14px;font-weight:700"></div>
+        <div id="dsDetailExamGrade" style="font-size:11px;color:var(--muted);margin-top:4px"></div>
+      </div>
+      <div style="background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;padding:12px">
+        <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">الدرجة الكلية</div>
+        <div style="font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent"><span id="dsDetailScore">—</span> / <span id="dsDetailTotal">—</span></div>
+      </div>
+      <div style="background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:10px;padding:12px">
+        <div style="font-size:10px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">وقت التسليم</div>
+        <div id="dsDetailTime" style="font-size:13px;font-weight:700"></div>
+      </div>
+    </div>
+    <div id="dsAnswersContainer"></div>
+    <button onclick="dsSaveGrade()" style="width:100%;padding:13px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;transition:all .2s">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:14px;height:14px"><polyline points="20,6 9,17 4,12"/></svg>
+      حفظ الدرجات
+    </button>
+  </div>
+</div>
+
 </body>
 </htm
