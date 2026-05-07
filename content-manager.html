@@ -250,6 +250,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
     <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" onerror="this.style.opacity='.5'"/>
     <h2>إدارة المحتوى</h2>
     <p>Plus Mathematics · 2026</p>
+    <div class="lf"><label>البريد الإلكتروني</label>
+      <input type="email" id="le" placeholder="admin@plusmath.com" onkeydown="if(event.key==='Enter')doLogin()"/></div>
     <div class="lf"><label>كلمة المرور</label>
       <input type="password" id="lp" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
     <button class="lbtn" onclick="doLogin()">دخول</button>
@@ -972,6 +974,8 @@ import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, dele
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const cfg = {
   apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
@@ -984,6 +988,37 @@ const cfg = {
 const app  = initializeApp(cfg);
 const db   = getFirestore(app);
 const stor = getStorage(app);
+const auth = getAuth(app);
+
+// ── Auth State Listener ──
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    // المستخدم مسجل دخول - تحقق من الصلاحيات
+    try {
+      const adminSnap = await getDoc(doc(db, 'admins', user.uid));
+      const supSnap = await getDoc(doc(db, 'supervisors', user.uid));
+      
+      if(adminSnap.exists() || supSnap.exists()){
+        // لديه صلاحيات - اعرض الصفحة
+        document.getElementById('loginWrap').style.display='none';
+        document.getElementById('app').style.display='block';
+      } else {
+        // ليس لديه صلاحيات - اعرض login
+        await signOut(auth);
+        document.getElementById('loginWrap').style.display='flex';
+        document.getElementById('app').style.display='none';
+      }
+    } catch(error) {
+      console.error('Auth check error:', error);
+      document.getElementById('loginWrap').style.display='flex';
+      document.getElementById('app').style.display='none';
+    }
+  } else {
+    // غير مسجل دخول - اعرض login screen
+    document.getElementById('loginWrap').style.display='flex';
+    document.getElementById('app').style.display='none';
+  }
+});
 
 // ── Upload file to Firebase Storage ──
 window.uploadFile = (file, path, onProgress) => {
@@ -1743,24 +1778,66 @@ window.sendCustomNotif = async () => {
 </script>
 
 <script>
-const DEFAULT='plus2026';
-function doLogin(){
-  const p=document.getElementById('lp').value;
-  if(p===DEFAULT||(window._adminPass&&p===window._adminPass)){
+// Auth functions
+async function doLogin(){
+  const email = document.getElementById('le').value.trim();
+  const pass = document.getElementById('lp').value;
+  const lerr = document.getElementById('lerr');
+  
+  if(!email || !pass){
+    lerr.textContent = 'ادخل البريد الإلكتروني وكلمة المرور';
+    lerr.style.display='block';
+    setTimeout(()=>lerr.style.display='none',3000);
+    return;
+  }
+  
+  try {
+    // تسجيل دخول بـ Firebase Auth
+    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+    const user = userCredential.user;
+    
+    // التحقق من أن المستخدم admin أو supervisor
+    const adminSnap = await getDoc(doc(db, 'admins', user.uid));
+    const supSnap = await getDoc(doc(db, 'supervisors', user.uid));
+    
+    if(!adminSnap.exists() && !supSnap.exists()){
+      await signOut(auth);
+      lerr.textContent = 'هذا الحساب ليس لديه صلاحيات إدارة';
+      lerr.style.display='block';
+      setTimeout(()=>lerr.style.display='none',4000);
+      return;
+    }
+    
+    // نجح تسجيل الدخول
     document.getElementById('loginWrap').style.display='none';
     document.getElementById('app').style.display='block';
     toast('أهلاً بك 👋','ok');
-  } else {
-    document.getElementById('lerr').style.display='block';
-    setTimeout(()=>document.getElementById('lerr').style.display='none',3000);
+  } catch(error) {
+    console.error('Login error:', error);
+    let msg = 'خطأ في تسجيل الدخول';
+    if(error.code === 'auth/invalid-email') msg = 'البريد الإلكتروني غير صحيح';
+    else if(error.code === 'auth/user-not-found') msg = 'الحساب غير موجود';
+    else if(error.code === 'auth/wrong-password') msg = 'كلمة المرور خاطئة';
+    else if(error.code === 'auth/invalid-credential') msg = 'البريد أو كلمة المرور خاطئة';
+    lerr.textContent = msg;
+    lerr.style.display='block';
+    setTimeout(()=>lerr.style.display='none',4000);
   }
 }
-function doLogout(){
-  document.getElementById('app').style.display='none';
-  document.getElementById('loginWrap').style.display='flex';
-  document.getElementById('lp').value='';
+async function doLogout(){
+  try {
+    await signOut(auth);
+    document.getElementById('app').style.display='none';
+    document.getElementById('loginWrap').style.display='flex';
+    document.getElementById('le').value='';
+    document.getElementById('lp').value='';
+    toast('تم تسجيل الخروج','ok');
+  } catch(error) {
+    console.error('Logout error:', error);
+    toast('خطأ في تسجيل الخروج','err');
+  }
 }
-document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+// Keydown handlers are already in the input fields
 
 let _curTab='v';
 const GRADES_LABEL={'primary-4':'رابع ابتدائي','primary-5':'خامس ابتدائي','primary-6':'سادس ابتدائي','prep-1':'أول إعدادي','prep-2':'ثاني إعدادي','prep-3':'ثالث إعدادي','sec-1':'أول ثانوي','sec-2':'ثاني ثانوي','sec-3':'ثالث ثانوي'};

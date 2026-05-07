@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار الإعداد - Plus Math</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .card h2 {
+      color: #2d4258;
+      margin-bottom: 15px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .test-item {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 2px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .test-item.pending {
+      background: #fff;
+      border-color: #e0e0e0;
+    }
+    .test-item.success {
+      background: #d4edda;
+      border-color: #c3e6cb;
+    }
+    .test-item.error {
+      background: #f8d7da;
+      border-color: #f5c6cb;
+    }
+    .test-item.warning {
+      background: #fff3cd;
+      border-color: #ffc107;
+    }
+    .test-label {
+      font-weight: 600;
+      color: #333;
+    }
+    .test-status {
+      font-size: 20px;
+    }
+    .details {
+      font-size: 13px;
+      color: #666;
+      margin-top: 8px;
+      font-family: 'Courier New', monospace;
+    }
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .login-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .login-form input {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      direction: ltr;
+      text-align: left;
+    }
+    .info-box {
+      background: #e7f3ff;
+      border: 1px solid #2196f3;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #0d47a1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔍 اختبار إعداد النظام</h1>
+      <p>Plus Mathematics Authentication Test</p>
+    </div>
+
+    <div class="card">
+      <h2>🔌 الاتصال بـ Firebase</h2>
+      <div id="firebase-test" class="test-item pending">
+        <span class="test-label">اتصال Firebase</span>
+        <span class="test-status">⏳</span>
+      </div>
+      <div id="firestore-test" class="test-item pending">
+        <span class="test-label">Firestore Database</span>
+        <span class="test-status">⏳</span>
+      </div>
+      <div id="auth-test" class="test-item pending">
+        <span class="test-label">Firebase Authentication</span>
+        <span class="test-status">⏳</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🔐 اختبار تسجيل الدخول</h2>
+      <div class="login-form">
+        <input type="email" id="test-email" placeholder="admin@plusmath.com">
+        <input type="password" id="test-password" placeholder="كلمة المرور">
+        <button class="btn" id="test-login-btn" onclick="testLogin()">اختبار</button>
+      </div>
+      <div id="login-test" class="test-item pending" style="margin-top: 15px;">
+        <div>
+          <div class="test-label">حالة تسجيل الدخول</div>
+          <div class="details" id="login-details"></div>
+        </div>
+        <span class="test-status">⏳</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📊 Firestore Rules</h2>
+      <div id="rules-test" class="test-item pending">
+        <div>
+          <div class="test-label">اختبار صلاحيات القراءة</div>
+          <div class="details" id="rules-details"></div>
+        </div>
+        <span class="test-status">⏳</span>
+      </div>
+      <button class="btn" onclick="testRules()" style="margin-top: 10px;">اختبار الصلاحيات</button>
+    </div>
+
+    <div class="card">
+      <h2>✅ النتيجة النهائية</h2>
+      <div id="final-result" class="info-box">
+        اضغط على الأزرار أعلاه لإجراء الاختبارات
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const cfg = {
+      apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
+      authDomain:"plusinmath-web.firebaseapp.com",
+      projectId:"plusinmath-web",
+      storageBucket:"plusinmath-web.firebasestorage.app",
+      messagingSenderId:"444492731461",
+      appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
+    };
+
+    let app, auth, db;
+
+    // Test 1: Firebase Connection
+    try {
+      app = initializeApp(cfg);
+      setStatus('firebase-test', 'success', '✓');
+    } catch(e) {
+      setStatus('firebase-test', 'error', '✗');
+      console.error(e);
+    }
+
+    // Test 2: Firestore
+    try {
+      db = getFirestore(app);
+      setStatus('firestore-test', 'success', '✓');
+    } catch(e) {
+      setStatus('firestore-test', 'error', '✗');
+      console.error(e);
+    }
+
+    // Test 3: Auth
+    try {
+      auth = getAuth(app);
+      setStatus('auth-test', 'success', '✓');
+    } catch(e) {
+      setStatus('auth-test', 'error', '✗');
+      console.error(e);
+    }
+
+    function setStatus(id, status, icon) {
+      const el = document.getElementById(id);
+      el.className = `test-item ${status}`;
+      el.querySelector('.test-status').textContent = icon;
+    }
+
+    function setDetails(id, text) {
+      const el = document.getElementById(id);
+      if(el) el.textContent = text;
+    }
+
+    // Test Login
+    window.testLogin = async function() {
+      const email = document.getElementById('test-email').value.trim();
+      const password = document.getElementById('test-password').value;
+      const btn = document.getElementById('test-login-btn');
+      
+      if(!email || !password) {
+        alert('ادخل البريد وكلمة المرور');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'جاري الاختبار...';
+      setStatus('login-test', 'pending', '⏳');
+      setDetails('login-details', 'جاري تسجيل الدخول...');
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        // Check admin status
+        const adminSnap = await getDoc(doc(db, 'admins', user.uid));
+        const supSnap = await getDoc(doc(db, 'supervisors', user.uid));
+        
+        const isAdmin = adminSnap.exists();
+        const isSup = supSnap.exists();
+        
+        if(isAdmin || isSup) {
+          setStatus('login-test', 'success', '✓');
+          setDetails('login-details', `UID: ${user.uid}\nالنوع: ${isAdmin ? 'Admin' : 'Supervisor'}`);
+        } else {
+          setStatus('login-test', 'warning', '⚠');
+          setDetails('login-details', `تم تسجيل الدخول لكن الحساب ليس admin/supervisor\nUID: ${user.uid}`);
+        }
+        
+        // Auto test rules
+        setTimeout(testRules, 500);
+        
+      } catch(error) {
+        setStatus('login-test', 'error', '✗');
+        let msg = 'فشل تسجيل الدخول';
+        if(error.code === 'auth/invalid-credential') msg = 'البيانات خاطئة';
+        else if(error.code === 'auth/user-not-found') msg = 'الحساب غير موجود';
+        setDetails('login-details', msg + '\n' + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'اختبار';
+      }
+    };
+
+    // Test Firestore Rules
+    window.testRules = async function() {
+      setStatus('rules-test', 'pending', '⏳');
+      setDetails('rules-details', 'جاري اختبار صلاحيات Firestore...');
+
+      try {
+        // Try to read content collection
+        const contentSnap = await getDocs(collection(db, 'content', 'sec1', 'videos'));
+        
+        if(contentSnap.empty) {
+          setStatus('rules-test', 'warning', '⚠');
+          setDetails('rules-details', 'الصلاحيات صحيحة لكن لا يوجد محتوى في sec1/videos');
+        } else {
+          setStatus('rules-test', 'success', '✓');
+          setDetails('rules-details', `تم قراءة ${contentSnap.size} عنصر من content/sec1/videos بنجاح`);
+        }
+        
+        updateFinalResult();
+        
+      } catch(error) {
+        setStatus('rules-test', 'error', '✗');
+        let msg = 'فشل الاختبار';
+        if(error.code === 'permission-denied') {
+          msg = 'رُفض الوصول - Rules غير صحيح أو لم تسجل دخول';
+        }
+        setDetails('rules-details', msg + '\n' + error.message);
+        updateFinalResult();
+      }
+    };
+
+    function updateFinalResult() {
+      const tests = document.querySelectorAll('.test-item');
+      let success = 0, errors = 0, warnings = 0;
+      
+      tests.forEach(t => {
+        if(t.classList.contains('success')) success++;
+        if(t.classList.contains('error')) errors++;
+        if(t.classList.contains('warning')) warnings++;
+      });
+      
+      const resultEl = document.getElementById('final-result');
+      
+      if(errors > 0) {
+        resultEl.style.background = '#f8d7da';
+        resultEl.style.borderColor = '#f5c6cb';
+        resultEl.style.color = '#721c24';
+        resultEl.innerHTML = `<strong>❌ يوجد ${errors} مشكلة</strong><br>راجع الاختبارات أعلاه وصحح الأخطاء`;
+      } else if(warnings > 0) {
+        resultEl.style.background = '#fff3cd';
+        resultEl.style.borderColor = '#ffc107';
+        resultEl.style.color = '#856404';
+        resultEl.innerHTML = `<strong>⚠️ تحذيرات</strong><br>النظام يعمل لكن هناك ${warnings} تحذير`;
+      } else if(success >= 5) {
+        resultEl.style.background = '#d4edda';
+        resultEl.style.borderColor = '#c3e6cb';
+        resultEl.style.color = '#155724';
+        resultEl.innerHTML = `<strong>✅ النظام جاهز!</strong><br>جميع الاختبارات نجحت. يمكنك استخدام content-manager.html الآن`;
+      }
+    }
+
+    // Make functions global
+    window.auth = auth;
+    window.db = db;
+  </script>
+</body>
+</html>
