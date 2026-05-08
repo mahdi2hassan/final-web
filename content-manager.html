@@ -1056,9 +1056,12 @@ window.loadList = async (tab, elId) => {
 window.saveVideo = async () => {
   const grade = document.getElementById('gSel').value;
   if(!grade){ toast('اختار صف','err'); return; }
-  const url   = document.getElementById('vUrl').value.trim();
+  // Drive URL overrides YouTube URL if YouTube is empty
+  const driveUrl  = document.getElementById('vDriveUrl')?.value.trim()||'';
+  const ytUrl     = document.getElementById('vUrl').value.trim();
+  const url       = ytUrl || driveUrl;
   const title = document.getElementById('vTitle').value.trim();
-  if(!url || !title){ toast('ادخل الرابط والعنوان','err'); return; }
+  if(!url || !title){ toast('ادخل رابط الفيديو (يوتيوب أو Drive) والعنوان','err'); return; }
   const btn = document.getElementById('vSaveBtn');
   btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
   try {
@@ -1067,6 +1070,8 @@ window.saveVideo = async () => {
     const maxViews = parseInt(document.getElementById('vMaxViews').value)||null;
     const data = {
       title, type:'video', url,
+      driveUrl: document.getElementById('vDriveUrl')?.value.trim()||'',
+      thumbnailUrl: document.getElementById('vThumbUrl')?.value.trim()||'',
       description: document.getElementById('vDesc').value.trim(),
       duration: document.getElementById('vDur').value.trim(),
       order: parseInt(document.getElementById('vOrder').value)||1,
@@ -1147,6 +1152,8 @@ window.saveHomework = async () => {
     const maxSubmissions = parseInt(document.getElementById('hMaxSubmissions').value)||null;
     const data = {
       title, type:'homework',
+      driveUrl: document.getElementById('hDriveUrl')?.value.trim()||'',
+      imageUrl: document.getElementById('hImgUrl')?.value.trim()||'',
       description: document.getElementById('hDesc').value.trim(),
       deadline: document.getElementById('hDeadline').value,
       fileUrl: document.getElementById('hFileUrl').value||'',
@@ -2489,40 +2496,46 @@ document.addEventListener('fbready', ()=>{
 // ══════════════════════════════════════════════════════
 // v2 FEATURES: Google Drive Picker + Image Preview
 // ══════════════════════════════════════════════════════
-// ── Drive: paste share link directly (no OAuth needed) ──
+let pickerInited = false;
+let pickerType = null;
+
+if (window.gapi) {
+  window.gapi.load('picker', () => { pickerInited = true; });
+}
+
 window.openDrivePicker = (type) => {
-  const url = prompt('📎 الصق رابط Google Drive هنا:\n(افتح الملف في Drive → Share → Copy link)');
-  if (!url || !url.trim()) return;
-  const raw = url.trim();
-  // Extract file ID from various Drive URL formats
-  let fileId = '';
-  const m = raw.match(/\/d\/([a-zA-Z0-9_-]+)/) || raw.match(/id=([a-zA-Z0-9_-]+)/);
-  if (m) fileId = m[1];
-  if (!fileId) { toast('رابط Drive غير صحيح — تأكد من الرابط', 'err'); return; }
-  const directUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
-  const embedUrl  = `https://drive.google.com/file/d/${fileId}/preview`;
-  const prefix = type === 'video' ? 'v' : 'h';
-  const nameEl = document.getElementById(`${prefix}DriveName`);
-  const previewEl = document.getElementById(`${prefix}DrivePreview`);
-  const idEl   = document.getElementById(`${prefix}DriveId`);
-  const urlEl  = document.getElementById(`${prefix}DriveUrl`);
-  if(nameEl) nameEl.textContent = 'ملف Drive: ' + fileId.substring(0,12) + '...';
-  const sizeEl = document.getElementById(`${prefix}DriveSize`);
-  if(sizeEl) sizeEl.textContent = directUrl;
-  const thumbEl = document.getElementById(`${prefix}DriveThumb`);
-  if(thumbEl) thumbEl.src = `https://drive.google.com/thumbnail?id=${fileId}&sz=w36-h36`;
-  if(previewEl) previewEl.style.display = 'flex';
-  if(idEl) idEl.value = fileId;
-  if(urlEl) urlEl.value = embedUrl;
-  // If video tab, auto-fill vUrl with embed
-  if (type === 'video') {
-    const vUrlEl = document.getElementById('vUrl');
-    if(vUrlEl && !vUrlEl.value) vUrlEl.value = embedUrl;
+  if (!pickerInited) {
+    toast('Google Drive API لسه بيحمّل — جرب تاني', 'info');
+    return;
   }
-  toast('✅ تم إضافة رابط Drive بنجاح', 'ok');
+  pickerType = type;
+  const picker = new google.picker.PickerBuilder()
+    .addView(google.picker.ViewId.DOCS)
+    .setDeveloperKey('AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE')
+    .setCallback(pickerCallback)
+    .build();
+  picker.setVisible(true);
 };
 
-function pickerCallback(data) { /* unused */ }
+function pickerCallback(data) {
+  if (data.action === google.picker.Action.PICKED) {
+    const file = data.docs[0];
+    const prefix = pickerType === 'video' ? 'v' : 'h';
+    const nameEl = document.getElementById(`${prefix}DriveName`);
+    const sizeEl = document.getElementById(`${prefix}DriveSize`);
+    const thumbEl = document.getElementById(`${prefix}DriveThumb`);
+    const previewEl = document.getElementById(`${prefix}DrivePreview`);
+    if(nameEl) nameEl.textContent = file.name;
+    if(sizeEl) sizeEl.textContent = formatDriveBytes(file.sizeBytes || 0);
+    if(thumbEl) thumbEl.src = file.iconUrl || '';
+    if(previewEl) previewEl.style.display = 'flex';
+    const idEl = document.getElementById(`${prefix}DriveId`);
+    const urlEl = document.getElementById(`${prefix}DriveUrl`);
+    if(idEl) idEl.value = file.id;
+    if(urlEl) urlEl.value = file.url;
+    toast('تم اختيار الملف من Drive ✓', 'ok');
+  }
+}
 
 window.clearDrive = (type) => {
   const prefix = type === 'video' ? 'v' : 'h';
@@ -2549,152 +2562,239 @@ window.previewImageUrl = (inputId) => {
 };
 
 // ══════════════════════════════════════════════════════
-// v2 EXAM BUILDER: Mixed Question Types
+// v2 EXAM BUILDER: Mixed Question Types — FIXED
 // ══════════════════════════════════════════════════════
-let questions = [];
 
-window.addQuestion = () => {
-  const q = { id: `q${Date.now()}`, type: 'mcq', text: '', points: 1, options: ['','','',''], correctAnswer: 0 };
-  questions.push(q);
-  renderQuestionsV2();
-};
+let _questions = [];   // use _questions to avoid conflict
 
-window.removeQuestion = (id) => {
-  questions = questions.filter(q => q.id !== id);
-  renderQuestionsV2();
-};
-
-window.updateQuestionType = (id, type) => {
-  const q = questions.find(x => x.id === id);
-  if (!q) return;
-  q.type = type;
-  if (type === 'truefalse') { q.options = ['صح','خطأ']; q.correctAnswer = 0; }
-  else if (type === 'essay') { q.options = []; q.correctAnswer = null; }
-  else if (type === 'mcq' && q.options.length < 2) { q.options = ['','','','']; q.correctAnswer = 0; }
-  renderQuestionsV2();
-};
-
-window.addOption = (qId) => {
-  const q = questions.find(x=>x.id===qId);
-  if(q) { q.options.push(''); renderQuestionsV2(); }
-};
-
-window.removeOption = (qId, i) => {
-  const q = questions.find(x=>x.id===qId);
-  if(!q || q.options.length<=2) return;
-  q.options.splice(i,1);
-  if(q.correctAnswer>=q.options.length) q.correctAnswer=0;
-  renderQuestionsV2();
-};
-
-function renderQuestionsV2() {
-  const c = document.getElementById('questionsContainer');
-  if (!c) return;
-  // Save current textarea values before re-render
-  c.querySelectorAll('textarea[data-qid]').forEach(ta => {
-    const q = questions.find(x => x.id === ta.dataset.qid);
-    if (q) q.text = ta.value;
-  });
-  c.querySelectorAll('input[data-qid][data-oidx]').forEach(inp => {
-    const q = questions.find(x => x.id === inp.dataset.qid);
-    if (q && q.options) q.options[parseInt(inp.dataset.oidx)] = inp.value;
-  });
-  if (!questions.length) {
-    c.innerHTML = '<div class="empty"><p>اضغط "إضافة سؤال" لبدء بناء الامتحان</p></div>';
-    return;
-  }
-  c.innerHTML = questions.map((q,index)=>{
-    let optsHTML = '';
-    if (q.type==='mcq'||q.type==='truefalse') {
-      optsHTML = `<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">${q.options.map((opt,i)=>`
-        <div style="display:flex;align-items:center;gap:8px">
-          <input type="radio" name="${q.id}" ${q.correctAnswer===i?'checked':''} onchange="questions.find(x=>x.id==='${q.id}').correctAnswer=${i}" style="accent-color:var(--ok);width:15px;height:15px"/>
-          <input type="text" value="${opt.replace(/"/g,'&quot;')}" data-qid="${q.id}" data-oidx="${i}" placeholder="الإجابة ${i+1}" oninput="questions.find(x=>x.id==='${q.id}').options[${i}]=this.value" style="flex:1;padding:8px 10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px"/>
-          ${q.type==='mcq'&&q.options.length>2?`<button onclick="removeOption('${q.id}',${i})" style="padding:4px 8px;border:1px solid rgba(255,77,109,.3);border-radius:6px;background:rgba(255,77,109,.08);color:var(--err);cursor:pointer">×</button>`:''}
-        </div>`).join('')}
-        ${q.type==='mcq'?`<button class="btn sm ghost" onclick="addOption('${q.id}')" style="margin-top:4px">+ إضافة خيار</button>`:''}
-      </div>`;
-    } else {
-      optsHTML = '<p style="font-size:11px;color:var(--muted);padding:8px">سؤال مقالي — الطالب يكتب إجابة نصية وتصحّحها أنت</p>';
+// Save current input values into _questions array before any re-render
+function _saveQInputs() {
+  _questions.forEach(q => {
+    const ta = document.querySelector(`textarea[data-qid="${q.id}"]`);
+    if (ta) q.text = ta.value;
+    if (q.options) {
+      q.options.forEach((_, i) => {
+        const inp = document.querySelector(`input[data-qid="${q.id}"][data-oi="${i}"]`);
+        if (inp) q.options[i] = inp.value;
+      });
     }
-    return `<div style="background:rgba(8,13,28,.5);border:1px solid var(--b2);border-radius:10px;padding:14px;margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">${index+1}</div>
-        <select onchange="updateQuestionType('${q.id}',this.value)" style="padding:6px 10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer">
-          <option value="mcq" ${q.type==='mcq'?'selected':''}>اختيار متعدد</option>
-          <option value="truefalse" ${q.type==='truefalse'?'selected':''}>صح/خطأ</option>
-          <option value="essay" ${q.type==='essay'?'selected':''}>مقالي</option>
-        </select>
-        <input type="number" value="${q.points}" min="1" placeholder="نقاط" oninput="questions.find(x=>x.id==='${q.id}').points=parseInt(this.value)||1" style="width:65px;padding:6px 8px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-size:12px"/>
-        <button onclick="removeQuestion('${q.id}')" style="margin-right:auto;padding:5px 10px;border:1px solid rgba(255,77,109,.3);border-radius:7px;background:rgba(255,77,109,.08);color:var(--err);cursor:pointer;font-size:11px">حذف</button>
-      </div>
-      <textarea placeholder="نص السؤال..." rows="2" data-qid="${q.id}" oninput="questions.find(x=>x.id==='${q.id}').text=this.value" style="width:100%;padding:10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;margin-bottom:4px;resize:vertical">${q.text}</textarea>
-      ${optsHTML}
-    </div>`;
-  }).join('');
+    const pts = document.querySelector(`input[data-qpoints="${q.id}"]`);
+    if (pts) q.points = parseInt(pts.value)||1;
+  });
 }
 
-// Extend saveExam to also support mixed questions from builder
-const _origSaveExam = window.saveExam;
+function _renderQuestions() {
+  const c = document.getElementById('questionsContainer');
+  if (!c) return;
+  if (!_questions.length) {
+    c.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">
+      <div style="font-size:32px;margin-bottom:8px">📝</div>
+      <p>اضغط "إضافة سؤال" لبدء بناء الامتحان</p>
+    </div>`;
+    return;
+  }
+
+  // Build HTML without losing focus — use a div per question
+  const container = c;
+  // Remove questions that were deleted
+  const existingIds = new Set([..._questions.map(q => q.id)]);
+  container.querySelectorAll('.q-block').forEach(el => {
+    if (!existingIds.has(el.dataset.qid)) el.remove();
+  });
+
+  _questions.forEach((q, index) => {
+    let existing = container.querySelector(`.q-block[data-qid="${q.id}"]`);
+    if (!existing) {
+      existing = document.createElement('div');
+      existing.className = 'q-block';
+      existing.dataset.qid = q.id;
+      existing.style.cssText = 'background:rgba(8,13,28,.5);border:1px solid var(--b2);border-radius:10px;padding:14px;margin-bottom:10px';
+      container.appendChild(existing);
+    }
+
+    // Only rebuild inner HTML if type changed (check data-type attr)
+    const needsRebuild = existing.dataset.qtype !== q.type || existing.dataset.qcount != (q.options||[]).length;
+    if (needsRebuild) {
+      existing.dataset.qtype = q.type;
+      existing.dataset.qcount = (q.options||[]).length;
+
+      let optsHTML = '';
+      if (q.type === 'mcq' || q.type === 'truefalse') {
+        optsHTML = `<div style="display:flex;flex-direction:column;gap:7px;margin-top:10px">
+          ${q.options.map((opt,i) => `
+            <div style="display:flex;align-items:center;gap:8px">
+              <input type="radio" name="r_${q.id}" ${q.correctAnswer===i?'checked':''} 
+                onchange="(()=>{ _questions.find(x=>x.id==='${q.id}').correctAnswer=${i}; })()"
+                style="accent-color:var(--ok);width:15px;height:15px;flex-shrink:0"/>
+              <input type="text" data-qid="${q.id}" data-oi="${i}"
+                value="${(opt||'').replace(/"/g,'&quot;')}"
+                placeholder="الإجابة ${i+1}"
+                style="flex:1;padding:8px 10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px"/>
+              ${q.type==='mcq' && q.options.length>2 ? `
+                <button onclick="_saveQInputs();_questions.find(x=>x.id==='${q.id}').options.splice(${i},1);if(_questions.find(x=>x.id==='${q.id}').correctAnswer>=${q.options.length-1})_questions.find(x=>x.id==='${q.id}').correctAnswer=0;_renderQuestions()"
+                  style="padding:4px 8px;border:1px solid rgba(255,77,109,.3);border-radius:6px;background:rgba(255,77,109,.08);color:var(--err);cursor:pointer;font-size:14px;line-height:1">×</button>
+              ` : ''}
+            </div>`).join('')}
+          ${q.type==='mcq' ? `
+            <button onclick="_saveQInputs();_questions.find(x=>x.id==='${q.id}').options.push('');_renderQuestions()"
+              style="margin-top:4px;padding:7px 14px;border:1px solid var(--b2);border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px">
+              + إضافة خيار
+            </button>
+          ` : ''}
+        </div>`;
+      } else {
+        optsHTML = `<p style="font-size:11px;color:var(--muted);padding:10px;background:rgba(255,255,255,0.02);border-radius:8px;border:1px dashed var(--b2);margin-top:8px">
+          ✍️ سؤال مقالي — الطالب يكتب إجابة نصية وأنت تصحّحها
+        </p>`;
+      }
+
+      existing.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+          <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">${index+1}</div>
+          <select onchange="_saveQInputs();_questions.find(x=>x.id==='${q.id}').type=this.value;const qq=_questions.find(x=>x.id==='${q.id}');if(qq.type==='truefalse'){qq.options=['صح','خطأ'];qq.correctAnswer=0;}else if(qq.type==='essay'){qq.options=[];qq.correctAnswer=null;}else if(qq.options.length<2){qq.options=['','','',''];qq.correctAnswer=0;}_renderQuestions()"
+            style="padding:6px 10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer">
+            <option value="mcq" ${q.type==='mcq'?'selected':''}>اختيار متعدد</option>
+            <option value="truefalse" ${q.type==='truefalse'?'selected':''}>صح / خطأ</option>
+            <option value="essay" ${q.type==='essay'?'selected':''}>مقالي</option>
+          </select>
+          <div style="display:flex;align-items:center;gap:4px">
+            <label style="font-size:11px;color:var(--muted)">نقاط:</label>
+            <input type="number" data-qpoints="${q.id}" value="${q.points||1}" min="1"
+              style="width:55px;padding:6px 8px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-size:12px"/>
+          </div>
+          <button onclick="_saveQInputs();_questions=_questions.filter(x=>x.id!=='${q.id}');_renderQuestions()"
+            style="margin-right:auto;padding:5px 12px;border:1px solid rgba(255,77,109,.3);border-radius:7px;background:rgba(255,77,109,.08);color:var(--err);cursor:pointer;font-size:12px;font-weight:700">
+            🗑 حذف
+          </button>
+        </div>
+        <textarea data-qid="${q.id}" placeholder="اكتب نص السؤال هنا..." rows="2"
+          style="width:100%;padding:10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;resize:vertical;box-sizing:border-box">${q.text||''}</textarea>
+        ${optsHTML}
+      `;
+    } else {
+      // Just update the index badge
+      const badge = existing.querySelector('div[style*="border-radius:8px"]');
+      if (badge) badge.textContent = index+1;
+    }
+
+    // Move to correct position in DOM
+    if (container.children[index] !== existing) {
+      container.insertBefore(existing, container.children[index]);
+    }
+  });
+}
+
+// Public API
+window.addQuestion = () => {
+  _saveQInputs();
+  _questions.push({ id:`q${Date.now()}`, type:'mcq', text:'', points:1, options:['','','',''], correctAnswer:0 });
+  _renderQuestions();
+  // Scroll to new question
+  setTimeout(()=>{
+    const c = document.getElementById('questionsContainer');
+    if(c) c.lastElementChild?.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }, 50);
+};
+
+// Override saveExam to support mixed questions
+const _origSaveExamV2 = window.saveExam;
 window.saveExam = async function() {
-  // If v2 builder has questions, save them as type:'mixed'
-  if (questions && questions.length > 0) {
+  if (_questions.length > 0) {
+    _saveQInputs();
     const grade = document.getElementById('gSel').value;
     if(!grade){ toast('اختار صف أولاً','err'); return; }
     const title = document.getElementById('eTitle').value.trim();
     if(!title){ toast('اكتب عنوان الامتحان','err'); return; }
+    // Validate questions
+    const invalid = _questions.find(q => !q.text.trim());
+    if(invalid){ toast('في سؤال فاضي — اكتب نص كل الأسئلة','err'); return; }
+    const btn = document.getElementById('eSaveBtn');
+    if(btn){ btn.innerHTML='<div class="spin"></div>'; btn.disabled=true; }
     try {
-      const totalScore = parseInt(document.getElementById('eTotalScore')?.value)||questions.reduce((s,q)=>s+(q.points||1),0);
-      await db.collection('content').doc(grade).collection('exams').add({
+      const totalScore = _questions.reduce((s,q)=>s+(q.points||1),0);
+      const data = {
         title, type:'mixed',
         duration: parseInt(document.getElementById('eDur').value)||60,
-        totalScore,
         order: parseInt(document.getElementById('eOrder').value)||1,
-        maxAttempts: document.getElementById('eMaxAttempts')?.value ? parseInt(document.getElementById('eMaxAttempts').value) : null,
-        questions: questions.map(q=>({id:q.id,type:q.type,text:q.text,points:q.points,options:q.options,correctAnswer:q.correctAnswer})),
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      toast('تم حفظ الامتحان المتقدم ✓','ok');
-      questions = [];
-      renderQuestionsV2();
-      document.getElementById('eTitle').value='';
+        totalScore,
+        questions: _questions.map(q=>({
+          id:q.id, type:q.type, text:q.text.trim(),
+          points:q.points||1, options:q.options||[], correctAnswer:q.correctAnswer
+        })),
+        updatedAt: serverTimestamp()
+      };
+      const maxAtEl = document.getElementById('eMaxAttempts');
+      if(maxAtEl?.value) data.maxAttempts = parseInt(maxAtEl.value)||null;
+      const expEl = document.getElementById('eExpiresAt');
+      if(expEl?.value) data.expiresAt = new Date(expEl.value);
+      if(window._editId?.e){
+        await updateDoc(doc(db,'content',grade,'exams',window._editId.e), data);
+        delete window._editId.e;
+        toast('تم تعديل الامتحان ✓','ok');
+      } else {
+        data.createdAt = serverTimestamp();
+        await addDoc(collection(db,'content',grade,'exams'), data);
+        toast(`✅ تم حفظ الامتحان — ${_questions.length} سؤال، ${totalScore} درجة`,'ok');
+        if(document.getElementById('eNotify')?.checked) await sendContentNotif(grade,'امتحان جديد 📝',title);
+      }
+      _questions = [];
+      _renderQuestions();
+      clearE();
       loadList('exams','eList');
     } catch(e){ toast('خطأ: '+e.message,'err'); }
+    if(btn){ btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ'; btn.disabled=false; }
   } else {
-    // fallback to original save
-    if(_origSaveExam) _origSaveExam();
+    // No questions in builder → use original text-based save
+    if(_origSaveExamV2) _origSaveExamV2();
   }
 };
 
-// Extend clearV to clear drive fields
-const _origClearV = window.clearV;
-window.clearV = function() {
-  if(_origClearV) _origClearV();
-  ['vDriveId','vDriveUrl','vThumbUrl'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  const prev = document.getElementById('vDrivePreview'); if(prev) prev.style.display='none';
-};
+// Drive URL picker — paste share link
+window.openDrivePicker = (type) => {
+  const url = prompt('📎 الصق رابط Google Drive هنا:\n(افتح الملف في Drive ← Share ← Copy link)');
+  if (!url?.trim()) return;
+  const m = url.trim().match(/\/d\/([a-zA-Z0-9_-]+)/) || url.trim().match(/id=([a-zA-Z0-9_-]+)/);
+  if (!m) { toast('رابط Drive غير صحيح — تأكد من الرابط', 'err'); return; }
+  const fileId = m[1];
+  const embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+  const thumbUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w40-h40`;
+  const prefix = type === 'video' ? 'v' : 'h';
 
-// Extend clearH to clear drive/img fields
-const _origClearH = window.clearH;
-window.clearH = function() {
-  if(_origClearH) _origClearH();
-  ['hDriveId','hDriveUrl','hImgUrl'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  const prev = document.getElementById('hDrivePreview'); if(prev) prev.style.display='none';
-};
+  const nameEl  = document.getElementById(`${prefix}DriveName`);
+  const sizeEl  = document.getElementById(`${prefix}DriveSize`);
+  const thumbEl = document.getElementById(`${prefix}DriveThumb`);
+  const prevEl  = document.getElementById(`${prefix}DrivePreview`);
+  const idEl    = document.getElementById(`${prefix}DriveId`);
+  const urlEl   = document.getElementById(`${prefix}DriveUrl`);
 
-// Extend saveVideo to include driveId and thumbUrl
-const _origSaveVideo = window.saveVideo;
-window.saveVideo = async function() {
-  // Inject thumb + drive values before original save
-  const vDriveUrl = document.getElementById('vDriveUrl')?.value.trim();
-  const vUrl = document.getElementById('vUrl')?.value.trim();
-  if(!vUrl && vDriveUrl) {
-    // If only drive URL provided, set vUrl so original function can save it
-    document.getElementById('vUrl').value = vDriveUrl;
+  if(nameEl)  nameEl.textContent  = 'Drive: ' + fileId.substring(0,16) + '…';
+  if(sizeEl)  sizeEl.textContent  = embedUrl;
+  if(thumbEl) thumbEl.src         = thumbUrl;
+  if(prevEl)  prevEl.style.display = 'flex';
+  if(idEl)    idEl.value          = fileId;
+  if(urlEl)   urlEl.value         = embedUrl;
+
+  // Auto-fill video URL field if empty
+  if (type === 'video') {
+    const vUrlEl = document.getElementById('vUrl');
+    if(vUrlEl && !vUrlEl.value.trim()) {
+      vUrlEl.value = embedUrl;
+      previewYt(embedUrl);
+    }
   }
-  if(_origSaveVideo) await _origSaveVideo();
+  toast('✅ تم إضافة رابط Drive', 'ok');
 };
 
+window.clearDrive = (type) => {
+  const prefix = type === 'video' ? 'v' : 'h';
+  ['DriveId','DriveUrl'].forEach(s => {
+    const el = document.getElementById(prefix+s);
+    if(el) el.value = '';
+  });
+  const prev = document.getElementById(prefix+'DrivePreview');
+  if(prev) prev.style.display = 'none';
+};
 
+</script>
 </body>
 </html>
