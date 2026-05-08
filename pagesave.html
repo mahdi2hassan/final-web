@@ -1398,18 +1398,38 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
 
           <div class="card">
-            <h4>🛠️ كلمة مرور مدير المحتوى</h4>
-            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7">
-              كلمة مرور صفحة <strong style="color:var(--text)">content-manager.html</strong> — مستقلة عن كلمة مرور الأدمن
+            <h4>🛠️ بيانات دخول إدارة المحتوى</h4>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">
+              الإيميل وكلمة المرور اللي بتستخدمها لفتح <strong style="color:var(--text)">content-manager.html</strong>
             </p>
-            <div class="ff"><label>كلمة المرور الجديدة</label>
+
+            <!-- Current credentials display -->
+            <div id="cm-current" style="background:rgba(74,127,212,0.06);border:1px solid rgba(74,127,212,0.2);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px">البيانات الحالية</div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:12px;color:var(--muted)">الإيميل:</span>
+                <span id="cm-cur-email" style="font-size:12px;font-weight:700;direction:ltr">—</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="font-size:12px;color:var(--muted)">كلمة المرور:</span>
+                <span id="cm-cur-pass" style="font-size:12px;font-weight:700;letter-spacing:2px">••••••</span>
+              </div>
+            </div>
+
+            <div class="ff">
+              <label>الإيميل الجديد</label>
+              <input type="email" id="cm-new-email" placeholder="admin@plusmath.com" style="direction:ltr"/>
+            </div>
+            <div class="ff">
+              <label>كلمة المرور الجديدة</label>
               <input type="password" id="cm-new-p" placeholder="٦ أحرف على الأقل"/>
             </div>
-            <div class="ff"><label>تأكيد كلمة المرور</label>
+            <div class="ff">
+              <label>تأكيد كلمة المرور</label>
               <input type="password" id="cm-cf-p" placeholder="أعد الكتابة"/>
             </div>
-            <button class="btn primary" style="width:100%;justify-content:center;background:linear-gradient(135deg,rgba(128,0,255,0.8),rgba(74,127,212,0.8))" onclick="changeContentManagerPass()">
-              <svg><use href="#ic-check"/></svg>تغيير كلمة مرور المحتوى
+            <button class="btn primary" style="width:100%;justify-content:center;background:linear-gradient(135deg,rgba(128,0,255,0.85),rgba(74,127,212,0.85))" onclick="saveCmCredentials()">
+              <svg><use href="#ic-check"/></svg>حفظ بيانات دخول المحتوى
             </button>
           </div>
 
@@ -2350,12 +2370,10 @@ const cfg = {
 firebase.initializeApp(cfg);
 const db  = firebase.firestore();
 window.db = db;
-const auth = firebase.auth();
-window.auth = auth;
 
 // تسجيل دخول مجهول تلقائي عشان Firestore يسمح بالقراءة
-// (الأدمن بيسجل دخوله بـ username/password — مش Firebase Auth)
-auth.signInAnonymously().catch(e => console.warn('anon auth:', e.message));
+// (الأدمن بيسجل دخول بـ username/password — مش Firebase Auth)
+firebase.auth().signInAnonymously().catch(e => console.warn('anon auth:', e.message));
 
 
 // ── LOAD ALL ──
@@ -2935,20 +2953,58 @@ window.changePass = async ()=>{
 };
 
 // ── CHANGE CONTENT MANAGER PASS ──
-window.changeContentManagerPass = async ()=>{
-  const nw = document.getElementById('cm-new-p').value;
-  const cf = document.getElementById('cm-cf-p').value;
-  if(nw.length<6){ toast('كلمة المرور قصيرة — ٦ أحرف على الأقل','err'); return; }
-  if(nw!==cf){ toast('كلمتا المرور مش متطابقتين','err'); return; }
-  try{
-    await db.collection('settings').doc('content-manager').set({
-      pass: nw,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+window.changeContentManagerPass = async ()=>{ saveCmCredentials(); }; // backward compat
+
+window.saveCmCredentials = async () => {
+  const email = document.getElementById('cm-new-email')?.value.trim();
+  const nw    = document.getElementById('cm-new-p')?.value;
+  const cf    = document.getElementById('cm-cf-p')?.value;
+
+  if (!email && !nw) { toast('ادخل الإيميل أو كلمة المرور الجديدة', 'err'); return; }
+  if (nw && nw.length < 6) { toast('كلمة المرور قصيرة — ٦ أحرف على الأقل', 'err'); return; }
+  if (nw && nw !== cf)     { toast('كلمتا المرور مش متطابقتين', 'err'); return; }
+
+  // حفظ في Firestore عشان content-manager يقراها
+  const updateData = { updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+  if (email) updateData.email = email;
+  if (nw)    updateData.pass  = nw;
+
+  try {
+    await db.collection('settings').doc('content-manager').set(updateData, { merge: true });
+
+    // تحديث العرض
+    if (email) {
+      const emailEl = document.getElementById('cm-cur-email');
+      if (emailEl) emailEl.textContent = email;
+    }
+
+    // مسح الحقول
+    ['cm-new-email','cm-new-p','cm-cf-p'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.value = '';
     });
-    ['cm-new-p','cm-cf-p'].forEach(id=>document.getElementById(id).value='');
-    toast('✅ تم تغيير كلمة مرور مدير المحتوى','ok');
-    logActivity('🛠️','تغيير كلمة مرور مدير المحتوى','');
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
+
+    toast('✅ تم حفظ بيانات دخول إدارة المحتوى', 'ok');
+    logActivity('🛠️','تغيير بيانات دخول مدير المحتوى', email||'—');
+  } catch(e) { toast('خطأ: '+e.message, 'err'); }
+};
+
+// تحميل البيانات الحالية لما تفتح الإعدادات
+window._loadCmCredentials = async () => {
+  try {
+    const snap = await db.collection('settings').doc('content-manager').get();
+    const emailEl = document.getElementById('cm-cur-email');
+    const passEl  = document.getElementById('cm-cur-pass');
+    if (snap.exists) {
+      const d = snap.data();
+      if (emailEl) emailEl.textContent = d.email || '(غير محدد)';
+      if (passEl)  passEl.textContent  = d.pass  ? '••••••' : '(افتراضي)';
+      // Pre-fill email field for convenience
+      const emailInput = document.getElementById('cm-new-email');
+      if (emailInput && d.email) emailInput.placeholder = d.email;
+    } else {
+      if (emailEl) emailEl.textContent = '(غير محدد — سيُستخدم حساب الأدمن)';
+    }
+  } catch(e) { console.warn('load cm creds:', e.message); }
 };
 
 // ── BROADCAST ──
@@ -6517,6 +6573,8 @@ window.wloadSettings = async ()=>{
   await _secureWloadSettings?.();
   // Ensure PASS is always from Firestore
   if(window._ap) window.PASS = window._ap;
+  // Load CM credentials into settings UI
+  window._loadCmCredentials?.();
 };
 
 let tTimer;
