@@ -2489,46 +2489,40 @@ document.addEventListener('fbready', ()=>{
 // ══════════════════════════════════════════════════════
 // v2 FEATURES: Google Drive Picker + Image Preview
 // ══════════════════════════════════════════════════════
-let pickerInited = false;
-let pickerType = null;
-
-if (window.gapi) {
-  window.gapi.load('picker', () => { pickerInited = true; });
-}
-
+// ── Drive: paste share link directly (no OAuth needed) ──
 window.openDrivePicker = (type) => {
-  if (!pickerInited) {
-    toast('Google Drive API لسه بيحمّل — جرب تاني', 'info');
-    return;
+  const url = prompt('📎 الصق رابط Google Drive هنا:\n(افتح الملف في Drive → Share → Copy link)');
+  if (!url || !url.trim()) return;
+  const raw = url.trim();
+  // Extract file ID from various Drive URL formats
+  let fileId = '';
+  const m = raw.match(/\/d\/([a-zA-Z0-9_-]+)/) || raw.match(/id=([a-zA-Z0-9_-]+)/);
+  if (m) fileId = m[1];
+  if (!fileId) { toast('رابط Drive غير صحيح — تأكد من الرابط', 'err'); return; }
+  const directUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
+  const embedUrl  = `https://drive.google.com/file/d/${fileId}/preview`;
+  const prefix = type === 'video' ? 'v' : 'h';
+  const nameEl = document.getElementById(`${prefix}DriveName`);
+  const previewEl = document.getElementById(`${prefix}DrivePreview`);
+  const idEl   = document.getElementById(`${prefix}DriveId`);
+  const urlEl  = document.getElementById(`${prefix}DriveUrl`);
+  if(nameEl) nameEl.textContent = 'ملف Drive: ' + fileId.substring(0,12) + '...';
+  const sizeEl = document.getElementById(`${prefix}DriveSize`);
+  if(sizeEl) sizeEl.textContent = directUrl;
+  const thumbEl = document.getElementById(`${prefix}DriveThumb`);
+  if(thumbEl) thumbEl.src = `https://drive.google.com/thumbnail?id=${fileId}&sz=w36-h36`;
+  if(previewEl) previewEl.style.display = 'flex';
+  if(idEl) idEl.value = fileId;
+  if(urlEl) urlEl.value = embedUrl;
+  // If video tab, auto-fill vUrl with embed
+  if (type === 'video') {
+    const vUrlEl = document.getElementById('vUrl');
+    if(vUrlEl && !vUrlEl.value) vUrlEl.value = embedUrl;
   }
-  pickerType = type;
-  const picker = new google.picker.PickerBuilder()
-    .addView(google.picker.ViewId.DOCS)
-    .setDeveloperKey('AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE')
-    .setCallback(pickerCallback)
-    .build();
-  picker.setVisible(true);
+  toast('✅ تم إضافة رابط Drive بنجاح', 'ok');
 };
 
-function pickerCallback(data) {
-  if (data.action === google.picker.Action.PICKED) {
-    const file = data.docs[0];
-    const prefix = pickerType === 'video' ? 'v' : 'h';
-    const nameEl = document.getElementById(`${prefix}DriveName`);
-    const sizeEl = document.getElementById(`${prefix}DriveSize`);
-    const thumbEl = document.getElementById(`${prefix}DriveThumb`);
-    const previewEl = document.getElementById(`${prefix}DrivePreview`);
-    if(nameEl) nameEl.textContent = file.name;
-    if(sizeEl) sizeEl.textContent = formatDriveBytes(file.sizeBytes || 0);
-    if(thumbEl) thumbEl.src = file.iconUrl || '';
-    if(previewEl) previewEl.style.display = 'flex';
-    const idEl = document.getElementById(`${prefix}DriveId`);
-    const urlEl = document.getElementById(`${prefix}DriveUrl`);
-    if(idEl) idEl.value = file.id;
-    if(urlEl) urlEl.value = file.url;
-    toast('تم اختيار الملف من Drive ✓', 'ok');
-  }
-}
+function pickerCallback(data) { /* unused */ }
 
 window.clearDrive = (type) => {
   const prefix = type === 'video' ? 'v' : 'h';
@@ -2596,6 +2590,15 @@ window.removeOption = (qId, i) => {
 function renderQuestionsV2() {
   const c = document.getElementById('questionsContainer');
   if (!c) return;
+  // Save current textarea values before re-render
+  c.querySelectorAll('textarea[data-qid]').forEach(ta => {
+    const q = questions.find(x => x.id === ta.dataset.qid);
+    if (q) q.text = ta.value;
+  });
+  c.querySelectorAll('input[data-qid][data-oidx]').forEach(inp => {
+    const q = questions.find(x => x.id === inp.dataset.qid);
+    if (q && q.options) q.options[parseInt(inp.dataset.oidx)] = inp.value;
+  });
   if (!questions.length) {
     c.innerHTML = '<div class="empty"><p>اضغط "إضافة سؤال" لبدء بناء الامتحان</p></div>';
     return;
@@ -2606,7 +2609,7 @@ function renderQuestionsV2() {
       optsHTML = `<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">${q.options.map((opt,i)=>`
         <div style="display:flex;align-items:center;gap:8px">
           <input type="radio" name="${q.id}" ${q.correctAnswer===i?'checked':''} onchange="questions.find(x=>x.id==='${q.id}').correctAnswer=${i}" style="accent-color:var(--ok);width:15px;height:15px"/>
-          <input type="text" value="${opt.replace(/"/g,'&quot;')}" placeholder="الإجابة ${i+1}" oninput="questions.find(x=>x.id==='${q.id}').options[${i}]=this.value" style="flex:1;padding:8px 10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px"/>
+          <input type="text" value="${opt.replace(/"/g,'&quot;')}" data-qid="${q.id}" data-oidx="${i}" placeholder="الإجابة ${i+1}" oninput="questions.find(x=>x.id==='${q.id}').options[${i}]=this.value" style="flex:1;padding:8px 10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px"/>
           ${q.type==='mcq'&&q.options.length>2?`<button onclick="removeOption('${q.id}',${i})" style="padding:4px 8px;border:1px solid rgba(255,77,109,.3);border-radius:6px;background:rgba(255,77,109,.08);color:var(--err);cursor:pointer">×</button>`:''}
         </div>`).join('')}
         ${q.type==='mcq'?`<button class="btn sm ghost" onclick="addOption('${q.id}')" style="margin-top:4px">+ إضافة خيار</button>`:''}
@@ -2625,7 +2628,7 @@ function renderQuestionsV2() {
         <input type="number" value="${q.points}" min="1" placeholder="نقاط" oninput="questions.find(x=>x.id==='${q.id}').points=parseInt(this.value)||1" style="width:65px;padding:6px 8px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-size:12px"/>
         <button onclick="removeQuestion('${q.id}')" style="margin-right:auto;padding:5px 10px;border:1px solid rgba(255,77,109,.3);border-radius:7px;background:rgba(255,77,109,.08);color:var(--err);cursor:pointer;font-size:11px">حذف</button>
       </div>
-      <textarea placeholder="نص السؤال..." rows="2" oninput="questions.find(x=>x.id==='${q.id}').text=this.value" style="width:100%;padding:10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;margin-bottom:4px;resize:vertical">${q.text}</textarea>
+      <textarea placeholder="نص السؤال..." rows="2" data-qid="${q.id}" oninput="questions.find(x=>x.id==='${q.id}').text=this.value" style="width:100%;padding:10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;margin-bottom:4px;resize:vertical">${q.text}</textarea>
       ${optsHTML}
     </div>`;
   }).join('');
