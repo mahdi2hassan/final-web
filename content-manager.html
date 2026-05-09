@@ -359,39 +359,52 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </div>
 
         <div class="note">
-          ارفع الفيديو على <strong>يوتيوب</strong> كـ <strong>Unlisted</strong> (غير مدرج) ثم الصق الرابط — أو <strong>ارفعه من Google Drive</strong> مباشرة 🎬
+          اختار مصدر الفيديو: <strong>يوتيوب</strong> (ارفعه كـ Unlisted) أو <strong>Google Drive</strong> مباشرةً 🎬
+        </div>
+
+        <!-- مصدر الفيديو — Dropdown -->
+        <div style="margin-bottom:14px">
+          <label style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:8px">📹 مصدر الفيديو</label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button id="vsrc-yt" onclick="setVideoSource('yt')" style="display:flex;align-items:center;gap:7px;padding:9px 16px;border:2px solid rgba(255,0,0,0.4);border-radius:10px;background:rgba(255,0,0,0.08);color:#ff4444;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all .2s;flex:1;justify-content:center;min-width:140px">
+              <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6a3 3 0 00-2.1 2.1C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
+              يوتيوب
+            </button>
+            <button id="vsrc-drive" onclick="setVideoSource('drive')" style="display:flex;align-items:center;gap:7px;padding:9px 16px;border:2px solid var(--b1);border-radius:10px;background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all .2s;flex:1;justify-content:center;min-width:140px">
+              <svg width="16" height="16" viewBox="0 0 87.3 78" fill="none"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M73.55 76.8a7.38 7.38 0 003.3-3.3l1.6-2.75L86.1 57.5c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.65 10.7z" fill="#ea4335"/><path d="M43.65 25L57.4 0h-.05c-1.35-.8-2.9-1.2-4.5-1.2H34.3c-1.6 0-3.1.45-4.5 1.2z" fill="#00832d"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
+              Google Drive
+            </button>
+          </div>
         </div>
 
         <div class="fgrid">
-          <div class="ff full">
-            <label>رابط يوتيوب</label>
+          <!-- يوتيوب -->
+          <div class="ff full" id="vf-yt">
+            <label>رابط يوتيوب <span style="font-size:10px;color:var(--muted)">(Unlisted)</span></label>
             <input type="url" id="vUrl" placeholder="https://youtube.com/watch?v=..." oninput="previewYt(this.value)"/>
             <div class="yt-wrap" id="ytWrap"><iframe id="ytFrame" allowfullscreen></iframe></div>
           </div>
 
-          <!-- Google Drive URL (بدلاً من Picker المعقد) -->
-          <div class="ff full">
-            <label>أو رابط Google Drive <span style="font-size:9px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;padding:1px 5px;border-radius:5px">Drive</span></label>
-            <div style="display:flex;gap:8px;align-items:stretch">
-              <input type="url" id="vDriveUrl" placeholder="https://drive.google.com/file/d/..." style="flex:1" oninput="onDriveUrlInput('v',this.value)"/>
-              <button onclick="clearDrive('video')" style="padding:10px 14px;border:1px solid rgba(255,77,109,.3);border-radius:10px;background:transparent;color:var(--err);cursor:pointer;font-size:12px;font-weight:700">مسح</button>
-            </div>
+          <!-- درايف -->
+          <div class="ff full" id="vf-drive" style="display:none">
+            <label>رابط Google Drive</label>
+            <input type="url" id="vDriveUrl" placeholder="https://drive.google.com/file/d/..." oninput="onDriveUrlInput('v',this.value)"/>
             <div id="vDrivePreview" style="margin-top:10px;padding:10px;background:rgba(66,133,244,0.06);border:1px solid rgba(66,133,244,0.2);border-radius:10px;display:none;align-items:center;gap:10px">
-              <svg width="28" height="28" viewBox="0 0 87.3 78" fill="none" style="flex-shrink:0"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M73.55 76.8a7.38 7.38 0 003.3-3.3l1.6-2.75L86.1 57.5c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.65 10.7z" fill="#ea4335"/><path d="M43.65 25L57.4 0h-.05c-1.35-.8-2.9-1.2-4.5-1.2H34.3c-1.6 0-3.1.45-4.5 1.2z" fill="#00832d"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
-              <div style="flex:1;min-width:0">
-                <div id="vDriveName" style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">تم إضافة رابط Drive ✓</div>
-                <div id="vDriveSize" style="font-size:10px;color:var(--muted)">سيتم تحميل الفيديو من Drive</div>
+              <svg width="24" height="24" viewBox="0 0 87.3 78" fill="none" style="flex-shrink:0"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M73.55 76.8a7.38 7.38 0 003.3-3.3l1.6-2.75L86.1 57.5c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.65 10.7z" fill="#ea4335"/><path d="M43.65 25L57.4 0h-.05c-1.35-.8-2.9-1.2-4.5-1.2H34.3c-1.6 0-3.1.45-4.5 1.2z" fill="#00832d"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
+              <div>
+                <div style="font-size:12px;font-weight:700;color:var(--text)">تم إضافة رابط Drive ✓</div>
+                <div style="font-size:10px;color:var(--muted)">اطمن الملف عنده صلاحية "Anyone with the link"</div>
               </div>
             </div>
             <input type="hidden" id="vDriveId"/>
           </div>
 
-          <!-- Thumbnail URL (NEW from v2) -->
+          <!-- Thumbnail URL -->
           <div class="ff full">
-            <label>رابط صورة الثامبنيل <span style="font-size:9px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;padding:1px 5px;border-radius:5px">جديد</span></label>
+            <label>صورة الثامبنيل <span style="font-size:10px;color:var(--muted)">(اختياري)</span></label>
             <div style="display:flex;gap:8px;align-items:stretch">
               <input type="url" id="vThumbUrl" placeholder="https://example.com/image.jpg" style="flex:1"/>
-              <button onclick="previewImageUrl('vThumbUrl')" style="padding:10px 14px;border:1px solid var(--b1);border-radius:10px;background:transparent;color:var(--blue);cursor:pointer;font-size:12px;font-weight:700">معاينة</button>
+              <button onclick="previewImageUrl('vThumbUrl')" style="padding:10px 14px;border:1px solid var(--b1);border-radius:10px;background:transparent;color:var(--blue);cursor:pointer;font-size:12px;font-weight:700;flex-shrink:0">معاينة</button>
             </div>
           </div>
           <div class="ff full">
@@ -1046,9 +1059,16 @@ window.loadList = async (tab, elId) => {
 window.saveVideo = async () => {
   const grade = document.getElementById('gSel').value;
   if(!grade){ toast('اختار صف','err'); return; }
-  const url   = document.getElementById('vUrl').value.trim();
   const title = document.getElementById('vTitle').value.trim();
-  if(!url || !title){ toast('ادخل الرابط والعنوان','err'); return; }
+  if(!title){ toast('ادخل عنوان الفيديو','err'); return; }
+  
+  // الرابط من المصدر المختار
+  const src = window._videoSource || 'yt';
+  const ytUrl    = document.getElementById('vUrl')?.value.trim()||'';
+  const driveUrl = document.getElementById('vDriveUrl')?.value.trim()||'';
+  const url = src === 'drive' ? driveUrl : ytUrl;
+  if(!url){ toast(src==='drive'?'ادخل رابط Google Drive':'ادخل رابط يوتيوب','err'); return; }
+
   const btn = document.getElementById('vSaveBtn');
   btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
   try {
@@ -1057,6 +1077,9 @@ window.saveVideo = async () => {
     const maxViews = parseInt(document.getElementById('vMaxViews').value)||null;
     const data = {
       title, type:'video', url,
+      videoSource: src, // 'yt' أو 'drive'
+      driveId: src==='drive' ? (document.getElementById('vDriveId')?.value||'') : '',
+      thumbUrl: document.getElementById('vThumbUrl')?.value.trim()||'',
       description: document.getElementById('vDesc').value.trim(),
       duration: document.getElementById('vDur').value.trim(),
       order: parseInt(document.getElementById('vOrder').value)||1,
@@ -1076,54 +1099,57 @@ window.saveVideo = async () => {
       await addDoc(collection(db,'content',grade,'videos'), data);
       toast('تم حفظ الفيديو ✓','ok');
     }
-    // إرسال إشعار للطلاب
-    if(isNew && document.getElementById('vNotify')?.checked){
-      await sendContentNotif(grade,'فيديو جديد 🎬',title);
-    }
+    if(isNew && document.getElementById('vNotify')?.checked) await sendContentNotif(grade,'فيديو جديد 🎬',title);
     clearV(); loadList('videos','vList');
   } catch(e){ toast('خطأ: '+e.message,'err'); }
   btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
 };
 
-// ── Save Exam ──
+// ── Save Exam (النظام القديم) ──
 window.saveExam = async () => {
   const grade = document.getElementById('gSel').value;
   if(!grade){ toast('اختار صف','err'); return; }
-  // النظام القديم يستخدم eTitleOld
   const title = (document.getElementById('eTitleOld')?.value||'').trim();
   if(!title){ toast('ادخل عنوان الامتحان','err'); return; }
   const btn = document.getElementById('eSaveBtn');
   if(btn){ btn.innerHTML='<div class="spin"></div>';btn.disabled=true; }
   try {
+    // نستخدم window aliases عشان تشتغل من أي scope
+    const _db = window._db || db;
+    const _add = window._addDoc || addDoc;
+    const _upd = window._updateDoc || updateDoc;
+    const _doc2 = window._doc || doc;
+    const _col = window._collection || collection;
+    const _ts = window._serverTimestamp || serverTimestamp;
+
     const type = window._eType||'mcq';
     const maxAttempts = parseInt(document.getElementById('eMaxAttemptsOld')?.value||'')||null;
     const eExpiresAtVal = document.getElementById('eExpiresAtOld')?.value||'';
-    const examSystem = 'old';
     const data = {
       title, type,
       duration: (document.getElementById('eDurOld')?.value||'').trim(),
       order: parseInt(document.getElementById('eOrderOld')?.value||'')||1,
       maxAttempts,
       expiresAt: eExpiresAtVal ? new Date(eExpiresAtVal) : null,
-      examSystem,
+      examSystem: 'old',
       mcqRaw: document.getElementById('eMcq')?.value.trim()||'',
       essayText: document.getElementById('eEssay')?.value.trim()||'',
       externalUrl: document.getElementById('eLink')?.value.trim()||'',
       imageUrls: window._examImgUrls||[],
-      updatedAt: serverTimestamp()
+      updatedAt: _ts()
     };
     if(window._editId?.e){
-      await updateDoc(doc(db,'content',grade,'exams',window._editId.e), data);
+      await _upd(_doc2(_db,'content',grade,'exams',window._editId.e), data);
       delete window._editId.e;
       toast('تم التعديل ✓','ok');
     } else {
-      data.createdAt = serverTimestamp();
-      await addDoc(collection(db,'content',grade,'exams'), data);
+      data.createdAt = _ts();
+      await _add(_col(_db,'content',grade,'exams'), data);
       toast('تم حفظ الامتحان ✓','ok');
       if(document.getElementById('eNotifyOld')?.checked) await sendContentNotif(grade,'امتحان جديد 📝',title);
     }
     clearE(); loadList('exams','eList');
-  } catch(e){ toast('خطأ: '+e.message,'err'); }
+  } catch(e){ toast('خطأ في الحفظ: '+e.message,'err'); console.error(e); }
   if(btn){ btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false; }
 };
 
@@ -1295,7 +1321,9 @@ window._db = db;
 window._fbReady=true;
 // Expose Firestore methods for new features
 window._getDocs = getDocs;
+window._getDoc = getDoc;
 window._addDoc = addDoc;
+window._updateDoc = updateDoc;
 window._deleteDoc = deleteDoc;
 window._collection = collection;
 window._doc = doc;
@@ -1877,8 +1905,19 @@ function previewYt(url){
   else wrap.style.display='none';
 }
 
-// ── Exam type ──
-window._eType='mcq';
+// ── Video Source Toggle ──
+window._videoSource = 'yt';
+window.setVideoSource = (src) => {
+  window._videoSource = src;
+  const isYt = src === 'yt';
+  // زر اليوتيوب
+  const ytBtn = document.getElementById('vsrc-yt');
+  const drBtn = document.getElementById('vsrc-drive');
+  if(ytBtn){ ytBtn.style.borderColor = isYt ? 'rgba(255,0,0,0.6)':'var(--b1)'; ytBtn.style.background = isYt ? 'rgba(255,0,0,0.1)':'transparent'; ytBtn.style.color = isYt ? '#ff4444':'var(--muted)'; }
+  if(drBtn){ drBtn.style.borderColor = !isYt ? 'rgba(66,133,244,0.6)':'var(--b1)'; drBtn.style.background = !isYt ? 'rgba(66,133,244,0.1)':'transparent'; drBtn.style.color = !isYt ? '#4285f4':'var(--muted)'; }
+  document.getElementById('vf-yt').style.display    = isYt ? 'block':'none';
+  document.getElementById('vf-drive').style.display = isYt ? 'none':'block';
+};
 function setEType(t){
   window._eType=t;
   ['mcq','essay','images','link'].forEach(x=>{
@@ -2632,64 +2671,35 @@ function renderQuestionsV2() {
 // Save questions from v2 builder as a new exam
 window.saveBuilderQuestions = async () => {
   const qs = window.questions;
-  if (!qs || qs.length === 0) {
-    toast('أضف أسئلة أولاً!','err'); 
-    return;
-  }
-  
-  const grade = document.getElementById('gSel').value;
+  if (!qs || qs.length === 0) { toast('أضف أسئلة أولاً!','err'); return; }
+  const grade = document.getElementById('gSel')?.value;
   if(!grade){ toast('اختار صف أولاً','err'); return; }
-  
   const title = (document.getElementById('eTitle')?.value||'').trim();
   if(!title){ toast('اكتب عنوان الامتحان','err'); return; }
-  
   try {
-    const db = window.db;
-    const addDocFn = window.addDoc;
-    const collectionFn = window.collection;
-    const stFn = window.serverTimestamp;
-    
+    const _db  = window._db;
+    const _add = window._addDoc;
+    const _col = window._collection;
+    const _ts  = window._serverTimestamp;
+    if(!_db||!_add){ toast('Firebase لسه بيحمّل، جرب تاني','err'); return; }
     const totalScore = parseInt(document.getElementById('eTotalScore')?.value||'') || qs.reduce((s,q)=>s+(q.points||1),0);
-    
-    await addDocFn(collectionFn(db,'content',grade,'exams'), {
-      title, 
-      type:'mixed',
-      examSystem:'new',
-      duration: document.getElementById('eDur')?.value || '60',
+    await _add(_col(_db,'content',grade,'exams'), {
+      title, type:'mixed', examSystem:'new',
+      duration: document.getElementById('eDur')?.value||'60',
       totalScore,
       order: parseInt(document.getElementById('eOrder')?.value||'')||1,
-      maxAttempts: document.getElementById('eMaxAttempts')?.value ? parseInt(document.getElementById('eMaxAttempts').value) : null,
+      maxAttempts: parseInt(document.getElementById('eMaxAttempts')?.value||'')||null,
       expiresAt: document.getElementById('eExpiresAt')?.value ? new Date(document.getElementById('eExpiresAt').value) : null,
-      questions: qs.map(q=>({
-        id:q.id,
-        type:q.type,
-        text:q.text,
-        points:q.points,
-        options:q.options,
-        correctAnswer:q.correctAnswer
-      })),
-      createdAt: stFn()
+      questions: qs.map(q=>({ id:q.id, type:q.type, text:q.text, points:q.points, options:q.options, correctAnswer:q.correctAnswer })),
+      createdAt: _ts()
     });
-    
     toast('تم حفظ الامتحان المتقدم ✓','ok');
-    
-    // إرسال إشعار
-    if(document.getElementById('eNotify')?.checked){
-      await window.sendContentNotif(grade,'امتحان جديد 📝',title);
-    }
-    
-    // Clear builder
+    if(document.getElementById('eNotify')?.checked) await window.sendContentNotif?.(grade,'امتحان جديد 📝',title);
     window.questions = [];
     renderQuestionsV2();
-    ['eTitle','eDur','eOrder','eTotalScore','eMaxAttempts','eExpiresAt'].forEach(id=>{
-      const el=document.getElementById(id); if(el) el.value='';
-    });
-    
+    ['eTitle','eDur','eOrder','eTotalScore','eMaxAttempts','eExpiresAt'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
     window.loadList('exams','eList');
-  } catch(e){ 
-    toast('خطأ: '+e.message,'err'); 
-    console.error('Save builder questions error:', e);
-  }
+  } catch(e){ toast('خطأ: '+e.message,'err'); console.error(e); }
 };
 
 // Extend clearV to clear drive fields
