@@ -1398,37 +1398,90 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
 
           <div class="card">
-            <h4>🛠️ بيانات دخول إدارة المحتوى</h4>
-            <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">
-              الإيميل وكلمة المرور اللي بتستخدمها لفتح <strong style="color:var(--text)">content-manager.html</strong>
-            </p>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(128,0,255,0.15),rgba(74,127,212,0.15));display:flex;align-items:center;justify-content:center">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;color:rgba(128,0,255,0.9)">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                  <path d="M2 17l10 5 10-5"/>
+                  <path d="M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <div>
+                <h4 style="margin:0;font-size:15px;font-weight:800">بيانات دخول إدارة المحتوى</h4>
+                <p style="font-size:11px;color:var(--muted);margin:2px 0 0 0">تسجيل الدخول إلى content-manager.html</p>
+              </div>
+            </div>
 
             <!-- Current credentials display -->
-            <div id="cm-current" style="background:rgba(74,127,212,0.06);border:1px solid rgba(74,127,212,0.2);border-radius:10px;padding:12px;margin-bottom:14px;display:flex;flex-direction:column;gap:6px">
-              <div style="font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px">البيانات الحالية</div>
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <span style="font-size:12px;color:var(--muted)">الإيميل:</span>
-                <span id="cm-cur-email" style="font-size:12px;font-weight:700;direction:ltr">—</span>
+            <div id="cm-current" style="background:linear-gradient(135deg,rgba(128,0,255,0.06),rgba(74,127,212,0.08));border:1.5px solid rgba(128,0,255,0.2);border-radius:12px;padding:14px;margin-bottom:16px">
+              <div style="font-size:10px;font-weight:900;color:rgba(128,0,255,0.7);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">✓ البيانات المحفوظة حالياً</div>
+              
+              <div style="display:flex;align-items:center;gap:10px;padding:8px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:8px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:rgba(128,0,255,0.6);flex-shrink:0">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <div style="flex:1">
+                  <div style="font-size:10px;color:var(--muted);margin-bottom:2px">الإيميل</div>
+                  <div id="cm-cur-email" style="font-size:13px;font-weight:700;direction:ltr;color:var(--text)">—</div>
+                </div>
               </div>
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <span style="font-size:12px;color:var(--muted)">كلمة المرور:</span>
-                <span id="cm-cur-pass" style="font-size:12px;font-weight:700;letter-spacing:2px">••••••</span>
+
+              <div style="display:flex;align-items:center;gap:10px;padding:8px;background:rgba(255,255,255,0.03);border-radius:8px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:rgba(128,0,255,0.6);flex-shrink:0">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+                <div style="flex:1">
+                  <div style="font-size:10px;color:var(--muted);margin-bottom:2px">كلمة المرور</div>
+                  <div id="cm-cur-pass" style="font-size:13px;font-weight:700;letter-spacing:3px;color:var(--text)">••••••</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:12px;margin-bottom:16px">
+              <div style="display:flex;align-items:start;gap:8px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--gold);margin-top:2px;flex-shrink:0">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="16" x2="12" y2="12"/>
+                  <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                <p style="font-size:11px;color:var(--text);line-height:1.6;margin:0">
+                  <strong style="color:var(--gold)">مهم:</strong> البيانات دي بتُستخدم للدخول على صفحة <code style="background:rgba(201,168,76,0.15);padding:2px 6px;border-radius:4px;font-size:10px">content-manager.html</code> فقط. لو عاوز تغير بيانات الأدمن الأساسية، استخدم القسم اللي فوق.
+                </p>
               </div>
             </div>
 
             <div class="ff">
-              <label>الإيميل الجديد</label>
+              <label>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;margin-left:4px">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                الإيميل الجديد
+              </label>
               <input type="email" id="cm-new-email" placeholder="admin@plusmath.com" style="direction:ltr"/>
             </div>
             <div class="ff">
-              <label>كلمة المرور الجديدة</label>
+              <label>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;margin-left:4px">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+                كلمة المرور الجديدة
+              </label>
               <input type="password" id="cm-new-p" placeholder="٦ أحرف على الأقل"/>
             </div>
             <div class="ff">
-              <label>تأكيد كلمة المرور</label>
+              <label>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;margin-left:4px">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                تأكيد كلمة المرور
+              </label>
               <input type="password" id="cm-cf-p" placeholder="أعد الكتابة"/>
             </div>
-            <button class="btn primary" style="width:100%;justify-content:center;background:linear-gradient(135deg,rgba(128,0,255,0.85),rgba(74,127,212,0.85))" onclick="saveCmCredentials()">
+            <button class="btn primary" style="width:100%;justify-content:center;background:linear-gradient(135deg,rgba(128,0,255,0.85),rgba(74,127,212,0.85));box-shadow:0 4px 12px rgba(128,0,255,0.2)" onclick="saveCmCredentials()">
               <svg><use href="#ic-check"/></svg>حفظ بيانات دخول المحتوى
             </button>
           </div>
@@ -2484,6 +2537,8 @@ window.wloadSettings = async ()=>{
       document.getElementById('pay-note').value = pd.note||'';
       document.getElementById('pay-wa').value   = pd.whatsapp||'';
     }
+    // Load content-manager credentials display
+    await window._loadCmCredentials?.();
   }catch(e){ console.warn('settings:',e.message); }
 };
 
