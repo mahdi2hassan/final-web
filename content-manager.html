@@ -322,10 +322,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <button class="tbtn" id="te" onclick="switchTab('e')"><svg><use href="#i-check"/></svg>الامتحانات <span style="font-size:9px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;padding:1px 5px;border-radius:6px;margin-right:2px">v2</span><span id="cnt-e" style="font-size:10px;opacity:.7"></span></button>
       <button class="tbtn" id="th" onclick="switchTab('h')"><svg><use href="#i-file"/></svg>الواجبات <span id="cnt-h" style="font-size:10px;opacity:.7"></span></button>
       <button class="tbtn" id="tb" onclick="switchTab('b')" style="background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border-color:rgba(201,168,76,0.3);color:var(--gold)">📚 الكتب <span id="cnt-b" style="font-size:10px;opacity:.7"></span></button>
-      <button class="tbtn" id="tpl" onclick="switchTab('pl')" style="background:linear-gradient(135deg,rgba(74,127,212,0.15),rgba(74,127,212,0.05));border-color:rgba(74,127,212,0.3);color:var(--blue)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        البلايلست <span id="cnt-pl" style="font-size:10px;opacity:.7"></span>
-      </button>
+
       <button class="tbtn" id="tr" onclick="switchTab('r')" style="background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04));border-color:rgba(16,185,129,0.3);color:#10b981">📝 الأبحاث <span id="cnt-r" style="font-size:10px;opacity:.7"></span></button>
 
       <button class="tbtn" onclick="openCopyModal()" style="margin-right:auto;border-color:rgba(139,92,246,0.3);color:#a78bfa" title="نسخ محتوى من صف لصف">
@@ -372,23 +369,21 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <div class="yt-wrap" id="ytWrap"><iframe id="ytFrame" allowfullscreen></iframe></div>
           </div>
 
-          <!-- Google Drive (NEW from v2) -->
+          <!-- Google Drive URL (بدلاً من Picker المعقد) -->
           <div class="ff full">
-            <label>أو ارفع من Google Drive <span style="font-size:9px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;padding:1px 5px;border-radius:5px">جديد</span></label>
-            <button style="padding:9px 16px;border:1px solid rgba(66,133,244,0.4);border-radius:10px;background:linear-gradient(135deg,rgba(66,133,244,0.12),rgba(66,133,244,0.05));color:#4285f4;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .2s" onclick="openDrivePicker('video')">
-              <svg width="13" height="13" viewBox="0 0 87.3 78" fill="none"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M73.55 76.8a7.38 7.38 0 003.3-3.3l1.6-2.75L86.1 57.5c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.65 10.7z" fill="#ea4335"/><path d="M43.65 25L57.4 0h-.05c-1.35-.8-2.9-1.2-4.5-1.2H34.3c-1.6 0-3.1.45-4.5 1.2z" fill="#00832d"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
-              اختار من Drive
-            </button>
+            <label>أو رابط Google Drive <span style="font-size:9px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;padding:1px 5px;border-radius:5px">Drive</span></label>
+            <div style="display:flex;gap:8px;align-items:stretch">
+              <input type="url" id="vDriveUrl" placeholder="https://drive.google.com/file/d/..." style="flex:1" oninput="onDriveUrlInput('v',this.value)"/>
+              <button onclick="clearDrive('video')" style="padding:10px 14px;border:1px solid rgba(255,77,109,.3);border-radius:10px;background:transparent;color:var(--err);cursor:pointer;font-size:12px;font-weight:700">مسح</button>
+            </div>
             <div id="vDrivePreview" style="margin-top:10px;padding:10px;background:rgba(66,133,244,0.06);border:1px solid rgba(66,133,244,0.2);border-radius:10px;display:none;align-items:center;gap:10px">
-              <img id="vDriveThumb" src="" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover"/>
+              <svg width="28" height="28" viewBox="0 0 87.3 78" fill="none" style="flex-shrink:0"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M73.55 76.8a7.38 7.38 0 003.3-3.3l1.6-2.75L86.1 57.5c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.65 10.7z" fill="#ea4335"/><path d="M43.65 25L57.4 0h-.05c-1.35-.8-2.9-1.2-4.5-1.2H34.3c-1.6 0-3.1.45-4.5 1.2z" fill="#00832d"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
               <div style="flex:1;min-width:0">
-                <div id="vDriveName" style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
-                <div id="vDriveSize" style="font-size:10px;color:var(--muted)">—</div>
+                <div id="vDriveName" style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">تم إضافة رابط Drive ✓</div>
+                <div id="vDriveSize" style="font-size:10px;color:var(--muted)">سيتم تحميل الفيديو من Drive</div>
               </div>
-              <button onclick="clearDrive('video')" style="padding:4px 8px;border:1px solid var(--err);border-radius:6px;background:transparent;color:var(--err);cursor:pointer">×</button>
             </div>
             <input type="hidden" id="vDriveId"/>
-            <input type="hidden" id="vDriveUrl"/>
           </div>
 
           <!-- Thumbnail URL (NEW from v2) -->
@@ -452,140 +447,185 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
     <!-- ══════════════════ EXAMS ══════════════════ -->
     <div id="se" style="display:none">
 
-      <div class="card">
-        <div class="card-head">
-          <h3><svg><use href="#i-check"/></svg>إضافة امتحان</h3>
-          <button class="btn sm ghost" onclick="clearE()">مسح</button>
-          <button class="btn sm gold" id="eSaveBtn" onclick="saveExam()"><svg><use href="#i-save"/></svg>حفظ</button>
-        </div>
-
-        <!-- Exam type selector -->
-        <div class="etype-grid">
-          <div class="etype-card sel" id="et-mcq" onclick="setEType('mcq')">
-            <svg><use href="#i-check"/></svg>اختيار متعدد
-          </div>
-          <div class="etype-card" id="et-essay" onclick="setEType('essay')">
-            <svg><use href="#i-edit" xlink:href="#i-edit"/></svg>مقالي
-            <svg width="20" height="20"><use href="#i-file"/></svg>
-          </div>
-          <div class="etype-card" id="et-images" onclick="setEType('images')">
-            <svg><use href="#i-img"/></svg>صور امتحان
-          </div>
-          <div class="etype-card" id="et-link" onclick="setEType('link')">
-            <svg><use href="#i-link"/></svg>Google Form
-          </div>
-        </div>
-
-        <!-- نظام الامتحان: جديد أو قديم -->
-        <div class="note" style="margin-bottom:16px;background:linear-gradient(135deg,rgba(74,127,212,0.08),rgba(201,168,76,0.06))">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <label style="font-size:12px;font-weight:800;color:var(--text);flex-shrink:0">🎯 نظام الامتحان:</label>
-            <select id="eSystem" onchange="onExamSystemChange(this.value)" style="padding:7px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;outline:none;cursor:pointer;flex:1;min-width:180px">
-              <option value="new">✨ نظام جديد (2026)</option>
-              <option value="old">📚 نظام قديم</option>
-            </select>
-            <span style="font-size:11px;color:var(--muted)">يمكنك اختيار النظام المناسب لكل امتحان</span>
-          </div>
-        </div>
-
-        <div class="fgrid">
-          <div class="ff full">
-            <label>عنوان الامتحان</label>
-            <input type="text" id="eTitle" placeholder="مثال: امتحان الفصل الأول"/>
-          </div>
-          <div class="ff">
-            <label>المدة (دقيقة)</label>
-            <input type="number" id="eDur" placeholder="60"/>
-          </div>
-          <div class="ff">
-            <label>الترتيب</label>
-            <input type="number" id="eOrder" placeholder="1" min="1"/>
-          </div>
-          <div class="ff">
-            <label>🔢 عدد المحاولات المسموحة</label>
-            <input type="number" id="eMaxAttempts" placeholder="فارغ = غير محدود" min="1"/>
-          </div>
-          <div class="ff">
-            <label>⏰ تاريخ انتهاء الامتحان (اختياري)</label>
-            <input type="datetime-local" id="eExpiresAt"/>
-          </div>
-
-          <!-- MCQ -->
-          <div class="ff full etype-fields show" id="ef-mcq">
-            <label>الأسئلة — * قبل الإجابة الصح — فصل بـ ---</label>
-            <textarea id="eMcq" rows="7" placeholder="ما هو حل 2x+4=10؟&#10;* x=3&#10;x=2&#10;x=7&#10;x=5&#10;---&#10;سؤال ثانٍ؟&#10;* الإجابة الصح&#10;إجابة خاطئة&#10;إجابة خاطئة"></textarea>
-          </div>
-
-          <!-- Essay -->
-          <div class="ff full etype-fields" id="ef-essay">
-            <label>نص الامتحان المقالي</label>
-            <textarea id="eEssay" rows="6" placeholder="اكتب أسئلة الامتحان هنا..."></textarea>
-          </div>
-
-          <!-- Images upload -->
-          <div class="ff full etype-fields" id="ef-images">
-            <label>صور الامتحان (JPG/PNG/PDF)</label>
-            <div class="upload-zone" id="eImgZone">
-              <input type="file" accept="image/*,.pdf" multiple id="eImgFile" onchange="handleExamFiles(this.files)"/>
-              <div class="upload-zone-ico"><svg><use href="#i-img"/></svg></div>
-              <h4>اضغط أو اسحب الصور هنا</h4>
-              <p>JPG, PNG, PDF — حتى 10 ملفات</p>
-            </div>
-            <div class="upload-progress" id="eImgProgress">
-              <div class="up-bar"><div class="up-fill" id="eImgFill"></div></div>
-              <div class="up-txt"><span id="eImgTxt">جاري الرفع...</span><span id="eImgPct">0%</span></div>
-            </div>
-            <div id="eImgPreviews" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
-          </div>
-
-          <!-- Link -->
-          <div class="ff full etype-fields" id="ef-link">
-            <label>رابط Google Form</label>
-            <input type="url" id="eLink" placeholder="https://forms.google.com/..."/>
-          </div>
-          <div class="ff full" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <label class="ff-check" style="flex:1">
-              <input type="checkbox" id="eNotify" style="width:17px;height:17px;accent-color:var(--gold);cursor:pointer;flex-shrink:0"/>
-              🔔 إرسال إشعار للطلاب عند الحفظ
-            </label>
-            <button type="button" onclick="openNotifModal('exam')" class="btn sm ghost" style="border-color:rgba(74,127,212,0.4);color:var(--blue)">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-              إشعار مخصص
+      <!-- نظام الاختيار -->
+      <div class="card" style="padding:14px 18px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:800;color:var(--text);flex-shrink:0">🎯 نظام الامتحان:</span>
+          <div style="display:flex;gap:8px;flex:1;flex-wrap:wrap">
+            <button id="sys-new" onclick="onExamSystemChange('new')" class="btn sm" style="border:2px solid var(--ok);background:rgba(0,214,143,0.12);color:var(--ok);flex:1;min-width:140px;justify-content:center">
+              ✨ نظام جديد (2026)
             </button>
+            <button id="sys-old" onclick="onExamSystemChange('old')" class="btn sm ghost" style="flex:1;min-width:140px;justify-content:center">
+              📚 نظام قديم
+            </button>
+          </div>
+          <input type="hidden" id="eSystem" value="new"/>
+        </div>
+      </div>
+
+      <!-- ══ نظام جديد: المنشئ المتقدم ══ -->
+      <div id="block-new">
+        <div class="card" style="border-color:rgba(0,214,143,0.3);position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--ok),#4a7fd4)"></div>
+          <div class="card-head" style="margin-top:6px">
+            <h3>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--ok)"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+              منشئ الأسئلة المتقدم
+              <span style="font-size:9px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;padding:1px 7px;border-radius:10px">v2</span>
+            </h3>
+            <button class="btn sm ghost" onclick="clearE()">مسح</button>
+            <button class="btn sm gold" onclick="saveBuilderQuestions()"><svg><use href="#i-save"/></svg>حفظ الامتحان</button>
+          </div>
+
+          <!-- معلومات الامتحان الأساسية -->
+          <div style="background:rgba(74,127,212,0.04);border:1px solid var(--b2);border-radius:10px;padding:14px;margin-bottom:14px">
+            <div style="font-size:10px;font-weight:800;color:var(--ok);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px">📋 معلومات الامتحان</div>
+            <div class="fgrid">
+              <div class="ff full">
+                <label>عنوان الامتحان</label>
+                <input type="text" id="eTitle" placeholder="مثال: امتحان الفصل الأول — المعادلات"/>
+              </div>
+              <div class="ff">
+                <label>المدة (دقيقة)</label>
+                <input type="number" id="eDur" placeholder="60"/>
+              </div>
+              <div class="ff">
+                <label>الترتيب</label>
+                <input type="number" id="eOrder" placeholder="1" min="1"/>
+              </div>
+              <div class="ff">
+                <label>🔢 عدد المحاولات المسموحة</label>
+                <input type="number" id="eMaxAttempts" placeholder="فارغ = غير محدود" min="1"/>
+              </div>
+              <div class="ff">
+                <label>⏰ تاريخ انتهاء الامتحان</label>
+                <input type="datetime-local" id="eExpiresAt"/>
+              </div>
+              <div class="ff">
+                <label>الدرجة الكلية</label>
+                <input type="number" id="eTotalScore" placeholder="100 (أو تلقائي من الأسئلة)"/>
+              </div>
+              <div class="ff full" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                <label class="ff-check" style="flex:1">
+                  <input type="checkbox" id="eNotify" style="width:17px;height:17px;accent-color:var(--gold);cursor:pointer;flex-shrink:0"/>
+                  🔔 إرسال إشعار للطلاب عند الحفظ
+                </label>
+                <button type="button" onclick="openNotifModal('exam')" class="btn sm ghost" style="border-color:rgba(74,127,212,0.4);color:var(--blue)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                  إشعار مخصص
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- منشئ الأسئلة -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+            <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.6px;text-transform:uppercase">الأسئلة</div>
+            <button class="btn sm ok" onclick="addQuestion()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              إضافة سؤال
+            </button>
+          </div>
+
+          <div id="questionsContainer">
+            <div class="empty" style="border:1px dashed var(--b1);border-radius:10px;padding:28px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:36px;height:36px;opacity:.2;display:block;margin:0 auto 10px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <p>اضغط "إضافة سؤال" لبدء بناء الامتحان</p>
+              <p style="font-size:11px;margin-top:4px">يدعم: اختيار متعدد · صح/خطأ · مقالي</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- NEW v2: Mixed Questions Builder -->
-      <div class="card" style="border-color:rgba(0,214,143,0.3)">
-        <div style="position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ok),#006040);border-radius:var(--r) var(--r) 0 0"></div>
-        <div class="card-head" style="margin-top:4px">
-          <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
-          منشئ الأسئلة المتقدم v2 <span style="font-size:9px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;padding:1px 6px;border-radius:6px">جديد</span></h3>
-          <button class="btn sm ok" onclick="addQuestion()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            إضافة سؤال
-          </button>
-          <button class="btn sm gold" onclick="saveBuilderQuestions()">
-            <svg width="13" height="13"><use href="#i-save"/></svg>
-            حفظ الأسئلة
-          </button>
-        </div>
-
-        <div style="background:rgba(0,214,143,0.06);border:1px solid rgba(0,214,143,0.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12px;line-height:1.8;color:var(--muted)">
-          <strong style="color:var(--ok)">النظام الجديد!</strong> امتحانات متنوعة: اختيار متعدد + صح/خطأ + مقالي — كلهم في امتحان واحد! 🎯<br/>
-          <strong style="color:var(--text)">ملاحظة:</strong> استخدم إما الطريقة التقليدية أعلاه <em>أو</em> منشئ الأسئلة هنا — ليس الاثنان معاً.
-        </div>
-
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-          <div class="ff" style="flex:1;min-width:180px;margin:0">
-            <label>الدرجة الكلية (للمنشئ)</label>
-            <input type="number" id="eTotalScore" placeholder="100"/>
+      <!-- ══ نظام قديم: الطريقة التقليدية ══ -->
+      <div id="block-old" style="display:none">
+        <div class="card">
+          <div class="card-head">
+            <h3><svg><use href="#i-check"/></svg>إضافة امتحان (النظام القديم)</h3>
+            <button class="btn sm ghost" onclick="clearE()">مسح</button>
+            <button class="btn sm gold" id="eSaveBtn" onclick="saveExam()"><svg><use href="#i-save"/></svg>حفظ</button>
           </div>
-        </div>
 
-        <div id="questionsContainer">
-          <div class="empty"><p>اضغط "إضافة سؤال" لبدء بناء الامتحان</p></div>
+          <!-- نوع الامتحان -->
+          <div class="etype-grid">
+            <div class="etype-card sel" id="et-mcq" onclick="setEType('mcq')">
+              <svg><use href="#i-check"/></svg>اختيار متعدد
+            </div>
+            <div class="etype-card" id="et-essay" onclick="setEType('essay')">
+              <svg><use href="#i-file"/></svg>مقالي
+            </div>
+            <div class="etype-card" id="et-images" onclick="setEType('images')">
+              <svg><use href="#i-img"/></svg>صور امتحان
+            </div>
+            <div class="etype-card" id="et-link" onclick="setEType('link')">
+              <svg><use href="#i-link"/></svg>Google Form
+            </div>
+          </div>
+
+          <div class="fgrid">
+            <div class="ff full">
+              <label>عنوان الامتحان</label>
+              <input type="text" id="eTitle" placeholder="مثال: امتحان الفصل الأول" style="display:none"/>
+              <input type="text" id="eTitleOld" placeholder="مثال: امتحان الفصل الأول"/>
+            </div>
+            <div class="ff">
+              <label>المدة (دقيقة)</label>
+              <input type="number" id="eDurOld" placeholder="60"/>
+            </div>
+            <div class="ff">
+              <label>الترتيب</label>
+              <input type="number" id="eOrderOld" placeholder="1" min="1"/>
+            </div>
+            <div class="ff">
+              <label>🔢 عدد المحاولات المسموحة</label>
+              <input type="number" id="eMaxAttemptsOld" placeholder="فارغ = غير محدود" min="1"/>
+            </div>
+            <div class="ff">
+              <label>⏰ تاريخ انتهاء الامتحان</label>
+              <input type="datetime-local" id="eExpiresAtOld"/>
+            </div>
+
+            <!-- MCQ -->
+            <div class="ff full etype-fields show" id="ef-mcq">
+              <label>الأسئلة — * قبل الإجابة الصح — فصل بـ ---</label>
+              <textarea id="eMcq" rows="7" placeholder="ما هو حل 2x+4=10؟&#10;* x=3&#10;x=2&#10;x=7&#10;x=5&#10;---&#10;سؤال ثانٍ؟&#10;* الإجابة الصح&#10;إجابة خاطئة&#10;إجابة خاطئة"></textarea>
+            </div>
+            <!-- Essay -->
+            <div class="ff full etype-fields" id="ef-essay">
+              <label>نص الامتحان المقالي</label>
+              <textarea id="eEssay" rows="6" placeholder="اكتب أسئلة الامتحان هنا..."></textarea>
+            </div>
+            <!-- Images -->
+            <div class="ff full etype-fields" id="ef-images">
+              <label>صور الامتحان (JPG/PNG/PDF)</label>
+              <div class="upload-zone" id="eImgZone">
+                <input type="file" accept="image/*,.pdf" multiple id="eImgFile" onchange="handleExamFiles(this.files)"/>
+                <div class="upload-zone-ico"><svg><use href="#i-img"/></svg></div>
+                <h4>اضغط أو اسحب الصور هنا</h4>
+                <p>JPG, PNG, PDF — حتى 10 ملفات</p>
+              </div>
+              <div class="upload-progress" id="eImgProgress">
+                <div class="up-bar"><div class="up-fill" id="eImgFill"></div></div>
+                <div class="up-txt"><span id="eImgTxt">جاري الرفع...</span><span id="eImgPct">0%</span></div>
+              </div>
+              <div id="eImgPreviews" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"></div>
+            </div>
+            <!-- Link -->
+            <div class="ff full etype-fields" id="ef-link">
+              <label>رابط Google Form</label>
+              <input type="url" id="eLink" placeholder="https://forms.google.com/..."/>
+            </div>
+            <div class="ff full" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <label class="ff-check" style="flex:1">
+                <input type="checkbox" id="eNotifyOld" style="width:17px;height:17px;accent-color:var(--gold);cursor:pointer;flex-shrink:0"/>
+                🔔 إرسال إشعار للطلاب عند الحفظ
+              </label>
+              <button type="button" onclick="openNotifModal('exam')" class="btn sm ghost" style="border-color:rgba(74,127,212,0.4);color:var(--blue)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+                إشعار مخصص
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -597,6 +637,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div id="eList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
       </div>
     </div>
+
 
     <!-- ══════════════════ HOMEWORK ══════════════════ -->
     <div id="sh" style="display:none">
@@ -665,23 +706,21 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             </div>
           </div>
 
-          <!-- Google Drive (NEW from v2) -->
+          <!-- Google Drive URL للواجب -->
           <div class="ff full">
-            <label>أو من Google Drive <span style="font-size:9px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;padding:1px 5px;border-radius:5px">جديد</span></label>
-            <button style="padding:9px 16px;border:1px solid rgba(66,133,244,0.4);border-radius:10px;background:linear-gradient(135deg,rgba(66,133,244,0.12),rgba(66,133,244,0.05));color:#4285f4;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px" onclick="openDrivePicker('homework')">
-              <svg width="13" height="13" viewBox="0 0 87.3 78" fill="none"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M73.55 76.8a7.38 7.38 0 003.3-3.3l1.6-2.75L86.1 57.5c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.65 10.7z" fill="#ea4335"/><path d="M43.65 25L57.4 0h-.05c-1.35-.8-2.9-1.2-4.5-1.2H34.3c-1.6 0-3.1.45-4.5 1.2z" fill="#00832d"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
-              اختار من Drive
-            </button>
+            <label>أو رابط Google Drive <span style="font-size:9px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;padding:1px 5px;border-radius:5px">Drive</span></label>
+            <div style="display:flex;gap:8px;align-items:stretch">
+              <input type="url" id="hDriveUrl" placeholder="https://drive.google.com/file/d/..." style="flex:1" oninput="onDriveUrlInput('h',this.value)"/>
+              <button onclick="clearDrive('homework')" style="padding:10px 14px;border:1px solid rgba(255,77,109,.3);border-radius:10px;background:transparent;color:var(--err);cursor:pointer;font-size:12px;font-weight:700">مسح</button>
+            </div>
             <div id="hDrivePreview" style="margin-top:10px;padding:10px;background:rgba(66,133,244,0.06);border:1px solid rgba(66,133,244,0.2);border-radius:10px;display:none;align-items:center;gap:10px">
-              <img id="hDriveThumb" src="" alt="" style="width:36px;height:36px;border-radius:6px;object-fit:cover"/>
+              <svg width="28" height="28" viewBox="0 0 87.3 78" fill="none" style="flex-shrink:0"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M73.55 76.8a7.38 7.38 0 003.3-3.3l1.6-2.75L86.1 57.5c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.65 10.7z" fill="#ea4335"/><path d="M43.65 25L57.4 0h-.05c-1.35-.8-2.9-1.2-4.5-1.2H34.3c-1.6 0-3.1.45-4.5 1.2z" fill="#00832d"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
               <div style="flex:1;min-width:0">
-                <div id="hDriveName" style="font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
-                <div id="hDriveSize" style="font-size:10px;color:var(--muted)">—</div>
+                <div id="hDriveName" style="font-size:12px;font-weight:700">تم إضافة رابط Drive ✓</div>
+                <div id="hDriveSize" style="font-size:10px;color:var(--muted)">سيتم فتح الملف من Drive</div>
               </div>
-              <button onclick="clearDrive('homework')" style="padding:4px 8px;border:1px solid var(--err);border-radius:6px;background:transparent;color:var(--err);cursor:pointer">×</button>
             </div>
             <input type="hidden" id="hDriveId"/>
-            <input type="hidden" id="hDriveUrl"/>
           </div>
         </div>
       </div>
@@ -783,83 +822,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
     </div>
 
-    </div>
-
-    <!-- ══════════════════ PLAYLISTS ══════════════════ -->
-    <div id="spl" style="display:none">
-
-      <div class="card">
-        <div class="card-head">
-          <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-            إضافة بلايلست
-          </h3>
-          <button class="btn sm ghost" onclick="clearPlaylist()">مسح</button>
-          <button class="btn sm primary" id="plSaveBtn" onclick="savePlaylist()"><svg><use href="#i-save"/></svg>حفظ</button>
-        </div>
-
-        <div class="note">
-          📋 البلايلست = مجموعة فيديوهات متسلسلة بتظهر للطالب كـ playlist. الطالب يشوف الفيديوهات واحد ورا التاني في نفس الصفحة.
-        </div>
-
-        <div class="fgrid">
-          <div class="ff full">
-            <label>عنوان البلايلست</label>
-            <input type="text" id="plTitle" placeholder="مثال: وحدة المعادلات — الفصل الأول"/>
-          </div>
-          <div class="ff full">
-            <label>وصف مختصر (اختياري)</label>
-            <input type="text" id="plDesc" placeholder="مثال: شرح كامل لوحدة المعادلات من الدرجة الأولى"/>
-          </div>
-          <div class="ff">
-            <label>الترتيب</label>
-            <input type="number" id="plOrder" placeholder="1" min="1" value="1"/>
-          </div>
-          <div class="ff">
-            <label>صورة الغلاف (اختياري)</label>
-            <input type="url" id="plCover" placeholder="https://..." oninput="previewPlCover(this.value)"/>
-          </div>
-          <div id="plCoverPreview" style="display:none;grid-column:1/-1;margin-top:-4px">
-            <img id="plCoverImg" style="width:120px;height:68px;object-fit:cover;border-radius:8px;border:1px solid var(--b2)"/>
-          </div>
-        </div>
-
-        <!-- قائمة الفيديوهات في البلايلست -->
-        <div style="margin-top:16px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-            <label style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.6px;text-transform:uppercase">فيديوهات البلايلست</label>
-            <button class="btn sm primary" onclick="addPlVideoRow()">
-              <svg><use href="#i-plus"/></svg>إضافة فيديو
-            </button>
-          </div>
-          <div id="plVideoRows" style="display:flex;flex-direction:column;gap:8px">
-            <!-- rows will be added here -->
-          </div>
-          <div id="plVideoEmpty" style="text-align:center;padding:20px;color:var(--muted);font-size:12px;background:rgba(74,127,212,0.04);border:1px dashed var(--b1);border-radius:10px;margin-top:4px">
-            اضغط "+ إضافة فيديو" لإضافة فيديوهات البلايلست
-          </div>
-        </div>
-
-        <!-- اختيار من الفيديوهات الموجودة -->
-        <div style="margin-top:10px;padding:10px 12px;background:rgba(74,127,212,0.05);border:1px solid var(--b2);border-radius:10px">
-          <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px">📥 أو اختر من الفيديوهات المحفوظة للصف ده</div>
-          <div id="plPickList" style="display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto">
-            <div style="font-size:11px;color:var(--muted)">اختار الصف الأول لتظهر الفيديوهات المحفوظة...</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Playlists list -->
-      <div class="card">
-        <div class="card-head">
-          <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-            البلايلستات المضافة
-          </h3>
-          <button class="btn sm ghost" onclick="loadPlaylists()"><svg><use href="#i-refresh"/></svg></button>
-        </div>
-        <div id="plList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
-      </div>
     </div>
 
     <!-- ══════════════════ RESEARCH ══════════════════ -->
@@ -1127,25 +1089,26 @@ window.saveVideo = async () => {
 window.saveExam = async () => {
   const grade = document.getElementById('gSel').value;
   if(!grade){ toast('اختار صف','err'); return; }
-  const title = document.getElementById('eTitle').value.trim();
+  // النظام القديم يستخدم eTitleOld
+  const title = (document.getElementById('eTitleOld')?.value||'').trim();
   if(!title){ toast('ادخل عنوان الامتحان','err'); return; }
   const btn = document.getElementById('eSaveBtn');
-  btn.innerHTML='<div class="spin"></div>';btn.disabled=true;
+  if(btn){ btn.innerHTML='<div class="spin"></div>';btn.disabled=true; }
   try {
     const type = window._eType||'mcq';
-    const maxAttempts = parseInt(document.getElementById('eMaxAttempts').value)||null;
-    const eExpiresAtVal = document.getElementById('eExpiresAt').value;
-    const examSystem = document.getElementById('eSystem').value || 'new'; // نظام الامتحان
+    const maxAttempts = parseInt(document.getElementById('eMaxAttemptsOld')?.value||'')||null;
+    const eExpiresAtVal = document.getElementById('eExpiresAtOld')?.value||'';
+    const examSystem = 'old';
     const data = {
       title, type,
-      duration: document.getElementById('eDur').value.trim(),
-      order: parseInt(document.getElementById('eOrder').value)||1,
+      duration: (document.getElementById('eDurOld')?.value||'').trim(),
+      order: parseInt(document.getElementById('eOrderOld')?.value||'')||1,
       maxAttempts,
       expiresAt: eExpiresAtVal ? new Date(eExpiresAtVal) : null,
-      examSystem, // حفظ نظام الامتحان
-      mcqRaw: document.getElementById('eMcq').value.trim(),
-      essayText: document.getElementById('eEssay').value.trim(),
-      externalUrl: document.getElementById('eLink').value.trim(),
+      examSystem,
+      mcqRaw: document.getElementById('eMcq')?.value.trim()||'',
+      essayText: document.getElementById('eEssay')?.value.trim()||'',
+      externalUrl: document.getElementById('eLink')?.value.trim()||'',
       imageUrls: window._examImgUrls||[],
       updatedAt: serverTimestamp()
     };
@@ -1157,11 +1120,11 @@ window.saveExam = async () => {
       data.createdAt = serverTimestamp();
       await addDoc(collection(db,'content',grade,'exams'), data);
       toast('تم حفظ الامتحان ✓','ok');
-      if(document.getElementById('eNotify')?.checked) await sendContentNotif(grade,'امتحان جديد 📝',title);
+      if(document.getElementById('eNotifyOld')?.checked) await sendContentNotif(grade,'امتحان جديد 📝',title);
     }
     clearE(); loadList('exams','eList');
   } catch(e){ toast('خطأ: '+e.message,'err'); }
-  btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false;
+  if(btn){ btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ';btn.disabled=false; }
 };
 
 // ── Save Homework ──
@@ -1889,16 +1852,15 @@ function switchTab(t){
   // أخبي الـ placeholder
   const ph = document.getElementById('cmPlaceholder');
   if(ph) ph.style.display='none';
-  ['v','e','h','b','pl','r'].forEach(x=>{
+  ['v','e','h','b','r'].forEach(x=>{
     document.getElementById('t'+x)?.classList.toggle('on',x===t);
   });
-  ['sv','se','sh','sb','spl','sr'].forEach(x=>{
+  ['sv','se','sh','sb','sr'].forEach(x=>{
     const el=document.getElementById(x);
     if(el) el.style.display=x.slice(1)===t?'block':'none';
   });
   const grade=document.getElementById('gSel').value;
   if(t==='b'){ loadBooks(); return; }
-  if(t==='pl'){ window.loadPlaylists?.(); window.loadPlPickList?.(); return; }
   if(t==='r'){ loadResearchCM(); return; }
   if(grade){
     const tab=t==='v'?'videos':t==='e'?'exams':'homework';
@@ -1928,24 +1890,15 @@ function setEType(t){
 
 // ── إخفاء/إظهار المنشئ المتقدم حسب نظام الامتحان ──
 window.onExamSystemChange = function(val) {
-  // المنشئ المتقدم v2 = النظام الجديد فقط
-  const builderCard = document.querySelector('[id="questionsContainer"]')?.closest('.card');
-  const classicSection = document.getElementById('ef-mcq')?.closest('.fgrid');
-  const etypeGrid = document.querySelector('.etype-grid');
-  
-  if (val === 'new') {
-    // إظهار المنشئ المتقدم
-    if (builderCard) builderCard.style.display = 'block';
-    // إخفاء الطريقة التقليدية (MCQ نصي)
-    if (etypeGrid) etypeGrid.style.opacity = '0.4';
-    toast('النظام الجديد: استخدم منشئ الأسئلة المتقدم ⬇️','info');
-  } else {
-    // إخفاء المنشئ المتقدم
-    if (builderCard) builderCard.style.display = 'none';
-    // إظهار الطريقة التقليدية
-    if (etypeGrid) etypeGrid.style.opacity = '1';
-    toast('النظام القديم: استخدم الطريقة التقليدية ⬆️','info');
-  }
+  document.getElementById('eSystem').value = val;
+  const isNew = val === 'new';
+  document.getElementById('block-new').style.display = isNew ? 'block' : 'none';
+  document.getElementById('block-old').style.display = isNew ? 'none' : 'block';
+  // تحديث أزرار الاختيار
+  const btnNew = document.getElementById('sys-new');
+  const btnOld = document.getElementById('sys-old');
+  if(btnNew){ btnNew.style.borderColor = isNew ? 'var(--ok)' : 'var(--b1)'; btnNew.style.background = isNew ? 'rgba(0,214,143,0.12)' : 'transparent'; btnNew.style.color = isNew ? 'var(--ok)' : 'var(--muted)'; }
+  if(btnOld){ btnOld.style.borderColor = !isNew ? 'var(--gold)' : 'var(--b1)'; btnOld.style.background = !isNew ? 'rgba(201,168,76,0.12)' : 'transparent'; btnOld.style.color = !isNew ? 'var(--gold)' : 'var(--muted)'; }
 };
 
 // ── Render items ──
@@ -1985,18 +1938,22 @@ function clearV(){
   if(window._editId) delete window._editId.v;
 }
 function clearE(){
-  ['eTitle','eDur','eOrder','eMcq','eEssay','eLink','eMaxAttempts','eExpiresAt','eTotalScore'].forEach(id=>{
+  ['eTitle','eDur','eOrder','eMaxAttempts','eExpiresAt','eTotalScore',
+   'eTitleOld','eDurOld','eOrderOld','eMaxAttemptsOld','eExpiresAtOld',
+   'eMcq','eEssay','eLink'].forEach(id=>{
     const el = document.getElementById(id);
     if(el) el.value = '';
   });
-  // Reset to default system
   const eSystemEl = document.getElementById('eSystem');
   if(eSystemEl) eSystemEl.value = 'new';
   
-  document.getElementById('eImgPreviews').innerHTML='';
+  document.getElementById('eImgPreviews') && (document.getElementById('eImgPreviews').innerHTML='');
   window._examImgUrls=[];
   setEType('mcq');
   if(window._editId) delete window._editId.e;
+  // إعادة ضبط الأسئلة
+  window.questions = [];
+  renderQuestionsV2();
 }
 function clearH(){
   ['hTitle','hDesc','hDeadline','hOrder','hFileUrl'].forEach(id=>document.getElementById(id).value='');
@@ -2548,62 +2505,39 @@ document.addEventListener('fbready', ()=>{
 
 
 // ══════════════════════════════════════════════════════
-// v2 FEATURES: Google Drive Picker + Image Preview
+// v2 FEATURES: Google Drive URL Handler + Image Preview
 // ══════════════════════════════════════════════════════
-let pickerInited = false;
-let pickerType = null;
 
-if (window.gapi) {
-  window.gapi.load('picker', () => { pickerInited = true; });
-}
-
-window.openDrivePicker = (type) => {
-  if (!pickerInited) {
-    toast('Google Drive API لسه بيحمّل — جرب تاني', 'info');
-    return;
-  }
-  pickerType = type;
-  const picker = new google.picker.PickerBuilder()
-    .addView(google.picker.ViewId.DOCS)
-    .setDeveloperKey('AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE')
-    .setCallback(pickerCallback)
-    .build();
-  picker.setVisible(true);
+// استخراج File ID من رابط Drive
+window.extractDriveId = (url) => {
+  const m = url.match(/\/d\/([-\w]+)|id=([-\w]+)/);
+  return m ? (m[1]||m[2]) : null;
 };
 
-function pickerCallback(data) {
-  if (data.action === google.picker.Action.PICKED) {
-    const file = data.docs[0];
-    const prefix = pickerType === 'video' ? 'v' : 'h';
-    const nameEl = document.getElementById(`${prefix}DriveName`);
-    const sizeEl = document.getElementById(`${prefix}DriveSize`);
-    const thumbEl = document.getElementById(`${prefix}DriveThumb`);
-    const previewEl = document.getElementById(`${prefix}DrivePreview`);
-    if(nameEl) nameEl.textContent = file.name;
-    if(sizeEl) sizeEl.textContent = formatDriveBytes(file.sizeBytes || 0);
-    if(thumbEl) thumbEl.src = file.iconUrl || '';
-    if(previewEl) previewEl.style.display = 'flex';
-    const idEl = document.getElementById(`${prefix}DriveId`);
-    const urlEl = document.getElementById(`${prefix}DriveUrl`);
-    if(idEl) idEl.value = file.id;
-    if(urlEl) urlEl.value = file.url;
-    toast('تم اختيار الملف من Drive ✓', 'ok');
+// لما المستخدم يحط رابط Drive
+window.onDriveUrlInput = (prefix, url) => {
+  const preview = document.getElementById(prefix+'DrivePreview');
+  if(!url || !url.includes('drive.google.com')) {
+    if(preview) preview.style.display='none';
+    return;
   }
-}
+  const id = window.extractDriveId(url);
+  if(id) {
+    const idEl = document.getElementById(prefix+'DriveId');
+    if(idEl) idEl.value = id;
+  }
+  if(preview) preview.style.display='flex';
+};
 
 window.clearDrive = (type) => {
   const prefix = type === 'video' ? 'v' : 'h';
-  ['DriveId','DriveUrl'].forEach(s => { const el=document.getElementById(prefix+s); if(el) el.value=''; });
+  const urlEl = document.getElementById(prefix+'DriveUrl');
+  const idEl = document.getElementById(prefix+'DriveId');
+  if(urlEl) urlEl.value='';
+  if(idEl) idEl.value='';
   const prev = document.getElementById(prefix+'DrivePreview');
   if(prev) prev.style.display = 'none';
 };
-
-function formatDriveBytes(bytes) {
-  if (!bytes) return '—';
-  const k = 1024, sizes = ['B','KB','MB','GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-}
 
 window.previewImageUrl = (inputId) => {
   const url = document.getElementById(inputId)?.value.trim();
@@ -2706,25 +2640,24 @@ window.saveBuilderQuestions = async () => {
   const grade = document.getElementById('gSel').value;
   if(!grade){ toast('اختار صف أولاً','err'); return; }
   
-  const title = document.getElementById('eTitle').value.trim();
+  const title = (document.getElementById('eTitle')?.value||'').trim();
   if(!title){ toast('اكتب عنوان الامتحان','err'); return; }
   
   try {
     const db = window.db;
-    const addDoc = window.addDoc;
-    const collection = window.collection;
-    const serverTimestamp = window.serverTimestamp;
+    const addDocFn = window.addDoc;
+    const collectionFn = window.collection;
+    const stFn = window.serverTimestamp;
     
-    const totalScore = parseInt(document.getElementById('eTotalScore')?.value) || qs.reduce((s,q)=>s+(q.points||1),0);
-    const examSystem = document.getElementById('eSystem')?.value || 'new';
+    const totalScore = parseInt(document.getElementById('eTotalScore')?.value||'') || qs.reduce((s,q)=>s+(q.points||1),0);
     
-    await addDoc(collection(db,'content',grade,'exams'), {
+    await addDocFn(collectionFn(db,'content',grade,'exams'), {
       title, 
       type:'mixed',
-      examSystem,
+      examSystem:'new',
       duration: document.getElementById('eDur')?.value || '60',
       totalScore,
-      order: parseInt(document.getElementById('eOrder')?.value)||1,
+      order: parseInt(document.getElementById('eOrder')?.value||'')||1,
       maxAttempts: document.getElementById('eMaxAttempts')?.value ? parseInt(document.getElementById('eMaxAttempts').value) : null,
       expiresAt: document.getElementById('eExpiresAt')?.value ? new Date(document.getElementById('eExpiresAt').value) : null,
       questions: qs.map(q=>({
@@ -2735,37 +2668,27 @@ window.saveBuilderQuestions = async () => {
         options:q.options,
         correctAnswer:q.correctAnswer
       })),
-      createdAt: serverTimestamp()
+      createdAt: stFn()
     });
     
     toast('تم حفظ الامتحان المتقدم ✓','ok');
     
+    // إرسال إشعار
+    if(document.getElementById('eNotify')?.checked){
+      await window.sendContentNotif(grade,'امتحان جديد 📝',title);
+    }
+    
     // Clear builder
     window.questions = [];
     renderQuestionsV2();
-    document.getElementById('eTitle').value='';
-    document.getElementById('eDur').value='';
-    document.getElementById('eOrder').value='';
-    document.getElementById('eTotalScore').value='';
+    ['eTitle','eDur','eOrder','eTotalScore','eMaxAttempts','eExpiresAt'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.value='';
+    });
     
     window.loadList('exams','eList');
   } catch(e){ 
     toast('خطأ: '+e.message,'err'); 
     console.error('Save builder questions error:', e);
-  }
-};
-
-// Extend saveExam to also support mixed questions from builder
-const _origSaveExam = window.saveExam;
-window.saveExam = async function() {
-  // If v2 builder has questions, use saveBuilderQuestions instead
-  if (questions && questions.length > 0) {
-    if(confirm('لديك أسئلة في المنشئ المتقدم. هل تريد حفظها كامتحان متقدم؟')){
-      await window.saveBuilderQuestions();
-    }
-  } else {
-    // fallback to original save
-    if(_origSaveExam) _origSaveExam();
   }
 };
 
@@ -2785,14 +2708,12 @@ window.clearH = function() {
   const prev = document.getElementById('hDrivePreview'); if(prev) prev.style.display='none';
 };
 
-// Extend saveVideo to include driveId and thumbUrl
+// Extend saveVideo: إذا كان فيه Drive URL ومفيش YouTube، استخدم Drive
 const _origSaveVideo = window.saveVideo;
 window.saveVideo = async function() {
-  // Inject thumb + drive values before original save
   const vDriveUrl = document.getElementById('vDriveUrl')?.value.trim();
   const vUrl = document.getElementById('vUrl')?.value.trim();
   if(!vUrl && vDriveUrl) {
-    // If only drive URL provided, set vUrl so original function can save it
     document.getElementById('vUrl').value = vDriveUrl;
   }
   if(_origSaveVideo) await _origSaveVideo();
