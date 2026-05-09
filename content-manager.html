@@ -1004,6 +1004,22 @@ const app  = initializeApp(cfg);
 const db   = getFirestore(app);
 const stor = getStorage(app);
 
+// Expose Firebase functions to window for use in non-module scripts
+window.db = db;
+window.stor = stor;
+window.getDoc = getDoc;
+window.doc = doc;
+window.collection = collection;
+window.getDocs = getDocs;
+window.addDoc = addDoc;
+window.updateDoc = updateDoc;
+window.deleteDoc = deleteDoc;
+window.serverTimestamp = serverTimestamp;
+window.ref = ref;
+window.uploadBytesResumable = uploadBytesResumable;
+window.getDownloadURL = getDownloadURL;
+window.deleteObject = deleteObject;
+
 // ── Simple Session Check ──
 window.addEventListener('DOMContentLoaded', () => {
   const session = localStorage.getItem('cm_session');
