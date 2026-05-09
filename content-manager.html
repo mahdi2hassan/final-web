@@ -480,7 +480,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="note" style="margin-bottom:16px;background:linear-gradient(135deg,rgba(74,127,212,0.08),rgba(201,168,76,0.06))">
           <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
             <label style="font-size:12px;font-weight:800;color:var(--text);flex-shrink:0">🎯 نظام الامتحان:</label>
-            <select id="eSystem" style="padding:7px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;outline:none;cursor:pointer;flex:1;min-width:180px">
+            <select id="eSystem" onchange="onExamSystemChange(this.value)" style="padding:7px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;outline:none;cursor:pointer;flex:1;min-width:180px">
               <option value="new">✨ نظام جديد (2026)</option>
               <option value="old">📚 نظام قديم</option>
             </select>
@@ -990,7 +990,8 @@ import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, dele
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-// Firebase Auth removed - using simple Firestore-based auth
+import { getAuth, signInAnonymously, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const cfg = {
   apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
@@ -1003,6 +1004,14 @@ const cfg = {
 const app  = initializeApp(cfg);
 const db   = getFirestore(app);
 const stor = getStorage(app);
+const auth = getAuth(app);
+
+// ── تسجيل دخول مجهول تلقائي عشان Firestore Rules تشتغل ──
+signInAnonymously(auth).then(() => {
+  console.log('✅ Anonymous auth OK');
+}).catch(e => {
+  console.warn('Anonymous auth failed:', e.message);
+});
 
 // Expose Firebase functions to window for use in non-module scripts
 window.db = db;
@@ -1917,6 +1926,28 @@ function setEType(t){
   });
 }
 
+// ── إخفاء/إظهار المنشئ المتقدم حسب نظام الامتحان ──
+window.onExamSystemChange = function(val) {
+  // المنشئ المتقدم v2 = النظام الجديد فقط
+  const builderCard = document.querySelector('[id="questionsContainer"]')?.closest('.card');
+  const classicSection = document.getElementById('ef-mcq')?.closest('.fgrid');
+  const etypeGrid = document.querySelector('.etype-grid');
+  
+  if (val === 'new') {
+    // إظهار المنشئ المتقدم
+    if (builderCard) builderCard.style.display = 'block';
+    // إخفاء الطريقة التقليدية (MCQ نصي)
+    if (etypeGrid) etypeGrid.style.opacity = '0.4';
+    toast('النظام الجديد: استخدم منشئ الأسئلة المتقدم ⬇️','info');
+  } else {
+    // إخفاء المنشئ المتقدم
+    if (builderCard) builderCard.style.display = 'none';
+    // إظهار الطريقة التقليدية
+    if (etypeGrid) etypeGrid.style.opacity = '1';
+    toast('النظام القديم: استخدم الطريقة التقليدية ⬆️','info');
+  }
+};
+
 // ── Render items ──
 function renderItems(tab, items, elId){
   const el=document.getElementById(elId);
@@ -2587,21 +2618,23 @@ window.previewImageUrl = (inputId) => {
 // ══════════════════════════════════════════════════════
 // v2 EXAM BUILDER: Mixed Question Types
 // ══════════════════════════════════════════════════════
-let questions = [];
+window.questions = window.questions || [];
+// alias local for convenience
+Object.defineProperty(window, '_q', { get: ()=>window.questions, set: v=>{ window.questions=v; } });
 
 window.addQuestion = () => {
   const q = { id: `q${Date.now()}`, type: 'mcq', text: '', points: 1, options: ['','','',''], correctAnswer: 0 };
-  questions.push(q);
+  window.questions.push(q);
   renderQuestionsV2();
 };
 
 window.removeQuestion = (id) => {
-  questions = questions.filter(q => q.id !== id);
+  window.questions = window.questions.filter(q => q.id !== id);
   renderQuestionsV2();
 };
 
 window.updateQuestionType = (id, type) => {
-  const q = questions.find(x => x.id === id);
+  const q = window.questions.find(x => x.id === id);
   if (!q) return;
   q.type = type;
   if (type === 'truefalse') { q.options = ['صح','خطأ']; q.correctAnswer = 0; }
@@ -2611,12 +2644,12 @@ window.updateQuestionType = (id, type) => {
 };
 
 window.addOption = (qId) => {
-  const q = questions.find(x=>x.id===qId);
+  const q = window.questions.find(x=>x.id===qId);
   if(q) { q.options.push(''); renderQuestionsV2(); }
 };
 
 window.removeOption = (qId, i) => {
-  const q = questions.find(x=>x.id===qId);
+  const q = window.questions.find(x=>x.id===qId);
   if(!q || q.options.length<=2) return;
   q.options.splice(i,1);
   if(q.correctAnswer>=q.options.length) q.correctAnswer=0;
@@ -2626,17 +2659,18 @@ window.removeOption = (qId, i) => {
 function renderQuestionsV2() {
   const c = document.getElementById('questionsContainer');
   if (!c) return;
-  if (!questions.length) {
+  const qs = window.questions;
+  if (!qs.length) {
     c.innerHTML = '<div class="empty"><p>اضغط "إضافة سؤال" لبدء بناء الامتحان</p></div>';
     return;
   }
-  c.innerHTML = questions.map((q,index)=>{
+  c.innerHTML = qs.map((q,index)=>{
     let optsHTML = '';
     if (q.type==='mcq'||q.type==='truefalse') {
       optsHTML = `<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">${q.options.map((opt,i)=>`
         <div style="display:flex;align-items:center;gap:8px">
-          <input type="radio" name="${q.id}" ${q.correctAnswer===i?'checked':''} onchange="questions.find(x=>x.id==='${q.id}').correctAnswer=${i}" style="accent-color:var(--ok);width:15px;height:15px"/>
-          <input type="text" value="${opt.replace(/"/g,'&quot;')}" placeholder="الإجابة ${i+1}" oninput="questions.find(x=>x.id==='${q.id}').options[${i}]=this.value" style="flex:1;padding:8px 10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px"/>
+          <input type="radio" name="${q.id}" ${q.correctAnswer===i?'checked':''} onchange="window.questions.find(x=>x.id==='${q.id}').correctAnswer=${i}" style="accent-color:var(--ok);width:15px;height:15px"/>
+          <input type="text" value="${opt.replace(/"/g,'&quot;')}" placeholder="الإجابة ${i+1}" oninput="window.questions.find(x=>x.id==='${q.id}').options[${i}]=this.value" style="flex:1;padding:8px 10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px"/>
           ${q.type==='mcq'&&q.options.length>2?`<button onclick="removeOption('${q.id}',${i})" style="padding:4px 8px;border:1px solid rgba(255,77,109,.3);border-radius:6px;background:rgba(255,77,109,.08);color:var(--err);cursor:pointer">×</button>`:''}
         </div>`).join('')}
         ${q.type==='mcq'?`<button class="btn sm ghost" onclick="addOption('${q.id}')" style="margin-top:4px">+ إضافة خيار</button>`:''}
@@ -2652,10 +2686,10 @@ function renderQuestionsV2() {
           <option value="truefalse" ${q.type==='truefalse'?'selected':''}>صح/خطأ</option>
           <option value="essay" ${q.type==='essay'?'selected':''}>مقالي</option>
         </select>
-        <input type="number" value="${q.points}" min="1" placeholder="نقاط" oninput="questions.find(x=>x.id==='${q.id}').points=parseInt(this.value)||1" style="width:65px;padding:6px 8px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-size:12px"/>
+        <input type="number" value="${q.points}" min="1" placeholder="نقاط" oninput="window.questions.find(x=>x.id==='${q.id}').points=parseInt(this.value)||1" style="width:65px;padding:6px 8px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-size:12px"/>
         <button onclick="removeQuestion('${q.id}')" style="margin-right:auto;padding:5px 10px;border:1px solid rgba(255,77,109,.3);border-radius:7px;background:rgba(255,77,109,.08);color:var(--err);cursor:pointer;font-size:11px">حذف</button>
       </div>
-      <textarea placeholder="نص السؤال..." rows="2" oninput="questions.find(x=>x.id==='${q.id}').text=this.value" style="width:100%;padding:10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;margin-bottom:4px;resize:vertical">${q.text}</textarea>
+      <textarea placeholder="نص السؤال..." rows="2" oninput="window.questions.find(x=>x.id==='${q.id}').text=this.value" style="width:100%;padding:10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;margin-bottom:4px;resize:vertical">${q.text}</textarea>
       ${optsHTML}
     </div>`;
   }).join('');
@@ -2663,7 +2697,8 @@ function renderQuestionsV2() {
 
 // Save questions from v2 builder as a new exam
 window.saveBuilderQuestions = async () => {
-  if (!questions || questions.length === 0) {
+  const qs = window.questions;
+  if (!qs || qs.length === 0) {
     toast('أضف أسئلة أولاً!','err'); 
     return;
   }
@@ -2675,19 +2710,24 @@ window.saveBuilderQuestions = async () => {
   if(!title){ toast('اكتب عنوان الامتحان','err'); return; }
   
   try {
-    const totalScore = parseInt(document.getElementById('eTotalScore')?.value) || questions.reduce((s,q)=>s+(q.points||1),0);
+    const db = window.db;
+    const addDoc = window.addDoc;
+    const collection = window.collection;
+    const serverTimestamp = window.serverTimestamp;
+    
+    const totalScore = parseInt(document.getElementById('eTotalScore')?.value) || qs.reduce((s,q)=>s+(q.points||1),0);
     const examSystem = document.getElementById('eSystem')?.value || 'new';
     
     await addDoc(collection(db,'content',grade,'exams'), {
       title, 
       type:'mixed',
-      examSystem, // نظام الامتحان
+      examSystem,
       duration: document.getElementById('eDur')?.value || '60',
       totalScore,
       order: parseInt(document.getElementById('eOrder')?.value)||1,
       maxAttempts: document.getElementById('eMaxAttempts')?.value ? parseInt(document.getElementById('eMaxAttempts').value) : null,
       expiresAt: document.getElementById('eExpiresAt')?.value ? new Date(document.getElementById('eExpiresAt').value) : null,
-      questions: questions.map(q=>({
+      questions: qs.map(q=>({
         id:q.id,
         type:q.type,
         text:q.text,
@@ -2701,14 +2741,14 @@ window.saveBuilderQuestions = async () => {
     toast('تم حفظ الامتحان المتقدم ✓','ok');
     
     // Clear builder
-    questions = [];
+    window.questions = [];
     renderQuestionsV2();
     document.getElementById('eTitle').value='';
     document.getElementById('eDur').value='';
     document.getElementById('eOrder').value='';
     document.getElementById('eTotalScore').value='';
     
-    loadList('exams','eList');
+    window.loadList('exams','eList');
   } catch(e){ 
     toast('خطأ: '+e.message,'err'); 
     console.error('Save builder questions error:', e);
