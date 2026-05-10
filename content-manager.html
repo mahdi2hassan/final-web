@@ -215,8 +215,46 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+
+/* ── SOURCE SELECTOR ── */
+.src-tabs{display:flex;gap:0;background:rgba(6,10,22,0.6);border:1.5px solid var(--b1);border-radius:11px;padding:3px;margin-bottom:12px}
+.src-tab{flex:1;padding:8px 10px;border:none;border-radius:8px;background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px}
+.src-tab.active{background:rgba(74,127,212,0.2);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.src-tab.yt.active{background:rgba(255,0,0,0.15);color:#ff5555}
+.src-tab.drive.active{background:rgba(66,133,244,0.15);color:#4285f4}
+.src-tab.upload.active{background:rgba(0,214,143,0.12);color:var(--ok)}
+.src-tab.link.active{background:rgba(167,139,250,0.15);color:var(--purple)}
+.src-panel{display:none;animation:fadeIn .2s ease}
+.src-panel.active{display:block}
+
+/* ── QUESTION CARD ── */
+.q-card{background:rgba(6,10,22,0.5);border:1.5px solid var(--b2);border-radius:12px;padding:14px;margin-bottom:10px;transition:border-color .2s}
+.q-card:hover{border-color:var(--b1)}
+.q-card-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.q-num{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;flex-shrink:0}
+.q-type-sel{padding:5px 10px;background:rgba(6,10,22,0.8);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;cursor:pointer}
+.q-pts{width:60px;padding:5px 8px;background:rgba(6,10,22,0.8);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none}
+.q-del{margin-right:auto;width:28px;height:28px;border:1.5px solid rgba(255,77,109,0.3);border-radius:8px;background:rgba(255,77,109,0.07);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--err);transition:all .2s}
+.q-del:hover{background:rgba(255,77,109,0.15);border-color:rgba(255,77,109,0.5)}
+.q-text{width:100%;padding:9px 12px;background:rgba(6,10,22,0.6);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;resize:vertical;outline:none;margin-bottom:8px;transition:border-color .2s}
+.q-text:focus{border-color:var(--blue)}
+.q-opt{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.q-opt input[type=radio]{accent-color:var(--ok);width:15px;height:15px;flex-shrink:0;cursor:pointer}
+.q-opt input[type=text]{flex:1;padding:7px 10px;background:rgba(6,10,22,0.6);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;transition:border-color .2s}
+.q-opt input[type=text]:focus{border-color:var(--ok)}
+.q-opt-del{width:24px;height:24px;border:1px solid rgba(255,77,109,0.25);border-radius:6px;background:transparent;cursor:pointer;color:var(--err);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.q-opt-del:hover{background:rgba(255,77,109,0.1)}
+
+/* ── CARD SECTION LABEL ── */
+.sec-label{font-size:10px;font-weight:800;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--b2)}
+
+/* ── SYSTEM TOGGLE ── */
+.sys-toggle{display:flex;gap:0;background:rgba(6,10,22,0.6);border:1.5px solid var(--b1);border-radius:12px;padding:3px}
+.sys-btn{flex:1;padding:9px 14px;border:none;border-radius:9px;background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.sys-btn.active-new{background:linear-gradient(135deg,rgba(0,214,143,0.2),rgba(0,214,143,0.08));color:var(--ok);border:1px solid rgba(0,214,143,0.3)}
+.sys-btn.active-old{background:linear-gradient(135deg,rgba(201,168,76,0.2),rgba(201,168,76,0.08));color:var(--gold);border:1px solid rgba(201,168,76,0.3)}
 </style>
-</head>
 <body>
 
 <svg style="display:none">
@@ -358,23 +396,17 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <button class="btn sm primary" id="vSaveBtn" onclick="saveVideo()"><svg><use href="#i-save"/></svg>حفظ</button>
         </div>
 
-        <div class="note">
-          اختار مصدر الفيديو: <strong>يوتيوب</strong> (ارفعه كـ Unlisted) أو <strong>Google Drive</strong> مباشرةً 🎬
-        </div>
-
-        <!-- مصدر الفيديو — Dropdown -->
-        <div style="margin-bottom:14px">
-          <label style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:8px">📹 مصدر الفيديو</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <button id="vsrc-yt" onclick="setVideoSource('yt')" style="display:flex;align-items:center;gap:7px;padding:9px 16px;border:2px solid rgba(255,0,0,0.4);border-radius:10px;background:rgba(255,0,0,0.08);color:#ff4444;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all .2s;flex:1;justify-content:center;min-width:140px">
-              <svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M23.5 6.2a3 3 0 00-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6a3 3 0 00-2.1 2.1C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 002.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 002.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.7 15.5V8.5l6.3 3.5-6.3 3.5z"/></svg>
-              يوتيوب
-            </button>
-            <button id="vsrc-drive" onclick="setVideoSource('drive')" style="display:flex;align-items:center;gap:7px;padding:9px 16px;border:2px solid var(--b1);border-radius:10px;background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all .2s;flex:1;justify-content:center;min-width:140px">
-              <svg width="16" height="16" viewBox="0 0 87.3 78" fill="none"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M73.55 76.8a7.38 7.38 0 003.3-3.3l1.6-2.75L86.1 57.5c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.65 10.7z" fill="#ea4335"/><path d="M43.65 25L57.4 0h-.05c-1.35-.8-2.9-1.2-4.5-1.2H34.3c-1.6 0-3.1.45-4.5 1.2z" fill="#00832d"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
-              Google Drive
-            </button>
-          </div>
+        <!-- مصدر الفيديو — Tabs -->
+        <div class="sec-label" style="margin-bottom:8px">📹 مصدر الفيديو</div>
+        <div class="src-tabs" style="margin-bottom:14px">
+          <button id="vsrc-yt" class="src-tab yt active" onclick="setVideoSource('yt')">
+            <svg viewBox="0 0 24 24" fill="currentColor" style="width:13px;height:13px"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            يوتيوب
+          </button>
+          <button id="vsrc-drive" class="src-tab drive" onclick="setVideoSource('drive')">
+            <svg width="13" height="13" viewBox="0 0 87.3 78" fill="none"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
+            Google Drive
+          </button>
         </div>
 
         <div class="fgrid">
@@ -464,11 +496,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       <div class="card" style="padding:14px 18px;margin-bottom:10px">
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           <span style="font-size:13px;font-weight:800;color:var(--text);flex-shrink:0">🎯 نظام الامتحان:</span>
-          <div style="display:flex;gap:8px;flex:1;flex-wrap:wrap">
-            <button id="sys-new" onclick="onExamSystemChange('new')" class="btn sm" style="border:2px solid var(--ok);background:rgba(0,214,143,0.12);color:var(--ok);flex:1;min-width:140px;justify-content:center">
+          <div class="sys-toggle" style="flex:1">
+            <button id="sys-new" class="sys-btn active-new" onclick="onExamSystemChange('new')">
               ✨ نظام جديد (2026)
             </button>
-            <button id="sys-old" onclick="onExamSystemChange('old')" class="btn sm ghost" style="flex:1;min-width:140px;justify-content:center">
+            <button id="sys-old" class="sys-btn" onclick="onExamSystemChange('old')">
               📚 نظام قديم
             </button>
           </div>
@@ -533,7 +565,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
           <!-- منشئ الأسئلة -->
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
-            <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.6px;text-transform:uppercase">الأسئلة</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.6px;text-transform:uppercase">الأسئلة</div>
+              <span id="qTotalCounter" style="font-size:10px;padding:2px 8px;background:rgba(0,214,143,0.1);border:1px solid rgba(0,214,143,0.2);border-radius:20px;color:var(--ok);font-weight:700"></span>
+            </div>
             <button class="btn sm ok" onclick="addQuestion()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               إضافة سؤال
@@ -688,52 +723,66 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <input type="number" id="hMaxSubmissions" placeholder="فارغ = غير محدود" min="1"/>
           </div>
 
-          <!-- PDF Upload -->
+          <!-- مصدر الصورة/الملف -->
           <div class="ff full">
-            <label>ملف PDF / صورة (اختياري)</label>
-            <div class="upload-zone" id="hFileZone">
-              <input type="file" accept=".pdf,image/*" id="hFile" onchange="handleHwFile(this.files[0])"/>
-              <div class="upload-zone-ico"><svg><use href="#i-upload"/></svg></div>
-              <h4>ارفع ملف PDF أو صورة</h4>
-              <p>سيتمكن الطلاب من فتحه</p>
-              <span class="accept">PDF · JPG · PNG</span>
+            <div class="sec-label">📎 مصدر الملف / الصورة</div>
+            <div class="src-tabs">
+              <button id="isrc-upload" class="src-tab upload active" onclick="setImgSource('upload')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><polyline points="16,16 12,12 8,16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+                رفع مباشر
+              </button>
+              <button id="isrc-drive" class="src-tab drive" onclick="setImgSource('drive')">
+                <svg width="13" height="13" viewBox="0 0 87.3 78" fill="none"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
+                Google Drive
+              </button>
+              <button id="isrc-link" class="src-tab link" onclick="setImgSource('link')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+                رابط مباشر
+              </button>
             </div>
-            <div class="upload-progress" id="hProgress">
-              <div class="up-bar"><div class="up-fill" id="hFill"></div></div>
-              <div class="up-txt"><span id="hTxt">جاري الرفع...</span><span id="hPct">0%</span></div>
-            </div>
-            <div class="file-preview" id="hPreview">
-              <div class="fp-ico"><svg><use href="#i-file"/></svg></div>
-              <div class="fp-info"><div class="fp-name" id="hFileName"></div><div class="fp-size" id="hFileSize"></div></div>
-              <button class="fp-del" onclick="clearHFile()"><svg><use href="#i-x"/></svg></button>
-            </div>
-          </div>
-          <input type="hidden" id="hFileUrl"/>
 
-          <!-- Image URL (NEW from v2) -->
-          <div class="ff full">
-            <label>أو رابط صورة الواجب <span style="font-size:9px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;padding:1px 5px;border-radius:5px">جديد</span></label>
-            <div style="display:flex;gap:8px;align-items:stretch">
-              <input type="url" id="hImgUrl" placeholder="https://example.com/homework.jpg" style="flex:1"/>
-              <button onclick="previewImageUrl('hImgUrl')" style="padding:10px 14px;border:1px solid var(--b1);border-radius:10px;background:transparent;color:var(--blue);cursor:pointer;font-size:12px;font-weight:700">معاينة</button>
-            </div>
-          </div>
-
-          <!-- Google Drive URL للواجب -->
-          <div class="ff full">
-            <label>أو رابط Google Drive <span style="font-size:9px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;padding:1px 5px;border-radius:5px">Drive</span></label>
-            <div style="display:flex;gap:8px;align-items:stretch">
-              <input type="url" id="hDriveUrl" placeholder="https://drive.google.com/file/d/..." style="flex:1" oninput="onDriveUrlInput('h',this.value)"/>
-              <button onclick="clearDrive('homework')" style="padding:10px 14px;border:1px solid rgba(255,77,109,.3);border-radius:10px;background:transparent;color:var(--err);cursor:pointer;font-size:12px;font-weight:700">مسح</button>
-            </div>
-            <div id="hDrivePreview" style="margin-top:10px;padding:10px;background:rgba(66,133,244,0.06);border:1px solid rgba(66,133,244,0.2);border-radius:10px;display:none;align-items:center;gap:10px">
-              <svg width="28" height="28" viewBox="0 0 87.3 78" fill="none" style="flex-shrink:0"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M73.55 76.8a7.38 7.38 0 003.3-3.3l1.6-2.75L86.1 57.5c.8-1.4 1.2-2.95 1.2-4.5H59.8l5.65 10.7z" fill="#ea4335"/><path d="M43.65 25L57.4 0h-.05c-1.35-.8-2.9-1.2-4.5-1.2H34.3c-1.6 0-3.1.45-4.5 1.2z" fill="#00832d"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
-              <div style="flex:1;min-width:0">
-                <div id="hDriveName" style="font-size:12px;font-weight:700">تم إضافة رابط Drive ✓</div>
-                <div id="hDriveSize" style="font-size:10px;color:var(--muted)">سيتم فتح الملف من Drive</div>
+            <!-- رفع مباشر -->
+            <div id="ipanel-upload" class="src-panel active">
+              <div class="upload-zone" id="hFileZone">
+                <input type="file" accept=".pdf,image/*" id="hFile" onchange="handleHwFile(this.files[0])"/>
+                <div class="upload-zone-ico"><svg><use href="#i-upload"/></svg></div>
+                <h4>اضغط أو اسحب ملف PDF أو صورة</h4>
+                <p>سيتمكن الطلاب من فتحه مباشرة</p>
+                <span class="accept">PDF · JPG · PNG · GIF</span>
+              </div>
+              <div class="upload-progress" id="hProgress">
+                <div class="up-bar"><div class="up-fill" id="hFill"></div></div>
+                <div class="up-txt"><span id="hTxt">جاري الرفع...</span><span id="hPct">0%</span></div>
+              </div>
+              <div class="file-preview" id="hPreview">
+                <div class="fp-ico"><svg><use href="#i-file"/></svg></div>
+                <div class="fp-info"><div class="fp-name" id="hFileName"></div><div class="fp-size" id="hFileSize"></div></div>
+                <button class="fp-del" onclick="clearHFile()"><svg><use href="#i-x"/></svg></button>
               </div>
             </div>
-            <input type="hidden" id="hDriveId"/>
+
+            <!-- Google Drive -->
+            <div id="ipanel-drive" class="src-panel">
+              <input type="url" id="hDriveUrl" placeholder="https://drive.google.com/file/d/..." oninput="onDriveUrlInput('h',this.value)"
+                style="width:100%;padding:10px 12px;background:var(--inp);border:1.5px solid rgba(66,133,244,0.3);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/>
+              <div id="hDrivePreview" style="margin-top:8px;padding:10px;background:rgba(66,133,244,0.06);border:1px solid rgba(66,133,244,0.2);border-radius:10px;display:none;align-items:center;gap:8px">
+                <svg width="20" height="20" viewBox="0 0 87.3 78" fill="none"><path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/><path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/><path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/></svg>
+                <div>
+                  <div style="font-size:12px;font-weight:700;color:var(--text)">تم إضافة رابط Drive ✓</div>
+                  <div style="font-size:10px;color:var(--muted)">تأكد إن الملف عنده صلاحية "Anyone with the link"</div>
+                </div>
+              </div>
+              <input type="hidden" id="hDriveId"/>
+            </div>
+
+            <!-- رابط مباشر -->
+            <div id="ipanel-link" class="src-panel">
+              <div style="display:flex;gap:8px">
+                <input type="url" id="hImgUrl" placeholder="https://example.com/homework.jpg" style="flex:1;padding:10px 12px;background:var(--inp);border:1.5px solid rgba(167,139,250,0.3);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/>
+                <button onclick="previewImageUrl('hImgUrl')" style="padding:10px 13px;border:1.5px solid var(--b1);border-radius:10px;background:transparent;color:var(--purple);cursor:pointer;font-size:12px;font-weight:700;flex-shrink:0;font-family:'Tajawal',sans-serif">معاينة</button>
+              </div>
+            </div>
+            <input type="hidden" id="hFileUrl"/>
           </div>
         </div>
       </div>
@@ -1798,6 +1847,163 @@ window.sendCustomNotif = async () => {
     setTimeout(()=>closeNotifModal(), 2000);
   }catch(e){ resEl.style.color='var(--err)'; resEl.textContent='خطأ: '+e.message; }
 };
+
+// ══════════════════════════════════════════════════════
+// QUESTION BUILDER — داخل الـ module عشان تشتغل صح
+// ══════════════════════════════════════════════════════
+window.questions = [];
+
+window.addQuestion = () => {
+  const q = { id:`q${Date.now()}`, type:'mcq', text:'', points:1, options:['','','',''], correctAnswer:0 };
+  window.questions.push(q);
+  renderQuestionsV2();
+};
+
+window.removeQuestion = (id) => {
+  window.questions = window.questions.filter(q=>q.id!==id);
+  renderQuestionsV2();
+};
+
+window.updateQuestionType = (id, type) => {
+  const q = window.questions.find(x=>x.id===id);
+  if(!q) return;
+  q.type = type;
+  if(type==='truefalse'){ q.options=['صح','خطأ']; q.correctAnswer=0; }
+  else if(type==='essay'){ q.options=[]; q.correctAnswer=null; }
+  else if(type==='mcq' && q.options.length<2){ q.options=['','','','']; q.correctAnswer=0; }
+  renderQuestionsV2();
+};
+
+window.addOption = (qId) => {
+  const q = window.questions.find(x=>x.id===qId);
+  if(q){ q.options.push(''); renderQuestionsV2(); }
+};
+
+window.removeOption = (qId, i) => {
+  const q = window.questions.find(x=>x.id===qId);
+  if(!q || q.options.length<=2) return;
+  q.options.splice(i,1);
+  if(q.correctAnswer>=q.options.length) q.correctAnswer=0;
+  renderQuestionsV2();
+};
+
+window.setCorrectAnswer = (qId, i) => {
+  const q = window.questions.find(x=>x.id===qId);
+  if(q) q.correctAnswer = i;
+};
+
+window.setQuestionText = (qId, val) => {
+  const q = window.questions.find(x=>x.id===qId);
+  if(q) q.text = val;
+};
+
+window.setOptionText = (qId, i, val) => {
+  const q = window.questions.find(x=>x.id===qId);
+  if(q) q.options[i] = val;
+};
+
+window.setQuestionPoints = (qId, val) => {
+  const q = window.questions.find(x=>x.id===qId);
+  if(q) q.points = parseInt(val)||1;
+};
+
+function renderQuestionsV2() {
+  const c = document.getElementById('questionsContainer');
+  if(!c) return;
+  const qs = window.questions;
+  if(!qs.length){
+    c.innerHTML=`<div style="text-align:center;padding:28px;color:var(--muted);border:1.5px dashed var(--b1);border-radius:12px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:32px;height:32px;opacity:.25;display:block;margin:0 auto 10px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg>
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px">لا توجد أسئلة بعد</div>
+      <div style="font-size:11px">اضغط "إضافة سؤال" لبدء بناء الامتحان</div>
+    </div>`;
+    return;
+  }
+  c.innerHTML = qs.map((q,idx)=>{
+    const typeLabel = q.type==='mcq'?'اختيار متعدد':q.type==='truefalse'?'صح / خطأ':'مقالي';
+    let optsHTML = '';
+    if(q.type==='mcq'||q.type==='truefalse'){
+      optsHTML = `<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+        ${q.options.map((opt,i)=>`
+        <div class="q-opt">
+          <input type="radio" name="r_${q.id}" ${q.correctAnswer===i?'checked':''} onchange="setCorrectAnswer('${q.id}',${i})"/>
+          <input type="text" class="q-opt input" value="${opt.replace(/"/g,'&quot;').replace(/'/g,'&#39;')}" placeholder="الإجابة ${i+1}" oninput="setOptionText('${q.id}',${i},this.value)"/>
+          ${q.type==='mcq'&&q.options.length>2?`<button class="q-opt-del" onclick="removeOption('${q.id}',${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:11px;height:11px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`:''}
+        </div>`).join('')}
+        ${q.type==='mcq'?`<button onclick="addOption('${q.id}')" style="margin-top:2px;padding:5px 10px;border:1.5px dashed rgba(74,127,212,0.4);border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;transition:all .2s" onmouseover="this.style.color='var(--blue)'" onmouseout="this.style.color='var(--muted)'">+ إضافة خيار</button>`:''}
+      </div>`;
+    } else {
+      optsHTML = `<div style="padding:10px 12px;background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.15);border-radius:8px;font-size:11px;color:var(--muted)">
+        ✍️ سؤال مقالي — الطالب يكتب إجابة نصية وتصحّحها يدوياً
+      </div>`;
+    }
+    const totalPts = window.questions.reduce((s,q2)=>s+(q2.points||1),0);
+    return `<div class="q-card">
+      <div class="q-card-head">
+        <div class="q-num">${idx+1}</div>
+        <select class="q-type-sel" onchange="updateQuestionType('${q.id}',this.value)">
+          <option value="mcq" ${q.type==='mcq'?'selected':''}>اختيار متعدد</option>
+          <option value="truefalse" ${q.type==='truefalse'?'selected':''}>صح / خطأ</option>
+          <option value="essay" ${q.type==='essay'?'selected':''}>مقالي</option>
+        </select>
+        <div style="display:flex;align-items:center;gap:4px;margin-right:4px">
+          <input class="q-pts" type="number" value="${q.points}" min="1" placeholder="نقاط" oninput="setQuestionPoints('${q.id}',this.value)"/>
+          <span style="font-size:10px;color:var(--muted)">نقطة</span>
+        </div>
+        <button class="q-del" onclick="removeQuestion('${q.id}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+        </button>
+      </div>
+      <textarea class="q-text" rows="2" placeholder="اكتب نص السؤال هنا..." oninput="setQuestionText('${q.id}',this.value)">${q.text||''}</textarea>
+      ${optsHTML}
+    </div>`;
+  }).join('');
+  // تحديث عداد الدرجات
+  const totalPts = window.questions.reduce((s,q)=>s+(q.points||1),0);
+  const ctr = document.getElementById('qTotalCounter');
+  if(ctr) ctr.textContent = `${window.questions.length} سؤال · ${totalPts} نقطة`;
+}
+window.renderQuestionsV2 = renderQuestionsV2;
+
+// ── Save Builder Exam ──
+window.saveBuilderQuestions = async () => {
+  const qs = window.questions;
+  if(!qs||qs.length===0){ toast('أضف أسئلة أولاً!','err'); return; }
+  const grade = document.getElementById('gSel')?.value;
+  if(!grade){ toast('اختار صف أولاً','err'); return; }
+  const title = (document.getElementById('eTitle')?.value||'').trim();
+  if(!title){ toast('اكتب عنوان الامتحان','err'); return; }
+  try {
+    const totalScore = parseInt(document.getElementById('eTotalScore')?.value||'')||qs.reduce((s,q)=>s+(q.points||1),0);
+    await addDoc(collection(db,'content',grade,'exams'), {
+      title, type:'mixed', examSystem:'new',
+      duration: document.getElementById('eDur')?.value||'60',
+      totalScore,
+      order: parseInt(document.getElementById('eOrder')?.value||'')||1,
+      maxAttempts: parseInt(document.getElementById('eMaxAttempts')?.value||'')||null,
+      expiresAt: document.getElementById('eExpiresAt')?.value ? new Date(document.getElementById('eExpiresAt').value) : null,
+      questions: qs.map(q=>({ id:q.id, type:q.type, text:q.text, points:q.points, options:q.options, correctAnswer:q.correctAnswer })),
+      createdAt: serverTimestamp()
+    });
+    toast('تم حفظ الامتحان ✓','ok');
+    if(document.getElementById('eNotify')?.checked) await sendContentNotif(grade,'امتحان جديد 📝',title);
+    window.questions=[];
+    renderQuestionsV2();
+    ['eTitle','eDur','eOrder','eTotalScore','eMaxAttempts','eExpiresAt'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    loadList('exams','eList');
+  }catch(e){ toast('خطأ: '+e.message,'err'); console.error(e); }
+};
+
+// ── Image Source for Homework ──
+window.setImgSource = (src) => {
+  window._imgSrc = src;
+  ['upload','drive','link'].forEach(s=>{
+    document.getElementById(`isrc-${s}`)?.classList.toggle('active', s===src);
+    const p = document.getElementById(`ipanel-${s}`);
+    if(p) p.classList.toggle('active', s===src);
+  });
+};
+
 </script>
 
 <script>
@@ -1909,14 +2115,11 @@ function previewYt(url){
 window._videoSource = 'yt';
 window.setVideoSource = (src) => {
   window._videoSource = src;
-  const isYt = src === 'yt';
-  // زر اليوتيوب
-  const ytBtn = document.getElementById('vsrc-yt');
-  const drBtn = document.getElementById('vsrc-drive');
-  if(ytBtn){ ytBtn.style.borderColor = isYt ? 'rgba(255,0,0,0.6)':'var(--b1)'; ytBtn.style.background = isYt ? 'rgba(255,0,0,0.1)':'transparent'; ytBtn.style.color = isYt ? '#ff4444':'var(--muted)'; }
-  if(drBtn){ drBtn.style.borderColor = !isYt ? 'rgba(66,133,244,0.6)':'var(--b1)'; drBtn.style.background = !isYt ? 'rgba(66,133,244,0.1)':'transparent'; drBtn.style.color = !isYt ? '#4285f4':'var(--muted)'; }
-  document.getElementById('vf-yt').style.display    = isYt ? 'block':'none';
-  document.getElementById('vf-drive').style.display = isYt ? 'none':'block';
+  ['yt','drive'].forEach(s=>{
+    document.getElementById(`vsrc-${s}`)?.classList.toggle('active', s===src);
+    const p = document.getElementById(`vf-${s}`);
+    if(p) p.style.display = s===src ? 'block':'none';
+  });
 };
 function setEType(t){
   window._eType=t;
@@ -1933,11 +2136,10 @@ window.onExamSystemChange = function(val) {
   const isNew = val === 'new';
   document.getElementById('block-new').style.display = isNew ? 'block' : 'none';
   document.getElementById('block-old').style.display = isNew ? 'none' : 'block';
-  // تحديث أزرار الاختيار
   const btnNew = document.getElementById('sys-new');
   const btnOld = document.getElementById('sys-old');
-  if(btnNew){ btnNew.style.borderColor = isNew ? 'var(--ok)' : 'var(--b1)'; btnNew.style.background = isNew ? 'rgba(0,214,143,0.12)' : 'transparent'; btnNew.style.color = isNew ? 'var(--ok)' : 'var(--muted)'; }
-  if(btnOld){ btnOld.style.borderColor = !isNew ? 'var(--gold)' : 'var(--b1)'; btnOld.style.background = !isNew ? 'rgba(201,168,76,0.12)' : 'transparent'; btnOld.style.color = !isNew ? 'var(--gold)' : 'var(--muted)'; }
+  if(btnNew){ btnNew.className = 'sys-btn' + (isNew ? ' active-new' : ''); }
+  if(btnOld){ btnOld.className = 'sys-btn' + (!isNew ? ' active-old' : ''); }
 };
 
 // ── Render items ──
@@ -2538,22 +2740,24 @@ window.executeCopy = async () => {
 
 document.addEventListener('fbready', ()=>{
   console.log('CM enhanced features ready');
+  // Initialize video source to YouTube by default
+  window.setVideoSource?.('yt');
+  // Initialize image source to upload by default  
+  window._imgSrc = 'upload';
 });
 
-// ══════════════════ SCORES / ANSWERS ══════════════════
+</script>
 
-
+<script>
 // ══════════════════════════════════════════════════════
-// v2 FEATURES: Google Drive URL Handler + Image Preview
+// UTILITY FUNCTIONS (non-module scope)
 // ══════════════════════════════════════════════════════
 
-// استخراج File ID من رابط Drive
 window.extractDriveId = (url) => {
-  const m = url.match(/\/d\/([-\w]+)|id=([-\w]+)/);
+  const m = url?.match(/\/d\/([-\w]+)|id=([-\w]+)/);
   return m ? (m[1]||m[2]) : null;
 };
 
-// لما المستخدم يحط رابط Drive
 window.onDriveUrlInput = (prefix, url) => {
   const preview = document.getElementById(prefix+'DrivePreview');
   if(!url || !url.includes('drive.google.com')) {
@@ -2561,174 +2765,74 @@ window.onDriveUrlInput = (prefix, url) => {
     return;
   }
   const id = window.extractDriveId(url);
-  if(id) {
-    const idEl = document.getElementById(prefix+'DriveId');
-    if(idEl) idEl.value = id;
-  }
+  if(id) { const el=document.getElementById(prefix+'DriveId'); if(el) el.value=id; }
   if(preview) preview.style.display='flex';
 };
 
 window.clearDrive = (type) => {
-  const prefix = type === 'video' ? 'v' : 'h';
-  const urlEl = document.getElementById(prefix+'DriveUrl');
-  const idEl = document.getElementById(prefix+'DriveId');
-  if(urlEl) urlEl.value='';
-  if(idEl) idEl.value='';
-  const prev = document.getElementById(prefix+'DrivePreview');
-  if(prev) prev.style.display = 'none';
+  const prefix = type==='video' ? 'v' : 'h';
+  ['DriveUrl','DriveId'].forEach(s=>{ const el=document.getElementById(prefix+s); if(el) el.value=''; });
+  const prev=document.getElementById(prefix+'DrivePreview');
+  if(prev) prev.style.display='none';
 };
 
 window.previewImageUrl = (inputId) => {
   const url = document.getElementById(inputId)?.value.trim();
-  if (!url) { toast('حط رابط الصورة الأول', 'err'); return; }
+  if(!url){ toast('حط رابط الصورة الأول','err'); return; }
   const modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
-  modal.innerHTML = `<div style="max-width:600px;width:100%"><img src="${url}" style="width:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)" onerror="this.alt='خطأ في تحميل الصورة'"/><button onclick="this.closest('[style*=fixed]').remove()" style="margin-top:12px;padding:9px 20px;border:1px solid rgba(255,77,109,.3);border-radius:9px;background:rgba(255,77,109,.12);color:#ff4d6d;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;width:100%">✕ إغلاق</button></div>`;
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;cursor:pointer';
+  modal.innerHTML=`<div style="max-width:640px;width:100%;cursor:default" onclick="event.stopPropagation()">
+    <img src="${url}" style="width:100%;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6);display:block" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"/>
+    <div style="display:none;padding:20px;background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.3);border-radius:10px;color:var(--err);text-align:center;font-size:13px">⚠️ تعذّر تحميل الصورة — تحقق من الرابط</div>
+    <button onclick="this.closest('[style*=fixed]').remove()" style="margin-top:12px;width:100%;padding:10px;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.7);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700">✕ إغلاق</button>
+  </div>`;
   document.body.appendChild(modal);
-  modal.addEventListener('click', e => { if (e.target===modal) modal.remove(); });
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.remove(); });
 };
 
-// ══════════════════════════════════════════════════════
-// v2 EXAM BUILDER: Mixed Question Types
-// ══════════════════════════════════════════════════════
-window.questions = window.questions || [];
-// alias local for convenience
-Object.defineProperty(window, '_q', { get: ()=>window.questions, set: v=>{ window.questions=v; } });
-
-window.addQuestion = () => {
-  const q = { id: `q${Date.now()}`, type: 'mcq', text: '', points: 1, options: ['','','',''], correctAnswer: 0 };
-  window.questions.push(q);
-  renderQuestionsV2();
+// ── clearH extended ──
+const _origClearH2 = window.clearH;
+window.clearH = function(){
+  if(_origClearH2) _origClearH2();
+  ['hDriveId','hDriveUrl','hImgUrl','hFileUrl'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const prev=document.getElementById('hDrivePreview'); if(prev) prev.style.display='none';
+  // reset source tabs
+  window.setImgSource?.('upload');
 };
 
-window.removeQuestion = (id) => {
-  window.questions = window.questions.filter(q => q.id !== id);
-  renderQuestionsV2();
+// ── clearV extended ──
+const _origClearV2 = window.clearV;
+window.clearV = function(){
+  if(_origClearV2) _origClearV2();
+  ['vDriveId','vDriveUrl','vThumbUrl'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const prev=document.getElementById('vDrivePreview'); if(prev) prev.style.display='none';
+  window.setVideoSource?.('yt');
 };
 
-window.updateQuestionType = (id, type) => {
-  const q = window.questions.find(x => x.id === id);
-  if (!q) return;
-  q.type = type;
-  if (type === 'truefalse') { q.options = ['صح','خطأ']; q.correctAnswer = 0; }
-  else if (type === 'essay') { q.options = []; q.correctAnswer = null; }
-  else if (type === 'mcq' && q.options.length < 2) { q.options = ['','','','']; q.correctAnswer = 0; }
-  renderQuestionsV2();
+// ── clearE extended ──
+const _origClearE2 = window.clearE;
+window.clearE = function(){
+  if(_origClearE2) _origClearE2();
+  // Reset questions
+  if(window.questions){ window.questions=[]; window.renderQuestionsV2?.(); }
 };
 
-window.addOption = (qId) => {
-  const q = window.questions.find(x=>x.id===qId);
-  if(q) { q.options.push(''); renderQuestionsV2(); }
-};
-
-window.removeOption = (qId, i) => {
-  const q = window.questions.find(x=>x.id===qId);
-  if(!q || q.options.length<=2) return;
-  q.options.splice(i,1);
-  if(q.correctAnswer>=q.options.length) q.correctAnswer=0;
-  renderQuestionsV2();
-};
-
-function renderQuestionsV2() {
-  const c = document.getElementById('questionsContainer');
-  if (!c) return;
-  const qs = window.questions;
-  if (!qs.length) {
-    c.innerHTML = '<div class="empty"><p>اضغط "إضافة سؤال" لبدء بناء الامتحان</p></div>';
-    return;
+// ── saveHomework extended to pick right file source ──
+const _origSaveHomework = window.saveHomework;
+window.saveHomework = async function(){
+  // Inject file URL from the active source
+  const src = window._imgSrc || 'upload';
+  const fileUrlEl = document.getElementById('hFileUrl');
+  if(src==='drive'){
+    const driveUrl = document.getElementById('hDriveUrl')?.value.trim();
+    if(fileUrlEl && driveUrl) fileUrlEl.value = driveUrl;
+  } else if(src==='link'){
+    const linkUrl = document.getElementById('hImgUrl')?.value.trim();
+    if(fileUrlEl && linkUrl) fileUrlEl.value = linkUrl;
   }
-  c.innerHTML = qs.map((q,index)=>{
-    let optsHTML = '';
-    if (q.type==='mcq'||q.type==='truefalse') {
-      optsHTML = `<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">${q.options.map((opt,i)=>`
-        <div style="display:flex;align-items:center;gap:8px">
-          <input type="radio" name="${q.id}" ${q.correctAnswer===i?'checked':''} onchange="window.questions.find(x=>x.id==='${q.id}').correctAnswer=${i}" style="accent-color:var(--ok);width:15px;height:15px"/>
-          <input type="text" value="${opt.replace(/"/g,'&quot;')}" placeholder="الإجابة ${i+1}" oninput="window.questions.find(x=>x.id==='${q.id}').options[${i}]=this.value" style="flex:1;padding:8px 10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px"/>
-          ${q.type==='mcq'&&q.options.length>2?`<button onclick="removeOption('${q.id}',${i})" style="padding:4px 8px;border:1px solid rgba(255,77,109,.3);border-radius:6px;background:rgba(255,77,109,.08);color:var(--err);cursor:pointer">×</button>`:''}
-        </div>`).join('')}
-        ${q.type==='mcq'?`<button class="btn sm ghost" onclick="addOption('${q.id}')" style="margin-top:4px">+ إضافة خيار</button>`:''}
-      </div>`;
-    } else {
-      optsHTML = '<p style="font-size:11px;color:var(--muted);padding:8px">سؤال مقالي — الطالب يكتب إجابة نصية وتصحّحها أنت</p>';
-    }
-    return `<div style="background:rgba(8,13,28,.5);border:1px solid var(--b2);border-radius:10px;padding:14px;margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-        <div style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0">${index+1}</div>
-        <select onchange="updateQuestionType('${q.id}',this.value)" style="padding:6px 10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer">
-          <option value="mcq" ${q.type==='mcq'?'selected':''}>اختيار متعدد</option>
-          <option value="truefalse" ${q.type==='truefalse'?'selected':''}>صح/خطأ</option>
-          <option value="essay" ${q.type==='essay'?'selected':''}>مقالي</option>
-        </select>
-        <input type="number" value="${q.points}" min="1" placeholder="نقاط" oninput="window.questions.find(x=>x.id==='${q.id}').points=parseInt(this.value)||1" style="width:65px;padding:6px 8px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-size:12px"/>
-        <button onclick="removeQuestion('${q.id}')" style="margin-right:auto;padding:5px 10px;border:1px solid rgba(255,77,109,.3);border-radius:7px;background:rgba(255,77,109,.08);color:var(--err);cursor:pointer;font-size:11px">حذف</button>
-      </div>
-      <textarea placeholder="نص السؤال..." rows="2" oninput="window.questions.find(x=>x.id==='${q.id}').text=this.value" style="width:100%;padding:10px;background:rgba(6,10,22,.6);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;margin-bottom:4px;resize:vertical">${q.text}</textarea>
-      ${optsHTML}
-    </div>`;
-  }).join('');
-}
-
-// Save questions from v2 builder as a new exam
-window.saveBuilderQuestions = async () => {
-  const qs = window.questions;
-  if (!qs || qs.length === 0) { toast('أضف أسئلة أولاً!','err'); return; }
-  const grade = document.getElementById('gSel')?.value;
-  if(!grade){ toast('اختار صف أولاً','err'); return; }
-  const title = (document.getElementById('eTitle')?.value||'').trim();
-  if(!title){ toast('اكتب عنوان الامتحان','err'); return; }
-  try {
-    const _db  = window._db;
-    const _add = window._addDoc;
-    const _col = window._collection;
-    const _ts  = window._serverTimestamp;
-    if(!_db||!_add){ toast('Firebase لسه بيحمّل، جرب تاني','err'); return; }
-    const totalScore = parseInt(document.getElementById('eTotalScore')?.value||'') || qs.reduce((s,q)=>s+(q.points||1),0);
-    await _add(_col(_db,'content',grade,'exams'), {
-      title, type:'mixed', examSystem:'new',
-      duration: document.getElementById('eDur')?.value||'60',
-      totalScore,
-      order: parseInt(document.getElementById('eOrder')?.value||'')||1,
-      maxAttempts: parseInt(document.getElementById('eMaxAttempts')?.value||'')||null,
-      expiresAt: document.getElementById('eExpiresAt')?.value ? new Date(document.getElementById('eExpiresAt').value) : null,
-      questions: qs.map(q=>({ id:q.id, type:q.type, text:q.text, points:q.points, options:q.options, correctAnswer:q.correctAnswer })),
-      createdAt: _ts()
-    });
-    toast('تم حفظ الامتحان المتقدم ✓','ok');
-    if(document.getElementById('eNotify')?.checked) await window.sendContentNotif?.(grade,'امتحان جديد 📝',title);
-    window.questions = [];
-    renderQuestionsV2();
-    ['eTitle','eDur','eOrder','eTotalScore','eMaxAttempts','eExpiresAt'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-    window.loadList('exams','eList');
-  } catch(e){ toast('خطأ: '+e.message,'err'); console.error(e); }
+  // src==='upload' => hFileUrl already set by handleHwFile
+  if(_origSaveHomework) await _origSaveHomework();
 };
-
-// Extend clearV to clear drive fields
-const _origClearV = window.clearV;
-window.clearV = function() {
-  if(_origClearV) _origClearV();
-  ['vDriveId','vDriveUrl','vThumbUrl'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  const prev = document.getElementById('vDrivePreview'); if(prev) prev.style.display='none';
-};
-
-// Extend clearH to clear drive/img fields
-const _origClearH = window.clearH;
-window.clearH = function() {
-  if(_origClearH) _origClearH();
-  ['hDriveId','hDriveUrl','hImgUrl'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  const prev = document.getElementById('hDrivePreview'); if(prev) prev.style.display='none';
-};
-
-// Extend saveVideo: إذا كان فيه Drive URL ومفيش YouTube، استخدم Drive
-const _origSaveVideo = window.saveVideo;
-window.saveVideo = async function() {
-  const vDriveUrl = document.getElementById('vDriveUrl')?.value.trim();
-  const vUrl = document.getElementById('vUrl')?.value.trim();
-  if(!vUrl && vDriveUrl) {
-    document.getElementById('vUrl').value = vDriveUrl;
-  }
-  if(_origSaveVideo) await _origSaveVideo();
-};
-
-
+</script>
 </body>
 </html>
