@@ -2401,41 +2401,52 @@ window.printMyResearch=(id)=>{
 };
 
 function _printResearch(r){
-  const html=`<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8"/>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet"/>
-<style>
-body{font-family:'Tajawal',"Traditional Arabic","Arial",sans-serif;font-size:16px;line-height:2;max-width:900px;margin:auto;direction:rtl;text-align:right}
-.cover{text-align:center;min-height:100vh;display:flex;flex-direction:column;justify-content:center;page-break-after:always}
-.cover h1{font-size:2.6em;color:#c62828}
-.info{font-size:1.1em;line-height:2.8;margin-top:30px}
-h2{color:#c62828;margin:60px 0 20px;border-right:8px solid #c62828;padding-right:15px}
-.box{background:#f9fbfc;border-right:6px solid #c62828;padding:30px 40px;margin:40px 0;border-radius:10px;white-space:pre-wrap;text-align:right;line-height:2}
-.print-btn{display:block;margin:60px auto;padding:12px 36px;font-size:18px;background:#c62828;color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:'Tajawal',sans-serif}
-@page{size:A4;margin:20mm;@top-center{content:"${r.studentName||''} – ${r.subject||''} – ${r.code||''} – ${r.gradeText||''}";font-family:'Tajawal',sans-serif;font-size:11pt;color:#c62828;border-bottom:1px solid #ccc}@bottom-center{content:"صفحة " counter(page);font-size:11pt}}
-@page :first{@bottom-center{content:""}}
-@media print{.print-btn{display:none}body{font-size:13pt}h1,h2{text-align:center;border:none}.box{background:none;border:none}}
-</style>
-</head>
-<body>
-<div class="cover">
-  <h1>${r.topic||'—'}</h1>
-  <div class="info">
-    إعداد الطالب<br/><br/>
-    <strong>${r.studentName||'—'}</strong><br/><br/>
-    ${r.gradeText||''}${r.dept?' – '+r.dept:''}<br/>
-    ${r.subject?'المادة: '+r.subject+'<br/>':''}
-    ${r.code?'الكود: '+r.code:''}
-  </div>
-</div>
-<h2>${r.topic||'—'}</h2>
-<div class="box">${(r.details||'لا يوجد محتوى').replace(/\n/g,'<br/>')}</div>
-<button class="print-btn" onclick="window.print()">🖨️ طباعة البحث</button>
-</body></html>`;
+  // نبني الـ HTML كـ array وندمجه عشان نتفادى إشكالية الـ parser مع الـ closing tags
+  const css=[
+    'body{font-family:"Tajawal","Traditional Arabic","Arial",sans-serif;font-size:16px;line-height:2;max-width:900px;margin:auto;direction:rtl;text-align:right}',
+    '.cover{text-align:center;min-height:100vh;display:flex;flex-direction:column;justify-content:center;page-break-after:always}',
+    '.cover h1{font-size:2.6em;color:#c62828}',
+    '.info{font-size:1.1em;line-height:2.8;margin-top:30px}',
+    'h2{color:#c62828;margin:60px 0 20px;border-right:8px solid #c62828;padding-right:15px}',
+    '.box{background:#f9fbfc;border-right:6px solid #c62828;padding:30px 40px;margin:40px 0;border-radius:10px;white-space:pre-wrap;text-align:right;line-height:2}',
+    '.print-btn{display:block;margin:60px auto;padding:12px 36px;font-size:18px;background:#c62828;color:#fff;border:none;border-radius:10px;cursor:pointer;font-family:"Tajawal",sans-serif}',
+    '@media print{.print-btn{display:none}body{font-size:13pt}h1,h2{text-align:center;border:none}.box{background:none;border:none}}'
+  ].join('\n');
+
+  const body=[
+    '<div class="cover">',
+    '  <h1>'+(r.topic||'—')+'</h1>',
+    '  <div class="info">',
+    '    إعداد الطالب<br/><br/>',
+    '    <strong>'+(r.studentName||'—')+'</strong><br/><br/>',
+    '    '+(r.gradeText||'')+(r.dept?' – '+r.dept:'')+'<br/>',
+    r.subject?'    المادة: '+r.subject+'<br/>':'',
+    r.code?'    الكود: '+r.code:'',
+    '  </div>',
+    '</div>',
+    '<h2>'+(r.topic||'—')+'</h2>',
+    '<div class="box">'+((r.details||'لا يوجد محتوى').replace(/\n/g,'<br/>'))+'</div>',
+    '<button class="print-btn" onclick="window.print()">🖨️ طباعة البحث</button>'
+  ].join('\n');
+
+  const parts=[
+    '<!DOCTYPE html>',
+    '<html lang="ar" dir="rtl">',
+    '<head>',
+    '<meta charset="UTF-8"/>',
+    '<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@700;800;900&display=swap" rel="stylesheet"/>',
+    '<style>'+css+'</'+'style>',
+    '</'+'head>',
+    '<body>',
+    body,
+    '</'+'body>',
+    '</'+'html>'
+  ];
+
   const w=window.open('','_blank');
-  w.document.write(html);
+  if(!w){ showToast('يرجى السماح بالنوافذ المنبثقة','err'); return; }
+  w.document.open();
+  w.document.write(parts.join('\n'));
   w.document.close();
 }
 
