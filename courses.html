@@ -306,9 +306,7 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;
 #countdownVal{font-size:12px;font-weight:900}
 
 /* ══ NOTIFICATION POPUP ══ */
-to{opacity:1;transform:translateX(-50%) translateY(0)}}
-
-
+@keyframes notifPop{from{opacity:0;transform:translateX(-50%) translateY(12px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 
 .notif-item-pop{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--b2)}
 .notif-item-pop:last-child{border-bottom:none;padding-bottom:0}
@@ -344,7 +342,39 @@ to{opacity:1;transform:translateX(-50%) translateY(0)}}
   background:rgba(74,127,212,0.05);border-radius:8px;border:1px solid var(--b2)}
 .nm-list li .nm-done{color:var(--ok)}
 .nm-list li .nm-not{color:var(--muted);opacity:.5}
-</style>
+
+/* ══ DRIVE VIDEO PLAYER ══ */
+.drive-player-wrap{border-radius:12px;overflow:hidden;background:#000;margin-bottom:14px;position:relative}
+.drive-player-wrap iframe{width:100%;height:clamp(200px,50vw,320px);border:none;display:block}
+.drive-player-overlay{position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:repeating-linear-gradient(-45deg,transparent,transparent 60px,rgba(255,255,255,.012) 60px,rgba(255,255,255,.012) 61px)}
+
+/* ══ MIXED EXAM ══ */
+.mix-q{background:rgba(8,13,28,0.5);border:1.5px solid var(--b2);border-radius:13px;padding:16px;margin-bottom:12px;transition:border-color .2s}
+.mix-q:focus-within{border-color:rgba(74,127,212,0.4)}
+.mix-q-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.mix-q-num{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--navy));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;flex-shrink:0}
+.mix-q-type{font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;letter-spacing:.5px}
+.mix-q-type.mcq{background:rgba(74,127,212,0.12);color:var(--blue)}
+.mix-q-type.tf{background:rgba(0,214,143,0.1);color:var(--ok)}
+.mix-q-type.essay{background:rgba(167,139,250,0.12);color:var(--purple)}
+.mix-q-pts{margin-right:auto;font-size:10px;font-weight:700;color:var(--muted)}
+.mix-q-text{font-size:14px;font-weight:700;line-height:1.7;margin-bottom:12px;color:var(--text)}
+.mix-opt{padding:10px 13px;border:1.5px solid var(--b2);border-radius:9px;cursor:pointer;font-size:13px;margin-bottom:7px;transition:all .2s;display:flex;align-items:center;gap:10px}
+.mix-opt:hover{border-color:var(--blue);background:rgba(74,127,212,0.06)}
+.mix-opt.sel{border-color:var(--blue);background:rgba(74,127,212,0.1);color:var(--blue)}
+.mix-opt.correct{border-color:var(--ok);background:rgba(0,214,143,0.1);color:var(--ok);pointer-events:none}
+.mix-opt.wrong{border-color:var(--err);background:rgba(255,77,109,0.1);color:var(--err);pointer-events:none}
+.mix-opt-radio{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.mix-opt.sel .mix-opt-radio::after,.mix-opt.correct .mix-opt-radio::after{content:'';width:8px;height:8px;border-radius:50%;background:currentColor}
+.mix-essay-area{width:100%;padding:10px 12px;background:rgba(8,13,28,.6);border:1.5px solid var(--b1);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;resize:vertical;min-height:80px;transition:border-color .2s}
+.mix-essay-area:focus{border-color:var(--blue)}
+.mix-progress-bar{height:4px;background:rgba(74,127,212,0.15);border-radius:2px;margin-bottom:16px;overflow:hidden}
+.mix-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--ok));border-radius:2px;transition:width .4s ease}
+.exam-timer{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;background:rgba(255,77,109,0.08);border:1px solid rgba(255,77,109,0.2);border-radius:20px;font-size:12px;font-weight:800;color:var(--err)}
+.exam-timer.ok{background:rgba(0,214,143,0.06);border-color:rgba(0,214,143,0.2);color:var(--ok)}
+.exam-timer.warn{background:rgba(245,166,35,0.08);border-color:rgba(245,166,35,0.2);color:#f5a623}
+
 </head>
 <body>
 <div class="bg-grid"></div>
@@ -1002,19 +1032,39 @@ function renderVideos(videos,done,gradeKey,isMine){
     const noViewsLeft=maxV&&views>=maxV;
     const isVideoBlocked=isExpired||noViewsLeft;
 
-    const ytId=getYtId(v.url||'');
-    const thumb=ytId?`https://img.youtube.com/vi/${ytId}/mqdefault.jpg`:'';
+    // كشف نوع المصدر
+    const isDrive = v.videoSource==='drive' || (v.driveId&&!getYtId(v.url||''));
+    const driveId = v.driveId || (isDrive ? getYtId(v.url||'')||v.url : '');
+    const ytId    = isDrive ? '' : getYtId(v.url||'');
+
+    // Thumbnail
+    const thumb = v.thumbUrl
+      ? v.thumbUrl
+      : ytId
+        ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`
+        : isDrive
+          ? `https://drive.google.com/thumbnail?id=${driveId}&sz=w300`
+          : '';
 
     let metaExtra='';
+    if(isDrive) metaExtra+=`<span style="color:#4285f4;font-size:10px">▶ Drive</span> `;
     if(maxV) metaExtra+=`<span style="color:var(--gold);font-size:10px">👁 ${views}/${maxV}</span>`;
     if(v.expiresAt&&!isExpired){const exp=v.expiresAt.toDate?v.expiresAt.toDate():new Date(v.expiresAt);metaExtra+=`<span style="color:var(--muted);font-size:10px">⏰ ${exp.toLocaleDateString('ar-EG')}</span>`;}
     if(isExpired) metaExtra+=`<span style="color:var(--err);font-size:10px">انتهى ⛔</span>`;
     if(noViewsLeft) metaExtra+=`<span style="color:var(--err);font-size:10px">استُنفد 🚫</span>`;
 
-    const canPlay=!isLocked&&!isVideoBlocked&&(ytId||v.url);
+    const canPlay=!isLocked&&!isVideoBlocked&&(ytId||driveId||v.url);
+    const clickFn = canPlay
+      ? `openVidWithTracking('${v.id}','${ytId||driveId}','${gradeKey}','${v.videoSource||''}','${driveId}')`
+      : '';
+
+    // الـ iframe: Drive يحتاج allow مختلف
+    const iframeAllow = isDrive ? 'autoplay; fullscreen' : 'autoplay';
+
     return `<div class="video-item" data-vid-id="${v.id}">
-      <div id="vp-${v.id}" class="video-player">
-        <iframe id="vf-${v.id}" src="" allowfullscreen allow="autoplay"></iframe>
+      <div id="vp-${v.id}" class="video-player" style="display:none">
+        <iframe id="vf-${v.id}" src="" allowfullscreen allow="${iframeAllow}" style="width:100%;height:clamp(200px,50vw,320px);border:none;display:block"></iframe>
+        ${isDrive?`<div style="position:absolute;inset:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(-45deg,transparent,transparent 60px,rgba(255,255,255,.012) 60px,rgba(255,255,255,.012) 61px)"></div>`:''}
         <div class="video-player-bar">
           ${isMine&&!isDone?`<button class="pbtn ok" onclick="markVDone('${gradeKey}','${v.id}')">انهيت الدرس ✓</button>`:''}
           <button class="pbtn ghost" onclick="closeVid('${v.id}')">إغلاق</button>
@@ -1026,11 +1076,11 @@ function renderVideos(videos,done,gradeKey,isMine){
         </div>
       </div>
       <div class="video-row" style="${isLocked||isVideoBlocked?'cursor:not-allowed;opacity:.55':''}"
-        ${canPlay&&ytId?`onclick="openVidWithTracking('${v.id}','${ytId}','${gradeKey}')"`:''}
-        ${canPlay&&!ytId&&v.url?`onclick="window.open('${v.url}','_blank')"`:''}
+        ${canPlay?`onclick="${clickFn}"`:''}
       >
         <div class="vthumb">
           ${thumb?`<img src="${thumb}" onerror="this.style.display='none'"/>`:''}
+          ${isDrive&&!isLocked?`<div style="position:absolute;top:4px;right:4px;background:rgba(66,133,244,0.9);border-radius:4px;padding:2px 5px;font-size:9px;font-weight:800;color:#fff">Drive</div>`:''}
           ${isLocked||isVideoBlocked
             ?`<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>`
             :isDone
@@ -1057,17 +1107,18 @@ function renderExams(exams,done,gradeKey,isMine){
   const el=document.getElementById('examList');
   window._CE={exams,done,gradeKey,isMine};
   if(!exams.length){el.innerHTML='<div class="empty"><p>لا يوجد امتحانات بعد</p></div>';return;}
-  const tL={mcq:'اختيار متعدد',essay:'مقالي',images:'صور امتحان',link:'Google Form',pdf:'PDF'};
-  const tC={mcq:'var(--gold)',essay:'var(--blue)',images:'var(--purple)',link:'var(--ok)',pdf:'var(--err)'};
   const now=new Date();
   const gp=_progress[gradeKey]||{};
   const examAttempts=gp.examAttempts||{};
 
+  const tL={mcq:'اختيار متعدد',essay:'مقالي',images:'صور امتحان',link:'Google Form',pdf:'PDF',mixed:'متنوع ✨'};
+  const tC={mcq:'var(--blue)',essay:'var(--purple)',images:'var(--ok)',link:'var(--gold)',pdf:'var(--ok)',mixed:'var(--ok)'};
   el.innerHTML=exams.map((e,i)=>{
     const isDone=done.includes(e.id);
     const isLocked=isMine&&i>0&&!done.includes(exams[i-1].id)&&!isDone;
-    const tl=tL[e.type]||'امتحان', tc=tC[e.type]||'var(--gold)';
-    const hasAction=e.mcqRaw||e.essayText||e.imageUrls?.length||e.fileUrl||e.externalUrl||e.url;
+    const tl=tL[e.type]||'امتحان';
+    const tc=e.type==='mixed'?'var(--ok)':tC[e.type]||'var(--gold)';
+    const hasAction=e.mcqRaw||e.essayText||e.imageUrls?.length||e.fileUrl||e.externalUrl||e.url||(e.type==='mixed'&&e.questions?.length);
 
     // تاريخ الانتهاء
     let isExpired=false;
@@ -1201,6 +1252,8 @@ function openInlineExam(examObj,gradeKey,showAnswers){
     const btn=document.getElementById('iep-submit');
     btn.style.display='block';btn.textContent='أنهيت الامتحان ✓';
     btn.onclick=()=>{recordAttemptAndDone(gradeKey,examId);closeInlineExam();};
+  } else if(type==='mixed'&&examObj.questions?.length){
+    renderInlineMixed(examObj,showAnswers);
   }
 }
 
@@ -1303,7 +1356,217 @@ window.closeInlineExam=()=>{
   document.getElementById('iep-result').innerHTML='';
   document.getElementById('iep-prog').textContent='';
   document.getElementById('iep-submit').style.display='none';
+  // إيقاف التايمر لو شغال
+  if(window._examTimer){ clearInterval(window._examTimer); window._examTimer=null; }
 };
+
+// ══════════════════════════════════════
+// ── MIXED EXAM RENDERER ──
+// ══════════════════════════════════════
+let _mixedExam={};
+
+function renderInlineMixed(examObj, showAnswers){
+  const questions = examObj.questions||[];
+  _mixedExam = { examObj, questions, answers:{}, essays:{}, showAnswers };
+
+  const total = examObj.totalScore || questions.reduce((s,q)=>s+(q.points||1),0);
+  const dur   = examObj.duration ? parseInt(examObj.duration) : 0;
+
+  // شريط التقدم
+  const progressHtml = `<div class="mix-progress-bar"><div class="mix-progress-fill" id="mix-prog-fill" style="width:0%"></div></div>`;
+
+  // التايمر
+  let timerHtml = '';
+  if(dur > 0){
+    timerHtml = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="font-size:12px;color:var(--muted)">${questions.length} سؤال · ${total} نقطة</div>
+      <div class="exam-timer ok" id="exam-timer-display">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+        <span id="exam-timer-val">${dur}:00</span>
+      </div>
+    </div>`;
+  } else {
+    timerHtml = `<div style="font-size:12px;color:var(--muted);margin-bottom:10px">${questions.length} سؤال · ${total} نقطة</div>`;
+  }
+
+  // بناء الأسئلة
+  const questionsHtml = questions.map((q,qi)=>{
+    const typeLabel = q.type==='mcq'?'MCQ':q.type==='truefalse'?'ص/خ':'مقالي';
+    const typeClass  = q.type==='mcq'?'mcq':q.type==='truefalse'?'tf':'essay';
+    const ptsLabel   = q.points?`${q.points} نقطة`:'';
+
+    let bodyHtml = '';
+    if(q.type==='mcq'||q.type==='truefalse'){
+      bodyHtml = (q.options||[]).map((opt,oi)=>`
+        <div class="mix-opt" id="mx-${qi}-${oi}" onclick="mixPick(${qi},${oi})">
+          <div class="mix-opt-radio"></div>
+          <span>${typeof opt==='object'?opt.text||opt:opt}</span>
+        </div>`).join('');
+    } else {
+      bodyHtml = `<textarea class="mix-essay-area" id="mx-essay-${qi}" placeholder="اكتب إجابتك هنا..." rows="3"
+        oninput="mixEssay(${qi},this.value)"></textarea>`;
+    }
+
+    return `<div class="mix-q" id="mix-q-${qi}">
+      <div class="mix-q-header">
+        <div class="mix-q-num">${qi+1}</div>
+        <span class="mix-q-type ${typeClass}">${typeLabel}</span>
+        ${ptsLabel?`<span class="mix-q-pts">${ptsLabel}</span>`:''}
+      </div>
+      <div class="mix-q-text">${q.text||'—'}</div>
+      ${bodyHtml}
+      <div class="mix-q-feedback" id="mx-fb-${qi}" style="display:none;margin-top:8px;font-size:12px;padding:8px 10px;border-radius:8px"></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('iep-body').innerHTML = progressHtml + timerHtml + questionsHtml;
+  document.getElementById('iep-submit').style.display='block';
+  document.getElementById('iep-submit').textContent='تسليم الإجابات ✓';
+  document.getElementById('iep-submit').onclick = submitMixedExam;
+
+  // تشغيل التايمر
+  if(dur > 0) startExamTimer(dur * 60);
+}
+
+function startExamTimer(seconds){
+  if(window._examTimer) clearInterval(window._examTimer);
+  let remaining = seconds;
+  function tick(){
+    const m = Math.floor(remaining/60);
+    const s = remaining%60;
+    const disp = `${m}:${s.toString().padStart(2,'0')}`;
+    const el = document.getElementById('exam-timer-val');
+    const wrap = document.getElementById('exam-timer-display');
+    if(el) el.textContent = disp;
+    if(wrap){
+      if(remaining<=60)       wrap.className='exam-timer';
+      else if(remaining<=300) wrap.className='exam-timer warn';
+      else                    wrap.className='exam-timer ok';
+    }
+    if(remaining<=0){
+      clearInterval(window._examTimer);
+      showToast('⏰ انتهى وقت الامتحان — يتم التسليم تلقائياً','err');
+      submitMixedExam();
+      return;
+    }
+    remaining--;
+  }
+  tick();
+  window._examTimer = setInterval(tick, 1000);
+}
+
+window.mixPick=(qi,oi)=>{
+  _mixedExam.answers[qi]=oi;
+  const q=_mixedExam.questions[qi];
+  const opts=q.options||[];
+  opts.forEach((_,idx)=>{
+    const el=document.getElementById(`mx-${qi}-${idx}`);
+    if(el) el.classList.toggle('sel', idx===oi);
+  });
+  // تحديث شريط التقدم
+  updateMixProgress();
+};
+
+window.mixEssay=(qi,val)=>{
+  _mixedExam.essays[qi]=val;
+  updateMixProgress();
+};
+
+function updateMixProgress(){
+  const qs=_mixedExam.questions||[];
+  const answered = qs.filter((_,qi)=>
+    (_mixedExam.answers[qi]!==undefined) || (_mixedExam.essays[qi]?.trim())
+  ).length;
+  const pct = qs.length ? Math.round(answered/qs.length*100) : 0;
+  const fill = document.getElementById('mix-prog-fill');
+  if(fill) fill.style.width = pct+'%';
+}
+
+async function submitMixedExam(){
+  if(window._examTimer){ clearInterval(window._examTimer); window._examTimer=null; }
+  const {questions, answers, essays, examObj, showAnswers} = _mixedExam;
+  const {examId, gradeKey} = _inlineExam;
+
+  let totalPts=0, earnedPts=0, correctCount=0, mcqCount=0, essayCount=0;
+
+  questions.forEach((q,qi)=>{
+    const pts = q.points||1;
+    totalPts += pts;
+    if(q.type==='mcq'||q.type==='truefalse'){
+      mcqCount++;
+      const ai = answers[qi];
+      const correct = q.correctAnswer;
+      const isCorrect = ai === correct;
+      if(isCorrect){ earnedPts+=pts; correctCount++; }
+
+      // تلوين الإجابات
+      if(showAnswers){
+        (q.options||[]).forEach((_,oi)=>{
+          const el=document.getElementById(`mx-${qi}-${oi}`);
+          if(!el) return;
+          el.onclick=null;
+          if(oi===correct){ el.classList.add('correct'); el.classList.remove('sel'); }
+          else if(oi===ai&&!isCorrect){ el.classList.add('wrong'); el.classList.remove('sel'); }
+        });
+        const fb=document.getElementById(`mx-fb-${qi}`);
+        if(fb){
+          fb.style.display='block';
+          fb.style.background=isCorrect?'rgba(0,214,143,0.08)':'rgba(255,77,109,0.08)';
+          fb.style.border=`1px solid ${isCorrect?'rgba(0,214,143,0.25)':'rgba(255,77,109,0.25)'}`;
+          fb.style.color=isCorrect?'var(--ok)':'var(--err)';
+          fb.textContent=isCorrect?`✅ صح — ${pts} نقطة`:`❌ الإجابة الصحيحة: ${typeof q.options[correct]==='object'?q.options[correct].text||q.options[correct]:q.options[correct]}`;
+        }
+      } else {
+        (q.options||[]).forEach((_,oi)=>{const el=document.getElementById(`mx-${qi}-${oi}`);if(el)el.onclick=null;});
+      }
+    } else if(q.type==='essay'){
+      essayCount++;
+      const essayAnswer = essays[qi]||'';
+      // حفظ الإجابة المقالية
+      if(_user && essayAnswer.trim()){
+        const att=((_progress[gradeKey]||{}).examAttempts||{})[examId]||0;
+        setDoc(doc(db,'scores',_user.uid+'_'+examId+'_'+qi+'_'+(att+1)),{
+          userId:_user.uid, userName:_userData?.name||'', userGrade:_userData?.grade||'',
+          gradeKey, examId, questionIdx:qi, questionText:q.text||'',
+          essayAnswer, type:'mixed_essay', attempt:att+1,
+          submittedAt:serverTimestamp()
+        }).catch(()=>{});
+      }
+      const fb=document.getElementById(`mx-fb-${qi}`);
+      if(fb&&essayAnswer.trim()){
+        fb.style.display='block';
+        fb.style.background='rgba(167,139,250,0.08)';
+        fb.style.border='1px solid rgba(167,139,250,0.2)';
+        fb.style.color='var(--purple)';
+        fb.textContent='✍️ تم حفظ إجابتك — سيتم التصحيح يدوياً';
+      }
+    }
+  });
+
+  const mcqPct = mcqCount ? Math.round(earnedPts/(totalPts-essayCount*1)*100) : 0;
+  const attLeft = examObj?.maxAttempts
+    ? (examObj.maxAttempts - (((_progress[gradeKey]||{}).examAttempts||{})[examId]||0) - 1)
+    : null;
+
+  // تسجيل النتيجة
+  recordAttemptAndDone(gradeKey, examId, earnedPts, totalPts, mcqPct);
+
+  // عرض النتيجة
+  document.getElementById('iep-result').innerHTML=`
+    <div style="background:linear-gradient(135deg,rgba(74,127,212,0.08),rgba(0,214,143,0.05));border:1.5px solid rgba(74,127,212,0.2);border-radius:14px;padding:18px;text-align:center;margin-top:12px">
+      <div style="font-size:40px;margin-bottom:8px">${mcqPct>=80?'🏆':mcqPct>=60?'🎉':'💪'}</div>
+      ${mcqCount>0?`<div style="font-size:20px;font-weight:900;margin-bottom:4px">${earnedPts} / ${totalPts-essayCount} نقطة</div>
+      <div style="font-size:14px;color:var(--muted);margin-bottom:8px">${mcqPct}% — ${mcqPct>=80?'ممتاز 🏆':mcqPct>=60?'جيد 👍':'حاول تاني 💪'}</div>`:''}
+      ${essayCount>0?`<div style="font-size:12px;padding:6px 12px;background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.2);border-radius:8px;color:var(--purple);display:inline-block;margin-bottom:8px">✍️ ${essayCount} سؤال مقالي — في انتظار التصحيح</div>`:''}
+      ${showAnswers?'<div style="font-size:12px;color:var(--ok);margin-top:4px">✅ الإجابات الصحيحة ظاهرة أعلاه</div>':''}
+      ${!showAnswers&&attLeft>0?`<div style="font-size:12px;color:var(--gold);margin-top:4px">⚠️ باقي لك ${attLeft} محاولة</div>`:''}
+    </div>`;
+  document.getElementById('iep-submit').style.display='none';
+
+  // التالي
+  const {gradeKey:gk, examId:eid} = _inlineExam;
+  setTimeout(()=>{ if(window.openNextContent) openNextContent(gk,'exams',eid); },3000);
+}
 
 function renderHw(hw,done,gradeKey,isMine){
   const el=document.getElementById('hwList');
@@ -1363,7 +1626,7 @@ window.openVid=(id,ytId)=>{
   const w=document.getElementById('vp-'+id),f=document.getElementById('vf-'+id);
   if(w&&f){w.style.display='block';f.src=`https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;}
 };
-window.openVidWithTracking=(id,ytId,gradeKey)=>{
+window.openVidWithTracking=(id,ytId,gradeKey,videoSource,driveId)=>{
   // تسجيل المشاهدة
   if(_user&&gradeKey){
     const gp=_progress[gradeKey]||{};
@@ -1379,15 +1642,42 @@ window.openVidWithTracking=(id,ytId,gradeKey)=>{
     if(f) f.src='';
   });
   const wrap=document.getElementById('vp-'+id);
-  if(wrap) wrap.style.display='block';
-  // YT API tracking
-  if(ytId&&typeof YT!=='undefined'&&YT.Player){
-    _initYTPlayer(id,ytId,gradeKey);
-  } else if(ytId){
+  if(!wrap) return;
+  wrap.style.display='block';
+  wrap.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  // ── Drive Video ──
+  if(videoSource==='drive' || (!ytId && (driveId||id))){
+    const fileId = driveId || (ytId||id); // ytId field may contain driveId for old data
+    const driveEmbedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
     const f=document.getElementById('vf-'+id);
-    if(f) f.src='https://www.youtube.com/embed/'+ytId+'?autoplay=1&rel=0&enablejsapi=1';
-    window._ytPendingInit=window._ytPendingInit||[];
-    window._ytPendingInit.push({id,ytId,gradeKey});
+    if(f){
+      f.src=driveEmbedUrl;
+      // تغيير allow للسماح بتشغيل Drive
+      f.setAttribute('allow','autoplay; fullscreen');
+      f.setAttribute('allowfullscreen','true');
+    }
+    // علّم كمشاهَد بعد 30 ثانية للـ drive (مفيش YT API)
+    if(!window._ytWatched[id]){
+      setTimeout(()=>{
+        if(!window._ytWatched[id]){
+          window._ytWatched[id]=true;
+          markDone(gradeKey,'videos',id);
+          _showNextBtn(id,gradeKey);
+        }
+      },30000);
+    }
+  }
+  // ── YouTube Video ──
+  else if(ytId){
+    if(typeof YT!=='undefined'&&YT.Player){
+      _initYTPlayer(id,ytId,gradeKey);
+    } else {
+      const f=document.getElementById('vf-'+id);
+      if(f) f.src='https://www.youtube.com/embed/'+ytId+'?autoplay=1&rel=0&enablejsapi=1';
+      window._ytPendingInit=window._ytPendingInit||[];
+      window._ytPendingInit.push({id,ytId,gradeKey});
+    }
   }
   // تحديث selector التعليقات
   const sel=document.getElementById('comment-video-select');
@@ -1427,7 +1717,7 @@ window.openNextContent=(gradeKey,type,currentId)=>{
       const el=document.querySelector('[data-vid-id="'+next.id+'"]');
       if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
       const ytId=getYtId(next.url||'');
-      openVidWithTracking(next.id,ytId,gradeKey);
+      openVidWithTracking(next.id, ytId||next.driveId||'', gradeKey, next.videoSource||'', next.driveId||'');
     } else if(next._type==='exam'){
       const el=document.querySelector('[data-exam-id="'+next.id+'"]');
       if(el) el.scrollIntoView({behavior:'smooth',block:'center'});
