@@ -611,6 +611,11 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <span>الدرجات والإجابات</span>
         <span class="sb-badge" id="essayPendingBadge" style="display:none;background:var(--purple)">0</span>
       </div>
+      <div class="sb-item" onclick="goPage('answers');setTimeout(()=>setAnsTab('homework'),300)" data-perm="scores">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span>تسليمات الواجبات</span>
+        <span class="sb-badge" id="hwSbBadge" style="display:none;background:var(--ok);color:#000">0</span>
+      </div>
       <div class="sb-item" onclick="goPage('comments')" data-perm="content">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         <span>تعليقات الفيديوهات</span>
@@ -998,6 +1003,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           <div class="ftab"    id="atab-essay" onclick="setAnsTab('essay')">📝 مقالي</div>
           <div class="ftab"    id="atab-manual" onclick="setAnsTab('manual')">✏️ يدوي</div>
           <div class="ftab"    id="atab-detailed" onclick="setAnsTab('detailed')" style="border-color:rgba(167,139,250,0.4);color:var(--purple)">📊 إجابات مفصلة</div>
+          <div class="ftab"    id="atab-homework" onclick="setAnsTab('homework')" style="border-color:rgba(0,214,143,0.4);color:var(--ok)">📤 تسليمات الواجبات <span id="hwPendingBadge" style="display:none;background:var(--ok);color:#000;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-right:3px">0</span></div>
         </div>
 
         <!-- Stats row -->
@@ -1103,6 +1109,91 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
         </div>
         <!-- ═══ END DETAILED PANEL ═══ -->
+
+        <!-- ═══ HOMEWORK SUBMISSIONS PANEL ═══ -->
+        <div id="hwSubmissionsPanel" style="display:none">
+          <!-- Stats -->
+          <div class="stats-row" style="margin-bottom:14px">
+            <div class="sc go">
+              <div class="sc-ico" style="background:rgba(0,214,143,0.12);color:var(--ok)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </div>
+              <div class="sc-val" id="hw-total">—</div><div class="sc-lbl">إجمالي التسليمات</div>
+            </div>
+            <div class="sc pu">
+              <div class="sc-ico" style="background:rgba(167,139,250,0.12);color:var(--purple)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div class="sc-val" id="hw-pending">—</div><div class="sc-lbl">تنتظر مراجعة</div>
+            </div>
+            <div class="sc gr">
+              <div class="sc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20,6 9,17 4,12"/></svg></div>
+              <div class="sc-val" id="hw-reviewed">—</div><div class="sc-lbl">تمت مراجعتها</div>
+            </div>
+            <div class="sc bl">
+              <div class="sc-ico"><svg><use href="#ic-users"/></svg></div>
+              <div class="sc-val" id="hw-students">—</div><div class="sc-lbl">طلاب سلّموا</div>
+            </div>
+          </div>
+
+          <!-- Filters -->
+          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+            <select id="hw-grade-filter" onchange="renderHwSubmissions()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
+              <option value="">كل الصفوف</option>
+            </select>
+            <select id="hw-status-filter" onchange="renderHwSubmissions()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
+              <option value="">كل الحالات</option>
+              <option value="pending">⏳ لم تُراجع</option>
+              <option value="reviewed">✅ تمت المراجعة</option>
+            </select>
+            <input id="hw-search" type="text" placeholder="🔍 ابحث باسم الطالب أو الواجب..." oninput="renderHwSubmissions()"
+              style="flex:1;min-width:180px;padding:7px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"/>
+            <button onclick="loadHwSubmissions()" class="btn ghost sm"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+            <button onclick="exportHwCsv()" class="btn gold sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:11px;height:11px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              CSV
+            </button>
+          </div>
+
+          <!-- List -->
+          <div id="hwSubmissionsList">
+            <div class="empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              <p>اضغط تحديث لتحميل تسليمات الواجبات</p>
+            </div>
+          </div>
+        </div>
+        <!-- ═══ END HOMEWORK SUBMISSIONS PANEL ═══ -->
+      </div>
+
+      <!-- Homework Review Modal -->
+      <div id="hwReviewModal" class="mbg">
+        <div class="mbx" style="max-width:580px;max-height:90vh;overflow-y:auto;position:relative">
+          <button onclick="closeModal('hwReviewModal')" style="position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:50%;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:18px">×</button>
+          <h3 style="font-size:16px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px;padding-left:40px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2" style="width:16px;height:16px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            مراجعة تسليم واجب
+          </h3>
+          <div id="hwReviewContent"></div>
+          <input type="hidden" id="hwReviewDocId"/>
+          <div class="ff" style="margin-top:14px">
+            <label>تعليق المراجع (اختياري)</label>
+            <textarea id="hwReviewComment" rows="3" placeholder="اكتب ملاحظتك للطالب..."
+              style="width:100%;padding:9px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;resize:vertical"></textarea>
+          </div>
+          <div class="ff">
+            <label>الدرجة (اختياري)</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="number" id="hwReviewScore" min="0" max="100" placeholder="من 100..."
+                style="flex:1;padding:9px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:14px;outline:none"/>
+              <span style="font-size:12px;color:var(--muted)">/100</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button onclick="closeModal('hwReviewModal')" style="flex:1;padding:11px;border:1px solid var(--b2);border-radius:10px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px">إلغاء</button>
+            <button onclick="saveHwReview()" style="flex:2;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,var(--ok),#006040);color:#fff;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:800">✅ تأكيد المراجعة</button>
+          </div>
+        </div>
       </div>
 
       <!-- Essay Grade Modal -->
@@ -7925,20 +8016,31 @@ window.updateMergedStats = ()=>{
 
 window.setAnsTab = (t)=>{
   window._ansTab = t;
-  ['all','mcq','essay','manual','detailed'].forEach(x=>{
+  ['all','mcq','essay','manual','detailed','homework'].forEach(x=>{
     document.getElementById('atab-'+x)?.classList.toggle('on',x===t);
   });
-  const detailedPanel = document.getElementById('detailedSubmissionsPanel');
-  const mergedList = document.getElementById('mergedList');
+  const detailedPanel  = document.getElementById('detailedSubmissionsPanel');
+  const hwPanel        = document.getElementById('hwSubmissionsPanel');
+  const mergedList     = document.getElementById('mergedList');
+  const chartEls       = document.querySelectorAll('[id="answersChart"]');
+
   if(t === 'detailed'){
-    if(mergedList) mergedList.style.display = 'none';
-    document.querySelectorAll('[id="answersChart"]').forEach(el=>el.style.display='none');
+    if(mergedList)  mergedList.style.display = 'none';
+    if(hwPanel)     hwPanel.style.display    = 'none';
+    chartEls.forEach(el=>el.style.display='none');
     if(detailedPanel) detailedPanel.style.display = '';
     if(!window._dsLoaded) dsLoadSubmissions();
+  } else if(t === 'homework'){
+    if(mergedList)     mergedList.style.display    = 'none';
+    if(detailedPanel)  detailedPanel.style.display = 'none';
+    chartEls.forEach(el=>el.style.display='none');
+    if(hwPanel)        hwPanel.style.display       = '';
+    if(!window._hwLoaded) loadHwSubmissions();
   } else {
-    if(detailedPanel) detailedPanel.style.display = 'none';
-    if(mergedList) mergedList.style.display = '';
-    document.querySelectorAll('[id="answersChart"]').forEach(el=>el.style.display='');
+    if(detailedPanel)  detailedPanel.style.display = 'none';
+    if(hwPanel)        hwPanel.style.display       = 'none';
+    if(mergedList)     mergedList.style.display    = '';
+    chartEls.forEach(el=>el.style.display='');
     renderMerged();
   }
 };
@@ -8629,6 +8731,204 @@ window.dsExportCsv = ()=>{
 };
 // ══════════════════════════════════════════════════════════
 // END DETAILED SUBMISSIONS
+// ══════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════
+// HOMEWORK SUBMISSIONS SYSTEM
+// ══════════════════════════════════════════════════════════
+window._hwSubmissions = [];
+window._hwLoaded = false;
+
+window.loadHwSubmissions = async ()=>{
+  window._hwLoaded = true;
+  const listEl = document.getElementById('hwSubmissionsList');
+  if(!listEl) return;
+  listEl.innerHTML = '<div class="empty"><div style="width:22px;height:22px;border:2px solid var(--b1);border-top-color:var(--ok);border-radius:50%;animation:spin .7s linear infinite;margin:20px auto"></div></div>';
+  try{
+    const snap = await db.collection('homeworkSubmissions').orderBy('submittedAt','desc').limit(500).get();
+    window._hwSubmissions = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderHwSubmissions();
+    updateHwStats();
+    buildHwGradeFilter();
+  }catch(e){
+    listEl.innerHTML = `<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p style="color:var(--err)">خطأ: ${e.message}</p></div>`;
+    toast('خطأ تحميل الواجبات: '+e.message,'err');
+  }
+};
+
+window.buildHwGradeFilter = ()=>{
+  const sel = document.getElementById('hw-grade-filter');
+  if(!sel) return;
+  const grades = [...new Set(window._hwSubmissions.map(s=>s.gradeKey).filter(Boolean))];
+  sel.innerHTML = '<option value="">كل الصفوف</option>';
+  grades.forEach(k=>{
+    const lbl = GRADE_LABELS_SC[k]||k;
+    sel.innerHTML += `<option value="${k}">${lbl}</option>`;
+  });
+};
+
+window.updateHwStats = ()=>{
+  const all     = window._hwSubmissions;
+  const pending  = all.filter(s=>!s.reviewed).length;
+  const reviewed = all.filter(s=>s.reviewed).length;
+  const students = new Set(all.map(s=>s.userId)).size;
+  document.getElementById('hw-total').textContent    = all.length||'—';
+  document.getElementById('hw-pending').textContent  = pending||'—';
+  document.getElementById('hw-reviewed').textContent = reviewed||'—';
+  document.getElementById('hw-students').textContent = students||'—';
+  // Sidebar badge
+  const hwBadge = document.getElementById('hwSbBadge');
+  if(hwBadge){ hwBadge.textContent=pending; hwBadge.style.display=pending>0?'flex':'none'; }
+  const hwPendBadge = document.getElementById('hwPendingBadge');
+  if(hwPendBadge){ hwPendBadge.textContent=pending; hwPendBadge.style.display=pending>0?'inline-flex':'none'; }
+};
+
+window.renderHwSubmissions = ()=>{
+  const listEl = document.getElementById('hwSubmissionsList');
+  if(!listEl) return;
+  const gradeF  = document.getElementById('hw-grade-filter')?.value||'';
+  const statusF = document.getElementById('hw-status-filter')?.value||'';
+  const q       = (document.getElementById('hw-search')?.value||'').trim().toLowerCase();
+  let list = [...window._hwSubmissions];
+  if(gradeF)              list = list.filter(s=>s.gradeKey===gradeF);
+  if(statusF==='pending') list = list.filter(s=>!s.reviewed);
+  if(statusF==='reviewed')list = list.filter(s=>s.reviewed);
+  if(q) list = list.filter(s=>
+    (s.userName||'').toLowerCase().includes(q)||
+    (s.hwTitle||'').toLowerCase().includes(q)||
+    (s.answer||'').toLowerCase().includes(q)
+  );
+  if(!list.length){
+    listEl.innerHTML='<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:28px;height:28px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><p>لا يوجد تسليمات تطابق البحث</p></div>';
+    return;
+  }
+  listEl.innerHTML = list.map(s=>{
+    const isReviewed = !!s.reviewed;
+    const dt   = s.submittedAt?.toDate?.()?.toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})||'—';
+    const gl   = GRADE_LABELS_SC[s.gradeKey]||s.userGrade||s.gradeKey||'—';
+    const isLink = s.answerType==='link';
+    const preview = isLink
+      ? `<a href="${s.answer}" target="_blank" style="color:var(--blue);font-size:12px;word-break:break-all">🔗 ${s.answer}</a>`
+      : `<div style="font-size:12px;line-height:1.7;color:var(--text);white-space:pre-wrap;max-height:60px;overflow:hidden;position:relative">${s.answer||'—'}<div style="position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(transparent,rgba(6,10,22,0.9))"></div></div>`;
+    return `<div style="background:rgba(8,13,28,0.65);border:1.5px solid ${isReviewed?'rgba(0,214,143,0.2)':'rgba(0,214,143,0.45)'};border-radius:14px;padding:14px 16px;margin-bottom:10px">
+      <div style="display:flex;align-items:start;gap:10px">
+        <div style="width:38px;height:38px;border-radius:10px;background:rgba(0,214,143,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">📤</div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;flex-wrap:wrap">
+            ${isReviewed
+              ? `<span class="bd ok" style="font-size:10px">✅ تمت المراجعة${s.hwScore!=null?' — '+s.hwScore+'/100':''}</span>`
+              : `<span class="bd" style="font-size:10px;background:rgba(245,166,35,0.1);color:var(--warn);border-color:rgba(245,166,35,0.3)">⏳ لم تُراجع</span>`}
+            <span class="bd blue" style="font-size:10px">${isLink?'🔗 رابط':'✍️ كتابة'}</span>
+          </div>
+          <div style="font-weight:800;font-size:13px;margin-bottom:2px">${s.hwTitle||'واجب'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:7px">👤 ${s.userName||'—'} &bull; ${gl} &bull; 📅 ${dt}</div>
+          <div style="background:rgba(6,10,22,0.7);border:1px solid var(--b2);border-radius:8px;padding:9px 11px;cursor:pointer" onclick="openHwReview('${s.id}')">
+            ${preview}
+          </div>
+          ${s.note?`<div style="margin-top:5px;font-size:11px;color:var(--gold)">📝 ملاحظة الطالب: ${s.note}</div>`:''}
+          ${isReviewed&&s.teacherComment?`<div style="margin-top:5px;font-size:11px;color:var(--ok)">💬 تعليق الأستاذ: ${s.teacherComment}</div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
+          <button onclick="openHwReview('${s.id}')" class="btn primary sm" style="font-size:11px">${isReviewed?'✏️ تعديل':'🖊️ مراجعة'}</button>
+          <button onclick="deleteHwSubmission('${s.id}')" class="btn icon-btn del"><svg><use href="#ic-trash"/></svg></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+window.openHwReview = (id)=>{
+  const s = window._hwSubmissions.find(x=>x.id===id);
+  if(!s){ toast('لم يتم العثور على التسليم','err'); return; }
+  const dt  = s.submittedAt?.toDate?.()?.toLocaleDateString('ar-EG',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'})||'—';
+  const gl  = GRADE_LABELS_SC[s.gradeKey]||s.userGrade||'—';
+  const isLink = s.answerType==='link';
+  document.getElementById('hwReviewContent').innerHTML = `
+    <div style="background:rgba(6,10,22,0.8);border:1px solid var(--b2);border-radius:11px;padding:14px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:800;color:var(--ok);margin-bottom:4px">📤 ${s.hwTitle||'واجب'}</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:10px">👤 ${s.userName||'—'} &bull; ${gl} &bull; 📅 ${dt}</div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px">إجابة الطالب (${isLink?'رابط':'نص'}):</div>
+      ${isLink
+        ? `<a href="${s.answer}" target="_blank" style="color:var(--blue);font-size:13px;word-break:break-all">🔗 ${s.answer}</a>`
+        : `<div style="font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;max-height:200px;overflow-y:auto">${s.answer||'—'}</div>`}
+      ${s.note?`<div style="margin-top:8px;font-size:11px;color:var(--gold)">📝 ملاحظة: ${s.note}</div>`:''}
+    </div>`;
+  document.getElementById('hwReviewDocId').value    = id;
+  document.getElementById('hwReviewComment').value  = s.teacherComment||'';
+  document.getElementById('hwReviewScore').value    = s.hwScore!=null?s.hwScore:'';
+  openModal('hwReviewModal');
+};
+
+window.saveHwReview = async ()=>{
+  const id      = document.getElementById('hwReviewDocId').value;
+  const comment = document.getElementById('hwReviewComment').value.trim();
+  const scoreRaw = document.getElementById('hwReviewScore').value;
+  const score   = scoreRaw!==''?parseInt(scoreRaw):null;
+  if(!id){ toast('خطأ: لا يوجد ID','err'); return; }
+  if(score!==null&&(isNaN(score)||score<0||score>100)){ toast('ادخل درجة صحيحة من 0 إلى 100','err'); return; }
+  try{
+    const upd = {
+      reviewed: true,
+      teacherComment: comment||null,
+      reviewedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      reviewedBy: 'admin'
+    };
+    if(score!==null) upd.hwScore = score;
+    await db.collection('homeworkSubmissions').doc(id).update(upd);
+    const idx = window._hwSubmissions.findIndex(x=>x.id===id);
+    if(idx>-1) Object.assign(window._hwSubmissions[idx], upd);
+    closeModal('hwReviewModal');
+    renderHwSubmissions();
+    updateHwStats();
+    toast('✅ تمت المراجعة','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.deleteHwSubmission = async (id)=>{
+  if(!confirm('حذف هذا التسليم نهائياً؟')) return;
+  try{
+    await db.collection('homeworkSubmissions').doc(id).delete();
+    window._hwSubmissions = window._hwSubmissions.filter(x=>x.id!==id);
+    renderHwSubmissions();
+    updateHwStats();
+    toast('تم الحذف','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.exportHwCsv = ()=>{
+  const all = window._hwSubmissions;
+  if(!all.length){ toast('لا يوجد بيانات','err'); return; }
+  const headers = ['الطالب','الصف','الهاتف','الواجب','نوع التسليم','الإجابة/الرابط','ملاحظة الطالب','الدرجة','تعليق الأستاذ','الحالة','تاريخ التسليم'];
+  const rows = all.map(s=>([
+    s.userName||'—', GRADE_LABELS_SC[s.gradeKey]||s.userGrade||'—', s.userPhone||'—',
+    s.hwTitle||'—', s.answerType==='link'?'رابط':'كتابة',
+    s.answer||'—', s.note||'', s.hwScore!=null?s.hwScore:'—',
+    s.teacherComment||'', s.reviewed?'تمت المراجعة':'لم تُراجع',
+    s.submittedAt?.toDate?.()?.toLocaleDateString('ar-EG')||'—'
+  ]));
+  const csv = [headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'homework_submissions_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+  toast('تم التصدير ✓','ok');
+};
+
+// ── load hw count on startup for sidebar badge ──
+(async ()=>{
+  try{
+    const snap = await db.collection('homeworkSubmissions').where('reviewed','==',false).get();
+    const cnt = snap.size;
+    const b1 = document.getElementById('hwSbBadge');
+    const b2 = document.getElementById('hwPendingBadge');
+    if(b1){ b1.textContent=cnt; b1.style.display=cnt>0?'flex':'none'; }
+    if(b2){ b2.textContent=cnt; b2.style.display=cnt>0?'inline-flex':'none'; }
+  }catch(_){}
+})();
+
+// ══════════════════════════════════════════════════════════
+// END HOMEWORK SUBMISSIONS SYSTEM
 // ══════════════════════════════════════════════════════════
 
 
