@@ -616,12 +616,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <span>تسليمات الواجبات</span>
         <span class="sb-badge" id="hwSbBadge" style="display:none;background:var(--ok);color:#000">0</span>
       </div>
-      <div class="sb-item" onclick="goPage('comments')" data-perm="content">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        <span>تعليقات الفيديوهات</span>
-        <span class="sb-badge" id="commentsSbBadge" style="display:none;background:var(--blue)">0</span>
-      </div>
-      <div class="sb-item" onclick="goPage('comments')" data-perm="content">
+      <div class="sb-item" onclick="goPage('comments')" data-perm="comments">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         <span>تعليقات الطلاب</span>
         <span class="sb-badge" id="commentsSbBadge" style="display:none;background:var(--blue)">0</span>
@@ -1038,7 +1033,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         </div>
 
         <!-- Pass/Fail chart -->
-        <div id="answersChart" style="background:rgba(8,13,28,0.6);border:1px solid var(--b1);border-radius:14px;padding:16px;margin-bottom:14px">
+        <div id="answersChart2" style="background:rgba(8,13,28,0.6);border:1px solid var(--b1);border-radius:14px;padding:16px;margin-bottom:14px">
           <div style="text-align:center;font-size:11px;color:var(--muted);padding:8px">اضغط تحديث لتحميل الرسم البياني</div>
         </div>
 
@@ -2197,7 +2192,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           </div>
           <div class="yn-toggle" id="adm-p-scores" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
         </div>
-        <div class="perm-row" onclick="togglePerm('adm-p-grades')" style="border-bottom:none">
+        <div class="perm-row" onclick="togglePerm('adm-p-grades')">
           <div style="display:flex;align-items:center;gap:9px">
             <div style="width:30px;height:30px;border-radius:8px;background:rgba(245,158,11,0.1);display:flex;align-items:center;justify-content:center">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
@@ -2205,6 +2200,24 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <div><div style="font-size:13px;font-weight:700">إدارة المراحل والصفوف</div><div style="font-size:10px;color:var(--muted)">يضيف ويحذف صفوف ومقررات</div></div>
           </div>
           <div class="yn-toggle" id="adm-p-grades" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-comments')">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(74,127,212,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">التعليقات والأسئلة</div><div style="font-size:10px;color:var(--muted)">يشوف ويرد على تعليقات الطلاب في الفيديوهات</div></div>
+          </div>
+          <div class="yn-toggle" id="adm-p-comments" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
+        </div>
+        <div class="perm-row" onclick="togglePerm('adm-p-homework')" style="border-bottom:none">
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:30px;height:30px;border-radius:8px;background:rgba(167,139,250,0.1);display:flex;align-items:center;justify-content:center">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+            </div>
+            <div><div style="font-size:13px;font-weight:700">تسليمات الواجبات</div><div style="font-size:10px;color:var(--muted)">يراجع ويصحح واجبات الطلاب المُسلَّمة</div></div>
+          </div>
+          <div class="yn-toggle" id="adm-p-homework" data-val="0"><span class="yn-yes">نعم</span><span class="yn-no">لا</span><div class="yn-knob"></div></div>
         </div>
       </div>
     </div>
@@ -3966,6 +3979,8 @@ function applyPermissions(){
       :perms.grades?'grades'
       :perms.tickets?'tickets'
       :perms.analytics?'analytics'
+      :perms.comments?'comments'
+      :perms.homework?'scores'
       :'overview';
     setTimeout(()=>goPage(first), 100);
   }
@@ -4058,7 +4073,8 @@ function goPage(p){
       analytics:'analytics', tickets:'tickets',
       admins:null, settings:null, sessions:null,
       answers:'scores',
-      comments:'content'
+      comments:'comments',
+      homework:'homework'
     };
     if(p in permMap && permMap[p]===null){ toast('ليس لديك صلاحية لهذه الصفحة','err'); return; }
     if(p in permMap && permMap[p] && !perms[permMap[p]]){ toast('ليس لديك صلاحية لهذه الصفحة','err'); return; }
@@ -4729,7 +4745,9 @@ window.saveAdmin=async()=>{
     delete:    document.getElementById('adm-p-delete')?.dataset.val==='1',
     research:  document.getElementById('adm-p-research')?.dataset.val==='1',
     grades:    document.getElementById('adm-p-grades')?.dataset.val==='1',
-    scores:    document.getElementById('adm-p-scores')?.dataset.val==='1'
+    scores:    document.getElementById('adm-p-scores')?.dataset.val==='1',
+    comments:  document.getElementById('adm-p-comments')?.dataset.val==='1',
+    homework:  document.getElementById('adm-p-homework')?.dataset.val==='1'
   };
   const active = isEdit ? document.getElementById('adm-p-active').dataset.val==='1' : true;
   try{
@@ -4798,6 +4816,8 @@ async function loadAdmins(){
             ${permBadge('الشكاوى', p.tickets)}
             ${permBadge('حذف/حظر', p.delete)}
             ${permBadge('إجابات الطلاب', p.scores)}
+            ${permBadge('التعليقات', p.comments)}
+            ${permBadge('الواجبات', p.homework)}
           </div>
         </div>
       </div>`;
@@ -4817,7 +4837,7 @@ function resetAdminModal(){
   document.getElementById('adminModalSaveBtn').innerHTML='<svg><use href="#ic-check"/></svg>إضافة المشرف';
   // Reset perms
   ['adm-p-users','adm-p-content'].forEach(id=>{ const el=document.getElementById(id); if(el){el.dataset.val='1';el.classList.add('on');} });
-  ['adm-p-codes','adm-p-broadcast','adm-p-parents','adm-p-coupons','adm-p-active','adm-p-analytics','adm-p-tickets','adm-p-delete'].forEach(id=>{ const el=document.getElementById(id); if(el){el.dataset.val='0';el.classList.remove('on');} });
+  ['adm-p-codes','adm-p-broadcast','adm-p-parents','adm-p-coupons','adm-p-active','adm-p-analytics','adm-p-tickets','adm-p-delete','adm-p-comments','adm-p-homework'].forEach(id=>{ const el=document.getElementById(id); if(el){el.dataset.val='0';el.classList.remove('on');} });
 }
 
 function closeAdminModal(){
@@ -4845,6 +4865,7 @@ window.editAdmin = async (id)=>{
       'adm-p-broadcast':p.broadcast,'adm-p-parents':p.parents,'adm-p-coupons':p.coupons,
       'adm-p-analytics':p.analytics,'adm-p-tickets':p.tickets,'adm-p-delete':p.delete,
       'adm-p-research':p.research,'adm-p-grades':p.grades,'adm-p-scores':p.scores,
+      'adm-p-comments':p.comments,'adm-p-homework':p.homework,
       'adm-p-active': a.active!==false
     };
     Object.entries(permMap).forEach(([pid,val])=>{
