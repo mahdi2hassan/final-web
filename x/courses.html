@@ -946,27 +946,56 @@ window._where = where;
 window._serverTimestamp = serverTimestamp;
 let _user,_userData,_progress={},_playerData=null,_imgData=null;
 
-// Timeout — لو Firebase ما ردش في 12 ثانية يكمل أو يروح للتسجيل
+// Timeout — لو Firebase ما ردش في 15 ثانية يخفي شاشة التحميل
 const _authTimeout = setTimeout(()=>{
   const ls = document.getElementById('loadingScreen');
   if(ls && ls.style.display !== 'none'){
-    console.warn('Auth timeout — redirecting');
-    window.location.href='plus-math-auth.html';
+    console.warn('⏰ Auth timeout — showing UI anyway');
+    ls.style.display='none';
+    document.getElementById('navbar').style.display='flex';
+    document.getElementById('mainContent').style.display='block';
+    buildGrades();
   }
-}, 12000);
+}, 15000);
+
+// Emergency fallback - 20 seconds absolute maximum
+setTimeout(()=>{
+  const ls = document.getElementById('loadingScreen');
+  if(ls && ls.style.display !== 'none'){
+    console.error('🚨 EMERGENCY: Forcing UI show after 20s');
+    ls.style.display='none';
+    document.getElementById('navbar').style.display='flex';
+    document.getElementById('mainContent').style.display='block';
+    try{ buildGrades(); }catch(e){ console.error(e); }
+  }
+}, 20000);
 
 onAuthStateChanged(auth,async(user)=>{
   clearTimeout(_authTimeout);
-  if(!user){window._user=null;window.location.href='plus-math-auth.html';return;}
+  console.log('🔐 Auth state changed:', user ? 'Logged in' : 'Not logged in');
+  if(!user){
+    console.log('❌ No user, redirecting to auth');
+    window._user=null;
+    window.location.href='plus-math-auth.html';
+    return;
+  }
   _user=user;
   window._user=user;
+  console.log('✅ User found:', user.uid);
   try{
+    console.log('📊 Fetching user data...');
     const ud=await getDoc(doc(db,'users',user.uid));
-    if(!ud.exists()||!ud.data().subscriptionActive){window.location.href='plus-math-auth.html';return;}
+    if(!ud.exists()||!ud.data().subscriptionActive){
+      console.log('❌ No subscription, redirecting');
+      window.location.href='plus-math-auth.html';
+      return;
+    }
+    console.log('✅ User data loaded');
     _userData=ud.data();
     if(_userData.expiresAt){
       const exp=_userData.expiresAt.toDate?_userData.expiresAt.toDate():new Date(_userData.expiresAt);
       if(new Date()>exp){
+        console.log('⏰ Subscription expired');
         // ── انتهى الاشتراك: امسح الكود والاشتراك، الحساب والصف يفضل ──
         setDoc(doc(db,'users',user.uid),{
           subscriptionActive:false,
@@ -978,12 +1007,13 @@ onAuthStateChanged(auth,async(user)=>{
         return;
       }
     }
+    console.log('🎉 Showing UI...');
     document.getElementById('loadingScreen').style.display='none';
     document.getElementById('navbar').style.display='flex';
     document.getElementById('mainContent').style.display='block';
     document.getElementById('userName').textContent=_userData.name?.split(' ')[0]||'طالب';
     document.getElementById('statGrade').textContent=_userData.grade||'—';
-    document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
+    document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعي'}[_userData.stage]||'—';
     window._userData = _userData;
     // ── آخر وقت دخول ──
     updateDoc(doc(db,'users',user.uid),{
@@ -1007,10 +1037,12 @@ onAuthStateChanged(auth,async(user)=>{
     checkNotifDot();
     // Set video watermark with student info
     setTimeout(()=>{ if(window.setWatermark) window.setWatermark(_userData.name||'طالب', _userData.phone||''); }, 500);
-    try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
-    try{const pr=await getDoc(doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={};}
+    try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){console.warn('Announcement:',e.message);}
+    try{const pr=await getDoc(doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={};console.warn('Progress:',e.message);}
     // ── تحميل المراحل الديناميكية ──
+    console.log('📚 Loading dynamic grades...');
     await loadDynamicGrades();
+    console.log('🏗️ Building UI...');
     buildGrades();
     // ── تحميل أبحاث الطالب ──
     loadMyResearches();
@@ -1019,8 +1051,10 @@ onAuthStateChanged(auth,async(user)=>{
       const g=window._GM[_userData.gradeKey];
       if(g) setTimeout(()=>openCourse(_userData.gradeKey,g.label,g.stage),600);
     }
+    console.log('✨ Everything loaded successfully!');
   }catch(e){
-    console.error(e);
+    console.error('❌ Error during auth:', e);
+    // Show UI anyway with fallback
     document.getElementById('loadingScreen').style.display='none';
     document.getElementById('navbar').style.display='flex';
     document.getElementById('mainContent').style.display='block';
