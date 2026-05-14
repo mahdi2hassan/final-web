@@ -49,6 +49,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   );
 }
 
+/* Playlist styles removed */
 .books-grid-inline{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .book-card-sm{background:var(--s2);border:1px solid var(--b2);border-radius:12px;
   overflow:hidden;transition:all .2s;cursor:pointer}
@@ -110,6 +111,38 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   border:1px solid var(--b2);background:rgba(8,13,28,.8);cursor:pointer;
   display:flex;align-items:center;justify-content:center;color:var(--muted)}
 .bs-close svg{width:12px;height:12px}
+/* ══ IMAGE LIGHTBOX ══ */
+#imgLightbox{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.92);
+  display:none;align-items:center;justify-content:center;flex-direction:column;gap:10px;
+  backdrop-filter:blur(8px);padding:16px}
+#imgLightbox.open{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.lb-wrap{position:relative;max-width:100%;max-height:85dvh;display:flex;align-items:center;justify-content:center}
+#lbImg{max-width:100%;max-height:80dvh;border-radius:10px;object-fit:contain;box-shadow:0 12px 48px rgba(0,0,0,.6)}
+#lbDriveFrame{width:min(700px,96vw);height:min(500px,72dvh);border:none;border-radius:10px;display:none}
+.lb-close{position:absolute;top:-12px;right:-12px;width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,0.15);border:1.5px solid rgba(255,255,255,0.3);
+  cursor:pointer;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;
+  transition:background .2s}
+.lb-close:hover{background:rgba(255,77,109,0.6)}
+.lb-caption{font-size:12px;color:rgba(255,255,255,.55);text-align:center;max-width:600px}
+.lb-open-btn{padding:7px 16px;border:1px solid rgba(255,255,255,0.2);border-radius:8px;
+  background:rgba(255,255,255,0.1);color:#fff;cursor:pointer;font-family:'Tajawal',sans-serif;
+  font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:6px}
+.lb-open-btn:hover{background:rgba(255,255,255,0.2)}
+
+/* ── Enhanced image display in exam/hw ── */
+.img-thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:8px}
+.img-thumb-item{border-radius:10px;overflow:hidden;border:1.5px solid var(--b2);cursor:pointer;
+  position:relative;transition:border-color .2s;background:rgba(8,13,28,.7)}
+.img-thumb-item:hover{border-color:var(--blue)}
+.img-thumb-item img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.img-thumb-item .img-zoom-hint{position:absolute;inset:0;background:rgba(0,0,0,0);
+  display:flex;align-items:center;justify-content:center;transition:background .2s}
+.img-thumb-item:hover .img-zoom-hint{background:rgba(0,0,0,0.4)}
+.img-zoom-hint svg{opacity:0;transition:opacity .2s;filter:drop-shadow(0 1px 3px rgba(0,0,0,.6))}
+.img-thumb-item:hover .img-zoom-hint svg{opacity:1}
+
 .bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:linear-gradient(rgba(74,127,212,0.04) 1px,transparent 1px),
   linear-gradient(90deg,rgba(74,127,212,0.04) 1px,transparent 1px);background-size:44px 44px}
@@ -506,6 +539,7 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;
     <button class="cv-tab" onclick="switchTab('books',this)">
       📚 الكتب
     </button>
+    <!-- playlist tab removed -->
     <button class="cv-tab" onclick="switchTab('comments',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>تعليقات
       <span id="commentsDot" style="display:none;width:6px;height:6px;border-radius:50%;background:var(--blue);flex-shrink:0"></span>
@@ -576,6 +610,7 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;
       </div>
     </div>
 
+    <!-- Playlists tab removed -->
     <div class="tab-pane" id="tp-homework"><div class="hw-list" id="hwList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <div class="tab-pane" id="tp-books"><div id="booksList"><div class="empty"><p>جاري التحميل...</p></div></div></div>
     <!-- ── COMMENTS TAB ── -->
@@ -963,7 +998,7 @@ window.openCourse=async(gradeKey,label,stage)=>{
   renderExams(exams,dE,gradeKey,isMine);
   renderHw(hw,dH,gradeKey,isMine);
   setTimeout(buildCommentVideoSelector,400);
-  // (قوائم التشغيل محذوفة من هذه النسخة)
+  // Playlist tab removed
   setTimeout(()=>{setProg('pv','pvt',vids.length,dV.length);setProg('pe','pet',exams.length,dE.length);setProg('ph','pht',hw.length,dH.length);},400);
   // Night mode
   if(isMine) buildNightMode(vids, dV);
@@ -1193,15 +1228,16 @@ function openInlineExam(examObj,gradeKey,showAnswers){
       btn.style.display='none';
     };
   } else if((type==='images'||type==='pdf')){
-    const urls=examObj.imageUrls?.length?examObj.imageUrls:(examObj.fileUrl?[examObj.fileUrl]:[examObj.externalUrl]);
-    document.getElementById('iep-body').innerHTML=(urls||[]).map((u,idx)=>`
-      <div style="margin-bottom:10px">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">صفحة ${idx+1}</div>
-        ${u.toLowerCase().includes('.pdf')
-          ?`<a href="${u}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(74,127,212,0.07);border:1px solid var(--b1);border-radius:10px;color:var(--blue);text-decoration:none;font-weight:700">📄 فتح الصفحة ${idx+1}</a>`
-          :`<img src="${u}" style="width:100%;border-radius:10px;display:block;cursor:pointer" onclick="window.open('${u}','_blank')"/>`
-        }
-      </div>`).join('');
+    const urls=(examObj.imageUrls?.length?examObj.imageUrls:(examObj.fileUrl?[examObj.fileUrl]:[examObj.externalUrl])).filter(Boolean);
+    // store urls for lightbox, scoped to this exam
+    window.__inlineExamImgUrls = urls;
+    window.__inlineExamOpen = (idx) => openLightbox(urls, idx, examObj.title||'امتحان');
+    document.getElementById('iep-body').innerHTML = `
+      <div style="margin-bottom:10px;font-size:12px;color:var(--muted)">
+        ${urls.length} ${urls.length===1?'صفحة':'صفحات'} — اضغط على أي صورة لعرضها
+      </div>
+      ${_buildImgGrid(urls,'window.__inlineExamOpen')}
+    `;
     const btn=document.getElementById('iep-submit');
     btn.style.display='block';btn.textContent='تم المشاهدة ✓';
     btn.onclick=()=>{recordAttemptAndDone(gradeKey,examId);closeInlineExam();};
@@ -1567,16 +1603,35 @@ function renderHw(hw,done,gradeKey,isMine){
 
     // ── صور الواجب (images array من content-manager) ──
     const hwImages = Array.isArray(h.images) ? h.images.filter(Boolean) : (h.imageUrl ? [h.imageUrl] : []);
+    const hwImgKey = 'hw_'+h.id;
+    // register images globally so onclick string can reach them
     const imagesHtml = hwImages.length ? `
-      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:8px">
-        ${hwImages.map((imgUrl,idx)=>`
-          <div style="position:relative;border-radius:9px;overflow:hidden;border:1px solid var(--b2);cursor:pointer"
-               onclick="window.open('${imgUrl}','_blank')" title="اضغط للتكبير">
-            <img src="${imgUrl}" alt="صورة الواجب ${idx+1}"
-              style="width:90px;height:70px;object-fit:cover;display:block"
-              onerror="this.parentElement.style.display='none'"/>
-            <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.55);font-size:9px;font-weight:700;color:#fff;text-align:center;padding:2px">🔍 تكبير</div>
-          </div>`).join('')}
+      <div style="margin-top:8px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px">📎 ${hwImages.length} ${hwImages.length===1?'صورة':'صور'} مرفقة — اضغط لعرضها</div>
+        ${(()=>{
+          // store images for this hw item globally
+          window['_hwImgs_'+h.id] = hwImages;
+          return `<div class="img-thumb-grid">${hwImages.map((imgUrl,idx)=>{
+            const isDrive = _isDriveUrl(imgUrl);
+            const isPdf   = imgUrl.toLowerCase().includes('.pdf');
+            const thumbSrc = isDrive
+              ? (()=>{
+                  const m=imgUrl.match(/\\/file\\/d\\/([^/?#]+)/);
+                  const m2=!m&&imgUrl.match(/[?&]id=([^&]+)/);
+                  const fid=(m&&m[1])||(m2&&m2[1])||'';
+                  return fid?'https://drive.google.com/thumbnail?id='+fid+'&sz=w400':'';
+                })()
+              : (isPdf?'':imgUrl);
+            const inner = thumbSrc
+              ? '<img src="'+thumbSrc+'" alt="صورة الواجب '+(idx+1)+'" loading="lazy" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block" onerror="this.parentElement.innerHTML=\'<div style=\\\\\"display:flex;align-items:center;justify-content:center;height:80px;font-size:28px\\\\\">\'+(isPdf?\'📄\':\'🖼️\')+\'</div>\'">'
+              : '<div style="display:flex;align-items:center;justify-content:center;height:80px;font-size:28px">'+(isPdf?'📄':'🖼️')+'</div>';
+            return '<div class="img-thumb-item" onclick="openLightbox(window._hwImgs_'+h.id+','+idx+',\''+( (h.title||'واجب').replace(/'/g,"\\'") )+'\')" title="'+(isDrive?'فتح من Drive':isPdf?'فتح PDF':'تكبير الصورة')+'">'
+              + inner
+              + '<div class="img-zoom-hint"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>'
+              + '<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);font-size:9px;font-weight:700;color:#fff;text-align:center;padding:2px">'+(isDrive?'☁️ Drive':isPdf?'📄 PDF':'🔍 تكبير')+'</div>'
+              + '</div>';
+          }).join('')}</div>`;
+        })()}
       </div>` : '';
 
     return `<div class="hw-item" style="flex-direction:column;align-items:stretch;gap:0">
@@ -1880,17 +1935,7 @@ function openEssay(examId,gradeKey,title,text){
   document.getElementById('mcqModal').classList.add('open');document.body.style.overflow='hidden';
 }
 
-function openImgs(examId,gradeKey,title,urls){
-  _imgData={examId,gradeKey};
-  document.getElementById('imgTitle').textContent=title;
-  document.getElementById('imgBody').innerHTML=urls.map((u,i)=>`
-    <div style="margin-bottom:10px">
-      <div style="font-size:11px;color:var(--muted);margin-bottom:4px">صفحة ${i+1}</div>
-      ${u.toLowerCase().includes('.pdf')?`<a href="${u}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:12px;background:rgba(74,127,212,0.07);border:1px solid var(--b1);border-radius:10px;color:var(--blue);text-decoration:none;font-weight:700">📄 فتح الصفحة ${i+1}</a>`:`<img src="${u}" style="width:100%;border-radius:10px;display:block;cursor:pointer" onclick="window.open('${u}','_blank')"/>`}
-    </div>`).join('');
-  document.getElementById('imgDoneBtn').style.display='flex';
-  document.getElementById('imgModal').classList.add('open');document.body.style.overflow='hidden';
-}
+
 window.imgDone=()=>{
   if(_imgData){
     markDone(_imgData.gradeKey,'exams',_imgData.examId);
@@ -2179,6 +2224,7 @@ function switchTab(name,btn){
     const wrap=document.getElementById('examListWrap');
     if(wrap) wrap.style.display='block';
   }
+  // playlists tab removed — no-op
   if(name==='books') loadBooksTab();
   if(name==='research') loadMyResearches();
   if(name==='comments'){
@@ -2188,7 +2234,7 @@ function switchTab(name,btn){
   // Show/hide search bar (only for videos/exams)
   const srch = document.getElementById('cvSearch');
   if(srch) srch.style.display = (name==='videos'||name==='exams') ? 'flex' : 'none';
-  const inp=document.getElementById('cvSearchInp'); if(inp&&name!=='videos'&&name!=='exams') inp.value='';
+  if(name!=='videos'&&name!=='exams') document.getElementById('cvSearchInp').value='';
 }
 
 // ══════════════════════════════════════
@@ -2650,7 +2696,7 @@ async function dismissTicketReply(){
 // ══════════════════════════════════════
 // ── CONTENT SEARCH ──
 // ══════════════════════════════════════
-let _allVideos=[], _allExams=[], _activePl=null;
+let _allVideos=[], _allExams=[];
 function searchContent(){
   const q=(document.getElementById('cvSearchInp')?.value||'').trim().toLowerCase();
   const isMine=window._openGrade===window._userData?.gradeKey;
@@ -2890,6 +2936,143 @@ function confirmBookOnWA(waNum){
   }
   window.open(`https://wa.me/${waNum}?text=${msg}`,'_blank');
 }
+// ══════════════════════════════════════
+// ── IMAGE LIGHTBOX ──
+// ══════════════════════════════════════
+window._lbImages = [];
+window._lbIndex  = 0;
+
+// Helper: detect if URL is a Google Drive file link
+function _isDriveUrl(url){
+  return url && (
+    url.includes('drive.google.com') ||
+    url.includes('docs.google.com')
+  );
+}
+
+// Convert any Drive share/view URL to an embeddable preview URL
+function _driveEmbedUrl(url){
+  // already a preview
+  if(url.includes('/preview')) return url;
+  // /file/d/FILE_ID/view  →  /file/d/FILE_ID/preview
+  const m = url.match(/\/file\/d\/([^/?#]+)/);
+  if(m) return `https://drive.google.com/file/d/${m[1]}/preview`;
+  // open?id=FILE_ID
+  const m2 = url.match(/[?&]id=([^&]+)/);
+  if(m2) return `https://drive.google.com/file/d/${m2[1]}/preview`;
+  return url;
+}
+
+window.openLightbox = function(urls, index, caption){
+  if(!urls || !urls.length) return;
+  window._lbImages = Array.isArray(urls) ? urls : [urls];
+  window._lbIndex  = index || 0;
+  _renderLightbox(caption||'');
+  document.getElementById('imgLightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+
+function _renderLightbox(caption){
+  const url = window._lbImages[window._lbIndex];
+  const imgEl   = document.getElementById('lbImg');
+  const frameEl = document.getElementById('lbDriveFrame');
+  const openLink= document.getElementById('lbOpenLink');
+  const capEl   = document.getElementById('lbCaption');
+  if(capEl) capEl.textContent = caption || (window._lbImages.length > 1 ? `صفحة ${window._lbIndex+1} من ${window._lbImages.length}` : '');
+  if(openLink){ openLink.href = url; openLink.style.display = 'flex'; }
+
+  if(_isDriveUrl(url)){
+    // Show iframe for Drive
+    imgEl.style.display   = 'none';
+    frameEl.style.display = 'block';
+    frameEl.src = _driveEmbedUrl(url);
+  } else if(url.toLowerCase().includes('.pdf')){
+    imgEl.style.display   = 'none';
+    frameEl.style.display = 'block';
+    frameEl.src = url;
+  } else {
+    // Regular image
+    frameEl.style.display = 'none';
+    frameEl.src = '';
+    imgEl.style.display   = 'block';
+    imgEl.src = url;
+    imgEl.onerror = function(){ this.src=''; this.alt='تعذّر تحميل الصورة'; };
+  }
+}
+
+window.closeLightbox = function(){
+  document.getElementById('imgLightbox').classList.remove('open');
+  document.body.style.overflow = '';
+  // stop Drive/PDF iframe
+  const f = document.getElementById('lbDriveFrame');
+  if(f) f.src = '';
+  const i = document.getElementById('lbImg');
+  if(i){ i.src=''; i.style.display='none'; }
+};
+
+// keyboard nav for lightbox
+document.addEventListener('keydown', e=>{
+  const lb = document.getElementById('imgLightbox');
+  if(!lb || !lb.classList.contains('open')) return;
+  if(e.key==='Escape')  closeLightbox();
+  if(e.key==='ArrowLeft'||e.key==='ArrowDown'){
+    if(window._lbIndex < window._lbImages.length-1){ window._lbIndex++; _renderLightbox(); }
+  }
+  if(e.key==='ArrowRight'||e.key==='ArrowUp'){
+    if(window._lbIndex > 0){ window._lbIndex--; _renderLightbox(); }
+  }
+});
+
+// ── Helper to build a nice image thumbnail grid ──
+function _buildImgGrid(urls, onClickFn){
+  if(!urls || !urls.length) return '';
+  return `<div class="img-thumb-grid">${urls.map((u,idx)=>{
+    const isDrive = _isDriveUrl(u);
+    const isPdf   = u.toLowerCase().includes('.pdf');
+    // thumbnail preview: for Drive use thumbnail API, for regular images use the url itself
+    const thumbSrc = isDrive
+      ? (()=>{
+          const m=u.match(/\/file\/d\/([^/?#]+)/);
+          const m2=!m && u.match(/[?&]id=([^&]+)/);
+          const fid=(m&&m[1])||(m2&&m2[1])||'';
+          return fid ? `https://drive.google.com/thumbnail?id=${fid}&sz=w400` : '';
+        })()
+      : (isPdf ? '' : u);
+    const inner = thumbSrc
+      ? `<img src="${thumbSrc}" alt="صورة ${idx+1}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;font-size:28px\\'>${isPdf?'📄':'🖼️'}</div>'"/>`
+      : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px">${isPdf?'📄':'🖼️'}</div>`;
+    return `<div class="img-thumb-item" onclick="${onClickFn}(${idx})" title="${isPdf?'فتح PDF':isDrive?'فتح من Drive':'تكبير الصورة'}">
+      ${inner}
+      <div class="img-zoom-hint">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      </div>
+      <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.5);font-size:9px;font-weight:700;color:#fff;text-align:center;padding:2px">
+        ${isDrive?'☁️ Drive':isPdf?'📄 PDF':'🔍 تكبير'}
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ── Rewrite openImgs to use new lightbox ──
+function openImgs(examId, gradeKey, title, urls){
+  _imgData = {examId, gradeKey};
+  document.getElementById('imgTitle').textContent = title;
+
+  // register lightbox images
+  const _lbUrls = urls;
+  window.__examImgOpen = (idx) => openLightbox(_lbUrls, idx, title);
+
+  document.getElementById('imgBody').innerHTML = `
+    <div style="margin-bottom:10px;font-size:12px;color:var(--muted)">
+      ${urls.length} ${urls.length===1?'صفحة':'صفحات'} — اضغط على أي صورة لتكبيرها
+    </div>
+    ${_buildImgGrid(urls, 'window.__examImgOpen')}
+  `;
+  document.getElementById('imgDoneBtn').style.display='flex';
+  document.getElementById('imgModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
 let tTimer;
 function showToast(msg,type='ok'){
   const t=document.getElementById('toast');t.className='toast '+type;
@@ -3176,6 +3359,22 @@ window.addEventListener('appinstalled',()=>{
   showToast('تم تثبيت Plus Mathematics 🎓','ok');
 });
 </script>
+<!-- ══ IMAGE LIGHTBOX ══ -->
+<div id="imgLightbox" onclick="if(event.target===this)closeLightbox()">
+  <div class="lb-wrap">
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+    <img id="lbImg" src="" alt="" style="display:none"/>
+    <iframe id="lbDriveFrame" allowfullscreen allow="autoplay; fullscreen"></iframe>
+  </div>
+  <div id="lbCaption" class="lb-caption"></div>
+  <div style="display:flex;gap:8px;margin-top:4px">
+    <a id="lbOpenLink" href="#" target="_blank" class="lb-open-btn" style="display:none">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      فتح في تبويب جديد
+    </a>
+  </div>
+</div>
+
 <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
