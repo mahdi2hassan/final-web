@@ -3,6 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بصمجي بلس: التربية المقارنة والدولية - محمي</title>
+    
+    <!-- 🔐 كود التحقق من المصادقة - يجب وضعه في البداية -->
+    <script>
+        (function() {
+            // رابط صفحة المصادقة
+            const AUTH_URL = 'https://plusinmath.vercel.app/x/plus-math-auth.html';
+            
+            // التحقق من وجود توكن مصادقة
+            const authToken = localStorage.getItem('plusMathAuth');
+            const bearerToken = localStorage.getItem('authToken');
+            
+            // إذا لم يكن المستخدم مسجلاً للدخول
+            if (!authToken || authToken !== 'true') {
+                // منع الوصول للمحتوى
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.body.innerHTML = '';
+                    document.body.style.background = 'linear-gradient(135deg, #1a5f7a, #159895)';
+                    document.body.style.display = 'flex';
+                    document.body.style.alignItems = 'center';
+                    document.body.style.justifyContent = 'center';
+                    document.body.style.height = '100vh';
+                    document.body.style.margin = '0';
+                    document.body.style.fontFamily = 'Tajawal, sans-serif';
+                });
+                
+                // عرض شاشة الانتظار والتحقق
+                const loadingHTML = `
+                    <div style="text-align: center; color: white; max-width: 500px; padding: 30px; background: rgba(255,255,255,0.1); border-radius: 20px; backdrop-filter: blur(10px);">
+                        <div style="width: 60px; height: 60px; border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                        <h2 style="margin: 0 0 10px; font-size: 1.5em;">🔐 التحقق من الهوية</h2>
+                        <p style="margin: 0 0 20px; opacity: 0.9;">جاري التحقق من تسجيل الدخول...</p>
+                        <a href="${AUTH_URL}" style="display: inline-block; padding: 12px 30px; background: white; color: #1a5f7a; text-decoration: none; border-radius: 50px; font-weight: bold; transition: transform 0.2s;">
+                            تسجيل الدخول الآن
+                        </a>
+                        <p style="margin: 15px 0 0; font-size: 0.9em; opacity: 0.7;">
+                            <small>سيتم إعادة التوجيه تلقائياً بعد تسجيل الدخول</small>
+                        </p>
+                    </div>
+                    <style>
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    </style>                `;
+                document.body.innerHTML = loadingHTML;
+                
+                // إعادة التوجيه بعد 3 ثوانٍ إذا لم يسجل الدخول
+                setTimeout(() => {
+                    if (!localStorage.getItem('plusMathAuth')) {
+                        window.location.href = AUTH_URL + '?redirect=' + encodeURIComponent(window.location.href);
+                    }
+                }, 3000);
+                
+                // منع عرض المحتوى الأصلي
+                return false;
+            }
+            
+            // إذا كان مسجلاً، متابعة تحميل الصفحة
+            return true;
+        })();
+    </script>
+    
+    <!-- باقي الـ head الأصلي -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* ... (نفس الـ CSS الأصلي) ... */
+        
+        /* 🛡️ أنماط إضافية لشاشة الحماية */
+        .auth-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1a5f7a, #159895);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            font-family: 'Tajawal', sans-serif;
+        }
+        
+        .auth-box {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+            margin: 20px;
+        }
+                .auth-loader {
+            width: 60px; height: 60px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .auth-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: white;
+            color: #1a5f7a;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: transform 0.2s;
+        }
+        .auth-btn:hover { transform: translateY(-2px); }
+        
+        /* إخفاء المحتوى حتى يتم التحقق */
+        #main-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        #main-content.loaded {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🛡️ شاشة التحقق من المصادقة -->
+    <div id="auth-check" class="auth-overlay">
+        <div class="auth-box">
+            <div class="auth-loader"></div>
+            <h2>🔐 الوصول المحمي</h2>
+            <p>يجب تسجيل الدخول أولاً للوصول إلى هذا المحتوى التعليمي</p>
+            <a href="https://plusinmath.vercel.app/x/plus-math-auth.html?redirect=1" class="auth-btn">
+                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+            </a>            <p style="margin-top: 20px; font-size: 0.9em; opacity: 0.8;">
+                <i class="fas fa-info-circle"></i> بعد تسجيل الدخول، سيتم إعادة توجيهك تلقائياً
+            </p>
+        </div>
+    </div>
+
+    <!-- المحتوى الرئيسي (مخفي حتى التحقق) -->
+    <div id="main-content">
+        
+        <!-- === هنا يبدأ محتوى الصفحة الأصلي === -->
+        <!-- انسخ كل محتوى Comparative.html الأصلي وضعه هنا -->
+        
+        <header>
+            <h1>📚 التربية المقارنة والدولية</h1>
+            <p>ملخص موسع وشامل مع بنك أسئلة تفاعلي ضخم</p>
+        </header>
+        
+        <!-- ... بقية المحتوى ... -->
+        
+    </div>
+
+    <!-- 🔐 سكربت تفعيل المحتوى بعد التحقق -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const AUTH_KEY = 'plusMathAuth';
+            const authOverlay = document.getElementById('auth-check');
+            const mainContent = document.getElementById('main-content');
+            
+            // دالة التحقق والتفعيل
+            function checkAndShowContent() {
+                const isAuthenticated = localStorage.getItem(AUTH_KEY) === 'true';
+                
+                if (isAuthenticated) {
+                    // إخفاء شاشة الحماية وعرض المحتوى
+                    if (authOverlay) {
+                        authOverlay.style.opacity = '0';
+                        setTimeout(() => {
+                            authOverlay.style.display = 'none';
+                        }, 300);
+                    }
+                    if (mainContent) {
+                        mainContent.classList.add('loaded');
+                    }
+                    console.log('✅ تم التحقق من المصادقة - عرض المحتوى');
+                } else {
+                    // البقاء على شاشة الحماية
+                    console.log('⏳ في انتظار المصادقة...');
+                    
+                    // مراقبة التغييرات في localStorage
+                    window.addEventListener('storage', function(e) {                        if (e.key === AUTH_KEY && e.newValue === 'true') {
+                            checkAndShowContent();
+                        }
+                    });
+                    
+                    // محاولة إعادة التحقق كل 2 ثانية (لحالات التحديث التلقائي)
+                    const retryInterval = setInterval(() => {
+                        if (localStorage.getItem(AUTH_KEY) === 'true') {
+                            clearInterval(retryInterval);
+                            checkAndShowContent();
+                        }
+                    }, 2000);
+                }
+            }
+            
+            // تشغيل التحقق
+            checkAndShowContent();
+        });
+    </script>
+    
+    <!-- سكربتات الصفحة الأصلية -->
+    <script>
+        // ... (نفس الجافاسكريبت الأصلي) ...
+    </script>
+    
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بصمجي بلس: التربية المقارنة والدولية</title>
     <!-- استيراد الخطوط -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
