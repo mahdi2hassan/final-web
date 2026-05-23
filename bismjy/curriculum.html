@@ -1,0 +1,2452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جميع الحقوق محفوظة لمنصات بلس</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a365d;
+            --secondary: #2c5282;
+            --accent: #dd6b20;
+            --accent-light: #ed8936;
+            --light: #f7fafc;
+            --dark: #1a202c;
+            --success: #38a169;
+            --warning: #d69e2e;
+            --danger: #e53e3e;
+            --info: #3182ce;
+            --gray: #718096;
+            --gray-light: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 12px;
+            --radius-lg: 20px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e6f7ff 100%);
+            color: var(--dark);
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, #1e40af 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .header-subtitle {
+            background: rgba(255,255,255,0.15);
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            margin-top: 1rem;
+            font-weight: 500;
+            position: relative;
+        }
+
+        /* Navigation */
+        .nav-container {
+            position: sticky;
+            top: 0;            z-index: 1000;
+            background: white;
+            box-shadow: var(--shadow);
+            padding: 0.8rem 2rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            list-style: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .nav-menu a {
+            padding: 0.6rem 1.2rem;
+            color: var(--secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.95rem;
+        }
+
+        .nav-menu a:hover, .nav-menu a.active {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Print Button */
+        .print-btn {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(221, 107, 32, 0.45);
+            transition: var(--transition);            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        .print-btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(221, 107, 32, 0.6);
+        }
+
+        .print-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Chapter Cards */
+        .chapter-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2.5rem;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid var(--gray-light);
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        .chapter-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.8rem 2.2rem;
+            font-size: 1.7rem;            font-weight: 800;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--accent);
+            position: relative;
+        }
+
+        .chapter-header::after {
+            content: "";
+            position: absolute;
+            bottom: -4px;
+            right: 2rem;
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .chapter-badge {
+            background: var(--accent);
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .chapter-content {
+            padding: 2rem 2.2rem;
+        }
+
+        /* Section Styles */
+        .section-title {
+            color: var(--secondary);
+            font-size: 1.55rem;
+            font-weight: 800;
+            margin: 2rem 0 1.3rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 3px solid var(--accent-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--accent);
+        }
+
+        .subsection-title {
+            color: var(--primary);            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 1.8rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subsection-title::before {
+            content: "•";
+            color: var(--accent);
+            font-size: 2rem;
+            font-weight: bold;
+            line-height: 0.5;
+        }
+
+        /* Content Boxes */
+        .content-box {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin: 1.3rem 0;
+            border-right: 4px solid var(--secondary);
+            transition: var(--transition);
+        }
+
+        .content-box:hover {
+            background: #f0f7ff;
+            border-right-color: var(--accent);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border: 2px solid var(--warning);
+            border-radius: var(--radius);
+            padding: 1.4rem;
+            margin: 1.3rem 0;
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: "⚠️";
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            border: 2px solid var(--warning);
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 2px solid var(--success);
+            border-radius: var(--radius);
+            padding: 1.4rem;
+            margin: 1.3rem 0;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 2px solid var(--info);
+            border-radius: var(--radius);
+            padding: 1.4rem;
+            margin: 1.3rem 0;
+        }
+
+        /* Lists */
+        ul, ol {
+            padding-right: 1.8rem;
+            margin: 1rem 0;
+        }
+
+        li {
+            margin-bottom: 0.7rem;
+            position: relative;
+            padding-right: 0.5rem;
+        }
+
+        ul li::before {
+            content: "▸";
+            color: var(--accent);
+            font-weight: bold;
+            position: absolute;
+            right: -1.3rem;
+            font-size: 1.2rem;
+        }
+
+        ol {
+            counter-reset: item;
+            list-style-type: none;
+        }
+
+        ol li {
+            counter-increment: item;            padding-right: 0;
+        }
+
+        ol li::before {
+            content: counter(item) ".";
+            color: var(--accent);
+            font-weight: 800;
+            margin-left: -1.8rem;
+            display: inline-block;
+            width: 1.5rem;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            min-width: 600px;
+        }
+
+        th {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 1.2rem;
+            text-align: right;
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        td {
+            padding: 0.9rem 1.2rem;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        tr:hover {
+            background: #f0f7ff;
+        }
+
+        /* Question Bank Styles */        .question-bank {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 2rem;
+            margin: 2.5rem 0;
+            border: 2px solid var(--secondary);
+        }
+
+        .qb-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 3px dashed var(--accent-light);
+        }
+
+        .qb-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+        }
+
+        .qb-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .stat-item {
+            background: var(--light);
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-mc { color: var(--info); }
+        .stat-tf { color: var(--success); }
+        .stat-essay { color: var(--accent); }
+
+        .question-type-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;            flex-wrap: wrap;
+        }
+
+        .qb-tab {
+            padding: 0.7rem 1.8rem;
+            background: var(--gray-light);
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .qb-tab.active, .qb-tab:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .question-item {
+            background: var(--light);
+            border-radius: var(--radius);
+            padding: 1.4rem;
+            margin-bottom: 1.2rem;
+            border-right: 4px solid var(--secondary);
+            transition: var(--transition);
+        }
+
+        .question-item:hover {
+            background: #f0f7ff;
+            border-right-color: var(--accent);
+            transform: translateX(5px);
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 0.9rem;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .options-list {
+            padding-right: 1.5rem;
+            margin: 0.8rem 0;
+        }
+
+        .options-list li {            margin-bottom: 0.5rem;
+            padding: 0.4rem 0;
+        }
+
+        .options-list li::before {
+            content: attr(data-option) ".";
+            color: var(--accent);
+            font-weight: 800;
+            margin-left: -1.5rem;
+            display: inline-block;
+            width: 1.5rem;
+        }
+
+        .answer {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 0.35rem 1rem;
+            border-radius: 50px;
+            font-weight: 700;
+            margin-top: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .answer.false {
+            background: var(--danger);
+        }
+
+        .answer.essay {
+            background: var(--accent);
+        }
+
+        .question-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            font-weight: 800;
+            margin-left: 0.6rem;
+            font-size: 0.95rem;
+        }
+
+        /* Search & Filter */
+        .search-filter {
+            display: flex;
+            gap: 1rem;            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: white;
+            padding: 1.2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.9rem 1.2rem 0.9rem 3rem;
+            border: 2px solid var(--gray-light);
+            border-radius: 50px;
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(221, 107, 32, 0.2);
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .filter-select {
+            padding: 0.9rem 1.5rem;
+            border: 2px solid var(--gray-light);
+            border-radius: 50px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            transition: var(--transition);
+        }
+
+        .filter-select:focus {            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, var(--dark), #2d3748);
+            color: white;
+            text-align: center;
+            padding: 2.5rem 2rem;
+            margin-top: 3rem;
+        }
+
+        footer p {
+            opacity: 0.9;
+            margin: 0.5rem 0;
+        }
+
+        .footer-highlight {
+            color: var(--accent-light);
+            font-weight: 700;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            header h1 { font-size: 2.3rem; }
+            header p { font-size: 1.15rem; }
+            .chapter-header { font-size: 1.5rem; padding: 1.5rem 1.8rem; }
+            .chapter-content { padding: 1.6rem 1.8rem; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu { gap: 0.3rem; }
+            .nav-menu a { padding: 0.5rem 0.9rem; font-size: 0.9rem; }
+            .print-btn { bottom: 15px; left: 15px; padding: 12px 22px; font-size: 0.95rem; }
+            .section-title { font-size: 1.4rem; }
+            .subsection-title { font-size: 1.2rem; }
+            .qb-stats { gap: 1rem; }
+            .stat-item { padding: 0.5rem 1.2rem; font-size: 0.9rem; }
+        }
+
+        @media (max-width: 480px) {
+            header { padding: 2rem 1.5rem; }
+            header h1 { font-size: 1.9rem; }
+            .chapter-header { font-size: 1.35rem; flex-direction: column; gap: 0.8rem; text-align: center; }
+            .chapter-badge { width: 100%; text-align: center; }
+            .search-filter { flex-direction: column; }
+            .question-type-tabs { flex-direction: column; align-items: center; }
+            .qb-tab { width: 100%; max-width: 300px; justify-content: center; }
+        }
+        /* Print Styles */
+        @media print {
+            body { 
+                background: white; 
+                color: black;
+                font-size: 14px;
+            }
+            .print-btn, .nav-container, .search-filter, .question-type-tabs { 
+                display: none !important; 
+            }
+            .chapter-card { 
+                box-shadow: none; 
+                border: 1px solid #ccc; 
+                break-inside: avoid;
+                margin-bottom: 1.5rem;
+            }
+            .chapter-header { 
+                background: white; 
+                color: black; 
+                border-bottom: 2px solid black;
+                border-right: 4px solid black;
+                padding: 1rem 1.5rem;
+            }
+            .chapter-header::after { display: none; }
+            .content-box, .highlight-box, .success-box, .info-box {
+                border: 1px solid #ddd;
+                background: white;
+            }
+            table { font-size: 13px; }
+            th, td { padding: 0.6rem 0.8rem; }
+            .question-item { 
+                border: 1px solid #ddd; 
+                background: white;
+                page-break-inside: avoid;
+            }
+            .answer { 
+                background: #eee !important; 
+                color: black !important;
+                border: 1px solid #999;
+            }
+            a { text-decoration: none; color: black; }
+            header { 
+                background: white; 
+                color: black; 
+                border-bottom: 3px solid black;
+                padding: 1.5rem;
+            }
+            header h1 { font-size: 22pt; color: black; }
+            header p { font-size: 14pt; }        }
+
+        /* Animation for content loading */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chapter-card {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .chapter-card:nth-child(1) { animation-delay: 0.1s; }
+        .chapter-card:nth-child(2) { animation-delay: 0.2s; }
+        .chapter-card:nth-child(3) { animation-delay: 0.3s; }
+        .question-bank { animation: fadeIn 0.5s ease-out 0.4s forwards; opacity: 0; }
+
+        /* Accordion for questions */
+        .answer-toggle {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-weight: 600;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            margin-top: 0.5rem;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .answer-toggle:hover {
+            background: rgba(221, 107, 32, 0.1);
+        }
+
+        .answer-content {
+            display: none;
+            margin-top: 0.8rem;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            border-right: 3px solid var(--success);
+        }
+
+        .answer-content.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        /* Progress indicator */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gray-light);
+            z-index: 2000;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <h1><i class="fas fa-book-open"></i> المنهج المدرسي: مفهومه، عناصره، تنظيماته، وتطويره</h1>
+        <p>  (150+ سؤال)</p>
+        <div class="header-subtitle">
+            <i class="fas fa-graduation-cap"></i> إعداد تفاعلي متوافق مع جميع الأجهزة
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav-container">
+        <ul class="nav-menu">
+            <li><a href="#chapter1" class="active"><i class="fas fa-book"></i> الفصل الأول</a></li>
+            <li><a href="#chapter2"><i class="fas fa-layer-group"></i> الفصل الثاني</a></li>
+            <li><a href="#chapter4"><i class="fas fa-cogs"></i> الفصل الرابع</a></li>
+            <li><a href="#question-bank"><i class="fas fa-question-circle"></i> بنك الأسئلة</a></li>
+            <li><a href="#mcq"><i class="fas fa-list-ol"></i> اختياري</a></li>
+            <li><a href="#tf"><i class="fas fa-check-circle"></i> صح وغلط</a></li>
+            <li><a href="#essay"><i class="fas fa-pen-fancy"></i> مقالي</a></li>        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+
+        <!-- الفصل الأول: تطور مفهوم المنهج -->
+        <section id="chapter1" class="chapter-card">
+            <div class="chapter-header">
+                <span>الفصل الأول: تطور مفهوم المنهج</span>
+                <span class="chapter-badge">كامل</span>
+            </div>
+            <div class="chapter-content">
+                
+                <h3 class="section-title"><i class="fas fa-history"></i> أولاً: المفهوم التقليدي للمنهج</h3>
+                <div class="content-box">
+                    <p><strong>التعريف:</strong> هو مجموع المواد الدراسية والمقررات التي تضعها الوزارة أو الإدارة التعليمية، ويتضمن معلومات ومعارف يجب على التلاميذ حفظها واستظهارها، مع التركيز على الجانب المعرفي فقط.</p>
+                </div>
+                
+                <h4 class="subsection-title">خصائص المفهوم التقليدي:</h4>
+                <ul>
+                    <li>التركيز الحصري على الجانب المعرفي (الحفظ والتلقين) وإهمال الجوانب الأخرى (الوجدانية، المهارية، الاجتماعية).</li>
+                    <li>عدم مراعاة ميول وحاجات ومشكلات التلاميذ الفردية والجماعية.</li>
+                    <li>إهمال الفروق الفردية بين الطلاب والتعامل مع الجميع بنفس الطريقة والأسلوب.</li>
+                    <li>عدم الاهتمام بتنمية الاتجاهات الإيجابية والقيم والعادات الحسنة لدى الطلاب.</li>
+                    <li>اعتماد الطالب على المعلم والكتاب المدرسي كمصدر وحيد وأوحد للمعرفة.</li>
+                    <li>ضخامة المقررات وكثافتها مما يسبب العبء المعرفي والنفسي على الطالب.</li>
+                    <li>عدم ربط المواد الدراسية ببعضها البعض (انعزال المواد) مما يفقد المعرفة تكاملها.</li>
+                    <li>التقويم يقتصر على الاختبارات التحريرية لقياس الحفظ والاستظهار فقط.</li>
+                    <li>دور الطالب سلبي (متلقٍ) ودور المعلم هو الناقل الوحيد للمعرفة.</li>
+                    <li>المنهج يُعد من قبل خبراء متخصصين دون مشاركة الميدان أو الطلاب.</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>عيوب المفهوم التقليدي:</strong>
+                    <ul>
+                        <li>يُنتج طلاباً يحفظون المعلومات دون فهم أو تطبيق.</li>
+                        <li>لا يُنمّي مهارات التفكير النقدي والإبداعي وحل المشكلات.</li>
+                        <li>لا يهيئ الطالب للحياة العملية والمهنية المستقبلية.</li>
+                        <li>يقتل الإبداع والابتكار لدى الطلاب.</li>
+                        <li>لا يراعي التغيرات السريعة في المعرفة والتكنولوجيا.</li>
+                    </ul>
+                </div>
+
+                <h3 class="section-title"><i class="fas fa-brain"></i> ثانياً: المفهوم الحديث للمنهج</h3>
+                <div class="content-box">
+                    <p><strong>التعريف:</strong> هو مجموعة الخبرات التربوية (المخططة وغير المخططة) التي تهيئها المدرسة للطلاب داخلها أو خارجها، تحت إشرافها، بهدف تحقيق نموهم الشامل والمتكامل في جميع الجوانب: المعرفية، المهارية، الوجدانية، الاجتماعية، الجسمية، الفنية.</p>
+                </div>
+
+                <h4 class="subsection-title">خصائص المفهوم الحديث:</h4>                <ul>
+                    <li><strong>شمولية النمو:</strong> يهتم بنمو الطالب من جميع الجوانب (جسمية، عقلية، اجتماعية، انفعالية، دينية، فنية) وليس الجانب المعرفي فقط.</li>
+                    <li><strong>الخبرة:</strong> المنهج هو الخبرة وليست فقط المعلومات؛ فالخبرة هي التفاعل بين الفرد وبيئته.</li>
+                    <li><strong>التخطيط:</strong> خبرات مخططة وهادفة وليست عشوائية، تُصمم لتحقيق أهداف محددة.</li>
+                    <li><strong>المرونة:</strong> يراعي الفروق الفردية وميول الطلاب وقدراتهم وظروفهم.</li>
+                    <li><strong>التنوع:</strong> يشمل الأنشطة الصفية واللاصفية، والتجارب، والرحلات، والمشاريع، والتفاعل مع المجتمع.</li>
+                    <li><strong>التكامل:</strong> ربط المواد الدراسية ببعضها وربطها بحياة الطالب ومجتمعه.</li>
+                    <li><strong>دور الطالب:</strong> الطالب مشارك فعال في عملية التعلم، وليس متلقياً سلبياً.</li>
+                    <li><strong>دور المعلم:</strong> المعلم موجه وميسر ومنظم للخبرات، وليس ناقلاً للمعرفة فقط.</li>
+                    <li><strong>التقويم:</strong> أساليب متنوعة (أدائية، ملاحظة، ملفات إنجاز، اختبارات) لقياس النمو الشامل.</li>
+                    <li><strong>الاستمرارية:</strong> المنهج عملية مستمرة من التطوير والتعديل لمواكبة المتغيرات.</li>
+                </ul>
+
+                <div class="success-box">
+                    <strong>مميزات المفهوم الحديث:</strong>
+                    <ul>
+                        <li>ينمي مهارات التفكير العليا: التحليل، التركيب، التقويم، الإبداع.</li>
+                        <li>يربط التعلم بحياة الطالب الواقعية ومجتمعه.</li>
+                        <li>يعزز التعلم الذاتي والاستكشاف والبحث.</li>
+                        <li>ينمي القيم والاتجاهات الإيجابية والمواطنة.</li>
+                        <li>يُعد الطالب للحياة والعمل في مجتمع متغير.</li>
+                    </ul>
+                </div>
+
+                <h3 class="section-title"><i class="fas fa-balance-scale"></i> ثالثاً: مقارنة شاملة بين المفهومين</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>وجه المقارنة</th>
+                                <th>المفهوم التقليدي</th>
+                                <th>المفهوم الحديث</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>الهدف الأساسي</strong></td>
+                                <td>تحصيل المعلومات وحفظها واستظهارها</td>
+                                <td>تحقيق النمو المتكامل والشامل لشخصية الطالب</td>
+                            </tr>
+                            <tr>
+                                <td><strong>طبيعة المحتوى</strong></td>
+                                <td>مواد دراسية منفصلة، معلومات نظرية</td>
+                                <td>خبرات متنوعة ومتكاملة، نظرية وتطبيقية</td>
+                            </tr>
+                            <tr>
+                                <td><strong>دور الطالب</strong></td>
+                                <td>سلبي، متلقٍ، يحفظ ويكرر</td>
+                                <td>إيجابي، مشارك، باحث، مكتشف، مبدع</td>
+                            </tr>                            <tr>
+                                <td><strong>دور المعلم</strong></td>
+                                <td>ناقل للمعرفة، محور العملية التعليمية</td>
+                                <td>موجه، ميسر، منظم للخبرات، شريك في التعلم</td>
+                            </tr>
+                            <tr>
+                                <td><strong>طرائق التدريس</strong></td>
+                                <td>الإلقاء، الحفظ، التلقين</td>
+                                <td>التعلم النشط، الاكتشاف، حل المشكلات، التعاوني</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الأنشطة التعليمية</strong></td>
+                                <td>محدودة، صفية فقط، نظرية</td>
+                                <td>متنوعة، صفية ولا صفية، عملية وتطبيقية</td>
+                            </tr>
+                            <tr>
+                                <td><strong>التقويم</strong></td>
+                                <td>اختبارات تحريرية، قياس الحفظ، نهائي</td>
+                                <td>أساليب متنوعة، قياس النمو، تكويني وختامي</td>
+                            </tr>
+                            <tr>
+                                <td><strong>مراعاة الفروق</strong></td>
+                                <td>لا يراعي الفروق الفردية</td>
+                                <td>يراعي الفروق الفردية والميول والقدرات</td>
+                            </tr>
+                            <tr>
+                                <td><strong>الربط بالواقع</strong></td>
+                                <td>منفصل عن حياة الطالب ومجتمعه</td>
+                                <td>مرتبط بحياة الطالب ومجتمعه ومشكلاته</td>
+                            </tr>
+                            <tr>
+                                <td><strong>التطوير</strong></td>
+                                <td>ثابت، نادر التحديث</td>
+                                <td>ديناميكي، مستمر التطوير والتعديل</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="section-title"><i class="fas fa-seedling"></i> رابعاً: أسس بناء المنهج الحديث</h3>
+                
+                <h4 class="subsection-title">1. الأساس الفلسفي:</h4>
+                <ul>
+                    <li>يعكس فلسفة المجتمع ومعتقداته وقيمه وتوجهاته الفكرية.</li>
+                    <li>يحدد الغايات الكبرى للتربية وأهدافها النهائية.</li>
+                    <li>يوجه اختيار المحتوى وطرائق التدريس وأساليب التقويم.</li>
+                    <li>في المجتمع المصري: يستند إلى القيم الإسلامية، والهوية العربية، والانتماء الوطني، والديمقراطية، وحقوق الإنسان.</li>
+                </ul>
+
+                <h4 class="subsection-title">2. الأساس الاجتماعي:</h4>                <ul>
+                    <li>يلبي حاجات المجتمع الحالية والمستقبلية (اقتصادية، اجتماعية، ثقافية).</li>
+                    <li>ينقل ثقافة المجتمع وقيمه وتراثه للأجيال الجديدة.</li>
+                    <li>يُعد الطالب للمشاركة الفعالة في تنمية مجتمعه.</li>
+                    <li>يراعي خصائص المجتمع وتغيراته وتحدياته.</li>
+                    <li>يعزز الانتماء والمواطنة والتعايش السلمي.</li>
+                </ul>
+
+                <h4 class="subsection-title">3. الأساس النفسي:</h4>
+                <ul>
+                    <li>يراعي سيكولوجية المتعلم: مراحل النمو، الخصائص العقلية، الانفعالية، الاجتماعية.</li>
+                    <li>ينطلق من ميول الطلاب وحاجاتهم وقدراتهم واستعداداتهم.</li>
+                    <li>يستخدم نظريات التعلم (سلوكية، معرفية، بنائية، إنسانية) في تصميم الخبرات.</li>
+                    <li>يعزز الدافعية للتعلم والثقة بالنفس وتقدير الذات.</li>
+                    <li>يراعي الفروق الفردية وأنماط التعلم المختلفة.</li>
+                </ul>
+
+                <h4 class="subsection-title">4. الأساس المعرفي:</h4>
+                <ul>
+                    <li>يواكب التطور العلمي والمعرفي الهائل في مختلف التخصصات.</li>
+                    <li>يختار المعرفة الأصيلة، الصحيحة، الموثوقة، ذات القيمة التربوية.</li>
+                    <li>ينظم المعرفة بشكل يتناسب مع طبيعة التخصص ومنطق البناء المعرفي.</li>
+                    <li>يربط بين فروع المعرفة المختلفة لتحقيق التكامل المعرفي.</li>
+                    <li>ينمي مهارات البحث العلمي والتفكير النقدي والإبداعي.</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>ملاحظة هامة:</strong> لا يمكن بناء منهج ناجح بالاعتماد على أساس واحد فقط؛ بل يجب التكامل بين الأسس الأربعة (الفلسفي، الاجتماعي، النفسي، المعرفي) لضمان منهج متوازن يحقق أهدافه بكفاءة.
+                </div>
+
+                <h3 class="section-title"><i class="fas fa-exchange-alt"></i> خامساً: العلاقة بين المنهج والمجتمع</h3>
+                <ul>
+                    <li>المنهج مرآة تعكس ثقافة المجتمع وقيمه وتوجهاته.</li>
+                    <li>المجتمع مصدر رئيسي لتحديد أهداف المنهج ومحتواه.</li>
+                    <li>المنهج أداة لتغيير المجتمع وتطويره من خلال إعداد أفراده.</li>
+                    <li>التغيرات المجتمعية (تكنولوجيا، عولمة، قيم) تستدعي تطوير المنهج.</li>
+                    <li>المنهج الناجح هو الذي يوازن بين الحفاظ على الهوية والانفتاح على العالم.</li>
+                </ul>
+
+            </div>
+        </section>
+
+        <!-- الفصل الثاني: عناصر المنهج -->
+        <section id="chapter2" class="chapter-card">
+            <div class="chapter-header">
+                <span>الفصل الثاني: عناصر المنهج</span>
+                <span class="chapter-badge">كامل</span>
+            </div>
+            <div class="chapter-content">
+                                <h3 class="section-title"><i class="fas fa-bullseye"></i> أولاً: الأهداف التربوية (الغايات)</h3>
+                <div class="content-box">
+                    <p><strong>التعريف:</strong> هي التغيرات المرغوبة في سلوك المتعلم (معرفياً، مهارياً، وجدانياً) التي تسعى المؤسسة التعليمية لتحقيقها من خلال الخبرات التربوية المقدمة.</p>
+                </div>
+
+                <h4 class="subsection-title">أهمية الأهداف التربوية:</h4>
+                <ul>
+                    <li>توجه عملية بناء المنهج بكافة عناصره (محتوى، طرق، أنشطة، تقويم).</li>
+                    <li>تحدد المعايير التي يُقاس عليها نجاح العملية التعليمية.</li>
+                    <li>تساعد المعلم في تخطيط دروسه واختيار استراتيجيات التدريس المناسبة.</li>
+                    <li>توضح للطالب ما هو متوقع منه تحقيقه، مما يعزز دافعيته للتعلم.</li>
+                    <li>تسهل عملية التواصل بين جميع أطراف العملية التعليمية (معلم، طالب، ولي أمر، إدارة).</li>
+                    <li>تُعد أساساً لاختيار وتطوير وسائل التقويم المناسبة.</li>
+                </ul>
+
+                <h4 class="subsection-title">مصادر اشتقاق الأهداف:</h4>
+                <ol>
+                    <li><strong>حاجات المجتمع ومشكلاته:</strong> دراسة الواقع الاجتماعي، الاقتصادي، الثقافي، التكنولوجي لتحديد المهارات والمعارف التي يحتاجها المجتمع.</li>
+                    <li><strong>حاجات الطلاب وميولهم:</strong> دراسة خصائص الطلاب النمائية، اهتماماتهم، استعداداتهم، فروقهم الفردية.</li>
+                    <li><strong>طبيعة المعرفة والتخصصات العلمية:</strong> تحليل بنية التخصصات، مفاهيمها الأساسية، مهارات التفكير الخاصة بها، اتجاهات التطور فيها.</li>
+                    <li><strong>الفلسفة التربوية والقيم المجتمعية:</strong> استناداً إلى رؤية المجتمع لغايات التربية وأهدافها النهائية.</li>
+                    <li><strong>نتائج البحوث التربوية والنفسية:</strong> الاستفادة من الدراسات العلمية حول كيفية التعلم الفعال وتنمية المهارات.</li>
+                </ol>
+
+                <h4 class="subsection-title">تصنيف بلوم للأهداف التربوية (المجالات الثلاثة):</h4>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المجال</th>
+                                <th>المستويات (من الأدنى للأعلى)</th>
+                                <th>أمثلة على أفعال سلوكية</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>المجال المعرفي</strong><br><small>(Bloom - Cognitive)</small></td>
+                                <td>
+                                    <ol style="margin:0; padding-right:1.2rem;">
+                                        <li>التذكر (استدعاء المعلومات)</li>
+                                        <li>الفهم (شرح، تفسير)</li>
+                                        <li>التطبيق (استخدام المعرفة في موقف جديد)</li>
+                                        <li>التحليل (تفكيك المعرفة لمكوناتها)</li>
+                                        <li>التركيب (دمج عناصر لإنتاج جديد)</li>
+                                        <li>التقويم (إصدار أحكام قائمة على معايير)</li>
+                                    </ol>
+                                </td>
+                                <td>يذكر، يصف، يفسر، يطبق، يحلل، يقارن، يصمم، يقيم، يبرر</td>
+                            </tr>                            <tr>
+                                <td><strong>المجال الانفعالي (الوجداني)</strong><br><small>(Krathwohl - Affective)</small></td>
+                                <td>
+                                    <ol style="margin:0; padding-right:1.2rem;">
+                                        <li>الاستقبال (الانتباه للظاهرة)</li>
+                                        <li>الاستجابة (المشاركة الفعالة)</li>
+                                        <li>التقييم (إعطاء قيمة للظاهرة)</li>
+                                        <li>التنظيم (دمج القيم في نظام قيمي)</li>
+                                        <li>تبلور القيمة (الالتزام بالقيمة وسلوكها)</li>
+                                    </ol>
+                                </td>
+                                <td>يستمع، يشارك، يقدر، يدافع عن، يلتزم، يظهر اتجاهاً، يحترم</td>
+                            </tr>
+                            <tr>
+                                <td><strong>المجال النفس حركي (المهاري)</strong><br><small>(Simpson - Psychomotor)</small></td>
+                                <td>
+                                    <ol style="margin:0; padding-right:1.2rem;">
+                                        <li>الإدراك الحسي (ملاحظة النموذج)</li>
+                                        <li>الاستعداد (التهيئة الذهنية والجسمية)</li>
+                                        <li>الاستجابة الموجهة (تقليد النموذج)</li>
+                                        <li>الأداء الآلي (إتقان المهارة)</li>
+                                        <li>الاستجابة المعقدة (أداء ماهر ودقيق)</li>
+                                        <li>التكيف (تعديل المهارة لمواقف جديدة)</li>
+                                        <li>الابتكار (تطوير أنماط حركية جديدة)</li>
+                                    </ol>
+                                </td>
+                                <td>يركب، يكتب، يرسم، يجري، يعزف، يصمم نموذجاً، يبتكر حلاً</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="subsection-title">شروط صياغة الأهداف السلوكية الجيدة:</h4>
+                <ul>
+                    <li><strong>الوضوح والتحديد:</strong> أن تصف سلوكاً قابلاً للملاحظة والقياس (تجنب الأفعال الغامضة: يفهم، يدرك، يقدر).</li>
+                    <li><strong>الارتباط بالمحتوى:</strong> أن تكون مشتقة من محتوى المنهج وقابلة للتحقيق من خلاله.</li>
+                    <li><strong>الملاءمة للمستوى النمائي:</strong> أن تتناسب مع قدرات الطلاب العقلية والجسمية والانفعالية.</li>
+                    <li><strong>القابلية للتحقق:</strong> أن يكون تحقيقها ممكناً في الوقت والإمكانيات المتاحة.</li>
+                    <li><strong>الشمولية والتوازن:</strong> أن تغطي المجالات الثلاثة (معرفي، وجداني، مهاري) بشكل متوازن.</li>
+                    <li><strong>التسلسل الهرمي:</strong> أن تنتقل من المستويات الدنيا (تذكر، فهم) إلى العليا (تحليل، تركيب، تقويم).</li>
+                </ul>
+
+                <h3 class="section-title"><i class="fas fa-book"></i> ثانياً: محتوى المنهج</h3>
+                <div class="content-box">
+                    <p><strong>التعريف:</strong> هو الوعاء الذي يحمل الخبرات والمعلومات والمهارات والقيم والاتجاهات التي يُتوقع من الطالب اكتسابها، ويشمل: الحقائق، المفاهيم، المبادئ، النظريات، القوانين، المهارات، التطبيقات.</p>
+                </div>
+
+                <h4 class="subsection-title">معايير اختيار محتوى المنهج:</h4>
+                <ul>
+                    <li><strong>الصدق العلمي:</strong> صحة المعلومات ودقتها وحداثتها وموثوقية مصادرها.</li>                    <li><strong>الأهمية والقيمة:</strong> قيمة المحتوى للفرد (تنمية شخصية) وللمجتمع (تحقيق تنمية).</li>
+                    <li><strong>الملاءمة لميول الطلاب وحاجاتهم:</strong> أن يثير اهتمام الطلاب ويلبي حاجاتهم النمائية والاجتماعية.</li>
+                    <li><strong>المرونة:</strong> قابلية المحتوى للتعديل والتطوير حسب الظروف والمتغيرات.</li>
+                    <li><strong>التوازن:</strong> بين النظرية والتطبيق، بين المجالات المعرفية المختلفة، بين المحلي والعالمي.</li>
+                    <li><strong>الصلاحية للتعلم:</strong> أن يكون المحتوى قابلاً للفهم والاستيعاب حسب مستوى الطلاب.</li>
+                    <li><strong>الشمولية والتكامل:</strong> أن يغطي جوانب المعرفة المختلفة ويربط بينها.</li>
+                    <li><strong>الارتباط بالواقع:</strong> أن يرتبط المحتوى بحياة الطالب ومجتمعه ومشكلاته الواقعية.</li>
+                </ul>
+
+                <h4 class="subsection-title">أنواع المحتوى:</h4>
+                <ul>
+                    <li><strong>المحتوى المعرفي:</strong> الحقائق، المفاهيم، المبادئ، النظريات، القوانين.</li>
+                    <li><strong>المحتوى المهاري:</strong> المهارات العقلية (تحليل، تركيب)، المهارية (تجارب، رسم)، الاجتماعية (تعاون، حوار).</li>
+                    <li><strong>المحتوى الوجداني:</strong> القيم، الاتجاهات، الميول، العادات، التقاليد الإيجابية.</li>
+                    <li><strong>المحتوى التطبيقي:</strong> الأنشطة، التجارب، المشاريع، الزيارات الميدانية.</li>
+                </ul>
+
+                <h4 class="subsection-title">تنظيم المحتوى:</h4>
+                <ul>
+                    <li><strong>التنظيم الأفقي:</strong> ربط الموضوعات في نفس المستوى الدراسي (تكامل المواد).</li>
+                    <li><strong>التنظيم الرأسي:</strong> تسلسل الموضوعات من البسيط إلى المعقد عبر المستويات الدراسية.</li>
+                    <li><strong>التنظيم الحلزوني:</strong> تكرار المفاهيم الأساسية بمستويات متزايدة من العمق والتعقيد.</li>
+                    <li><strong>التنظيم حسب المجالات:</strong> تجميع المحتوى في مجالات (لغة، علوم، دراسات اجتماعية...).</li>
+                </ul>
+
+                <h3 class="section-title"><i class="fas fa-chalkboard-teacher"></i> ثالثاً: طرائق التدريس (استراتيجيات التعليم)</h3>
+                <div class="content-box">
+                    <p><strong>التعريف:</strong> هي الأساليب والوسائل والخطوات المنظمة التي يستخدمها المعلم لتوصيل محتوى المنهج وتحقيق أهدافه، مع مراعاة خصائص الطلاب وطبيعة المحتوى.</p>
+                </div>
+
+                <h4 class="subsection-title">تصنيف طرق التدريس:</h4>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>التصنيف</th>
+                                <th>الطرق</th>
+                                <th>المميزات</th>
+                                <th>العيوب</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>طرق الإلقاء</strong></td>
+                                <td>المحاضرة، الشرح، السرد، الوصف</td>
+                                <td>توفير الوقت، مناسبة للأعداد الكبيرة، نقل معلومات دقيقة</td>
+                                <td>سلبية الطالب، صعوبة قياس الفهم، ملل الطلاب</td>
+                            </tr>
+                            <tr>                                <td><strong>طرق الحوار والمناقشة</strong></td>
+                                <td>المناقشة الموجهة، الحوار السقراطي، العصف الذهني</td>
+                                <td>تنمية التفكير، مشاركة الطلاب، اكتشاف الأخطاء</td>
+                                <td>تستهلك وقتاً، تحتاج معلم ماهر، صعوبة الضبط</td>
+                            </tr>
+                            <tr>
+                                <td><strong>طرق الاكتشاف</strong></td>
+                                <td>التعلم بالاكتشاف، حل المشكلات، الاستقصاء</td>
+                                <td>تنمية التفكير العلمي، تعلم عميق، دافعية عالية</td>
+                                <td>تستهلك وقتاً، تحتاج موارد، صعوبة التطبيق مع كل المحتوى</td>
+                            </tr>
+                            <tr>
+                                <td><strong>طرق التعلم التعاوني</strong></td>
+                                <td>فرق العمل، التعلم الجماعي، الأقران</td>
+                                <td>تنمية المهارات الاجتماعية، تعلم من الأقران، دعم الفروق</td>
+                                <td>صعوبة التقييم الفردي، احتمال هيمنة بعض الطلاب</td>
+                            </tr>
+                            <tr>
+                                <td><strong>طرق التعلم الذاتي</strong></td>
+                                <td>التعلم المبرمج، الحقائب التعليمية، التعلم الإلكتروني</td>
+                                <td>مراعاة الفروق، تنمية الاستقلالية، المرونة الزمنية</td>
+                                <td>تحتاج موارد تقنية، تتطلب دافعية عالية من الطالب</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="subsection-title">معايير اختيار طريقة التدريس:</h4>
+                <ul>
+                    <li>طبيعة الأهداف التعليمية (معرفية، مهارية، وجدانية).</li>
+                    <li>خصائص الطلاب (العمر، المستوى، الميول، الفروق الفردية).</li>
+                    <li>طبيعة المحتوى (نظري، تطبيقي، تجريبي).</li>
+                    <li>الإمكانيات المتاحة (زمن، مكان، أدوات، تقنيات).</li>
+                    <li>كفاءة المعلم وخبرته في استخدام الطريقة.</li>
+                    <li>السياق التعليمي (فصل تقليدي، معمل، ميدان).</li>
+                </ul>
+
+                <h3 class="section-title"><i class="fas fa-tasks"></i> رابعاً: الأنشطة التعليمية</h3>
+                <div class="content-box">
+                    <p><strong>التعريف:</strong> هي الممارسات والتطبيقات العملية التي يقوم بها الطلاب لترجمة محتوى المنهج إلى سلوك واكتساب الخبرات المستهدفة.</p>
+                </div>
+
+                <h4 class="subsection-title">أهمية الأنشطة التعليمية:</h4>
+                <ul>
+                    <li>تحويل المعرفة النظرية إلى مهارات عملية وتطبيقات واقعية.</li>
+                    <li>تنمية مهارات التفكير العليا وحل المشكلات والإبداع.</li>
+                    <li>تعزيز التعلم النشط ومشاركة الطلاب في بناء معرفتهم.</li>
+                    <li>مراعاة الفروق الفردية وأنماط التعلم المختلفة.</li>
+                    <li>ربط التعلم بحياة الطالب ومجتمعه.</li>
+                    <li>تنمية المهارات الاجتماعية والعمل الجماعي.</li>                </ul>
+
+                <h4 class="subsection-title">تصنيف الأنشطة التعليمية:</h4>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>حسب المكان</th>
+                                <th>أمثلة</th>
+                                <th>الأهداف</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>أنشطة صفية</strong></td>
+                                <td>مناقشات، تجارب معملية، عروض، ألعاب تعليمية، خرائط مفاهيم</td>
+                                <td>تطبيق مباشر للمحتوى، تفاعل فوري، تقويم تكويني</td>
+                            </tr>
+                            <tr>
+                                <td><strong>أنشطة لا صفية</strong></td>
+                                <td>رحلات ميدانية، مشاريع بحثية، معارض، أنشطة تطوعية، ناديات</td>
+                                <td>ربط التعلم بالواقع، تنمية الاستقلالية، خدمة المجتمع</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="subsection-title">معايير تصميم الأنشطة الفعالة:</h4>
+                <ul>
+                    <li>الارتباط الوثيق بأهداف الدرس والمنهج.</li>
+                    <li>الملاءمة لمستوى الطلاب وقدراتهم وميولهم.</li>
+                    <li>التنوع لتغطية أنماط التعلم المختلفة (بصري، سمعي، حسي حركي).</li>
+                    <li>التحدي المعقول الذي يحفز الطلاب دون إحباطهم.</li>
+                    <li>إتاحة فرص للإبداع والابتكار والتعبير عن الرأي.</li>
+                    <li>إمكانية التقويم وقياس مخرجات التعلم.</li>
+                    <li>الأمان والسلامة خاصة في الأنشطة العملية والتجريبية.</li>
+                </ul>
+
+                <h3 class="section-title"><i class="fas fa-chart-line"></i> خامساً: التقويم</h3>
+                <div class="content-box">
+                    <p><strong>التعريف:</strong> عملية منهجية لجمع البيانات وتحليلها وتفسيرها للحكم على مدى تحقيق الأهداف التعليمية، بهدف تحسين عملية التعلم والتعليم.</p>
+                </div>
+
+                <h4 class="subsection-title">أهداف التقويم:</h4>
+                <ul>
+                    <li>قياس مدى تحقق الأهداف التعليمية (معرفياً، مهارياً، وجدانياً).</li>
+                    <li>تشخيص صعوبات التعلم لدى الطلاب وتقديم العلاج المناسب.</li>
+                    <li>توجيه الطلاب وتحفيزهم للتعلم وتحسين أدائهم.</li>
+                    <li>تقييم فاعلية طرق التدريس والمواد التعليمية وتطويرها.</li>                    <li>تزويد الإدارة وأولياء الأمور بمعلومات عن تقدم الطلاب.</li>
+                    <li>اتخاذ قرارات تربوية (ترقية، تحويل، توجيه مهني).</li>
+                </ul>
+
+                <h4 class="subsection-title">أنواع التقويم حسب التوقيت:</h4>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>النوع</th>
+                                <th>التوقيت</th>
+                                <th>الهدف</th>
+                                <th>أمثلة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>التقويم القبلي</strong></td>
+                                <td>قبل بدء التعلم</td>
+                                <td>تحديد المستوى القبلي، الكشف عن الخبرات السابقة، تخطيط التدريس</td>
+                                <td>اختبار تشخيصي، استبيان، مقابلة، ملاحظة</td>
+                            </tr>
+                            <tr>
+                                <td><strong>التقويم التكويني (المستمر)</strong></td>
+                                <td>أثناء عملية التعلم</td>
+                                <td>متابعة التقدم، تشخيص الصعوبات، تقديم تغذية راجعة فورية، تعديل التدريس</td>
+                                <td>ملاحظة صفية، أسئلة شفوية، واجبات قصيرة، ملفات الإنجاز، تقويم الأقران</td>
+                            </tr>
+                            <tr>
+                                <td><strong>التقويم الختامي (النهائي)</strong></td>
+                                <td>في نهاية وحدة أو فصل أو عام</td>
+                                <td>الحكم على مدى تحقيق الأهداف، إصدار أحكام نهائية، اتخاذ قرارات</td>
+                                <td>اختبارات نهائية، مشاريع ختامية، عروض نهائية، ملفات إنجاز ختامية</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="subsection-title">أنواع التقويم حسب المرجعية:</h4>
+                <ul>
+                    <li><strong>التقويم محكي المرجع:</strong> يقارن أداء الطالب بمعيار محدد مسبقاً (مثلاً: يحل 80% من المسائل). يركز على إتقان المهارات.</li>
+                    <li><strong>التقويم معياري المرجع:</strong> يقارن أداء الطالب بأداء مجموعة مرجعية (زملائه). يركز على الترتيب والتصنيف.</li>
+                    <li><strong>التقويم الذاتي:</strong> يقوم الطالب بتقييم أدائه ذاتياً وفق معايير واضحة. ينمي مهارات التقويم والتفكير التأملي.</li>
+                </ul>
+
+                <h4 class="subsection-title">أدوات التقويم:</h4>
+                <ul>
+                    <li><strong>الاختبارات:</strong> تحريرية (مقالية، موضوعية)، شفوية، عملية.</li>
+                    <li><strong>الملاحظة:</strong> منظمة (باستخدام قوائم شطب، مقاييس تقدير)، غير منظمة.</li>                    <li><strong>المقابلات:</strong> فردية، جماعية، منظمة، شبه منظمة.</li>
+                    <li><strong>الاستبيانات:</strong> لقياس الاتجاهات، الميول، الرضا.</li>
+                    <li><strong>ملفات الإنجاز:</strong> تجميع منظم لأعمال الطالب تعكس نموه وتقدمه.</li>
+                    <li><strong>المشاريع والتقارير:</strong> تقييم المنتجات والأداءات الحقيقية.</li>
+                    <li><strong>التقويم بالأقران:</strong> تقييم الطلاب لأداء زملائهم وفق معايير.</li>
+                </ul>
+
+                <h4 class="subsection-title">شروط التقويم الجيد:</h4>
+                <ul>
+                    <li><strong>الصدق:</strong> أن يقيس الأداة ما وضعت لقياسه فعلاً.</li>
+                    <li><strong>الثبات:</strong> أن تعطي الأداة نتائج متسقة عند تكرار الاستخدام.</li>
+                    <li><strong>الموضوعية:</strong> أن تكون النتائج خالية من التحيز الشخصي للمقوم.</li>
+                    <li><strong>الشمولية:</strong> أن تغطي الأداة جوانب التعلم المختلفة (معرفي، مهاري، وجداني).</li>
+                    <li><strong>العدالة:</strong> أن تتيح الأداة فرصاً متكافئة لجميع الطلاب لإظهار قدراتهم.</li>
+                    <li><strong>الجدوى:</strong> أن تكون الأداة عملية من حيث الوقت، التكلفة، الجهد.</li>
+                </ul>
+
+                <div class="success-box">
+                    <strong>اتجاهات حديثة في التقويم:</strong>
+                    <ul>
+                        <li>الانتقال من تقويم الحفظ إلى تقويم الفهم والتطبيق والتفكير.</li>
+                        <li>دمج التقويم في عملية التعلم (تقويم تكويني مستمر).</li>
+                        <li>استخدام أدوات تقويم متنوعة وأصيلة (تقويم الأداء، المشاريع).</li>
+                        <li>إشراك الطالب في عملية التقويم (تقويم ذاتي، تقويم الأقران).</li>
+                        <li>استخدام التكنولوجيا في التقويم (اختبارات إلكترونية، منصات تفاعلية).</li>
+                        <li>التركيز على التغذية الراجعة البنّاءة لتحسين التعلم.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- الفصل الرابع: تطوير المنهج (النقاط المحددة) -->
+        <section id="chapter4" class="chapter-card">
+            <div class="chapter-header">
+                <span>الفصل الرابع: تطوير المنهج (محاور مختارة)</span>
+                <span class="chapter-badge">محدد</span>
+            </div>
+            <div class="chapter-content">
+                
+                <h3 class="section-title"><i class="fas fa-lightbulb"></i> أولاً: مبررات ودواعي تطوير المنهج</h3>
+                <div class="content-box">
+                    <p><strong>التعريف:</strong> التطوير عملية مستمرة ومنظمة لإدخال تحسينات على المنهج (أهدافه، محتواه، طرقه، أنشطته، تقويمه) لمواكبة المتغيرات وتحقيق أهداف تربوية أفضل.</p>
+                </div>
+
+                <h4 class="subsection-title">المبررات الداخلية (المتعلقة بالنظام التعليمي):</h4>
+                <ul>
+                    <li><strong>القصور في المناهج الحالية:</strong> وجود سلبيات في الواقع الحالي (محتوى قديم، طرق تقليدية، تقويم ضيق) تستدعي الإصلاح.</li>
+                    <li><strong>نتائج التقويم والبحوث:</strong> ظهور نتائج سلبية في تقويم الطلاب أو بحوث تربوية تشير إلى ضعف فاعلية المنهج الحالي.</li>
+                    <li><strong>تطور نظريات التعلم:</strong> ظهور نظريات تربوية ونفسية جديدة (بنائية، اجتماعية ثقافية) تتطلب تعديل ممارسات التدريس.</li>                    <li><strong>تطور أدوات التقويم:</strong> ظهور أساليب تقويم حديثة (أصيلة، إلكترونية) تستدعي تطوير المنهج لاستيعابها.</li>
+                    <li><strong>تغير خصائص الطلاب:</strong> تغير ميول الطلاب، أنماط تعلمهم، ثقافتهم، تفاعلهم مع التكنولوجيا.</li>
+                </ul>
+
+                <h4 class="subsection-title">المبررات الخارجية (المتعلقة بالمجتمع والعالم):</h4>
+                <ul>
+                    <li><strong>الانفجار المعرفي:</strong> الزيادة الهائلة والسريعة في حجم المعرفة في جميع التخصصات تتطلب تحديثاً مستمراً للمحتوى.</li>
+                    <li><strong>التطور التكنولوجي:</strong> ظهور وسائل وتقنيات جديدة (ذكاء اصطناعي، واقع افتراضي، تعلم إلكتروني) تفتح آفاقاً جديدة للتعلم.</li>
+                    <li><strong>تغير حاجات المجتمع:</strong> تغير متطلبات سوق العمل (مهارات القرن 21: تفكير نقدي، إبداع، تعاون، تواصل)، والتحديات المجتمعية (استدامة، مواطنة رقمية).</li>
+                    <li><strong>العولمة والانفتاح الثقافي:</strong> ضرورة مواكبة المعايير العالمية، وتعزيز الهوية مع الانفتاح على الثقافات الأخرى.</li>
+                    <li><strong>التغيرات السياسية والاقتصادية:</strong> تغير السياسات التعليمية، الأولويات الوطنية، الموارد المخصصة للتعليم.</li>
+                    <li><strong>الأزمات والطوارئ:</strong> مثل جائحة كورونا التي فرضت التحول للتعلم عن بعد واستدعت تطوير المناهج لتتلاءم مع هذا النمط.</li>
+                </ul>
+
+                <div class="highlight-box">
+                    <strong>ملاحظة:</strong> تطوير المنهج ليس رفاهية، بل ضرورة حتمية لمواكبة عصر التغير السريع. المنهج الثابت في عالم متغير يصبح عائقاً أمام النمو والتقدم.
+                </div>
+
+                <h3 class="section-title"><i class="fas fa-puzzle-piece"></i> ثانياً: أسس تطوير المنهج</h3>
+                <div class="content-box">
+                    <p>لكي يكون التطوير ناجحاً ومستداماً، يجب أن يستند إلى أسس راسخة تضمن فعاليته وملاءمته:</p>
+                </div>
+
+                <h4 class="subsection-title">1. الأساس الفلسفي:</h4>
+                <ul>
+                    <li>وضوح الفلسفة التربوية التي توجه التطوير (ما هي غايات التربية في مجتمعنا؟).</li>
+                    <li>الاتساق مع القيم المجتمعية والهوية الثقافية والدينية.</li>
+                    <li>تحقيق التوازن بين الأصالة والمعاصرة، بين المحلي والعالمي.</li>
+                    <li>تعزيز قيم المواطنة، الديمقراطية، حقوق الإنسان، التسامح.</li>
+                </ul>
+
+                <h4 class="subsection-title">2. الأساس الاجتماعي:</h4>
+                <ul>
+                    <li>ارتباط المنهج بالمجتمع: دراسة حاجاته، مشكلاته، تطلعاته، موارده.</li>
+                    <li>إعداد الطلاب للمشاركة الفعالة في تنمية مجتمعهم.</li>
+                    <li>نقل التراث الثقافي والقيم الإيجابية مع الانفتاح على الثقافات الأخرى.</li>
+                    <li>مراعاة التنوع الاجتماعي (ثقافي، اقتصادي، جغرافي) داخل المجتمع.</li>
+                    <li>تعزيز الانتماء الوطني والمواطنة المسؤولة.</li>
+                </ul>
+
+                <h4 class="subsection-title">3. الأساس النفسي:</h4>
+                <ul>
+                    <li>مراعاة خصائص المتعلم النمائية (العقلية، الجسمية، الانفعالية، الاجتماعية) في كل مرحلة.</li>
+                    <li>الانطلاق من ميول الطلاب، حاجاتهم، اهتماماتهم، خبراتهم السابقة.</li>
+                    <li>استخدام نظريات التعلم الحديثة (البنائية، الاجتماعية) في تصميم الخبرات.</li>
+                    <li>مراعاة الفروق الفردية في القدرات، أنماط التعلم، السرعة.</li>
+                    <li>تعزيز الدافعية الداخلية للتعلم، الثقة بالنفس، تقدير الذات.</li>
+                </ul>
+
+                <h4 class="subsection-title">4. الأساس المعرفي:</h4>                <ul>
+                    <li>اختيار المعرفة الأصيلة، الصحيحة، الموثوقة، ذات القيمة التربوية.</li>
+                    <li>مواكبة التطور العلمي في التخصصات وتحديث المحتوى باستمرار.</li>
+                    <li>تنظيم المعرفة بشكل منطقي يتناسب مع طبيعة التخصص ومنطق البناء المعرفي.</li>
+                    <li>ربط فروع المعرفة المختلفة لتحقيق التكامل المعرفي.</li>
+                    <li>تنمية مهارات التفكير العلمي، النقدي، الإبداعي، وحل المشكلات.</li>
+                </ul>
+
+                <h4 class="subsection-title">5. أسس منهجية إضافية:</h4>
+                <ul>
+                    <li><strong>الشمولية والتكامل:</strong> تطوير جميع عناصر المنهج (أهداف، محتوى، طرق، أنشطة، تقويم) بشكل متكامل.</li>
+                    <li><strong>المرونة:</strong> قابلية المنهج للتعديل والتكيف مع الظروف المختلفة (محلية، طارئة).</li>
+                    <li><strong>الواقعية:</strong> مراعاة الإمكانيات المتاحة (بشرية، مادية، زمنية، مالية).</li>
+                    <li><strong>الاستمرارية:</strong> اعتبار التطوير عملية مستمرة وليست حدثاً لمرة واحدة.</li>
+                    <li><strong>المشاركة:</strong> إشراك جميع أصحاب المصلحة (معلمين، طلاب، أولياء أمور، خبراء، مجتمع محلي) في عملية التطوير.</li>
+                    <li><strong>التقويم والتغذية الراجعة:</strong> تضمين آليات لتقويم فاعلية التطوير واستخدام النتائج في التحسين المستمر.</li>
+                </ul>
+
+                <h3 class="section-title"><i class="fas fa-exclamation-triangle"></i> ثالثاً: معوقات تطوير المنهج</h3>
+                <div class="content-box">
+                    <p>تواجه عملية تطوير المنهج عدة عوائق قد تعيق نجاحها أو تقلل من فاعليتها، ويمكن تصنيفها كالتالي:</p>
+                </div>
+
+                <h4 class="subsection-title">1. المعوقات الإدارية:</h4>
+                <ul>
+                    <li><strong>المركزية الشديدة:</strong> اتخاذ القرارات من القمة (الوزارة) دون مشاركة كافية من الميدان (المعلمين، المدارس)، مما يفقد التطوير ملاءمته للواقع.</li>
+                    <li><strong>الروتين والبيروقراطية:</strong> تعقيد الإجراءات، طول الوقت اللازم لاتخاذ القرارات، كثرة الموافقات المطلوبة.</li>
+                    <li><strong>نقص الموارد المالية:</strong> عدم توفير ميزانية كافية للتطوير (تدريب، أدوات، تقنيات، بحوث).</li>
+                    <li><strong>ضعف التواصل والتنسيق:</strong> عدم التنسيق الفعال بين الإدارات المختلفة (مناهج، تدريب، تقويم، تكنولوجيا).</li>
+                    <li><strong>مقاومة التغيير:</strong> تمسك الإداريين والأنظمة القديمة خوفاً من المسؤولية أو المجهول أو فقدان الامتيازات.</li>
+                    <li><strong>ضعف المتابعة والتقويم:</strong> عدم وجود آليات فعالة لمتابعة تنفيذ التطوير وتقويم نتائجه.</li>
+                    <li><strong>التعيينات غير المبنية على الكفاءة:</strong> تعيين مسؤولين عن التطوير دون الخبرة أو الكفاءة اللازمة.</li>
+                </ul>
+
+                <h4 class="subsection-title">2. المعوقات الخاصة بالمجتمع:</h4>
+                <ul>
+                    <li><strong>العادات والتقاليد:</strong> رفض كل جديد يخالف المألوف، التمسك بالطرق التقليدية في التعليم.</li>
+                    <li><strong>ضغط أولياء الأمور:</strong> التركيز على الدرجات والشهادات بدلاً من التعلم الحقيقي، مقاومة التغييرات التي لا يفهمون أهدافها.</li>
+                    <li><strong>الفجوة الثقافية:</strong> عدم تفهم المجتمع لأهداف التطوير الجديدة، خاصة إذا تضمنت قيماً أو ممارسات جديدة.</li>
+                    <li><strong>الظروف الاقتصادية:</strong> الفقر، البطالة، انخفاض الدخل تؤثر على قدرة الأسر على دعم تعلم أبنائها أو توفير متطلبات التطوير.</li>
+                    <li><strong>الظروف السياسية:</strong> عدم الاستقرار السياسي، تغير السياسات التعليمية مع تغير الحكومات، يؤثر على استمرارية التطوير.</li>
+                    <li><strong>ضعف المشاركة المجتمعية:</strong> عدم إشراك المجتمع المحلي، المؤسسات، القطاع الخاص في دعم وتطوير التعليم.</li>
+                </ul>
+
+                <h4 class="subsection-title">3. معوقات خاصة بالظروف الطارئة:</h4>
+                <ul>
+                    <li><strong>الكوارث الطبيعية:</strong> الزلازل، الفيضانات، الأعاصير التي تعطل العملية التعليمية وتدمر البنية التحتية.</li>
+                    <li><strong>الأوبئة والجوائح:</strong> مثل جائحة كورونا التي فرضت التحول المفاجئ للتعلم عن بعد، واستدعت تطوير المناهج والوسائل بسرعة.</li>
+                    <li><strong>الحروب والنزاعات:</strong> تدمير المدارس، تشريد الطلاب والمعلمين، انقطاع التمويل، تأثير نفسي على المتعلمين.</li>
+                    <li><strong>الأزمات الاقتصادية المفاجئة:</strong> التضخم، انخفاض الميزانيات، التي تؤثر على تمويل مشاريع التطوير.</li>                    <li><strong>التغيرات السياسية المفاجئة:</strong> التي تؤدي إلى تغيير السياسات التعليمية بشكل غير مدروس أو متسرع.</li>
+                    <li><strong>نقص الاستعداد للطوارئ:</strong> عدم وجود خطط بديلة، بنية تحتية مرنة، تدريب على التعلم عن بعد.</li>
+                </ul>
+
+                <div class="info-box">
+                    <strong>استراتيجيات للتغلب على المعوقات:</strong>
+                    <ul>
+                        <li>تعزيز اللامركزية وإشراك الميدان في صنع القرار.</li>
+                        <li>تبسيط الإجراءات وتقليل البيروقراطية.</li>
+                        <li>تأمين تمويل مستقر وكافٍ للتطوير.</li>
+                        <li>بناء شراكات مع المجتمع والقطاع الخاص.</li>
+                        <li>توعية المجتمع بأهداف التطوير ومكاسبه.</li>
+                        <li>إعداد خطط طوارئ مرنة للتعامل مع الأزمات.</li>
+                        <li>تدريب الكوادر الإدارية والتدريسية على إدارة التغيير.</li>
+                        <li>تضمين آليات تقويم وتغذية راجعة مستمرة.</li>
+                    </ul>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- بنك الأسئلة -->
+        <section id="question-bank" class="question-bank">
+            <div class="qb-header">
+                <h2 class="qb-title"><i class="fas fa-brain"></i> بنك الأسئلة التفاعلي</h2>
+                <p>أكثر من 150 سؤال متنوع لتقويم فهمك للمقرر</p>
+                <div class="qb-stats">
+                    <div class="stat-item stat-mc"><i class="fas fa-list-ol"></i> <span id="mcq-count">80</span> سؤال اختياري</div>
+                    <div class="stat-item stat-tf"><i class="fas fa-check-circle"></i> <span id="tf-count">50</span> صح وغلط</div>
+                    <div class="stat-item stat-essay"><i class="fas fa-pen-fancy"></i> <span id="essay-count">25</span> سؤال مقالي</div>
+                </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="search-filter">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="ابحث عن سؤال أو موضوع...">
+                </div>
+                <select class="filter-select" id="typeFilter">
+                    <option value="all">جميع الأنواع</option>
+                    <option value="mcq">أسئلة اختيار من متعدد</option>
+                    <option value="tf">أسئلة صح وغلط</option>
+                    <option value="essay">أسئلة مقالية</option>
+                </select>
+                <select class="filter-select" id="chapterFilter">
+                    <option value="all">جميع الفصول</option>
+                    <option value="ch1">الفصل الأول</option>
+                    <option value="ch2">الفصل الثاني</option>
+                    <option value="ch4">الفصل الرابع</option>                </select>
+            </div>
+
+            <!-- Question Type Tabs -->
+            <div class="question-type-tabs">
+                <button class="qb-tab active" data-type="all"><i class="fas fa-th-large"></i> الكل</button>
+                <button class="qb-tab" data-type="mcq"><i class="fas fa-list-ol"></i> اختياري</button>
+                <button class="qb-tab" data-type="tf"><i class="fas fa-check-circle"></i> صح وغلط</button>
+                <button class="qb-tab" data-type="essay"><i class="fas fa-pen-fancy"></i> مقالي</button>
+            </div>
+
+            <!-- Questions Container -->
+            <div id="questionsContainer">
+                <!-- Questions will be loaded here by JavaScript -->
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer -->
+    
+    <!-- JavaScript for Interactivity -->
+    <script>
+        // Question Bank Data (150+ Questions)
+        const questions = [
+            // ========== Multiple Choice Questions (80) ==========
+            // Chapter 1 Questions
+            {
+                id: 1,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'ما هو التعريف الأكثر دقة للمفهوم التقليدي للمنهج؟',
+                options: [
+                    'مجموعة الخبرات التربوية التي تهيئها المدرسة',
+                    'مجموع المواد الدراسية التي يجب على الطلاب حفظها',
+                    'الأنشطة اللاصفية التي يمارسها الطلاب',
+                    'عملية التقويم المستمرة لأداء الطلاب'
+                ],
+                answer: 'ب',
+                explanation: 'المفهوم التقليدي يركز على المواد الدراسية والحفظ والاستظهار'
+            },
+            {
+                id: 2,                type: 'mcq',
+                chapter: 'ch1',
+                question: 'أي مما يلي ليس من عيوب المفهوم التقليدي للمنهج؟',
+                options: [
+                    'إهمال الفروق الفردية بين الطلاب',
+                    'التركيز على الجانب المعرفي فقط',
+                    'ربط المواد الدراسية ببعضها البعض',
+                    'اعتماد الطالب على المعلم كمصدر وحيد للمعرفة'
+                ],
+                answer: 'ج',
+                explanation: 'المفهوم التقليدي يتميز بانعزال المواد وعدم ربطها'
+            },
+            {
+                id: 3,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'المفهوم الحديث للمنهج يعرف بأنه:',
+                options: [
+                    'مجموعة الكتب المدرسية المقررة',
+                    'الخبرات التربوية المخططة وغير المخططة لتحقيق النمو الشامل',
+                    'الاختبارات النهائية لقياس تحصيل الطلاب',
+                    'الأنشطة الرياضية والفنية فقط'
+                ],
+                answer: 'ب',
+                explanation: 'المفهوم الحديث يشمل جميع الخبرات التي تحقق النمو المتكامل'
+            },
+            {
+                id: 4,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'أي من الجوانب التالية لا يهتم بها المفهوم الحديث للمنهج بشكل منفرد؟',
+                options: [
+                    'الجانب المعرفي فقط',
+                    'الجانب المهاري فقط',
+                    'الجانب الوجداني فقط',
+                    'جميع الجوانب بشكل متكامل'
+                ],
+                answer: 'د',
+                explanation: 'المفهوم الحديث يهتم بالنمو الشامل والمتكامل في جميع الجوانب'
+            },
+            {
+                id: 5,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'في المفهوم الحديث، دور الطالب هو:',
+                options: [
+                    'متلقٍ سلبي للمعلومات',
+                    'مشارك فعال في عملية التعلم',
+                    'ناقل للمعرفة إلى زملائه',
+                    'مقيم لأداء المعلم'                ],
+                answer: 'ب',
+                explanation: 'الطالب في المفهوم الحديث شريك نشط في بناء معرفته'
+            },
+            {
+                id: 6,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'أي مما يلي يمثل خاصية للمفهوم الحديث للمنهج؟',
+                options: [
+                    'الثبات وعدم التغيير',
+                    'المرونة ومراعاة الفروق الفردية',
+                    'التركيز على الحفظ والتلقين',
+                    'انفصال المواد الدراسية عن بعضها'
+                ],
+                answer: 'ب',
+                explanation: 'المرونة ومراعاة الفروق الفردية من خصائص المنهج الحديث'
+            },
+            {
+                id: 7,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'الأساس الذي يراعي مراحل نمو الطالب وخصائصه النفسية هو:',
+                options: [
+                    'الأساس الفلسفي',
+                    'الأساس الاجتماعي',
+                    'الأساس النفسي',
+                    'الأساس المعرفي'
+                ],
+                answer: 'ج',
+                explanation: 'الأساس النفسي يركز على خصائص المتعلم النمائية'
+            },
+            {
+                id: 8,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'أي من الأسس التالية يهتم بنقل ثقافة المجتمع وقيمه؟',
+                options: [
+                    'الأساس الفلسفي',
+                    'الأساس الاجتماعي',
+                    'الأساس النفسي',
+                    'الأساس المعرفي'
+                ],
+                answer: 'ب',
+                explanation: 'الأساس الاجتماعي يربط المنهج بمجتمع وثقافته'
+            },
+            {
+                id: 9,
+                type: 'mcq',
+                chapter: 'ch1',                question: 'مواكبة التطور العلمي في التخصصات تمثل:',
+                options: [
+                    'الأساس الفلسفي',
+                    'الأساس الاجتماعي',
+                    'الأساس النفسي',
+                    'الأساس المعرفي'
+                ],
+                answer: 'د',
+                explanation: 'الأساس المعرفي يهتم بتحديث المحتوى العلمي'
+            },
+            {
+                id: 10,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'تحديد غايات التربية وأهدافها النهائية يرتبط بـ:',
+                options: [
+                    'الأساس الفلسفي',
+                    'الأساس الاجتماعي',
+                    'الأساس النفسي',
+                    'الأساس المعرفي'
+                ],
+                answer: 'أ',
+                explanation: 'الأساس الفلسفي يحدد الغايات الكبرى للتربية'
+            },
+            {
+                id: 11,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'أي من المقارنات التالية صحيحة بين المفهومين؟',
+                options: [
+                    'التقليدي: طالب إيجابي / الحديث: طالب سلبي',
+                    'التقليدي: تقويم متنوع / الحديث: اختبارات فقط',
+                    'التقليدي: مواد منفصلة / الحديث: خبرات متكاملة',
+                    'التقليدي: مرن / الحديث: ثابت'
+                ],
+                answer: 'ج',
+                explanation: 'المفهوم الحديث يركز على تكامل الخبرات'
+            },
+            {
+                id: 12,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'في المفهوم التقليدي، طريقة التدريس السائدة هي:',
+                options: [
+                    'التعلم بالاكتشاف',
+                    'التعلم التعاوني',
+                    'الإلقاء والتلقين',
+                    'حل المشكلات'
+                ],
+                answer: 'ج',                explanation: 'الإلقاء والتلقين من سمات التدريس التقليدي'
+            },
+            {
+                id: 13,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'أي من الأنشطة التالية تمثل المفهوم الحديث؟',
+                options: [
+                    'حفظ الدرس عن ظهر قلب',
+                    'إجراء تجربة معملية جماعية',
+                    'الإجابة على أسئلة الكتاب فقط',
+                    'الاستماع للمحاضرة دون تفاعل'
+                ],
+                answer: 'ب',
+                explanation: 'التجارب المعملية تمثل التعلم النشط في المفهوم الحديث'
+            },
+            {
+                id: 14,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'التقويم في المفهوم الحديث يتميز بـ:',
+                options: [
+                    'الاختبارات النهائية فقط',
+                    'قياس الحفظ والاستظهار',
+                    'أساليب متنوعة وقياس النمو الشامل',
+                    'التقويم من قبل المعلم فقط'
+                ],
+                answer: 'ج',
+                explanation: 'التقويم الحديث متنوع ويشمل جميع جوانب النمو'
+            },
+            {
+                id: 15,
+                type: 'mcq',
+                chapter: 'ch1',
+                question: 'العلاقة بين المنهج والمجتمع في المفهوم الحديث هي:',
+                options: [
+                    'المنهج منفصل عن المجتمع',
+                    'المنهج يعكس ثقافة المجتمع ويرتبط بواقعه',
+                    'المجتمع لا يؤثر في المنهج',
+                    'المنهج يحدد ثقافة المجتمع'
+                ],
+                answer: 'ب',
+                explanation: 'المنهج الحديث مرتبط بمجتمع الطالب وثقافته'
+            },
+            
+            // Chapter 2 Questions
+            {
+                id: 16,
+                type: 'mcq',
+                chapter: 'ch2',                question: 'الأهداف التربوية هي:',
+                options: [
+                    'المحتوى الذي يدرسه الطالب',
+                    'التغيرات المرغوبة في سلوك المتعلم',
+                    'طرق التدريس التي يستخدمها المعلم',
+                    'درجات الطالب في الاختبارات'
+                ],
+                answer: 'ب',
+                explanation: 'الأهداف هي التغيرات السلوكية المرغوبة'
+            },
+            {
+                id: 17,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'أي مما يلي ليس مصدراً لاشتقاق الأهداف؟',
+                options: [
+                    'حاجات المجتمع',
+                    'ميول الطلاب',
+                    'رغبات المعلم الشخصية',
+                    'طبيعة المعرفة'
+                ],
+                answer: 'ج',
+                explanation: 'الأهداف تُشتق من مصادر موضوعية وليس رغبات شخصية'
+            },
+            {
+                id: 18,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'مستوى "التحليل" في المجال المعرفي لبلوم يعني:',
+                options: [
+                    'استدعاء المعلومات من الذاكرة',
+                    'شرح الأفكار بكلمات الطالب',
+                    'تفكيك المعرفة لمكوناتها وعلاقاتها',
+                    'إصدار أحكام قائمة على معايير'
+                ],
+                answer: 'ج',
+                explanation: 'التحليل يعني تفكيك المعرفة وفهم مكوناتها'
+            },
+            {
+                id: 19,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'أي من الأفعال السلوكية التالية ينتمي للمجال الوجداني؟',
+                options: [
+                    'يذكر',
+                    'يحل',
+                    'يقدر',
+                    'يصمم'
+                ],
+                answer: 'ج',                explanation: '"يقدر" يعبر عن اتجاه أو قيمة في المجال الوجداني'
+            },
+            {
+                id: 20,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'شرط من شروط صياغة الأهداف الجيدة هو:',
+                options: [
+                    'أن تكون غامضة وعامة',
+                    'أن تصف سلوكاً قابلاً للملاحظة والقياس',
+                    'أن تركز على الحفظ فقط',
+                    'أن تكون طويلة ومعقدة'
+                ],
+                answer: 'ب',
+                explanation: 'الوضوح والقابلية للقياس من شروط الأهداف الجيدة'
+            },
+            {
+                id: 21,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'محتوى المنهج لا يشمل:',
+                options: [
+                    'المفاهيم والمبادئ',
+                    'المهارات والتطبيقات',
+                    'درجات الطلاب في الامتحانات',
+                    'القيم والاتجاهات'
+                ],
+                answer: 'ج',
+                explanation: 'درجات الطلاب نتيجة للتقويم وليست جزءاً من المحتوى'
+            },
+            {
+                id: 22,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'معيار "الصدق العلمي" لاختيار المحتوى يعني:',
+                options: [
+                    'أن يكون المحتوى سهلاً',
+                    'صحة المعلومات ودقتها وحداثتها',
+                    'أن يكون المحتوى طويلاً',
+                    'أن يركز على الحفظ'
+                ],
+                answer: 'ب',
+                explanation: 'الصدق العلمي يعني دقة وصحة المعلومات'
+            },
+            {
+                id: 23,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'التنظيم الحلزوني للمحتوى يعني:',
+                options: [                    'تكرار نفس المحتوى دون تغيير',
+                    'تكرار المفاهيم الأساسية بمستويات متزايدة من العمق',
+                    'تقديم كل موضوع مرة واحدة فقط',
+                    'عدم ربط الموضوعات ببعضها'
+                ],
+                answer: 'ب',
+                explanation: 'التنظيم الحلزوني يعمق المفاهيم عبر المستويات'
+            },
+            {
+                id: 24,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'طريقة التدريس التي تنمي التفكير العلمي وحل المشكلات هي:',
+                options: [
+                    'المحاضرة',
+                    'الإلقاء',
+                    'التعلم بالاكتشاف',
+                    'الحفظ والتكرار'
+                ],
+                answer: 'ج',
+                explanation: 'التعلم بالاكتشاف ينمي مهارات التفكير العليا'
+            },
+            {
+                id: 25,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'من مميزات التعلم التعاوني:',
+                options: [
+                    'سلبية الطالب',
+                    'تنمية المهارات الاجتماعية والتعلم من الأقران',
+                    'التركيز على الفرد فقط',
+                    'صعوبة التطبيق مع أي محتوى'
+                ],
+                answer: 'ب',
+                explanation: 'التعلم التعاوني ينمي العمل الجماعي والمهارات الاجتماعية'
+            },
+            {
+                id: 26,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'عند اختيار طريقة التدريس، نراعي:',
+                options: [
+                    'رغبة المعلم فقط',
+                    'طبيعة الأهداف والمحتوى وخصائص الطلاب',
+                    'توفر الوقت فقط',
+                    'سهولة الطريقة بغض النظر عن الفعالية'
+                ],
+                answer: 'ب',
+                explanation: 'اختيار الطريقة يعتمد على عوامل متعددة'
+            },            {
+                id: 27,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'الأنشطة اللاصفية تشمل:',
+                options: [
+                    'الواجبات المنزلية فقط',
+                    'الرحلات الميدانية والمشاريع البحثية',
+                    'الاختبارات القصيرة',
+                    'المحاضرات النظرية'
+                ],
+                answer: 'ب',
+                explanation: 'الأنشطة اللاصفية تربط التعلم بالواقع خارج الفصل'
+            },
+            {
+                id: 28,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'من أهداف الأنشطة التعليمية:',
+                options: [
+                    'زيادة عبء الواجبات على الطالب',
+                    'تحويل المعرفة النظرية إلى مهارات عملية',
+                    'تقليل وقت التعلم',
+                    'التركيز على الحفظ فقط'
+                ],
+                answer: 'ب',
+                explanation: 'الأنشطة تطبق المعرفة وتنمي المهارات'
+            },
+            {
+                id: 29,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'التقويم التكويني يتم:',
+                options: [
+                    'قبل بدء التعلم',
+                    'أثناء عملية التعلم',
+                    'في نهاية العام الدراسي فقط',
+                    'بعد التخرج'
+                ],
+                answer: 'ب',
+                explanation: 'التقويم التكويني مستمر أثناء التعلم لتحسينه'
+            },
+            {
+                id: 30,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'أداة التقويم التي تجمع أعمال الطالب لتعكس نموه هي:',
+                options: [
+                    'الاختبار التحريري',
+                    'ملف الإنجاز',                    'المقابلة الشفهية',
+                    'الاستبيان'
+                ],
+                answer: 'ب',
+                explanation: 'ملف الإنجاز يوثق تقدم الطالب عبر الزمن'
+            },
+            {
+                id: 31,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'شرط "الصدق" في التقويم يعني:',
+                options: [
+                    'أن تعطي الأداة نفس النتائج عند التكرار',
+                    'أن تقيس الأداة ما وضعت لقياسه فعلاً',
+                    'أن تكون النتائج خالية من التحيز',
+                    'أن تكون الأداة سهلة التطبيق'
+                ],
+                answer: 'ب',
+                explanation: 'الصدق يعني قياس ما نريد قياسه حقاً'
+            },
+            {
+                id: 32,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'التقويم محكي المرجع يقارن أداء الطالب بـ:',
+                options: [
+                    'أداء زملائه في الفصل',
+                    'معيار محدد مسبقاً',
+                    'أداء طلاب سنوات سابقة',
+                    'متوسط الدرجات على مستوى الدولة'
+                ],
+                answer: 'ب',
+                explanation: 'المحكّي يركز على إتقان معايير محددة'
+            },
+            {
+                id: 33,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'من اتجاهات التقويم الحديثة:',
+                options: [
+                    'التركيز على الحفظ والاستظهار',
+                    'دمج التقويم في عملية التعلم بشكل مستمر',
+                    'استخدام الاختبارات النهائية فقط',
+                    'إبعاد الطالب عن عملية التقويم'
+                ],
+                answer: 'ب',
+                explanation: 'التقويم الحديث تكويني ومدمج في التعلم'
+            },
+            {
+                id: 34,                type: 'mcq',
+                chapter: 'ch2',
+                question: 'التقويم الذاتي ينمي لدى الطالب:',
+                options: [
+                    'الاعتماد على المعلم',
+                    'مهارات التفكير التأملي وتحمل المسؤولية',
+                    'الخوف من الأخطاء',
+                    'المنافسة السلبية مع الزملاء'
+                ],
+                answer: 'ب',
+                explanation: 'التقويم الذاتي يعزز الاستقلالية والتأمل'
+            },
+            {
+                id: 35,
+                type: 'mcq',
+                chapter: 'ch2',
+                question: 'أي مما يلي يمثل أداة تقويم أصيلة؟',
+                options: [
+                    'اختبار اختيار من متعدد',
+                    'مشروع تطبيقي يحل مشكلة واقعية',
+                    'سؤال مقالي تقليدي',
+                    'تمرين حفظ'
+                ],
+                answer: 'ب',
+                explanation: 'التقويم الأصيل يقيم الأداء في سياقات حقيقية'
+            },
+            
+            // Chapter 4 Questions
+            {
+                id: 36,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'تطوير المنهج هو:',
+                options: [
+                    'حدث لمرة واحدة لتغيير الكتب',
+                    'عملية مستمرة ومنظمة لتحسين عناصر المنهج',
+                    'إلغاء المنهج الحالي واستبداله كلياً',
+                    'تعديل بسيط في شكل الكتاب المدرسي'
+                ],
+                answer: 'ب',
+                explanation: 'التطوير عملية مستمرة وليست حدثاً لمرة واحدة'
+            },
+            {
+                id: 37,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'من المبررات الداخلية لتطوير المنهج:',
+                options: [
+                    'الانفجار المعرفي',
+                    'القصور في المناهج الحالية',                    'التطور التكنولوجي',
+                    'العولمة'
+                ],
+                answer: 'ب',
+                explanation: 'القصور الداخلي في المنهج الحالي مبرر للتطوير'
+            },
+            {
+                id: 38,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'الانفجار المعرفي يمثل مبرراً:',
+                options: [
+                    'داخلياً',
+                    'خارجياً',
+                    'إدارياً',
+                    'نفسياً'
+                ],
+                answer: 'ب',
+                explanation: 'الانفجار المعرفي عامل خارجي يدفع للتطوير'
+            },
+            {
+                id: 39,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'أي مما يلي ليس من أسس تطوير المنهج؟',
+                options: [
+                    'الأساس الفلسفي',
+                    'الأساس الاجتماعي',
+                    'الأساس المالي فقط',
+                    'الأساس النفسي'
+                ],
+                answer: 'ج',
+                explanation: 'الأسس تشمل الفلسفي، الاجتماعي، النفسي، المعرفي'
+            },
+            {
+                id: 40,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'مبدأ "المشاركة" في تطوير المنهج يعني:',
+                options: [
+                    'اقتصار التطوير على الخبراء فقط',
+                    'إشراك المعلمين والطلاب وأولياء الأمور والمجتمع',
+                    'تطوير المنهج سراً',
+                    'تفويض التطوير لشركات خارجية فقط'
+                ],
+                answer: 'ب',
+                explanation: 'المشاركة تعني إشراك جميع أصحاب المصلحة'
+            },
+            {
+                id: 41,                type: 'mcq',
+                chapter: 'ch4',
+                question: 'من المعوقات الإدارية لتطوير المنهج:',
+                options: [
+                    'العادات والتقاليد',
+                    'المركزية الشديدة والروتين',
+                    'الظروف الاقتصادية للأسر',
+                    'الكوارث الطبيعية'
+                ],
+                answer: 'ب',
+                explanation: 'المركزية والروتين معوقات إدارية'
+            },
+            {
+                id: 42,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'ضغط أولياء الأمور للتركيز على الدرجات يمثل:',
+                options: [
+                    'معوقاً إدارياً',
+                    'معوقاً مجتمعياً',
+                    'معوقاً طارئاً',
+                    'مبرراً للتطوير'
+                ],
+                answer: 'ب',
+                explanation: 'ضغوط المجتمع وأولياء الأمور معوق مجتمعي'
+            },
+            {
+                id: 43,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'جائحة كورونا مثلت:',
+                options: [
+                    'مبرراً داخلياً',
+                    'معوقاً طارئاً',
+                    'أساساً فلسفياً',
+                    'معوقاً إدارياً'
+                ],
+                answer: 'ب',
+                explanation: 'الأوبئة من الظروف الطارئة التي تؤثر على التطوير'
+            },
+            {
+                id: 44,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'استراتيجية للتغلب على معوقات التطوير:',
+                options: [
+                    'زيادة المركزية',
+                    'توعية المجتمع بأهداف التطوير',
+                    'إخفاء معلومات التطوير',
+                    'تأجيل التطوير للأبد'                ],
+                answer: 'ب',
+                explanation: 'التوعية تقلل مقاومة المجتمع للتغيير'
+            },
+            {
+                id: 45,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'مبدأ "المرونة" في التطوير يعني:',
+                options: [
+                    'ثبات المنهج وعدم تغييره',
+                    'قابلية المنهج للتعديل حسب الظروف',
+                    'تطبيق نفس المنهج في كل المدارس',
+                    'إلغاء جميع التعديلات السابقة'
+                ],
+                answer: 'ب',
+                explanation: 'المرونة تسمح بالتكيف مع المتغيرات'
+            },
+            {
+                id: 46,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'أي مما يلي يمثل أساساً معرفياً للتطوير؟',
+                options: [
+                    'تحديد غايات التربية',
+                    'مراعاة خصائص النمو',
+                    'مواكبة التطور العلمي في التخصصات',
+                    'نقل ثقافة المجتمع'
+                ],
+                answer: 'ج',
+                explanation: 'الأساس المعرفي يهتم بتحديث المحتوى العلمي'
+            },
+            {
+                id: 47,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'الشمولية في التطوير تعني:',
+                options: [
+                    'تطوير عنصر واحد فقط',
+                    'تطوير جميع عناصر المنهج بشكل متكامل',
+                    'تطوير المناهج في مادة واحدة',
+                    'إشراك فئة واحدة فقط'
+                ],
+                answer: 'ب',
+                explanation: 'الشمولية تعني النظر للمنهج ككل متكامل'
+            },
+            {
+                id: 48,
+                type: 'mcq',
+                chapter: 'ch4',                question: 'من فوائد إشراك المعلمين في التطوير:',
+                options: [
+                    'زيادة مقاومة التغيير',
+                    'ضمان ملاءمة التطوير للواقع الميداني',
+                    'تقليل جودة المنهج',
+                    'إطالة وقت التطوير دون فائدة'
+                ],
+                answer: 'ب',
+                explanation: 'المعلمون يفهمون واقع الفصل واحتياجات الطلاب'
+            },
+            {
+                id: 49,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'التقويم والتغذية الراجعة في التطوير يهدفان لـ:',
+                options: [
+                    'إثبات فشل التطوير',
+                    'التحسين المستمر بناءً على النتائج',
+                    'تبرير الميزانيات فقط',
+                    'إلقاء اللوم على الآخرين'
+                ],
+                answer: 'ب',
+                explanation: 'التقويم وسيلة للتحسين وليس للحكم النهائي'
+            },
+            {
+                id: 50,
+                type: 'mcq',
+                chapter: 'ch4',
+                question: 'أي مما يلي يمثل معوقاً اقتصادياً؟',
+                options: [
+                    'الروتين الإداري',
+                    'نقص الموارد المالية للتطوير',
+                    'العادات والتقاليد',
+                    'الكوارث الطبيعية'
+                ],
+                answer: 'ب',
+                explanation: 'نقص التمويل معوق اقتصادي رئيسي'
+            },
+            
+            // Additional MCQs to reach 80 (abbreviated for brevity)
+            {id: 51, type: 'mcq', chapter: 'ch1', question: 'أي العبارات تعبر عن دور المعلم في المفهوم الحديث؟', options: ['ناقل للمعرفة', 'موجه وميسر', 'مصدر وحيد', 'مقيم فقط'], answer: 'ب', explanation: 'المعلم في المفهوم الحديث ميسر للتعلم'},
+            {id: 52, type: 'mcq', chapter: 'ch1', question: 'المنهج الذي يربط المواد ببعضها يسمى:', options: ['منفصلاً', 'متكاملاً', 'تقليدياً', 'ثابتاً'], answer: 'ب', explanation: 'التكامل من خصائص المنهج الحديث'},
+            {id: 53, type: 'mcq', chapter: 'ch2', question: 'مستوى "التركيب" في بلوم يعني:', options: ['تذكر المعلومات', 'فهم الأفكار', 'دمج عناصر لإنتاج جديد', 'إصدار أحكام'], answer: 'ج', explanation: 'التركيب يعني الإبداع وإنتاج الجديد'},
+            {id: 54, type: 'mcq', chapter: 'ch2', question: 'أي فعل ينتمي للمجال المهاري؟', options: ['يذكر', 'يقدر', 'يركب', 'يفسر'], answer: 'ج', explanation: '"يركب" فعل حركي في المجال المهاري'},
+            {id: 55, type: 'mcq', chapter: 'ch2', question: 'من معايير اختيار المحتوى:', options: ['الطول فقط', 'الصدق العلمي', 'الصعوبة', 'الحداثة فقط'], answer: 'ب', explanation: 'الصدق العلمي معيار أساسي'},
+            {id: 56, type: 'mcq', chapter: 'ch2', question: 'التنظيم الأفقي للمحتوى يعني:', options: ['التسلسل عبر السنوات', 'ربط موضوعات نفس المستوى', 'التكرار فقط', 'العشوائية'], answer: 'ب', explanation: 'الأفقي يربط موضوعات المستوى الواحد'},
+            {id: 57, type: 'mcq', chapter: 'ch2', question: 'طريقة العصف الذهني تنمي:', options: ['الحفظ', 'الإبداع وتوليد الأفكار', 'السلوكية', 'الروتين'], answer: 'ب', explanation: 'العصف الذهني ينمي التفكير الإبداعي'},
+            {id: 58, type: 'mcq', chapter: 'ch2', question: 'من عيوب طريقة المحاضرة:', options: ['توفير الوقت', 'سلبية الطالب', 'مناسبة للأعداد الكبيرة', 'نقل معلومات دقيقة'], answer: 'ب', explanation: 'المحاضرة قد تجعل الطالب سلبياً'},
+            {id: 59, type: 'mcq', chapter: 'ch2', question: 'الأنشطة الصفية تهدف لـ:', options: ['الخروج من الفصل', 'تطبيق مباشر للمحتوى', 'تقليل التعلم', 'زيادة الحفظ'], answer: 'ب', explanation: 'الأنشطة الصفية تطبق المعرفة فوراً'},
+            {id: 60, type: 'mcq', chapter: 'ch2', question: 'التقويم القبلي يتم:', options: ['أثناء التعلم', 'قبل بدء التعلم', 'بعد التخرج', 'في الإجازة'], answer: 'ب', explanation: 'القبلي يسبق التعلم لتحديد المستوى'},            {id: 61, type: 'mcq', chapter: 'ch2', question: 'من أدوات التقويم:', options: ['الرواتب', 'الملاحظة المنظمة', 'المباني', 'الجداول'], answer: 'ب', explanation: 'الملاحظة أداة تقويم مهمة'},
+            {id: 62, type: 'mcq', chapter: 'ch2', question: 'شرط "الثبات" في التقويم يعني:', options: ['قياس ما نريد', 'نتائج متسقة عند التكرار', 'سهولة التطبيق', 'شمولية الجوانب'], answer: 'ب', explanation: 'الثبات يعني استقرار النتائج'},
+            {id: 63, type: 'mcq', chapter: 'ch2', question: 'التقويم معياري المرجع يقارن بـ:', options: ['معيار محدد', 'أداء المجموعة', 'الذات', 'الماضي'], answer: 'ب', explanation: 'المعياري يقارن بأداء الأقران'},
+            {id: 64, type: 'mcq', chapter: 'ch2', question: 'من مميزات ملف الإنجاز:', options: ['يقيس الحفظ فقط', 'يعكس نمو الطالب عبر الزمن', 'سهل التصحيح', 'رخيص التكلفة'], answer: 'ب', explanation: 'ملف الإنجاز يوثق التقدم'},
+            {id: 65, type: 'mcq', chapter: 'ch2', question: 'التغذية الراجعة الفورية تساعد في:', options: ['زيادة القلق', 'تحسين التعلم فوراً', 'تأجيل التصحيح', 'إهمال الأخطاء'], answer: 'ب', explanation: 'التغذية الفورية تصحح المسار'},
+            {id: 66, type: 'mcq', chapter: 'ch4', question: 'من مبررات التطوير الخارجية:', options: ['قصور المناهج', 'نتائج التقويم', 'تغير حاجات المجتمع', 'تطور نظريات التعلم'], answer: 'ج', explanation: 'حاجات المجتمع عامل خارجي'},
+            {id: 67, type: 'mcq', chapter: 'ch4', question: 'تطور نظريات التعلم يمثل:', options: ['مبرراً داخلياً', 'مبرراً خارجياً', 'معوقاً', 'أساساً'], answer: 'أ', explanation: 'تطور النظريات داخل الحقل التربوي'},
+            {id: 68, type: 'mcq', chapter: 'ch4', question: 'الأساس الفلسفي يهتم بـ:', options: ['خصائص النمو', 'حاجات المجتمع', 'غايات التربية', 'تحديث المعرفة'], answer: 'ج', explanation: 'الفلسفي يحدد الغايات الكبرى'},
+            {id: 69, type: 'mcq', chapter: 'ch4', question: 'مراعاة التنوع الاجتماعي يمثل:', options: ['أساساً فلسفياً', 'أساساً اجتماعياً', 'أساساً نفسياً', 'أساساً معرفياً'], answer: 'ب', explanation: 'الاجتماعي يراعي خصائص المجتمع'},
+            {id: 70, type: 'mcq', chapter: 'ch4', question: 'استخدام نظريات البنائية يمثل:', options: ['أساساً فلسفياً', 'أساساً اجتماعياً', 'أساساً نفسياً', 'أساساً معرفياً'], answer: 'ج', explanation: 'النظريات التربوية جزء من الأساس النفسي'},
+            {id: 71, type: 'mcq', chapter: 'ch4', question: 'من الأسس المنهجية:', options: ['التمركز حول الخبير', 'المرونة', 'السرية', 'التعقيد'], answer: 'ب', explanation: 'المرونة أساس منهجي مهم'},
+            {id: 72, type: 'mcq', chapter: 'ch4', question: 'المركزية الشديدة تمثل:', options: ['مبرراً', 'أساساً', 'معوقاً إدارياً', 'معوقاً مجتمعياً'], answer: 'ج', explanation: 'المركزية تعيق المشاركة الميدانية'},
+            {id: 73, type: 'mcq', chapter: 'ch4', question: 'ضعف التواصل بين الإدارات:', options: ['يسرع التطوير', 'معوق إداري', 'أساس فلسفي', 'مبرر خارجي'], answer: 'ب', explanation: 'ضعف التنسيق يعيق التطوير'},
+            {id: 74, type: 'mcq', chapter: 'ch4', question: 'مقاومة التغيير من قبل الإداريين:', options: ['تسهل التطوير', 'معوق إداري', 'أساس معرفي', 'مبرر داخلي'], answer: 'ب', explanation: 'المقاومة تعيق تنفيذ التطوير'},
+            {id: 75, type: 'mcq', chapter: 'ch4', question: 'العادات والتقاليد الرافضة للجديد:', options: ['معوق إداري', 'معوق مجتمعي', 'مبرر', 'أساس'], answer: 'ب', explanation: 'العادات المجتمعية قد تعيق التغيير'},
+            {id: 76, type: 'mcq', chapter: 'ch4', question: 'الظروف الاقتصادية للأسر:', options: ['معوق إداري', 'معوق مجتمعي', 'مبرر', 'أساس'], answer: 'ب', explanation: 'الظروف الاقتصادية تؤثر على دعم التعليم'},
+            {id: 77, type: 'mcq', chapter: 'ch4', question: 'الحروب والنزاعات:', options: ['معوق إداري', 'معوق مجتمعي', 'معوق طارئ', 'مبرر'], answer: 'ج', explanation: 'الحروب من الظروف الطارئة'},
+            {id: 78, type: 'mcq', chapter: 'ch4', question: 'نقص الاستعداد للطوارئ:', options: ['يسهل التطوير', 'معوق طارئ', 'أساس', 'مبرر'], answer: 'ب', explanation: 'عدم الجاهزية يعيق الاستجابة للأزمات'},
+            {id: 79, type: 'mcq', chapter: 'ch4', question: 'تبسيط الإجراءات يمثل:', options: ['معوقاً', 'استراتيجية للتغلب على المعوقات', 'أساساً', 'مبرراً'], answer: 'ب', explanation: 'تبسيط الروتين يساعد في التطوير'},
+            {id: 80, type: 'mcq', chapter: 'ch4', question: 'بناء شراكات مع المجتمع:', options: ['معوق', 'استراتيجية للتغلب على المعوقات', 'أساس فلسفي', 'مبرر داخلي'], answer: 'ب', explanation: 'الشراكات تدعم التطوير بالموارد والخبرات'},
+            
+            // ========== True/False Questions (50) ==========
+            // Chapter 1 T/F
+            {id: 81, type: 'tf', chapter: 'ch1', question: 'المفهوم التقليدي للمنهج يهتم بالنمو الشامل للطالب.', answer: 'خطأ', explanation: 'المفهوم التقليدي يركز على الجانب المعرفي فقط'},
+            {id: 82, type: 'tf', chapter: 'ch1', question: 'في المفهوم الحديث، الطالب مشارك فعال في التعلم.', answer: 'صح', explanation: 'نعم، الطالب شريك نشط في المفهوم الحديث'},
+            {id: 83, type: 'tf', chapter: 'ch1', question: 'المفهوم التقليدي يراعي الفروق الفردية بين الطلاب.', answer: 'خطأ', explanation: 'المفهوم التقليدي يتعامل مع الجميع بنفس الطريقة'},
+            {id: 84, type: 'tf', chapter: 'ch1', question: 'الأساس النفسي يهتم بمراحل نمو الطالب وخصائصه.', answer: 'صح', explanation: 'نعم، الأساس النفسي يركز على خصائص المتعلم'},
+            {id: 85, type: 'tf', chapter: 'ch1', question: 'الأساس الاجتماعي يهتم بتحديث المحتوى العلمي فقط.', answer: 'خطأ', explanation: 'تحديث المحتوى من الأساس المعرفي، الاجتماعي يهتم بحاجات المجتمع'},
+            {id: 86, type: 'tf', chapter: 'ch1', question: 'المفهوم الحديث يربط المواد الدراسية ببعضها البعض.', answer: 'صح', explanation: 'التكامل بين المواد من خصائص المنهج الحديث'},
+            {id: 87, type: 'tf', chapter: 'ch1', question: 'التقويم في المفهوم التقليدي متنوع ويشمل جميع جوانب النمو.', answer: 'خطأ', explanation: 'التقويم التقليدي يقتصر على الاختبارات وقياس الحفظ'},
+            {id: 88, type: 'tf', chapter: 'ch1', question: 'المنهج في المفهوم الحديث عملية مستمرة من التطوير.', answer: 'صح', explanation: 'الاستمرارية والتطوير من خصائص المفهوم الحديث'},
+            {id: 89, type: 'tf', chapter: 'ch1', question: 'الأساس الفلسفي يحدد غايات التربية وأهدافها النهائية.', answer: 'صح', explanation: 'نعم، الفلسفة توجه الغايات الكبرى'},
+            {id: 90, type: 'tf', chapter: 'ch1', question: 'المفهوم التقليدي يستخدم طرق تدريس نشطة مثل الاكتشاف.', answer: 'خطأ', explanation: 'المفهوم التقليدي يعتمد على الإلقاء والتلقين'},
+            
+            // Chapter 2 T/F
+            {id: 91, type: 'tf', chapter: 'ch2', question: 'الأهداف التربوية تصف التغيرات المرغوبة في سلوك المتعلم.', answer: 'صح', explanation: 'هذا هو التعريف الدقيق للأهداف'},
+            {id: 92, type: 'tf', chapter: 'ch2', question: 'مستوى "التذكر" في بلوم هو أعلى مستويات المجال المعرفي.', answer: 'خطأ', explanation: 'التذكر أدنى مستوى، والتقويم هو الأعلى'},
+            {id: 93, type: 'tf', chapter: 'ch2', question: 'الأفعال مثل "يقدر" و"يحترم" تنتمي للمجال الوجداني.', answer: 'صح', explanation: 'هذه الأفعال تعبر عن اتجاهات وقيم'},
+            {id: 94, type: 'tf', chapter: 'ch2', question: 'من شروط الأهداف الجيدة أن تكون غامضة وعامة.', answer: 'خطأ', explanation: 'يجب أن تكون الأهداف واضحة وقابلة للقياس'},
+            {id: 95, type: 'tf', chapter: 'ch2', question: 'معيار "الملاءمة لميول الطلاب" مهم في اختيار المحتوى.', answer: 'صح', explanation: 'المحتوى يجب أن يثير اهتمام الطلاب'},
+            {id: 96, type: 'tf', chapter: 'ch2', question: 'التنظيم الرأسي يربط موضوعات نفس المستوى الدراسي.', answer: 'خطأ', explanation: 'الرأسي يتسلسل عبر المستويات، الأفقي يربط نفس المستوى'},
+            {id: 97, type: 'tf', chapter: 'ch2', question: 'طريقة المحاضرة مناسبة لتنمية مهارات التفكير النقدي.', answer: 'خطأ', explanation: 'المحاضرة سلبية، طرق مثل المناقشة والاكتشاف أنسب للتفكير'},
+            {id: 98, type: 'tf', chapter: 'ch2', question: 'التعلم التعاوني ينمي المهارات الاجتماعية والعمل الجماعي.', answer: 'صح', explanation: 'نعم، من فوائد التعلم التعاوني'},
+            {id: 99, type: 'tf', chapter: 'ch2', question: 'الأنشطة اللاصفية لا ترتبط بأهداف المنهج.', answer: 'خطأ', explanation: 'جميع الأنشطة يجب أن ترتبط بالأهداف'},
+            {id: 100, type: 'tf', chapter: 'ch2', question: 'التقويم التكويني يساعد في تحسين التعلم أثناء العملية.', answer: 'صح', explanation: 'هذا هو الهدف الرئيسي للتقويم التكويني'},
+            {id: 101, type: 'tf', chapter: 'ch2', question: 'ملف الإنجاز يجمع أعمال الطالب لتعكس نموه.', answer: 'صح', explanation: 'نعم، هذه وظيفة ملف الإنجاز'},
+            {id: 102, type: 'tf', chapter: 'ch2', question: 'شرط "الموضوعية" يعني خلو النتائج من التحيز الشخصي.', answer: 'صح', explanation: 'الموضوعية تعني الحياد في التقويم'},
+            {id: 103, type: 'tf', chapter: 'ch2', question: 'التقويم محكي المرجع يقارن الطالب بزملائه.', answer: 'خطأ', explanation: 'المحكّي يقارن بمعيار، المعياري يقارن بالأقران'},
+            {id: 104, type: 'tf', chapter: 'ch2', question: 'إشراك الطالب في التقويم ينمي الاستقلالية.', answer: 'صح', explanation: 'التقويم الذاتي يعزز تحمل المسؤولية'},
+            {id: 105, type: 'tf', chapter: 'ch2', question: 'الاختبارات الموضوعية تقيس مهارات التفكير العليا بفعالية.', answer: 'خطأ', explanation: 'الاختبارات الموضوعية مناسبة للمستويات الدنيا، المقالية والمشاريع أفضل للعليا'},            
+            // Chapter 4 T/F
+            {id: 106, type: 'tf', chapter: 'ch4', question: 'تطوير المنهج حدث لمرة واحدة.', answer: 'خطأ', explanation: 'التطوير عملية مستمرة وليست حدثاً لمرة واحدة'},
+            {id: 107, type: 'tf', chapter: 'ch4', question: 'الانفجار المعرفي مبرر داخلي لتطوير المنهج.', answer: 'خطأ', explanation: 'الانفجار المعرفي مبرر خارجي'},
+            {id: 108, type: 'tf', chapter: 'ch4', question: 'الأساس الفلسفي يهتم بمراعاة خصائص نمو الطالب.', answer: 'خطأ', explanation: 'خصائص النمو من الأساس النفسي'},
+            {id: 109, type: 'tf', chapter: 'ch4', question: 'المشاركة في التطوير تعني إشراك المعلمين والطلاب والمجتمع.', answer: 'صح', explanation: 'المشاركة الشاملة أساس للتطوير الناجح'},
+            {id: 110, type: 'tf', chapter: 'ch4', question: 'المركزية الشديدة تسهل عملية تطوير المنهج.', answer: 'خطأ', explanation: 'المركزية تعيق المشاركة الميدانية وتقلل الملاءمة'},
+            {id: 111, type: 'tf', chapter: 'ch4', question: 'العادات والتقاليد قد تعيق قبول التغييرات في المنهج.', answer: 'صح', explanation: 'المقاومة الثقافية معوق مجتمعي شائع'},
+            {id: 112, type: 'tf', chapter: 'ch4', question: 'جائحة كورونا مثلت مبرراً لتطوير التعليم عن بعد.', answer: 'صح', explanation: 'الأزمات الطارئة تدفع للتطوير السريع'},
+            {id: 113, type: 'tf', chapter: 'ch4', question: 'المرونة تعني ثبات المنهج وعدم تغييره.', answer: 'خطأ', explanation: 'المرونة تعني قابلية التعديل والتكيف'},
+            {id: 114, type: 'tf', chapter: 'ch4', question: 'التقويم في التطوير يهدف للتحسين المستمر.', answer: 'صح', explanation: 'التقويم وسيلة للتعلم والتحسين وليس للحكم النهائي'},
+            {id: 115, type: 'tf', chapter: 'ch4', question: 'نقص الموارد المالية ليس معوقاً لتطوير المنهج.', answer: 'خطأ', explanation: 'التمويل الكافي ضروري للتطوير الفعال'},
+            
+            // Additional T/F to reach 50
+            {id: 116, type: 'tf', chapter: 'ch1', question: 'المفهوم الحديث يهمل الجانب المعرفي.', answer: 'خطأ', explanation: 'المفهوم الحديث يدمج المعرفي مع المهاري والوجداني'},
+            {id: 117, type: 'tf', chapter: 'ch1', question: 'الأساس المعرفي يهتم بنقل ثقافة المجتمع.', answer: 'خطأ', explanation: 'نقل الثقافة من الأساس الاجتماعي'},
+            {id: 118, type: 'tf', chapter: 'ch2', question: 'مستوى "التطبيق" يعني استخدام المعرفة في موقف جديد.', answer: 'صح', explanation: 'هذا تعريف مستوى التطبيق في بلوم'},
+            {id: 119, type: 'tf', chapter: 'ch2', question: 'الأهداف يجب أن تركز على جانب واحد فقط.', answer: 'خطأ', explanation: 'يجب أن تكون الأهداف شاملة للمجالات الثلاثة'},
+            {id: 120, type: 'tf', chapter: 'ch2', question: 'التنظيم الحلزوني يكرر المفاهيم بنفس المستوى.', answer: 'خطأ', explanation: 'يكرر المفاهيم بمستويات متزايدة من العمق'},
+            {id: 121, type: 'tf', chapter: 'ch2', question: 'طريقة الاكتشاف تستهلك وقتاً ولكنها تنمي التفكير.', answer: 'صح', explanation: 'من عيوبها الوقت، ومن مميزاتها تنمية التفكير'},
+            {id: 122, type: 'tf', chapter: 'ch2', question: 'الأنشطة التعليمية لا تحتاج للتخطيط.', answer: 'خطأ', explanation: 'الأنشطة الفعالة تتطلب تخطيطاً دقيقاً'},
+            {id: 123, type: 'tf', chapter: 'ch2', question: 'التقويم الختامي يتم أثناء التعلم.', answer: 'خطأ', explanation: 'الختامي في نهاية الوحدة أو العام'},
+            {id: 124, type: 'tf', chapter: 'ch2', question: 'الملاحظة أداة تقويم مناسبة للمهارات العملية.', answer: 'صح', explanation: 'الملاحظة مباشرة للأداءات والمهارات'},
+            {id: 125, type: 'tf', chapter: 'ch2', question: 'التقويم الأصيل يقيم في سياقات حقيقية.', answer: 'صح', explanation: 'هذا جوهر التقويم الأصيل'},
+            {id: 126, type: 'tf', chapter: 'ch4', question: 'القصور في المناهج الحالية مبرر خارجي.', answer: 'خطأ', explanation: 'القصور الداخلي مبرر داخلي'},
+            {id: 127, type: 'tf', chapter: 'ch4', question: 'تطور التكنولوجيا مبرر داخلي.', answer: 'خطأ', explanation: 'التطور التكنولوجي عامل خارجي'},
+            {id: 128, type: 'tf', chapter: 'ch4', question: 'الأساس الاجتماعي يهتم بحاجات المجتمع.', answer: 'صح', explanation: 'نعم، هذا دور الأساس الاجتماعي'},
+            {id: 129, type: 'tf', chapter: 'ch4', question: 'الشمولية تعني تطوير عنصر واحد فقط.', answer: 'خطأ', explanation: 'الشمولية تعني تطوير جميع العناصر'},
+            {id: 130, type: 'tf', chapter: 'ch4', question: 'الروتين الإداري يسهل التطوير.', answer: 'خطأ', explanation: 'الروتين يعيق السرعة والمرونة'},
+            {id: 131, type: 'tf', chapter: 'ch4', question: 'ضعف التواصل معوق إداري.', answer: 'صح', explanation: 'التنسيق بين الإدارات أساسي للنجاح'},
+            {id: 132, type: 'tf', chapter: 'ch4', question: 'مقاومة التغيير طبيعية ويجب تجاهلها.', answer: 'خطأ', explanation: 'يجب فهم أسباب المقاومة ومعالجتها'},
+            {id: 133, type: 'tf', chapter: 'ch4', question: 'الظروف الاقتصادية للأسر تؤثر على التعليم.', answer: 'صح', explanation: 'الفقر يؤثر على دعم التعلم وتوفير المتطلبات'},
+            {id: 134, type: 'tf', chapter: 'ch4', question: 'الحروب لا تؤثر على تطوير المنهج.', answer: 'خطأ', explanation: 'الحروب تدمر البنية وتعطل التطوير'},
+            {id: 135, type: 'tf', chapter: 'ch4', question: 'توعية المجتمع تقلل مقاومة التغيير.', answer: 'صح', explanation: 'الفهم يقلل الخوف ويزيد القبول'},
+            
+            // ========== Essay Questions (25) ==========
+            {id: 136, type: 'essay', chapter: 'ch1', question: 'قارن بين المفهوم التقليدي والمفهوم الحديث للمنهج من حيث: الهدف، دور الطالب، طريقة التدريس، والتقويم.', answer: 'مقال', explanation: 'يجب أن يشمل الطالب مقارنة شاملة في جدول أو فقرات منظمة'},
+            {id: 137, type: 'essay', chapter: 'ch1', question: 'اشرح بالأمثلة كيف يراعي الأساس النفسي في بناء المنهج خصائص الطالب النمائية.', answer: 'مقال', explanation: 'يجب ذكر مراحل النمو وأمثلة على تكييف المحتوى والطرق'},
+            {id: 138, type: 'essay', chapter: 'ch1', question: 'ناقش العلاقة التكاملية بين الأسس الأربعة لبناء المنهج (الفلسفي، الاجتماعي، النفسي، المعرفي).', answer: 'مقال', explanation: 'يجب توضيح كيف تكمل الأسس بعضها ولا تعمل بمعزل'},
+            {id: 139, type: 'essay', chapter: 'ch1', question: 'كيف يمكن للمنهج الحديث أن يعزز الانتماء الوطني والمواطنة لدى الطلاب؟', answer: 'مقال', explanation: 'يجب ربط المحتوى والأنشطة والقيم بالهوية والمواطنة'},
+            {id: 140, type: 'essay', chapter: 'ch1', question: 'ما دور التكنولوجيا في تحويل المنهج من المفهوم التقليدي إلى الحديث؟', answer: 'مقال', explanation: 'يجب ذكر أدوات تكنولوجية وتأثيرها على التفاعل والتعلم'},
+            
+            {id: 141, type: 'essay', chapter: 'ch2', question: 'صمم هدفاً سلوكياً جيداً لمادة تخصصك، موضحاً كيف يحقق شروط الصياغة الجيدة.', answer: 'مقال', explanation: 'يجب أن يكون الهدف واضحاً، قابلاً للقياس، مرتبطاً بالمحتوى، مناسباً للمستوى'},
+            {id: 142, type: 'essay', chapter: 'ch2', question: 'اختر موضوعاً من منهجك، واقترح طريقة تدريس مناسبة له، مبرراً اختيارك.', answer: 'مقال', explanation: 'يجب ربط خصائص الموضوع بطبيعة الطريقة ومزاياها'},
+            {id: 143, type: 'essay', chapter: 'ch2', question: 'صمم نشاطاً تعليمياً لا صفياً يربط تعلم الطلاب بمشكلة مجتمعية واقعية.', answer: 'مقال', explanation: 'يجب أن يكون النشاط تطبيقياً، مرتبطاً بالهدف، قابلاً للتنفيذ'},
+            {id: 144, type: 'essay', chapter: 'ch2', question: 'قارن بين التقويم التكويني والتقويم الختامي من حيث: التوقيت، الهدف، الأدوات، واستخدام النتائج.', answer: 'مقال', explanation: 'مقارنة منظمة في جدول أو فقرات مع أمثلة'},
+            {id: 145, type: 'essay', chapter: 'ch2', question: 'كيف يمكن استخدام ملف الإنجاز لتقويم النمو الشامل للطالب؟', answer: 'مقال', explanation: 'يجب شرح مكونات الملف وكيفية استخدامه في التقويم التكويني والختامي'},
+            {id: 146, type: 'essay', chapter: 'ch2', question: 'ناقش أهمية التغذية الراجعة الفعالة في تحسين عملية التعلم.', answer: 'مقال', explanation: 'يجب ذكر خصائص التغذية الجيدة (فورية، بنّاءة، محددة) وتأثيرها'},
+            {id: 147, type: 'essay', chapter: 'ch2', question: 'ما معايير اختيار أداة تقويم مناسبة لقياس مهارات التفكير العليا؟', answer: 'مقال', explanation: 'يجب ذكر الصدق، الثبات، الأصالة، وملاءمة المهمة لمستوى التفكير'},
+            {id: 148, type: 'essay', chapter: 'ch2', question: 'كيف يمكن إشراك الطالب في عملية التقويم لتعزيز تعلمه؟', answer: 'مقال', explanation: 'يجب ذكر استراتيجيات مثل التقويم الذاتي، تقويم الأقران، وضع معايير مشتركة'},            {id: 149, type: 'essay', chapter: 'ch2', question: 'صمم خطة تقويم متكاملة لوحدة دراسية، تشمل أنواع التقويم وأدواته وتوقيتاته.', answer: 'مقال', explanation: 'خطة منظمة تدمج القبلي، التكويني، الختامي بأدوات متنوعة'},
+            
+            {id: 150, type: 'essay', chapter: 'ch4', question: 'حلل مبررين داخليين ومبررين خارجيين لتطوير المنهج في مجتمعك، مع ذكر أمثلة.', answer: 'مقال', explanation: 'تحليل واقعي يربط النظرية بالسياق المحلي'},
+            {id: 151, type: 'essay', chapter: 'ch4', question: 'ناقش كيف يمكن للأسس الأربعة (الفلسفي، الاجتماعي، النفسي، المعرفي) أن توجه عملية تطوير المنهج.', answer: 'مقال', explanation: 'توضيح دور كل أساس في مراحل التطوير المختلفة'},
+            {id: 152, type: 'essay', chapter: 'ch4', question: 'ما استراتيجيات فعالة للتغلب على مقاومة المعلمين للتغيير في عملية تطوير المنهج؟', answer: 'مقال', explanation: 'استراتيجيات عملية: تدريب، مشاركة، حوافز، تواصل'},
+            {id: 153, type: 'essay', chapter: 'ch4', question: 'كيف يمكن إشراك المجتمع المحلي وأولياء الأمور في دعم تطوير المنهج؟', answer: 'مقال', explanation: 'آليات مشاركة: استطلاعات، ورش عمل، شراكات، توعية'},
+            {id: 154, type: 'essay', chapter: 'ch4', question: 'صمم خطة طوارئ لتطوير المنهج في ظل أزمة مفاجئة (مثل جائحة).', answer: 'مقال', explanation: 'خطة مرنة: أولويات، بدائل رقمية، تدريب سريع، تقويم مستمر'},
+            {id: 155, type: 'essay', chapter: 'ch4', question: 'ناقش دور التقويم والتغذية الراجعة في ضمان جودة وفعالية عملية تطوير المنهج.', answer: 'مقال', explanation: 'دورة التحسين: تقويم قبلي، تكويني، ختامي، واستخدام النتائج'},
+            {id: 156, type: 'essay', chapter: 'ch4', question: 'ما التحديات التي تواجه تطوير المنهج في ظل العولمة، وكيف يمكن تحويلها لفرص؟', answer: 'مقال', explanation: 'تحديات: الهوية، الفجوة الرقمية. فرص: تبادل الخبرات، معايير عالمية'},
+            {id: 157, type: 'essay', chapter: 'ch4', question: 'كيف يمكن ضمان استمرارية وديمومة عملية تطوير المنهج بعد انتهاء المشروع؟', answer: 'مقال', explanation: 'آليات: بناء القدرات، هياكل مؤسسية، تمويل مستدام، ثقافة التحسين'},
+            {id: 158, type: 'essay', chapter: 'ch4', question: 'اقترح مؤشرات لقياس نجاح عملية تطوير المنهج على مستوى الطالب والمعلم والمدرسة.', answer: 'مقال', explanation: 'مؤشرات كمية ونوعية: تحصيل، مهارات، رضا، ممارسات تدريسية'},
+            {id: 159, type: 'essay', chapter: 'ch4', question: 'ناقش الأخلاقيات المهنية التي يجب مراعاتها أثناء عملية تطوير المنهج.', answer: 'مقال', explanation: 'شفافية، عدالة، احترام التنوع، حماية البيانات، مسؤولية اجتماعية'},
+            {id: 160, type: 'essay', chapter: 'all', question: 'كيف يمكن دمج مهارات القرن الحادي والعشرين (التفكير النقدي، الإبداع، التعاون، التواصل) في عناصر المنهج الأربعة؟', answer: 'مقال', explanation: 'تطبيقات في الأهداف، المحتوى، الطرق، الأنشطة، والتقويم'},
+        ];
+
+        // DOM Elements
+        const questionsContainer = document.getElementById('questionsContainer');
+        const searchInput = document.getElementById('searchInput');
+        const typeFilter = document.getElementById('typeFilter');
+        const chapterFilter = document.getElementById('chapterFilter');
+        const tabs = document.querySelectorAll('.qb-tab');
+
+        // Display Questions
+        function displayQuestions(filteredQuestions) {
+            questionsContainer.innerHTML = '';
+            
+            if (filteredQuestions.length === 0) {
+                questionsContainer.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--gray);">لا توجد أسئلة تطابق معايير البحث</p>';
+                return;
+            }
+            
+            filteredQuestions.forEach(q => {
+                const questionEl = document.createElement('div');
+                questionEl.className = 'question-item';
+                questionEl.dataset.type = q.type;
+                questionEl.dataset.chapter = q.chapter;
+                
+                let content = `
+                    <div class="question-text">
+                        <span class="question-number">${q.id}</span>
+                        ${q.question}
+                    </div>
+                `;
+                
+                if (q.type === 'mcq') {
+                    content += `<ul class="options-list">`;
+                    q.options.forEach((opt, idx) => {
+                        const optionLabel = String.fromCharCode(1571 + idx); // أ، ب، ج، د
+                        content += `<li data-option="${optionLabel}">${opt}</li>`;
+                    });                    content += `</ul>`;
+                }
+                
+                content += `
+                    <button class="answer-toggle" onclick="toggleAnswer(${q.id})">
+                        <i class="fas fa-eye"></i> إظهار الإجابة
+                    </button>
+                    <div class="answer-content" id="answer-${q.id}">
+                        <strong>الإجابة:</strong> <span class="answer ${q.type === 'tf' && q.answer === 'خطأ' ? 'false' : q.type === 'essay' ? 'essay' : ''}">${q.answer}</span>
+                        ${q.explanation ? `<p style="margin-top: 0.5rem; font-size: 0.95rem;"><strong>شرح:</strong> ${q.explanation}</p>` : ''}
+                    </div>
+                `;
+                
+                questionEl.innerHTML = content;
+                questionsContainer.appendChild(questionEl);
+            });
+        }
+
+        // Toggle Answer Visibility
+        window.toggleAnswer = function(id) {
+            const answerEl = document.getElementById(`answer-${id}`);
+            const btn = answerEl.previousElementSibling;
+            
+            if (answerEl.classList.contains('show')) {
+                answerEl.classList.remove('show');
+                btn.innerHTML = '<i class="fas fa-eye"></i> إظهار الإجابة';
+            } else {
+                answerEl.classList.add('show');
+                btn.innerHTML = '<i class="fas fa-eye-slash"></i> إخفاء الإجابة';
+            }
+        };
+
+        // Filter Questions
+        function filterQuestions() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const typeValue = typeFilter.value;
+            const chapterValue = chapterFilter.value;
+            
+            const filtered = questions.filter(q => {
+                const matchSearch = q.question.toLowerCase().includes(searchTerm) || 
+                                  q.explanation?.toLowerCase().includes(searchTerm);
+                const matchType = typeValue === 'all' || q.type === typeValue;
+                const matchChapter = chapterValue === 'all' || q.chapter === chapterValue;
+                
+                return matchSearch && matchType && matchChapter;
+            });
+            
+            displayQuestions(filtered);
+        }
+        // Event Listeners
+        searchInput.addEventListener('input', filterQuestions);
+        typeFilter.addEventListener('change', filterQuestions);
+        chapterFilter.addEventListener('change', filterQuestions);
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const type = tab.dataset.type;
+                typeFilter.value = type;
+                filterQuestions();
+            });
+        });
+
+        // Initial Load
+        displayQuestions(questions);
+
+        // Progress Bar
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (scrollTop / scrollHeight) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+
+        // Navigation Active State
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-menu a');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (pageYOffset >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
