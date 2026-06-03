@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام معلومات الطالب - جامعة بنها</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .student-info {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .student-info p {
+            margin: 8px 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-right: 3px solid #c33;
+        }
+
+        .grades-table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+
+        .grades-table th,
+        .grades-table td {
+            padding: 10px;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .grades-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .grades-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 جامعة بنها</h1>
+            <p>نظام معلومات الطالب</p>
+        </div>
+
+        <div class="content">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>📝 الرقم القومي</label>
+                    <input type="text" id="nationalId" placeholder="ادخل الرقم القومي" required>
+                </div>
+
+                <div class="form-group">
+                    <label>🔐 كلمة السر</label>
+                    <input type="password" id="password" placeholder="ادخل كلمة السر" required>
+                </div>
+
+                <button type="submit" class="btn">🚪 تسجيل الدخول</button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 10px;">جاري تسجيل الدخول...</p>
+            </div>
+
+            <div class="result" id="result">
+                <h3>📋 بيانات الطالب</h3>
+                <div id="studentData"></div>
+                
+                <button id="showGradesBtn" class="btn" style="margin-top: 15px; display: none;">📊 عرض الاحصائيات والدرجات</button>
+                <div id="gradesData"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>⚠️ هذه الواجهة تحتاج إلى خادم خلفي لتشغيل سكربت Python</p>
+        </div>
+    </div>
+
+    <script>
+        // ملاحظة: هذا مجرد واجهة أمامية، سكربت Python الحقيقي لا يعمل مباشرة في المتصفح
+        // هذا مثال توضيحي فقط
+        
+        const loginForm = document.getElementById('loginForm');
+        const loading = document.getElementById('loading');
+        const resultDiv = document.getElementById('result');
+        const studentDataDiv = document.getElementById('studentData');
+        const gradesDataDiv = document.getElementById('gradesData');
+        const showGradesBtn = document.getElementById('showGradesBtn');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const nationalId = document.getElementById('nationalId').value;
+            const password = document.getElementById('password').value;
+            
+            // إظهار شاشة التحميل
+            loading.classList.add('show');
+            resultDiv.classList.remove('show');
+            
+            // تنبيه: هذا مجرد محاكاة، في الحقيقة يجب ربطها بـ API حقيقي
+            setTimeout(() => {
+                loading.classList.remove('show');
+                
+                // عرض بيانات تجريبية (للمعاينة فقط)
+                const mockData = `
+                    <div class="student-info">
+                        <p><strong>👤 الاسم:</strong> أحمد محمد علي</p>
+                        <p><strong>📚 الفرقة:</strong> الثالثة</p>
+                        <p><strong>🏛️ الكلية:</strong> كلية الحاسبات والمعلومات</p>
+                        <p><strong>🆔 الرقم الجامعي:</strong> ${nationalId}</p>
+                        <p><strong>📊 التقدير العام:</strong> جيد جداً</p>
+                    </div>
+                `;
+                
+                studentDataDiv.innerHTML = mockData;
+                resultDiv.classList.add('show');
+                showGradesBtn.style.display = 'block';
+                
+            }, 1500);
+        });
+        
+        showGradesBtn.addEventListener('click', () => {
+            // محاكاة عرض الدرجات
+            gradesDataDiv.innerHTML = `
+                <h3 style="margin-top: 20px;">📖 المواد والدرجات</h3>
+                <table class="grades-table">
+                    <thead>
+                        <tr>
+                            <th>المادة</th>
+                            <th>الدرجة</th>
+                            <th>التقدير</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>رياضيات (1)</td><td>85</td><td>جيد جداً</td></tr>
+                        <tr><td>برمجة (1)</td><td>92</td><td>ممتاز</td></tr>
+                        <tr><td>هياكل بيانات</td><td>78</td><td>جيد</td></tr>
+                        <tr><td>قواعد بيانات</td><td>88</td><td>جيد جداً</td></tr>
+                    </tbody>
+                </table>
+            `;
+            showGradesBtn.disabled = true;
+            showGradesBtn.textContent = '✅ تم عرض الدرجات';
+        });
+        
+        // تنبيه للمستخدم
+        console.warn('⚠️ هذه واجهة أمامية فقط. سكربت Python الحقيقي يحتاج إلى خادم خلفي!');
+    </script>
+</body>
+</html>
