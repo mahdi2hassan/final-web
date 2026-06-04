@@ -1149,6 +1149,18 @@ function getDeviceInfo(){
 async function registerDeviceSession(uid){
   var did = getDeviceId();
   var sessRef = db.collection('users').doc(uid).collection('sessions').doc(did);
+
+  // اقرأ الحد من Firestore (settings/devices) أو user document
+  var maxDevices = MAX_DEVICES;
+  try{
+    var userDoc = await db.collection('users').doc(uid).get();
+    if(userDoc.exists && userDoc.data().maxDevices) maxDevices = userDoc.data().maxDevices;
+    else {
+      var devSettings = await db.collection('settings').doc('devices').get();
+      if(devSettings.exists && devSettings.data().defaultMax) maxDevices = devSettings.data().defaultMax;
+    }
+  }catch(e){ /* fallback to MAX_DEVICES */ }
+
   var sessSnap = await sessRef.get().catch(function(){ return null; });
 
   // لو الجهاز موجود بالفعل ومش مطرود — جدّد الـ lastSeen بس
@@ -1169,7 +1181,7 @@ async function registerDeviceSession(uid){
   var allSess = await db.collection('users').doc(uid).collection('sessions')
     .where('status','==','active').get().catch(function(){ return {docs:[]}; });
 
-  if(allSess.docs.length >= MAX_DEVICES){
+  if(allSess.docs.length >= maxDevices){
     // اطرد الأقدم جهاز
     var sorted = allSess.docs.sort(function(a,b){
       var ta = a.data().lastSeen?.toDate?.() || new Date(0);
