@@ -1610,10 +1610,10 @@ function renderHw(hw,done,gradeKey,isMine){
     if(isExpired) metaExtra+=` · <span style="color:var(--err)">انتهى ⛔</span>`;
     if(noSubsLeft) metaExtra+=` · <span style="color:var(--err)">استُنفد 🚫</span>`;
 
-    // ── صور الواجب: images array → imageUrl → fileUrl (صور تتعرض تلقائياً) ──
+    // ── صور الواجب: images array → imageUrl → fileUrl (أي fileUrl يتعرض تلقائياً) ──
     const hwImages = Array.isArray(h.images) && h.images.filter(Boolean).length
       ? h.images.filter(Boolean)
-      : (h.imageUrl ? [h.imageUrl] : (h.fileUrl && isImageOrDriveUrl(h.fileUrl) ? [h.fileUrl] : []));
+      : (h.imageUrl ? [h.imageUrl] : (h.fileUrl ? [h.fileUrl] : []));
     const imagesHtml = hwImages.length ? buildHwImgGrid(hwImages, h.id, h.title||'واجب') : '';
 
     return `<div class="hw-item" style="flex-direction:column;align-items:stretch;gap:0">
@@ -1623,7 +1623,7 @@ function renderHw(hw,done,gradeKey,isMine){
           <div class="hw-title">${h.order?h.order+'. ':''}${h.title||'واجب'}</div>
           <div class="hw-meta">${h.description||''}${h.deadline?' · 📅 '+h.deadline:''}${metaExtra}</div>
           <div class="hw-links">
-            ${h.fileUrl?`<a href="${h.fileUrl}" target="_blank" class="hw-link file">📎 فتح الملف</a>`:''}
+            ${h.fileUrl&&!hwImages.length?`<a href="${h.fileUrl}" target="_blank" class="hw-link file">📎 فتح الملف</a>`:''}
             ${h.url&&!h.fileUrl?`<a href="${h.url}" target="_blank" class="hw-link file">🔗 رابط</a>`:''}
           </div>
         </div>
