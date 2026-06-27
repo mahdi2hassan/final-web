@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plus Math – المناهج الدراسية</title>
+<title>Plus Math - المناهج الدراسية</title>
 <meta name="theme-color" content="#04060f"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -1156,6 +1156,7 @@ function renderExams(exams,done,gradeKey,isMine){
 
     let metaExtra='';
     if(maxAtt) metaExtra+=` · 🔢 ${attempts}/${maxAtt}`;
+    if(e.showAnswers) metaExtra+=` · <span style="color:var(--ok);font-size:10px">✅ بتظهر الإجابات</span>`;
     if(e.expiresAt&&!isExpired){
       const exp=e.expiresAt.toDate?e.expiresAt.toDate():new Date(e.expiresAt);
       metaExtra+=` · ⏰ ${exp.toLocaleDateString('ar-EG')}`;
@@ -1194,10 +1195,17 @@ window.handleExam=async(el)=>{
   const maxAtt=e.maxAttempts||null;
   if(maxAtt&&attempts>=maxAtt){showToast(`انتهت محاولاتك (${attempts}/${maxAtt}) 🚫`,'err');return;}
 
-  // هل هذه آخر محاولة؟ → بعد التسليم تظهر الإجابات
-  const isLastAttempt=maxAtt?attempts===maxAtt-1:true;
+  // إظهار الإجابات:
+  // showAnswers=true  → تظهر دايمًا بعد التسليم (الأدمن سمح)
+  // showAnswers=false → مش تظهر أبداً (الأدمن أخفى)
+  // showAnswers=undefined → السلوك القديم: تظهر بس في آخر محاولة
+  const isLastAttempt = maxAtt ? attempts===maxAtt-1 : true;
+  let showAnswersAfterSubmit;
+  if(e.showAnswers === true)       showAnswersAfterSubmit = true;
+  else if(e.showAnswers === false) showAnswersAfterSubmit = false;
+  else                             showAnswersAfterSubmit = isLastAttempt; // سلوك قديم
 
-  openInlineExam(e,gradeKey,isLastAttempt);
+  openInlineExam(e,gradeKey,showAnswersAfterSubmit);
 };
 
 // ── INLINE EXAM ──
@@ -1601,8 +1609,10 @@ function renderHw(hw,done,gradeKey,isMine){
     if(isExpired) metaExtra+=` · <span style="color:var(--err)">انتهى ⛔</span>`;
     if(noSubsLeft) metaExtra+=` · <span style="color:var(--err)">استُنفد 🚫</span>`;
 
-    // ── صور الواجب (images array من content-manager) ──
-    const hwImages = Array.isArray(h.images) ? h.images.filter(Boolean) : (h.imageUrl ? [h.imageUrl] : []);
+    // ── صور الواجب: images array → imageUrl → fileUrl (صور تتعرض تلقائياً) ──
+    const hwImages = Array.isArray(h.images) && h.images.filter(Boolean).length
+      ? h.images.filter(Boolean)
+      : (h.imageUrl ? [h.imageUrl] : (h.fileUrl && isImageOrDriveUrl(h.fileUrl) ? [h.fileUrl] : []));
     const imagesHtml = hwImages.length ? buildHwImgGrid(hwImages, h.id, h.title||'واجب') : '';
 
     return `<div class="hw-item" style="flex-direction:column;align-items:stretch;gap:0">
@@ -1964,7 +1974,15 @@ window.submitTicket=async()=>{
   }
 };
 function getYtId(url){const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);return m?m[1]:'';}
-function setProg(fId,vId,tot,done){const p=tot?Math.round(done/tot*100):0;const f=document.getElementById(fId),v=document.getElementById(vId);if(f)f.style.width=p+'%';if(v)v.textContent=p+'%';}
+
+// مساعد: هل الرابط صورة أو Drive؟ (عشان الواجبات تتعرض تلقائياً)
+function isImageOrDriveUrl(url){
+  if(!url) return false;
+  if(url.includes('drive.google.com')||url.includes('docs.google.com')) return true;
+  const lower=url.toLowerCase();
+  return lower.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?|$|#)/)||
+         lower.includes('firebasestorage')&&(lower.includes('jpg')||lower.includes('jpeg')||lower.includes('png')||lower.includes('gif')||lower.includes('webp'));
+}function setProg(fId,vId,tot,done){const p=tot?Math.round(done/tot*100):0;const f=document.getElementById(fId),v=document.getElementById(vId);if(f)f.style.width=p+'%';if(v)v.textContent=p+'%';}
 
 async function markDone(gradeKey, type, id){
   if(!_user||!gradeKey||!type||!id) return;
