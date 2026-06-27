@@ -394,6 +394,7 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;
 .hw-img-tile-label{position:absolute;bottom:0;left:0;right:0;
   background:rgba(0,0,0,.55);font-size:9px;font-weight:800;color:#fff;text-align:center;padding:3px}
 .hw-img-placeholder{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:26px}
+.hw-drive-tile{flex-direction:column;background:linear-gradient(135deg,rgba(66,133,244,0.08),rgba(0,172,71,0.06));border:1.5px solid rgba(66,133,244,0.2)}
 </style>
 </head>
 <body>
@@ -3331,13 +3332,27 @@ window.addEventListener('appinstalled',()=>{
     var tiles=images.map(function(url,idx){
       var drive=isDrive(url);
       var pdf=url.toLowerCase().includes('.pdf');
-      var thumb=drive?driveThumb(url):(pdf?'':url);
       var label=drive?'☁️ Drive':pdf?'📄 PDF':'🔍 تكبير';
-      var inner=thumb
-        ? '<img src="'+thumb+'" alt="صورة '+(idx+1)+'" loading="lazy" '
+      // Drive: نعرض placeholder مباشرة (الـ thumbnail بيتبلوك بسبب CORS)
+      // صور عادية: نعرض الصورة مع fallback للـ placeholder
+      var inner;
+      if(drive){
+        inner='<div class="hw-img-placeholder hw-drive-tile">'
+          +'<svg width="32" height="32" viewBox="0 0 87.3 78" fill="none">'
+          +'<path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3L27.5 53H0c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>'
+          +'<path d="M43.65 25L29.9 0C28.55.8 27.4 1.9 26.6 3.3L1.2 48.5C.4 49.9 0 51.45 0 53h27.5z" fill="#00ac47"/>'
+          +'<path d="M59.8 53H87.3c0-1.55-.4-3.1-1.2-4.5L61.6 3.3C60.8 1.9 59.65.8 58.3 0l-14.65 25z" fill="#2684fc"/>'
+          +'<path d="M43.65 53L27.5 53l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h51c1.6 0 3.1-.45 4.5-1.2z" fill="#ffba00"/>'
+          +'</svg>'
+          +'<span style="font-size:10px;margin-top:4px;font-weight:700;color:#4285f4">Drive</span>'
+          +'</div>';
+      } else if(pdf){
+        inner='<div class="hw-img-placeholder">📄</div>';
+      } else {
+        inner='<img src="'+url+'" alt="صورة '+(idx+1)+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:10px" '
           +'onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
-          +'<div class="hw-img-placeholder" style="display:none">'+(drive?'☁️':pdf?'📄':'🖼️')+'</div>'
-        : '<div class="hw-img-placeholder">'+(drive?'☁️':pdf?'📄':'🖼️')+'</div>';
+          +'<div class="hw-img-placeholder" style="display:none">🖼️</div>';
+      }
       return '<div class="hw-img-tile" onclick="lbOpen(window[\'_hwI_\'+ \''+hwId+'\'],'+idx+')" title="'+label+'">'
         +inner
         +'<div class="hw-img-tile-overlay">'
