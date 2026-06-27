@@ -2847,17 +2847,27 @@ window.clearE = function(){
 // ── saveHomework extended to pick right file source ──
 const _origSaveHomework = window.saveHomework;
 window.saveHomework = async function(){
-  // Inject file URL from the active source
-  const src = window._imgSrc || 'upload';
   const fileUrlEl = document.getElementById('hFileUrl');
-  if(src==='drive'){
+  if(!fileUrlEl) { if(_origSaveHomework) await _origSaveHomework(); return; }
+
+  // اكتشف الـ tab النشط من الـ DOM مباشرة (أضمن من window._imgSrc)
+  const driveTabActive = document.getElementById('isrc-drive')?.classList.contains('active');
+  const linkTabActive  = document.getElementById('isrc-link')?.classList.contains('active');
+
+  if(driveTabActive){
     const driveUrl = document.getElementById('hDriveUrl')?.value.trim();
-    if(fileUrlEl && driveUrl) fileUrlEl.value = driveUrl;
-  } else if(src==='link'){
+    if(driveUrl) {
+      fileUrlEl.value = driveUrl;
+    } else {
+      toast('حط رابط Google Drive الأول ⚠️','err');
+      return;
+    }
+  } else if(linkTabActive){
     const linkUrl = document.getElementById('hImgUrl')?.value.trim();
-    if(fileUrlEl && linkUrl) fileUrlEl.value = linkUrl;
+    if(linkUrl) fileUrlEl.value = linkUrl;
   }
-  // src==='upload' => hFileUrl already set by handleHwFile
+  // upload => hFileUrl already set by handleHwFile
+
   if(_origSaveHomework) await _origSaveHomework();
 };
 </script>
