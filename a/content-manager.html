@@ -1363,10 +1363,31 @@ window.editItem = (tab, id) => {
     document.getElementById('hDeadline').value = item.deadline||'';
     document.getElementById('hOrder').value    = item.order||'';
     document.getElementById('hFileUrl').value  = item.fileUrl||'';
+
     if(item.fileUrl){
-      document.getElementById('hFileName').textContent = item.fileUrl.split('%2F').pop().split('?')[0];
-      document.getElementById('hFileSize').textContent = '';
-      document.getElementById('hPreview').classList.add('show');
+      const url = item.fileUrl;
+      const isDrive = url.includes('drive.google.com') || url.includes('docs.google.com');
+      const isUpload = url.includes('firebasestorage') || url.includes('firebase');
+
+      if(isDrive){
+        // اضبط تاب Drive وملأ الـ input
+        window.setImgSource?.('drive');
+        const driveEl = document.getElementById('hDriveUrl');
+        if(driveEl) { driveEl.value = url; window.onDriveUrlInput?.('h', url); }
+      } else if(isUpload){
+        // ملف مرفوع — اضبط تاب Upload وعرض اسمه
+        window.setImgSource?.('upload');
+        document.getElementById('hFileName').textContent = url.split('%2F').pop().split('?')[0];
+        document.getElementById('hFileSize').textContent = '';
+        document.getElementById('hPreview').classList.add('show');
+      } else {
+        // رابط مباشر — اضبط تاب Link
+        window.setImgSource?.('link');
+        const linkEl = document.getElementById('hImgUrl');
+        if(linkEl) linkEl.value = url;
+      }
+    } else {
+      window.setImgSource?.('upload');
     }
     window.scrollTo({top:0,behavior:'smooth'});
   }
