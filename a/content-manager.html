@@ -796,6 +796,16 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             </div>
             <input type="hidden" id="hFileUrl"/>
           </div>
+
+          <!-- ── روابط الواجب ── -->
+          <div class="ff full">
+            <div class="sec-label">🔗 روابط الواجب <span style="font-size:10px;color:var(--muted);font-weight:400">(اختياري — بتظهر للطالب بالاسم)</span></div>
+            <div id="hwLinksContainer" style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px"></div>
+            <button type="button" onclick="addHwLink()" class="btn sm ghost" style="border-style:dashed;width:100%;justify-content:center;gap:6px">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              إضافة رابط
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1226,13 +1236,29 @@ window.saveHomework = async () => {
   try {
     const hExpiresAtVal = document.getElementById('hExpiresAt').value;
     const maxSubmissions = parseInt(document.getElementById('hMaxSubmissions').value)||null;
+
+    // ── اقرأ الـ URL من الـ tab النشط مباشرة ──
+    const driveTabActive = document.getElementById('isrc-drive')?.classList.contains('active');
+    const linkTabActive  = document.getElementById('isrc-link')?.classList.contains('active');
+    let resolvedFileUrl = '';
+    if(driveTabActive){
+      resolvedFileUrl = document.getElementById('hDriveUrl')?.value.trim() || '';
+    } else if(linkTabActive){
+      resolvedFileUrl = document.getElementById('hImgUrl')?.value.trim() || '';
+    } else {
+      resolvedFileUrl = document.getElementById('hFileUrl')?.value || '';
+    }
+
+    // ── روابط الواجب (links array) ──
+    const hwLinks = (window._hwLinks||[]).filter(l=>l.url&&l.label);
+
     const data = {
       title, type:'homework',
       description: document.getElementById('hDesc').value.trim(),
       deadline: document.getElementById('hDeadline').value,
-      fileUrl: document.getElementById('hFileUrl').value||'',
-      // حفظ كـ images array عشان courses.html يعرض الصور تلقائياً
-      images: document.getElementById('hFileUrl').value ? [document.getElementById('hFileUrl').value] : [],
+      fileUrl: resolvedFileUrl,
+      images: resolvedFileUrl ? [resolvedFileUrl] : [],
+      links: hwLinks,
       order: parseInt(document.getElementById('hOrder').value)||1,
       expiresAt: hExpiresAtVal ? new Date(hExpiresAtVal) : null,
       maxSubmissions,
@@ -1389,6 +1415,11 @@ window.editItem = (tab, id) => {
     } else {
       window.setImgSource?.('upload');
     }
+
+    // تحميل الروابط
+    window._hwLinks = (item.links||[]).map(l=>({...l, id: Date.now()+Math.random()}));
+    renderHwLinks();
+
     window.scrollTo({top:0,behavior:'smooth'});
   }
   toast('جاهز للتعديل ✏️','ok');
@@ -2890,6 +2921,51 @@ window.saveHomework = async function(){
   // upload => hFileUrl already set by handleHwFile
 
   if(_origSaveHomework) await _origSaveHomework();
+};
+
+// ══════════════════════════════════════
+// ── HOMEWORK LINKS SYSTEM ──
+// ══════════════════════════════════════
+window._hwLinks = [];
+
+window.addHwLink = (link) => {
+  const id = Date.now();
+  window._hwLinks.push({ id, label: link?.label||'', url: link?.url||'' });
+  renderHwLinks();
+};
+
+window.removeHwLink = (id) => {
+  window._hwLinks = window._hwLinks.filter(l=>l.id!==id);
+  renderHwLinks();
+};
+
+function renderHwLinks(){
+  const container = document.getElementById('hwLinksContainer');
+  if(!container) return;
+  if(!window._hwLinks.length){
+    container.innerHTML='';
+    return;
+  }
+  container.innerHTML = window._hwLinks.map(l=>`
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="text" placeholder="اسم الرابط (مثال: ورقة العمل)" value="${(l.label||'').replace(/"/g,'&quot;')}"
+        oninput="window._hwLinks.find(x=>x.id===${l.id}).label=this.value"
+        style="flex:1;padding:9px 12px;background:var(--inp);border:1.5px solid rgba(167,139,250,0.3);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/>
+      <input type="url" placeholder="https://..." value="${(l.url||'').replace(/"/g,'&quot;')}"
+        oninput="window._hwLinks.find(x=>x.id===${l.id}).url=this.value"
+        style="flex:2;padding:9px 12px;background:var(--inp);border:1.5px solid rgba(167,139,250,0.3);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/>
+      <button onclick="removeHwLink(${l.id})" style="padding:8px;border:1.5px solid rgba(255,77,109,0.3);border-radius:9px;background:transparent;color:var(--err);cursor:pointer;flex-shrink:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;display:block"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`).join('');
+}
+
+// إعادة ضبط الـ links عند clearH
+const _origClearHLinks = window.clearH;
+window.clearH = function(){
+  if(_origClearHLinks) _origClearHLinks();
+  window._hwLinks = [];
+  renderHwLinks();
 };
 </script>
 </body>
