@@ -563,7 +563,7 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;
   <!-- Search bar -->
   <div class="cv-search" id="cvSearch" style="display:none">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input id="cvSearchInp" placeholder="ابحث في الفيديوهات والامتحانات..." oninput="searchContent()"/>
+    <input id="cvSearchInp" placeholder="ابحث في الفيديوهات والامتحانات والواجبات والكتب..." oninput="searchContent()"/>
   </div>
 
   <!-- Night before exam banner -->
@@ -1099,7 +1099,7 @@ function renderVideos(videos,done,gradeKey,isMine){
           }
         </div>
         <div class="vinfo">
-          <div class="vtitle">${v.order?v.order+'. ':''}${v.title||'درس'}</div>
+          <div class="vtitle">${v.order?v.order+'. ':''}${v.title||'درس'}${isNewContent(v)?' <span style="font-size:9px;background:linear-gradient(135deg,#00d68f,#00a86b);color:#fff;padding:1px 6px;border-radius:20px;font-weight:800;vertical-align:middle">جديد</span>':''}</div>
           <div class="vmeta">
             ${v.duration?`⏱ ${v.duration}`:''}
             ${isLocked?'<span style="color:var(--err)">🔒 أكمل الدرس السابق</span>':isVideoBlocked?'<span style="color:var(--err)">🔒 غير متاح</span>':isDone?'<span style="color:var(--ok)">✅ تمت المشاهدة</span>':'<span style="color:var(--blue)">▶ اضغط للتشغيل</span>'}
@@ -1171,7 +1171,7 @@ function renderExams(exams,done,gradeKey,isMine){
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
       </div>
       <div class="exam-info">
-        <div class="exam-title">${e.order?e.order+'. ':''}${e.title||'امتحان'}</div>
+        <div class="exam-title">${e.order?e.order+'. ':''}${e.title||'امتحان'}${isNewContent(e)?' <span style="font-size:9px;background:linear-gradient(135deg,#00d68f,#00a86b);color:#fff;padding:1px 6px;border-radius:20px;font-weight:800;vertical-align:middle">جديد</span>':''}</div>
         <div class="exam-meta"><span style="color:${tc};font-weight:700">${tl}</span>${e.duration?' · ⏱ '+e.duration:''}${isLocked?' · 🔒':''}${metaExtra}</div>
         ${Array.isArray(e.links)&&e.links.length?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:5px">${e.links.filter(l=>l.url&&l.label).map(l=>`<a href="${l.url}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid rgba(201,168,76,0.25);text-decoration:none;white-space:nowrap">🔗 ${l.label}</a>`).join('')}</div>`:''}
       </div>
@@ -1245,10 +1245,11 @@ function openInlineExam(examObj,gradeKey,showAnswers){
       btn.style.display='none';
     };
   } else if((type==='images'||type==='pdf')){
-    const urls=(examObj.imageUrls?.length?examObj.imageUrls:(examObj.fileUrl?[examObj.fileUrl]:[examObj.externalUrl])||[]).filter(Boolean);
-    window._examImgUrls=urls;
+    const rawUrls=(examObj.imageUrls?.length?examObj.imageUrls:(examObj.fileUrl?[examObj.fileUrl]:[examObj.externalUrl])||[]).filter(Boolean);
+    window._examImgUrls=rawUrls;
+    // عرض الصور بنفس طريقة الواجبات (Drive tiles + صور عادية)
     document.getElementById('iep-body').innerHTML=
-      buildHwImgGrid(urls,'__exam__', examObj.title||'امتحان');
+      buildHwImgGrid(rawUrls,'__exam__', examObj.title||'امتحان');
     const btn=document.getElementById('iep-submit');
     btn.style.display='block';btn.textContent='تم المشاهدة ✓';
     btn.onclick=()=>{recordAttemptAndDone(gradeKey,examId);closeInlineExam()};
@@ -1622,7 +1623,7 @@ function renderHw(hw,done,gradeKey,isMine){
       <div style="display:flex;align-items:center;gap:12px">
         <div class="hw-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div>
         <div class="hw-info" style="flex:1;min-width:0">
-          <div class="hw-title">${h.order?h.order+'. ':''}${h.title||'واجب'}</div>
+          <div class="hw-title">${h.order?h.order+'. ':''}${h.title||'واجب'}${isNewContent(h)?' <span style="font-size:9px;background:linear-gradient(135deg,#00d68f,#00a86b);color:#fff;padding:1px 6px;border-radius:20px;font-weight:800;vertical-align:middle">جديد</span>':''}</div>
           <div class="hw-meta">${h.description||''}${h.deadline?' · 📅 '+h.deadline:''}${metaExtra}</div>
           <div class="hw-links">
             ${h.fileUrl&&!hwImages.length?`<a href="${h.fileUrl}" target="_blank" class="hw-link file">📎 فتح الملف</a>`:''}
@@ -1979,14 +1980,35 @@ window.submitTicket=async()=>{
 };
 function getYtId(url){const m=url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&\s?]+)/);return m?m[1]:'';}
 
-// مساعد: هل الرابط صورة أو Drive؟ (عشان الواجبات تتعرض تلقائياً)
+// مساعد: هل المحتوى جديد (آخر 3 أيام)؟
+function isNewContent(item){
+  if(!item.createdAt) return false;
+  const created = item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt);
+  return (Date.now() - created.getTime()) < 3*24*60*60*1000;
+}
+
 function isImageOrDriveUrl(url){
   if(!url) return false;
   if(url.includes('drive.google.com')||url.includes('docs.google.com')) return true;
   const lower=url.toLowerCase();
   return lower.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?|$|#)/)||
          lower.includes('firebasestorage')&&(lower.includes('jpg')||lower.includes('jpeg')||lower.includes('png')||lower.includes('gif')||lower.includes('webp'));
-}function setProg(fId,vId,tot,done){const p=tot?Math.round(done/tot*100):0;const f=document.getElementById(fId),v=document.getElementById(vId);if(f)f.style.width=p+'%';if(v)v.textContent=p+'%';}
+}function setProg(fId,vId,tot,done){
+  const p=tot?Math.round(done/tot*100):0;
+  const f=document.getElementById(fId),v=document.getElementById(vId);
+  if(f)f.style.width=p+'%';
+  if(v)v.textContent=p+'%';
+  // عرض العداد x/y
+  const countId = fId+'-count';
+  let countEl = document.getElementById(countId);
+  if(!countEl){
+    countEl = document.createElement('span');
+    countEl.id = countId;
+    countEl.style.cssText='font-size:10px;color:var(--muted);font-weight:700;margin-right:6px';
+    v?.parentElement?.appendChild(countEl);
+  }
+  if(tot) countEl.textContent = `(${done}/${tot})`;
+}
 
 async function markDone(gradeKey, type, id){
   if(!_user||!gradeKey||!type||!id) return;
@@ -2702,6 +2724,7 @@ function searchContent(){
   if(!q){
     renderVideos(_allVideos, gp.videos||[], window._openGrade, isMine);
     renderExams(_allExams, gp.exams||[], window._openGrade, isMine);
+    renderHomework(window._allHw||[], gp.homework||[], window._openGrade, isMine);
     const srch=document.getElementById('srch-count');
     if(srch) srch.remove();
     return;
@@ -2715,8 +2738,27 @@ function searchContent(){
     (e.title||'').toLowerCase().includes(q)||
     (e.description||'').toLowerCase().includes(q)
   );
+  const filteredHw=(window._allHw||[]).filter(h=>
+    (h.title||'').toLowerCase().includes(q)||
+    (h.description||'').toLowerCase().includes(q)
+  );
+  const filteredBooks=(_books||[]).filter(b=>
+    (b.title||'').toLowerCase().includes(q)||
+    (b.description||'').toLowerCase().includes(q)||
+    (b.note||'').toLowerCase().includes(q)
+  );
   renderVideos(filteredVids, gp.videos||[], window._openGrade, isMine);
   renderExams(filteredExams, gp.exams||[], window._openGrade, isMine);
+  renderHomework(filteredHw, gp.homework||[], window._openGrade, isMine);
+  // Books: عرض نتائج الكتب في قسم منفصل
+  const booksEl=document.getElementById('booksList');
+  if(booksEl && filteredBooks.length){
+    booksEl.innerHTML=`<div class="books-grid-inline">${filteredBooks.map(b=>`
+      <div class="book-card-sm" onclick="openBookSheet('${b.id}')">
+        ${b.coverUrl?`<img class="bc-cover" src="${b.coverUrl}" alt="${b.title}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/><div class="bc-cover-ph" style="display:none">📚</div>`:`<div class="bc-cover-ph">📚</div>`}
+        <div class="bc-info"><div class="bc-title">${b.title}</div><div class="bc-price">${b.price} جنيه</div></div>
+      </div>`).join('')}</div>`;
+  } else if(booksEl && q){ booksEl.innerHTML='<div class="empty"><p>لا يوجد كتب مطابقة</p></div>'; }
   let countEl=document.getElementById('srch-count');
   if(!countEl){
     countEl=document.createElement('div');
@@ -2724,9 +2766,9 @@ function searchContent(){
     countEl.style.cssText='font-size:11px;padding:6px 16px;text-align:center;font-weight:700';
     document.getElementById('cvSearch')?.after(countEl);
   }
-  const total=filteredVids.length+filteredExams.length;
+  const total=filteredVids.length+filteredExams.length+filteredHw.length+filteredBooks.length;
   if(total){
-    countEl.textContent='🔍 ' + total + ' نتيجة — فيديوهات: ' + filteredVids.length + ' · امتحانات: ' + filteredExams.length;
+    countEl.textContent=`🔍 ${total} نتيجة — فيديوهات: ${filteredVids.length} · امتحانات: ${filteredExams.length} · واجبات: ${filteredHw.length} · كتب: ${filteredBooks.length}`;
     countEl.style.color='var(--muted)';
   } else {
     countEl.textContent='لا يوجد نتائج لـ "' + q + '" 😕';
@@ -2971,7 +3013,7 @@ function buildCommentVideoSelector(){
 // ══════════════════════════════════════
 window._hwSubmitData = {};
 
-window.openHwSubmit = (hwId, gradeKey, title, description, deadline) => {
+window.openHwSubmit = async (hwId, gradeKey, title, description, deadline) => {
   window._hwSubmitData = { hwId, gradeKey };
   document.getElementById('hwSubmit-hwId').value    = hwId;
   document.getElementById('hwSubmit-gradeKey').value = gradeKey;
@@ -2988,6 +3030,36 @@ window.openHwSubmit = (hwId, gradeKey, title, description, deadline) => {
   const msgEl = document.getElementById('hwSubmit-msg');
   msgEl.style.display = 'none';
   hwSwitchTab('text');
+
+  // ── تحميل التسليم السابق ──
+  const prevBox = document.getElementById('hw-prev-submission');
+  if(prevBox) prevBox.remove();
+  try{
+    const _user = window._user;
+    if(_user){
+      const snap = await getDocs(
+        query(collection(db,'homeworkSubmissions'),
+          where('hwId','==',hwId),
+          where('userId','==',_user.uid)
+        )
+      );
+      if(!snap.empty){
+        const sub = snap.docs[0].data();
+        const gradeInfo = sub.grade!=null
+          ? `<span style="color:var(--ok);font-weight:800">✅ درجتك: ${sub.grade}</span>${sub.teacherNote?` · <span style="color:var(--muted)">${sub.teacherNote}</span>`:''}`
+          : `<span style="color:var(--gold)">⏳ لم تُصحَّح بعد</span>`;
+        const answerPreview = sub.answer
+          ? `<div style="background:rgba(6,10,22,0.5);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:12px;color:var(--text);white-space:pre-wrap;max-height:80px;overflow:hidden;position:relative">${sub.answer}<div style="position:absolute;bottom:0;left:0;right:0;height:25px;background:linear-gradient(transparent,rgba(6,10,22,0.9))"></div></div>`
+          : sub.link ? `<a href="${sub.link}" target="_blank" style="color:var(--blue);font-size:12px">🔗 ${sub.link}</a>` : '';
+        const box = document.createElement('div');
+        box.id = 'hw-prev-submission';
+        box.style.cssText = 'background:rgba(0,214,143,0.06);border:1px solid rgba(0,214,143,0.2);border-radius:11px;padding:11px 13px;margin-bottom:14px;font-size:12px;line-height:1.7';
+        box.innerHTML = `<div style="font-weight:800;color:var(--ok);margin-bottom:4px">📬 سليمت الواجب ده قبل كده</div>${gradeInfo}${answerPreview}`;
+        document.getElementById('hwSubmit-info').after(box);
+      }
+    }
+  }catch(e){ console.warn('prev submission load:',e); }
+
   document.getElementById('hwSubmitModal').classList.add('open');
   document.body.style.overflow = 'hidden';
 };
