@@ -492,6 +492,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="card-head">
           <h3><svg><use href="#i-play"/></svg>الفيديوهات المضافة</h3>
           <button class="btn sm ghost" onclick="loadList('videos','vList')"><svg><use href="#i-refresh"/></svg></button>
+          <button class="btn sm ghost" onclick="toggleBulkMode('videos','vList')" title="حذف جماعي" style="border-color:rgba(255,77,109,.3);color:#ff4d6d">🗑 تحديد</button>
         </div>
         <div id="vList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
       </div>
@@ -717,6 +718,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="card-head">
           <h3><svg><use href="#i-check"/></svg>الامتحانات المضافة</h3>
           <button class="btn sm ghost" onclick="loadList('exams','eList')"><svg><use href="#i-refresh"/></svg></button>
+          <button class="btn sm ghost" onclick="toggleBulkMode('exams','eList')" title="حذف جماعي" style="border-color:rgba(255,77,109,.3);color:#ff4d6d">🗑 تحديد</button>
         </div>
         <div id="eList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
       </div>
@@ -837,6 +839,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="card-head">
           <h3><svg><use href="#i-file"/></svg>الواجبات المضافة</h3>
           <button class="btn sm ghost" onclick="loadList('homework','hList')"><svg><use href="#i-refresh"/></svg></button>
+          <button class="btn sm ghost" onclick="toggleBulkMode('homework','hList')" title="حذف جماعي" style="border-color:rgba(255,77,109,.3);color:#ff4d6d">🗑 تحديد</button>
         </div>
         <div id="hList"><div class="empty"><p>اختار صفاً أولاً</p></div></div>
       </div>
@@ -2090,9 +2093,11 @@ window.saveBuilderQuestions = async () => {
   if(!grade){ toast('اختار صف أولاً','err'); return; }
   const title = (document.getElementById('eTitle')?.value||'').trim();
   if(!title){ toast('اكتب عنوان الامتحان','err'); return; }
+  const btn = document.getElementById('eSaveBtn');
+  if(btn){ btn.innerHTML='<div class="spin"></div>'; btn.disabled=true; }
   try {
     const totalScore = parseInt(document.getElementById('eTotalScore')?.value||'')||qs.reduce((s,q)=>s+(q.points||1),0);
-    await addDoc(collection(db,'content',grade,'exams'), {
+    const examData = {
       title, type:'mixed', examSystem:'new',
       duration: document.getElementById('eDur')?.value||'60',
       totalScore,
@@ -2102,15 +2107,25 @@ window.saveBuilderQuestions = async () => {
       expiresAt: document.getElementById('eExpiresAt')?.value ? new Date(document.getElementById('eExpiresAt').value) : null,
       links: (window._links_e||[]).filter(l=>l.url&&l.label),
       questions: qs.map(q=>({ id:q.id, type:q.type, text:q.text, points:q.points, options:q.options, correctAnswer:q.correctAnswer })),
-      createdAt: serverTimestamp()
-    });
-    toast('تم حفظ الامتحان ✓','ok');
-    if(document.getElementById('eNotify')?.checked) await sendContentNotif(grade,'امتحان جديد 📝',title);
+      updatedAt: serverTimestamp()
+    };
+    const isEdit = !!window._editId?.e;
+    if(isEdit){
+      await updateDoc(doc(db,'content',grade,'exams',window._editId.e), examData);
+      delete window._editId.e;
+      toast('تم تعديل الامتحان ✓','ok');
+    } else {
+      examData.createdAt = serverTimestamp();
+      await addDoc(collection(db,'content',grade,'exams'), examData);
+      toast('تم حفظ الامتحان ✓','ok');
+      if(document.getElementById('eNotify')?.checked) await sendContentNotif(grade,'امتحان جديد 📝',title);
+    }
     window.questions=[];
     renderQuestionsV2();
     ['eTitle','eDur','eOrder','eTotalScore','eMaxAttempts','eExpiresAt'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     loadList('exams','eList');
   }catch(e){ toast('خطأ: '+e.message,'err'); console.error(e); }
+  if(btn){ btn.innerHTML='<svg width="13" height="13"><use href="#i-save"/></svg>حفظ'; btn.disabled=false; }
 };
 
 // ── Image Source for Homework ──
@@ -3006,6 +3021,10 @@ function renderLinks(prefix){
       <input type="url" placeholder="https://..." value="${(l.url||'').replace(/"/g,'&quot;')}"
         oninput="(window['_links_${prefix}']||[]).find(x=>x.id===${l.id}).url=this.value"
         style="flex:2;padding:9px 12px;background:var(--inp);border:1.5px solid rgba(167,139,250,0.3);border-radius:10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none"/>
+      <button onclick="const u=(window['_links_${prefix}']||[]).find(x=>x.id===${l.id})?.url;if(u)window.open(u,'_blank');else toast('حط الرابط الأول ⚠️','err')"
+        title="معاينة الرابط" style="padding:8px;border:1.5px solid rgba(74,127,212,0.3);border-radius:9px;background:transparent;color:var(--blue);cursor:pointer;flex-shrink:0">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;display:block"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15,3 21,3 21,9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </button>
       <button onclick="removeLink('${prefix}',${l.id})" style="padding:8px;border:1.5px solid rgba(255,77,109,0.3);border-radius:9px;background:transparent;color:var(--err);cursor:pointer;flex-shrink:0">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;display:block"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
