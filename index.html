@@ -95,6 +95,25 @@ nav{
 .hero-logo{width:clamp(90px,18vw,130px);height:clamp(90px,18vw,130px);object-fit:contain;margin-bottom:20px;filter:drop-shadow(0 6px 24px rgba(26,50,112,0.2))}
 .hero h1{font-size:clamp(26px,6vw,52px);font-weight:900;color:var(--navy);line-height:1.15;margin-bottom:10px}
 .hero h1 span{background:linear-gradient(135deg,var(--blue),var(--navy));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ── ANIMATED NAME ── */
+.hero-name-animated{
+  display:inline-block;
+  background:linear-gradient(270deg,#1a3270,#3a6ec4,#b8922a,#3a6ec4,#1a3270);
+  background-size:300% 300%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:nameShift 4s ease infinite, namePop .7s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes nameShift{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+@keyframes namePop{
+  0%{opacity:0;transform:translateY(14px) scale(0.95)}
+  100%{opacity:1;transform:none}
+}
 .hero-sub{font-size:clamp(14px,3vw,18px);color:var(--muted);font-weight:600;margin-bottom:14px}
 .hero-features{display:flex;gap:clamp(10px,3vw,28px);justify-content:center;flex-wrap:wrap;margin-bottom:28px}
 .hf{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text2);font-weight:600}
@@ -184,19 +203,45 @@ nav{
 
 /* ── CONTACT ICONS ── */
 .contact-icon{
-  width:52px;height:52px;border-radius:14px;
+  width:50px;height:50px;border-radius:16px;
   display:flex;align-items:center;justify-content:center;
-  background:white;border:1px solid var(--border);
-  box-shadow:var(--shadow);transition:all .25s;text-decoration:none;
+  background:white;border:none;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08),0 0 0 1px rgba(0,0,0,0.06);
+  transition:all .22s cubic-bezier(.34,1.56,.64,1);
+  text-decoration:none;position:relative;overflow:hidden;
 }
-.contact-icon svg{width:24px;height:24px}
-.contact-icon:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
-.contact-icon.yt{color:#FF0000}.contact-icon.yt:hover{background:#fff5f5;border-color:#FF0000}
-.contact-icon.fb{color:#1877F2}.contact-icon.fb:hover{background:#eff6ff;border-color:#1877F2}
-.contact-icon.tg{color:#0088cc}.contact-icon.tg:hover{background:#eff9ff;border-color:#0088cc}
-.contact-icon.ig{color:#E1306C}.contact-icon.ig:hover{background:#fdf2f8;border-color:#E1306C}
-.contact-icon.tt{color:#010101}.contact-icon.tt:hover{background:#f8f8f8;border-color:#010101}
-.contact-icon.wa{color:#25D366}.contact-icon.wa:hover{background:#f0fdf4;border-color:#25D366}
+.contact-icon::before{
+  content:'';position:absolute;inset:0;opacity:0;
+  transition:opacity .22s;border-radius:inherit;
+}
+.contact-icon:hover{transform:translateY(-4px) scale(1.08);box-shadow:0 8px 24px rgba(0,0,0,0.13)}
+.contact-icon:hover::before{opacity:1}
+.contact-icon svg{width:22px;height:22px;position:relative;z-index:1;transition:transform .22s}
+.contact-icon:hover svg{transform:scale(1.1)}
+
+.contact-icon.yt{color:#FF0000}
+.contact-icon.yt::before{background:linear-gradient(135deg,#fff5f5,#ffe4e4)}
+.contact-icon.yt:hover{box-shadow:0 8px 24px rgba(255,0,0,0.2)}
+
+.contact-icon.fb{color:#1877F2}
+.contact-icon.fb::before{background:linear-gradient(135deg,#eff6ff,#dbeafe)}
+.contact-icon.fb:hover{box-shadow:0 8px 24px rgba(24,119,242,0.22)}
+
+.contact-icon.tg{color:#0088cc}
+.contact-icon.tg::before{background:linear-gradient(135deg,#eff9ff,#ddf4ff)}
+.contact-icon.tg:hover{box-shadow:0 8px 24px rgba(0,136,204,0.22)}
+
+.contact-icon.ig{color:#E1306C}
+.contact-icon.ig::before{background:linear-gradient(135deg,#fdf2f8,#fce7f3)}
+.contact-icon.ig:hover{box-shadow:0 8px 24px rgba(225,48,108,0.22)}
+
+.contact-icon.tt{color:#010101}
+.contact-icon.tt::before{background:linear-gradient(135deg,#f8f8f8,#f0f0f0)}
+.contact-icon.tt:hover{box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+
+.contact-icon.wa{color:#25D366}
+.contact-icon.wa::before{background:linear-gradient(135deg,#f0fdf4,#dcfce7)}
+.contact-icon.wa:hover{box-shadow:0 8px 24px rgba(37,211,102,0.25)}
 
 /* ── CONTACT ── */
 .contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;max-width:700px;margin:0 auto}
@@ -338,7 +383,7 @@ section.gray{background:var(--bg)}
   <div class="hero-shape hs2"></div>
   <div class="hero-inner">
     <div class="hero-badge"><div class="dot"></div>منصة تعليمية متكاملة · 2026</div>
-    <h1>مستر / <span>مهدي حسن</span></h1>
+    <h1>مستر / <span class="hero-name-animated">مهدي حسن</span></h1>
     <div class="hero-sub">معلم مادة الرياضيات لجميع المراحل التعليمية</div>
     <div class="hero-features">
       <div class="hf"><div class="hf-dot"></div>وفر وقتك وذاكر من مكانك</div>
