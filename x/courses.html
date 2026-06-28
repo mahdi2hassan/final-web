@@ -1105,6 +1105,7 @@ function renderVideos(videos,done,gradeKey,isMine){
             ${isLocked?'<span style="color:var(--err)">🔒 أكمل الدرس السابق</span>':isVideoBlocked?'<span style="color:var(--err)">🔒 غير متاح</span>':isDone?'<span style="color:var(--ok)">✅ تمت المشاهدة</span>':'<span style="color:var(--blue)">▶ اضغط للتشغيل</span>'}
             ${metaExtra}
           </div>
+          ${Array.isArray(v.links)&&v.links.length?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:6px">${v.links.filter(l=>l.url&&l.label).map(l=>`<a href="${l.url}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(74,127,212,0.12);color:var(--blue);border:1px solid rgba(74,127,212,0.25);text-decoration:none;white-space:nowrap">🔗 ${l.label}</a>`).join('')}</div>`:''}
         </div>
         ${isDone?'<span style="color:var(--ok);font-size:15px;flex-shrink:0">✅</span>':''}
       </div>
@@ -1172,6 +1173,7 @@ function renderExams(exams,done,gradeKey,isMine){
       <div class="exam-info">
         <div class="exam-title">${e.order?e.order+'. ':''}${e.title||'امتحان'}</div>
         <div class="exam-meta"><span style="color:${tc};font-weight:700">${tl}</span>${e.duration?' · ⏱ '+e.duration:''}${isLocked?' · 🔒':''}${metaExtra}</div>
+        ${Array.isArray(e.links)&&e.links.length?`<div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:5px">${e.links.filter(l=>l.url&&l.label).map(l=>`<a href="${l.url}" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid rgba(201,168,76,0.25);text-decoration:none;white-space:nowrap">🔗 ${l.label}</a>`).join('')}</div>`:''}
       </div>
       ${badge}
     </div>`;
@@ -2839,6 +2841,7 @@ function openBookSheet(id){
   document.getElementById('bsBody').innerHTML=`
     ${b.description?`<div class="bs-desc">${b.description}</div>`:''}
     ${b.note?`<div class="bs-note">📌 ${b.note}</div>`:''}
+    ${Array.isArray(b.links)&&b.links.length?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${b.links.filter(l=>l.url&&l.label).map(l=>`<a href="${l.url}" target="_blank" style="display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid rgba(201,168,76,0.25);text-decoration:none">🔗 ${l.label}</a>`).join('')}</div>`:''}
     <div class="bs-pay">
       <div class="bs-pay-title">💳 طريقة الشراء</div>
       ${methodsHtml||'<div style="font-size:12px;color:var(--muted)">سيتم إضافة طرق الدفع قريباً</div>'}
