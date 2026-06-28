@@ -1625,6 +1625,7 @@ function renderHw(hw,done,gradeKey,isMine){
           <div class="hw-links">
             ${h.fileUrl&&!hwImages.length?`<a href="${h.fileUrl}" target="_blank" class="hw-link file">📎 فتح الملف</a>`:''}
             ${h.url&&!h.fileUrl?`<a href="${h.url}" target="_blank" class="hw-link file">🔗 رابط</a>`:''}
+            ${Array.isArray(h.links)&&h.links.length?h.links.filter(l=>l.url&&l.label).map(l=>`<a href="${l.url}" target="_blank" class="hw-link file" style="background:rgba(74,127,212,0.1);border-color:rgba(74,127,212,0.3);color:var(--blue)">🔗 ${l.label}</a>`).join(''):''}
           </div>
         </div>
         ${isMine&&!isDone&&!isBlocked
