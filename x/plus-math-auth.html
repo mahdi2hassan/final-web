@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plus Mathematics – تسجيل الدخول</title>
+<title>Plus In Math – تسجيل الدخول</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -290,8 +290,12 @@ input::placeholder{color:var(--muted);opacity:.5}
       <div id="tab-login">
         <div class="field">
           <label>رقم الهاتف أو الإيميل</label>
-          <input type="text" id="login-id" placeholder="01xxxxxxxxx أو example@gmail.com"
-            oninput="clearLoginMsg()" autocomplete="username"/>
+          <div style="position:relative">
+            <input type="text" id="login-id" placeholder="01xxxxxxxxx أو example@gmail.com"
+              oninput="clearLoginMsg();detectLoginType(this.value)" autocomplete="username"
+              style="padding-left:36px!important"/>
+            <span id="login-type-ico" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">🔑</span>
+          </div>
         </div>
         <div class="field">
           <label>كلمة المرور</label>
@@ -641,15 +645,6 @@ input::placeholder{color:var(--muted);opacity:.5}
         </div>
       </div>
 
-      <!-- Sessions (Devices) Panel -->
-      <div id="sessions-panel" style="background:rgba(8,13,28,0.4);border:1px solid var(--border2);border-radius:12px;padding:8px 12px;margin-bottom:12px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-          <span style="font-size:11px;font-weight:700;color:var(--muted)">📱 الأجهزة المتصلة (<span id="sess-count">...</span>/3)</span>
-          <button onclick="loadSessions()" style="padding:2px 8px;border:1px solid var(--border2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px">تحديث</button>
-        </div>
-        <div id="sessions-list" style="display:flex;flex-direction:column;gap:5px"></div>
-      </div>
-
       <div class="msg" id="prof-msg"></div>
       <button class="btn" onclick="window.location.href='courses.html'" style="margin-bottom:8px">
         <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>ادخل على كورساتك</span>
@@ -937,8 +932,6 @@ function showProfileStep(data){
     setTimeout(function(){ document.getElementById('prof-bar').style.width=Math.round(days/total*100)+'%'; },300);
   }
   showStep('step-profile');
-  // تحميل الأجهزة المتصلة
-  setTimeout(function(){ loadSessions(); }, 300);
 }
 
 // ── EDIT FIELD (phone/email) ──
@@ -1124,215 +1117,50 @@ async function sendTicket(){
   setLoad(btn,false);
 }
 
-// ── SESSION MANAGEMENT (max 3 devices) ──
-var MAX_DEVICES = 3;
-var _sessionListener = null;
-
-// جمع معلومات عن المتصفح الحالي
-function getDeviceInfo(){
-  var ua = navigator.userAgent;
-  var browser = 'متصفح';
-  if(/Chrome\//.test(ua) && !/Edg\//.test(ua)) browser = 'Chrome';
-  else if(/Firefox\//.test(ua)) browser = 'Firefox';
-  else if(/Safari\//.test(ua) && !/Chrome\//.test(ua)) browser = 'Safari';
-  else if(/Edg\//.test(ua)) browser = 'Edge';
-  var os = 'جهاز';
-  if(/Android/.test(ua)) os = 'Android';
-  else if(/iPhone|iPad/.test(ua)) os = 'iOS';
-  else if(/Windows/.test(ua)) os = 'Windows';
-  else if(/Mac OS/.test(ua)) os = 'Mac';
-  else if(/Linux/.test(ua)) os = 'Linux';
-  return browser + ' / ' + os;
-}
-
-// تسجيل الجهاز الحالي في Firestore
-async function registerDeviceSession(uid){
-  var did = getDeviceId();
-  var sessRef = db.collection('users').doc(uid).collection('sessions').doc(did);
-
-  // اقرأ الحد من Firestore (settings/devices) أو user document
-  var maxDevices = MAX_DEVICES;
-  try{
-    var userDoc = await db.collection('users').doc(uid).get();
-    if(userDoc.exists && userDoc.data().maxDevices) maxDevices = userDoc.data().maxDevices;
-    else {
-      var devSettings = await db.collection('settings').doc('devices').get();
-      if(devSettings.exists && devSettings.data().defaultMax) maxDevices = devSettings.data().defaultMax;
-    }
-  }catch(e){ /* fallback to MAX_DEVICES */ }
-
-  var sessSnap = await sessRef.get().catch(function(){ return null; });
-
-  // لو الجهاز موجود بالفعل ومش مطرود — جدّد الـ lastSeen بس
-  if(sessSnap && sessSnap.exists && sessSnap.data().status !== 'kicked'){
-    await sessRef.update({
-      lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
-      deviceInfo: getDeviceInfo()
-    }).catch(function(){});
-    return 'ok';
-  }
-
-  // لو الجهاز كان مطرود — ارفض
-  if(sessSnap && sessSnap.exists && sessSnap.data().status === 'kicked'){
-    return 'kicked';
-  }
-
-  // جهاز جديد — اشوف عدد الأجهزة الحالية
-  var allSess = await db.collection('users').doc(uid).collection('sessions')
-    .where('status','==','active').get().catch(function(){ return {docs:[]}; });
-
-  if(allSess.docs.length >= maxDevices){
-    // اطرد الأقدم جهاز
-    var sorted = allSess.docs.sort(function(a,b){
-      var ta = a.data().lastSeen?.toDate?.() || new Date(0);
-      var tb = b.data().lastSeen?.toDate?.() || new Date(0);
-      return ta - tb;
-    });
-    var oldest = sorted[0];
-    await oldest.ref.update({ status: 'kicked', kickedAt: firebase.firestore.FieldValue.serverTimestamp() })
-      .catch(function(){});
-  }
-
-  // سجّل الجهاز الجديد
-  await sessRef.set({
-    deviceId: did,
-    deviceInfo: getDeviceInfo(),
-    status: 'active',
-    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
-  }).catch(function(){});
-  return 'ok';
-}
-
-// الاستماع للتغييرات على الـ session — لو اتطرد يسجّل خروج
-function listenToMySession(uid){
-  if(_sessionListener) _sessionListener(); // إلغاء الاستماع القديم
-  var did = getDeviceId();
-  _sessionListener = db.collection('users').doc(uid).collection('sessions').doc(did)
-    .onSnapshot(function(snap){
-      if(!snap.exists) return;
-      if(snap.data().status === 'kicked'){
-        _sessionListener && _sessionListener();
-        _sessionListener = null;
-        auth.signOut().then(function(){
-          showStep('step-auth');
-          // إظهار رسالة
-          var msg = document.getElementById('login-msg');
-          if(msg){
-            msg.innerHTML = '⚠️ تم تسجيل خروجك — تم تسجيل الدخول من جهاز جديد';
-            msg.className = 'msg show error';
-          }
-        }).catch(function(){});
-      }
-    }, function(){ /* تجاهل أخطاء الـ listener */ });
-}
-
 function doSignOut(){
-  var uid = auth.currentUser?.uid;
-  var did = getDeviceId();
-  // إلغاء الـ listener أولاً
-  if(_sessionListener){ _sessionListener(); _sessionListener = null; }
-  // مسح الـ session من Firestore
-  var cleanup = uid
-    ? db.collection('users').doc(uid).collection('sessions').doc(did)
-        .delete().catch(function(){})
-    : Promise.resolve();
-  cleanup.then(function(){
-    return auth.signOut();
-  }).then(function(){
-    // مسح البيانات المحلية (عدا remember me)
-    var remId = localStorage.getItem('pm_remember_id');
-    var onboarded = localStorage.getItem('pm_onboarded');
-    var did2 = localStorage.getItem('plusmath_did');
-    // كلير كامل ثم أعد اللي محتاجه
-    localStorage.clear();
-    if(remId) localStorage.setItem('pm_remember_id', remId);
-    if(onboarded) localStorage.setItem('pm_onboarded', onboarded);
-    if(did2) localStorage.setItem('plusmath_did', did2);
-    showStep('step-auth');
-  }).catch(function(){
-    showStep('step-auth');
-  });
+  auth.signOut().then(function(){ showStep('step-auth'); }).catch(function(){});
 }
 
 // ── Auth State ──
 auth.onAuthStateChanged(function(user){
   loadBanner(); loadPrice();
-  if(!user){
-    if(_sessionListener){ _sessionListener(); _sessionListener = null; }
-    showStep('step-auth');
-    return;
-  }
-
-  // تسجيل الجهاز والتحقق من الحد الأقصى
-  registerDeviceSession(user.uid).then(function(result){
-    if(result === 'kicked'){
-      // هذا الجهاز تم طرده سابقاً
-      if(_sessionListener){ _sessionListener(); _sessionListener = null; }
-      auth.signOut().then(function(){
-        showStep('step-auth');
-        setTimeout(function(){
-          var msg = document.getElementById('login-msg');
-          if(msg){
-            msg.innerHTML = '⚠️ تم تسجيل خروجك من هذا الجهاز — تم تسجيل الدخول من جهاز آخر';
-            msg.className = 'msg show error';
+  if(!user){ showStep('step-auth'); return; }
+  db.collection('users').doc(user.uid).get().then(function(ud){
+    if(!ud.exists){
+      // ممكن يكون Google user لسه ما اتكتبش الـ document — استنى ثانية وحاول تاني
+      setTimeout(function(){
+        db.collection('users').doc(user.uid).get().then(function(ud2){
+          if(!ud2.exists){ showStep('step-auth'); return; }
+          var data2 = ud2.data();
+          if(!data2.subscriptionActive){
+            if(data2.gradeKey) showCodeStep(data2.gradeKey, data2.grade);
+            else showStep('step-grade');
+            return;
           }
-        }, 300);
-      });
+          showProfileStep(data2);
+        }).catch(function(){ showStep('step-auth'); });
+      }, 1500);
       return;
     }
-
-    // ابدأ الاستماع للـ session
-    listenToMySession(user.uid);
-
-    db.collection('users').doc(user.uid).get().then(function(ud){
-      if(!ud.exists){
-        setTimeout(function(){
-          db.collection('users').doc(user.uid).get().then(function(ud2){
-            if(!ud2.exists){ showStep('step-auth'); return; }
-            var data2 = ud2.data();
-            if(!data2.subscriptionActive){
-              if(data2.gradeKey) showCodeStep(data2.gradeKey, data2.grade);
-              else showStep('step-grade');
-              return;
-            }
-            showProfileStep(data2);
-          }).catch(function(){ showStep('step-auth'); });
-        }, 1500);
+    var data = ud.data();
+    if(!data.subscriptionActive){
+      if(data.gradeKey) showCodeStep(data.gradeKey, data.grade);
+      else showStep('step-grade');
+      return;
+    }
+    if(data.expiresAt){
+      var exp = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
+      if(new Date() > exp){
+        db.collection('users').doc(user.uid).update({
+          subscriptionActive: false, subscriptionCode: '', expiresAt: null, activatedAt: null
+        });
+        showExpiredStep(data.grade||'', data.gradeKey||'');
         return;
       }
-      var data = ud.data();
-      if(!data.subscriptionActive){
-        if(data.gradeKey) showCodeStep(data.gradeKey, data.grade);
-        else showStep('step-grade');
-        return;
-      }
-      if(data.expiresAt){
-        var exp = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
-        if(new Date() > exp){
-          db.collection('users').doc(user.uid).update({
-            subscriptionActive: false, subscriptionCode: '', expiresAt: null, activatedAt: null
-          });
-          showExpiredStep(data.grade||'', data.gradeKey||'');
-          return;
-        }
-      }
-      showProfileStep(data);
-    }).catch(function(){ showStep('step-auth'); });
-  }).catch(function(){
-    // لو فشل التسجيل، استمر عادي
-    listenToMySession(user.uid);
-    db.collection('users').doc(user.uid).get().then(function(ud){
-      if(!ud.exists){ showStep('step-auth'); return; }
-      var data = ud.data();
-      if(!data.subscriptionActive){
-        if(data.gradeKey) showCodeStep(data.gradeKey, data.grade);
-        else showStep('step-grade');
-        return;
-      }
-      showProfileStep(data);
-    }).catch(function(){ showStep('step-auth'); });
-  });
+    }
+    // ── Active user → show profile step ──
+    showProfileStep(data);
+  }).catch(function(){ showStep('step-auth'); });
 });
 
 // ── Helpers ──
@@ -1349,8 +1177,40 @@ function getDeviceId(){
   return did;
 }
 
+// ── Auto-detect login type ──
+function detectLoginType(val){
+  var ico = document.getElementById('login-type-ico');
+  if(!ico) return;
+  if(!val){ ico.textContent='🔑'; return; }
+  if(val.includes('@')) ico.textContent='📧';
+  else if(/^\d/.test(val)) ico.textContent='📱';
+  else ico.textContent='🔑';
+}
+
+// ── LOGIN RATE LIMITING (محلي — ضد Brute Force) ──
+var _loginAttempts = 0;
+var _loginLockUntil = 0;
+
+function checkLoginRateLimit(){
+  var now = Date.now();
+  if(now < _loginLockUntil){
+    var secs = Math.ceil((_loginLockUntil - now)/1000);
+    showMsg('login-msg','كتير جداً — انتظر '+secs+' ثانية ⏳','error');
+    return false;
+  }
+  _loginAttempts++;
+  if(_loginAttempts >= 5){
+    _loginLockUntil = Date.now() + 60000; // lock دقيقة
+    _loginAttempts = 0;
+    showMsg('login-msg','5 محاولات فاشلة — انتظر دقيقة ⏳','error');
+    return false;
+  }
+  return true;
+}
+
 // ── LOGIN ──
 function doLogin(){
+  if(!checkLoginRateLimit()) return;
   var id   = document.getElementById('login-id').value.trim();
   var pass = document.getElementById('login-pass').value;
   if(!id)  { showMsg('login-msg','ادخل رقم الهاتف أو الإيميل','error'); return; }
@@ -1360,6 +1220,7 @@ function doLogin(){
   var email = id.includes('@') ? id.toLowerCase() : phoneToEmail(id);
   saveRememberMe(id);
   auth.signInWithEmailAndPassword(email, pass)
+    .then(function(){ _loginAttempts=0; }) // reset on success
     .catch(function(e){
       smartLoginError(e.code, 'login-msg');
       setLoad(btn,false);
@@ -1434,8 +1295,10 @@ function handleGoogleUser(user){
 }
 
 // ── HANDLE REDIRECT RESULT (لما الـ popup يتبلوك ويستخدم redirect) ──
+var _googleRedirectHandled = false;
 auth.getRedirectResult().then(function(result){
   if(result && result.user){
+    _googleRedirectHandled = true;
     handleGoogleUser(result.user);
   }
 }).catch(function(e){
@@ -1449,10 +1312,20 @@ function forgotPass(e){
   if(e) e.preventDefault();
   var id = document.getElementById('login-id').value.trim();
   if(!id){ showMsg('login-msg','ادخل رقم الهاتف أو الإيميل','error'); return; }
-  var email = id.includes('@') ? id.toLowerCase() : phoneToEmail(id);
+  // لو رقم هاتف — الـ email وهمي ومش هيوصل reset، وجّه للواتساب
+  if(!id.includes('@')){
+    var wa = '201007586279';
+    var msg = encodeURIComponent('مرحباً أستاذ مهدي 👋\nعايز أعيد تعيين كلمة مروري في Plus Mathematics\nرقمي: '+id);
+    showMsg('login-msg','<a href="https://wa.me/'+wa+'?text='+msg+'" target="_blank" style="color:var(--gold2);text-decoration:underline">تواصل عبر واتساب لإعادة التعيين</a>','tip');
+    var el=document.getElementById('login-msg');
+    el.innerHTML='<svg width="14" height="14"><use href="#i-check"/></svg>الحساب برقم الهاتف — <a href="https://wa.me/'+wa+'?text='+msg+'" target="_blank" style="color:var(--gold2)">تواصل عبر واتساب ←</a>';
+    el.className='msg show tip';
+    return;
+  }
+  var email = id.toLowerCase();
   auth.sendPasswordResetEmail(email)
-    .then(function(){ showMsg('login-msg','تم إرسال رابط إعادة التعيين ✓','success'); })
-    .catch(function(){ showMsg('login-msg','الرقم أو الإيميل مش مسجل','error'); });
+    .then(function(){ showMsg('login-msg','✅ تم إرسال رابط إعادة التعيين على '+email,'success'); })
+    .catch(function(){ showMsg('login-msg','الإيميل مش مسجل','error'); });
 }
 
 // ── GRADE SELECTION ──
@@ -1687,6 +1560,7 @@ submitCode = function(){
       var myGradeKey = (ud.data()||{}).gradeKey || window._savedGradeKey || '';
       if(!myGradeKey){ showMsg('code-msg','اختار صفك أولاً','error'); setLoad(btn,false); return; }
       var expiry = new Date(Date.now() + 29*24*60*60*1000);
+      var userData = ud.data()||{};
       // Increment coupon usedCount
       db.collection('coupons').doc(cp.id).update({
         usedCount: firebase.firestore.FieldValue.increment(1)
@@ -1694,8 +1568,20 @@ submitCode = function(){
       return db.collection('users').doc(user.uid).update({
         subscriptionActive:true, subscriptionCode:'COUPON-'+cp.code,
         activatedAt:firebase.firestore.FieldValue.serverTimestamp(),
-        expiresAt:expiry
-      }).then(function(){ showStep('step-success'); });
+        expiresAt:expiry,
+        gradeKey: userData.gradeKey||myGradeKey,
+        grade:    userData.grade||(GRADE_LABELS[myGradeKey]||myGradeKey),
+        stage:    userData.stage||''
+      }).then(function(){
+        db.collection('adminNotifications').add({
+          type:'code_activated',icon:'🎟️',title:'تفعيل كوبون مجاني',
+          body:(userData.name||'طالب')+' فعّل كوبون '+cp.code+' — '+(userData.grade||myGradeKey),
+          userId:user.uid,userName:userData.name||'—',userGrade:userData.grade||'',
+          code:'COUPON-'+cp.code,read:false,
+          createdAt:firebase.firestore.FieldValue.serverTimestamp()
+        }).catch(function(){});
+        showStep('step-success');
+      });
     }).catch(function(e){ showMsg('code-msg','خطأ: '+e.message,'error'); setLoad(btn,false); });
     return;
   }
@@ -1735,68 +1621,22 @@ function closeBanner(){
   document.body.style.paddingTop='14px';
 }
 
-// ── SESSIONS MANAGEMENT UI ──
-function loadSessions(){
-  var user = auth.currentUser;
-  if(!user) return;
-  var did = getDeviceId();
-  var listEl = document.getElementById('sessions-list');
-  var countEl = document.getElementById('sess-count');
-  if(!listEl) return;
-  listEl.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:5px">جاري التحميل...</div>';
-  db.collection('users').doc(user.uid).collection('sessions')
-    .where('status','==','active')
-    .get()
-    .then(function(snap){
-      if(countEl) countEl.textContent = snap.size;
-      if(snap.empty){ listEl.innerHTML='<div style="font-size:11px;color:var(--muted);text-align:center;padding:5px">لا توجد أجهزة</div>'; return; }
-      listEl.innerHTML = snap.docs.map(function(d){
-        var s = d.data();
-        var isMe = d.id === did;
-        var timeAgo = '';
-        if(s.lastSeen && s.lastSeen.toDate){
-          var diff = Math.floor((new Date() - s.lastSeen.toDate()) / 60000);
-          timeAgo = diff < 1 ? 'الآن' : diff < 60 ? diff+' دقيقة' : Math.floor(diff/60)+' ساعة';
-        }
-        return '<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:'+(isMe?'rgba(74,127,212,0.08)':'rgba(255,255,255,0.02)')+';border:1px solid '+(isMe?'rgba(74,127,212,0.25)':'var(--border2)')+';border-radius:8px">'+
-          '<span style="font-size:16px">'+(s.deviceInfo&&s.deviceInfo.includes('Android')?'📱':s.deviceInfo&&s.deviceInfo.includes('iOS')?'📱':s.deviceInfo&&s.deviceInfo.includes('Windows')?'💻':s.deviceInfo&&s.deviceInfo.includes('Mac')?'🍎':'📱')+'</span>'+
-          '<div style="flex:1;min-width:0">'+
-            '<div style="font-size:11px;font-weight:700;color:'+(isMe?'var(--blue)':'var(--text)')+'">'+
-              (s.deviceInfo||'جهاز')+(isMe?' <span style="color:var(--success);font-size:9px">(هذا الجهاز)</span>':'')+
-            '</div>'+
-            '<div style="font-size:10px;color:var(--muted)">'+(timeAgo?'آخر نشاط: '+timeAgo:'')+'</div>'+
-          '</div>'+
-          (!isMe?'<button onclick="kickDevice(\''+d.id+'\')" style="padding:3px 8px;border:1px solid rgba(255,77,109,0.3);border-radius:6px;background:rgba(255,77,109,0.06);color:var(--error);cursor:pointer;font-family:\'Tajawal\',sans-serif;font-size:10px;font-weight:700;flex-shrink:0">طرد</button>':'<span style="font-size:9px;padding:2px 6px;background:rgba(0,214,143,0.1);color:var(--success);border-radius:4px;flex-shrink:0">متصل</span>')+
-        '</div>';
-      }).join('');
-    }).catch(function(){
-      listEl.innerHTML='<div style="font-size:11px;color:var(--muted);text-align:center;padding:5px">تعذّر التحميل</div>';
-    });
-}
-
-function kickDevice(deviceDocId){
-  var user = auth.currentUser;
-  if(!user) return;
-  if(!confirm('هتطرد هذا الجهاز من حسابك؟')) return;
-  db.collection('users').doc(user.uid).collection('sessions').doc(deviceDocId)
-    .update({ status: 'kicked', kickedAt: firebase.firestore.FieldValue.serverTimestamp() })
-    .then(function(){
-      showMsg('prof-msg','✅ تم طرد الجهاز','success');
-      setTimeout(function(){ document.getElementById('prof-msg').className='msg'; }, 3000);
-      loadSessions();
-    }).catch(function(e){ showMsg('prof-msg','خطأ: '+e.message,'error'); });
-}
-
-
+// ── ENTER KEY ──
 document.addEventListener('keydown',function(e){
   if(e.key!=='Enter') return;
   var active=document.querySelector('.step.active');
   if(!active) return;
   if(active.id==='step-auth'){
-    document.querySelector('.tab-btn.active').textContent.includes('دخول') ? doLogin() : doRegister();
+    // استخدم state variable بدل النص عشان مش يتكسر لو النص اتغير
+    var isLogin = document.getElementById('tab-login').style.display !== 'none';
+    isLogin ? doLogin() : doRegister();
   }
   if(active.id==='step-code')  submitCode();
   if(active.id==='step-grade') saveGradeAndGoCode();
+  if(active.id==='step-profile'){
+    var nameEdit = document.getElementById('prof-name-edit');
+    if(nameEdit && nameEdit.style.display!=='none') saveName();
+  }
 });
 
 </script>
