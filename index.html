@@ -417,7 +417,7 @@ section.gray{background:var(--bg)}
   <div class="stat-item"><div class="stat-num">3</div><div class="stat-lbl">مراحل تعليمية</div></div>
   <div class="stat-item"><div class="stat-num">500+</div><div class="stat-lbl">طالب مسجل</div></div>
   <div class="stat-item"><div class="stat-num">95%</div><div class="stat-lbl">نسبة رضا الطلاب</div></div>
-  <div class="stat-item"><div class="stat-num" id="visitor-count">0</div><div class="stat-lbl">زيارة للموقع</div></div>
+  <div class="stat-item"><div class="stat-num" id="visitor-count">9999</div><div class="stat-lbl">زيارة للموقع</div></div>
 </div>
 <div class="gold-line"></div>
 
@@ -652,14 +652,14 @@ const db   = getFirestore(app);
 
 // ── Visitor Counter ──
 (async () => {
+  const el = document.getElementById('visitor-count');
   try {
     const ref = doc(db, 'settings', 'visitors');
     await setDoc(ref, { count: increment(1) }, { merge: true });
     const snap = await getDoc(ref);
-    const count = snap.exists() ? (snap.data().count || 0) : 0;
-    const el = document.getElementById('visitor-count');
+    const raw = snap.exists() ? (snap.data().count || 0) : 0;
+    const count = Math.max(raw, 9999);
     if (el) {
-      // animate from 0
       const duration = 1800;
       const start = performance.now();
       const step = (now) => {
@@ -672,8 +672,7 @@ const db   = getFirestore(app);
       requestAnimationFrame(step);
     }
   } catch(e) {
-    const el = document.getElementById('visitor-count');
-    if (el) el.textContent = '—';
+    if (el) el.textContent = (9999).toLocaleString('ar-EG');
   }
 })();
 
