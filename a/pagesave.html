@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>  العناية بالموقع</title>
+<title> العناية بالموقع</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -749,6 +749,17 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <div id="ov-activity" style="padding:8px;max-height:180px;overflow-y:auto">
               <div style="text-align:center;font-size:11px;color:var(--muted);padding:12px">جاري التحميل...</div>
             </div>
+          </div>
+        </div>
+
+        <!-- آخر نشاطات الطلاب -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-head" style="padding:10px 14px">
+            <h3 style="font-size:12px">📡 آخر نشاطات الطلاب</h3>
+            <button onclick="buildOverviewWidgets()" style="padding:3px 9px;border:1px solid var(--b2);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px;font-weight:700">تحديث</button>
+          </div>
+          <div id="ov-student-feed" style="padding:8px;max-height:220px;overflow-y:auto">
+            <div style="text-align:center;font-size:11px;color:var(--muted);padding:12px">جاري التحميل...</div>
           </div>
         </div>
 
@@ -1570,28 +1581,6 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <button class="btn primary" style="width:100%;justify-content:center;background:linear-gradient(135deg,rgba(128,0,255,0.85),rgba(74,127,212,0.85));box-shadow:0 4px 12px rgba(128,0,255,0.2)" onclick="saveCmCredentials()">
               <svg><use href="#ic-check"/></svg>حفظ بيانات دخول المحتوى
             </button>
-          </div>
-
-          <!-- ══ DEVICE SETTINGS CARD ══ -->
-          <div class="card">
-            <h4>📱 إعدادات الأجهزة</h4>
-            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">تحكم في عدد الأجهزة المسموح بها لكل طالب افتراضياً. الطلاب اللي عندهم حد مخصص مش هيتأثروا.</p>
-            <div class="ff">
-              <label>الحد الافتراضي لكل طالب (أجهزة)</label>
-              <div style="display:flex;gap:8px;align-items:center">
-                <input type="number" id="default-max-dev" min="1" max="20" placeholder="3" style="flex:1"/>
-                <button class="btn primary" onclick="saveDefaultMaxDevices()" style="white-space:nowrap;flex-shrink:0;padding:10px 14px">
-                  <svg><use href="#ic-check"/></svg>حفظ
-                </button>
-              </div>
-            </div>
-            <div style="margin-top:10px;padding:10px 12px;background:rgba(255,77,109,0.05);border:1px solid rgba(255,77,109,0.2);border-radius:9px">
-              <div style="font-size:12px;font-weight:700;margin-bottom:6px;color:var(--err)">⛔ طرد جماعي لكل الطلاب</div>
-              <p style="font-size:11px;color:var(--muted);margin-bottom:8px">هتطرد كل الأجهزة المتصلة لكل الطلاب في نفس الوقت. استخدم بحذر!</p>
-              <button onclick="kickAllSessions()" style="width:100%;padding:9px;border:1px solid rgba(255,77,109,0.4);border-radius:8px;background:rgba(255,77,109,0.08);color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700">
-                ⛔ طرد كل الأجهزة من كل الطلاب
-              </button>
-            </div>
           </div>
 
           <div class="card">
@@ -2665,12 +2654,6 @@ window.wloadSettings = async ()=>{
     }
     // Load content-manager credentials display
     await window._loadCmCredentials?.();
-    // Load default max devices setting
-    const devSettings = await db.collection('settings').doc('devices').get();
-    if(devSettings.exists){
-      const el = document.getElementById('default-max-dev');
-      if(el) el.value = devSettings.data().defaultMax || 3;
-    }
   }catch(e){ console.warn('settings:',e.message); }
 };
 
@@ -2711,55 +2694,6 @@ window.savePaySettings = async ()=>{
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     toast('تم حفظ إعدادات الدفع ✓','ok');
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-};
-
-// ── SAVE DEFAULT MAX DEVICES ──
-window.saveDefaultMaxDevices = async ()=>{
-  const val = parseInt(document.getElementById('default-max-dev').value);
-  if(!val||val<1){ toast('ادخل رقم صحيح (1 أو أكتر)','err'); return; }
-  try{
-    await db.collection('settings').doc('devices').set({
-      defaultMax: val,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    toast('✅ تم حفظ الحد الافتراضي: '+val+' أجهزة','ok');
-    logActivity('⚙️','تغيير الحد الافتراضي للأجهزة','→ '+val);
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-};
-
-// ── KICK ALL SESSIONS (global) ──
-window.kickAllSessions = async ()=>{
-  if(!confirm('ده هيطرد كل الأجهزة المتصلة لكل الطلاب في نفس الوقت! متأكد تماماً؟')) return;
-  if(!confirm('تأكيد تاني: كل الطلاب هيتسجلوا خروج فوراً من كل الأجهزة. استمر؟')) return;
-  try{
-    toast('⏳ جاري طرد كل الأجهزة...','ok');
-    // Get all users
-    const usersSnap = await db.collection('users').get();
-    let kicked = 0;
-    const batch = db.batch();
-    const batchSize = 400;
-    let batchCount = 0;
-    for(const userDoc of usersSnap.docs){
-      const sessSnap = await db.collection('users').doc(userDoc.id).collection('sessions')
-        .where('status','==','active').get();
-      for(const s of sessSnap.docs){
-        batch.update(s.ref, {
-          status: 'kicked',
-          kickedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          kickedBy: 'admin_global'
-        });
-        kicked++;
-        batchCount++;
-        if(batchCount>=batchSize){
-          await batch.commit();
-          batchCount=0;
-        }
-      }
-    }
-    if(batchCount>0) await batch.commit();
-    toast(`✅ تم طرد ${kicked} جهاز من كل الطلاب`,'ok');
-    logActivity('⛔','طرد جماعي كل الأجهزة',kicked+' جهاز');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
@@ -3014,31 +2948,23 @@ window.viewUser = async (id)=>{
     const stageMap={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
     const statusLabel = d.blocked ? '⛔ محظور' : d.subscriptionActive ? '✅ مشترك' : '⏳ غير مشترك';
 
-    // Load sessions
-    const devSnap = await db.collection('users').doc(id).collection('sessions').get();
+    // Load devices
+    const devSnap = await db.collection('users').doc(id).collection('devices').get();
     const devices = devSnap.docs.map(dd=>({id:dd.id,...dd.data()}));
-    const activeDev = devices.filter(d=>d.status==='active');
     const maxDev = d.maxDevices||3;
 
-    const devHtml = activeDev.length===0
-      ? '<div style="color:var(--muted);font-size:12px;text-align:center;padding:8px">لا يوجد أجهزة متصلة حالياً</div>'
-      : activeDev.map((dv,i)=>{
-          const lastSeen = dv.lastSeen?.toDate?.() || (dv.lastSeen ? new Date(dv.lastSeen) : null);
-          const timeAgo = lastSeen ? (() => {
-            const diff = Math.floor((new Date()-lastSeen)/60000);
-            return diff<1?'الآن':diff<60?diff+' دقيقة':Math.floor(diff/60)+' ساعة';
-          })() : '—';
-          const devIcon = dv.deviceInfo?.includes('Android')||dv.deviceInfo?.includes('iOS')?'📱':
-                          dv.deviceInfo?.includes('Windows')||dv.deviceInfo?.includes('Mac')?'💻':'📱';
-          return `<div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(74,127,212,0.05);border:1px solid var(--b2);border-radius:8px;margin-bottom:6px;font-size:11px">
-            <span style="font-size:16px">${devIcon}</span>
-            <div style="flex:1;min-width:0">
-              <div style="font-weight:700;color:var(--text)">${dv.deviceInfo||'جهاز '+(i+1)}</div>
-              <div style="color:var(--muted);margin-top:2px">آخر نشاط: ${timeAgo}</div>
-            </div>
-            <button onclick="removeDevice('${id}','${dv.id}')" style="padding:4px 8px;border:1px solid var(--err);border-radius:6px;background:rgba(255,77,109,0.07);color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;flex-shrink:0">⚡ طرد</button>
-          </div>`;
-        }).join('');
+    const devHtml = devices.length===0
+      ? '<div style="color:var(--muted);font-size:12px;text-align:center;padding:8px">لا يوجد أجهزة مسجلة</div>'
+      : devices.map((dv,i)=>`
+        <div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(74,127,212,0.05);border:1px solid var(--b2);border-radius:8px;margin-bottom:6px;font-size:11px">
+          <span style="font-size:16px">📱</span>
+          <div style="flex:1;min-width:0">
+            <div style="font-weight:700;color:var(--text)">جهاز ${i+1}</div>
+            <div style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(dv.userAgent||'—').slice(0,60)}</div>
+            <div style="color:var(--muted);margin-top:2px">آخر دخول: ${dv.lastSeen?new Date(dv.lastSeen).toLocaleString('ar-EG'):'—'}</div>
+          </div>
+          <button onclick="removeDevice('${id}','${dv.id}')" style="padding:4px 8px;border:1px solid var(--err);border-radius:6px;background:transparent;color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;flex-shrink:0">حذف</button>
+        </div>`).join('');
 
     document.getElementById('studentModalContent').innerHTML = `
       <div style="display:flex;align-items:center;gap:12px;padding:14px;background:rgba(74,127,212,0.06);border:1px solid var(--b2);border-radius:12px;margin-bottom:12px">
@@ -3114,19 +3040,18 @@ window.viewUser = async (id)=>{
       <div style="margin-bottom:12px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
           <div style="font-size:13px;font-weight:800">
-            📱 الأجهزة المتصلة 
-            <span style="color:${activeDev.length>=maxDev?'var(--err)':'var(--ok)'};font-size:12px">${activeDev.length}/${maxDev}</span>
+            📱 الأجهزة المسجلة 
+            <span style="color:${devices.length>=maxDev?'var(--err)':'var(--ok)'};font-size:12px">${devices.length}/${maxDev}</span>
           </div>
           <div style="display:flex;gap:6px;align-items:center">
             <select id="maxDevSel" style="padding:4px 8px;background:rgba(8,13,28,0.8);border:1px solid var(--b2);border-radius:6px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px">
-              <option value="1" ${maxDev===1?'selected':''}>1 جهاز فقط</option>
-              <option value="2" ${maxDev===2?'selected':''}>2 أجهزة</option>
-              <option value="3" ${maxDev===3?'selected':''}>3 أجهزة</option>
-              <option value="5" ${maxDev===5?'selected':''}>5 أجهزة</option>
-              <option value="10" ${maxDev===10?'selected':''}>10 أجهزة</option>
+              <option value="1" ${maxDev===1?'selected':''}>حد 1 جهاز</option>
+              <option value="2" ${maxDev===2?'selected':''}>حد 2 جهاز</option>
+              <option value="3" ${maxDev===3?'selected':''}>حد 3 أجهزة</option>
+              <option value="5" ${maxDev===5?'selected':''}>حد 5 أجهزة</option>
             </select>
-            <button onclick="setMaxDevices('${id}',document.getElementById('maxDevSel').value)" style="padding:4px 10px;border:1px solid var(--blue);border-radius:6px;background:transparent;color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">حفظ</button>
-            <button onclick="resetDevices('${id}')" style="padding:4px 10px;border:1px solid var(--err);border-radius:6px;background:rgba(255,77,109,0.08);color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">⛔ طرد الكل</button>
+            <button onclick="setMaxDevices('${id}')" style="padding:4px 10px;border:1px solid var(--blue);border-radius:6px;background:transparent;color:var(--blue);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">حفظ</button>
+            <button onclick="resetDevices('${id}')" style="padding:4px 10px;border:1px solid var(--err);border-radius:6px;background:rgba(255,77,109,0.08);color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">🔄 Reset الكل</button>
           </div>
         </div>
         ${devHtml}
@@ -3151,43 +3076,31 @@ function tr(label,val){
   return '<tr style="border-bottom:1px solid var(--b2)"><td style="padding:8px 4px;color:var(--muted);font-weight:600;width:38%">'+label+'</td><td style="padding:8px 4px">'+val+'</td></tr>';
 }
 
-// ── DEVICE / SESSION MANAGEMENT (unified — uses 'sessions' collection) ──
+// ── DEVICE MANAGEMENT ──
 window.resetDevices = async (userId) => {
-  if(!confirm('هتطرد كل الأجهزة المتصلة — الطالب هيتسجل خروج من كل الأجهزة. متأكد؟')) return;
+  if(!confirm('هتمسح كل الأجهزة المسجلة — الطالب هيقدر يدخل من جهاز جديد. متأكد؟')) return;
   try{
-    const snap = await db.collection('users').doc(userId).collection('sessions').get();
-    const updates = snap.docs.map(d=>d.ref.update({
-      status:'kicked',
-      kickedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      kickedBy:'admin'
-    }));
-    await Promise.all(updates);
-    toast('تم طرد كل الأجهزة ✓ — الطالب هيتسجل خروج تلقائياً','ok');
-    logActivity('📱','طرد كل أجهزة طالب', userId);
+    const snap = await db.collection('users').doc(userId).collection('devices').get();
+    const deletes = snap.docs.map(d=>db.collection('users').doc(userId,'devices',d.id).delete());
+    await Promise.all(deletes);
+    toast('تم مسح الأجهزة ✓ — الطالب يقدر يدخل من جديد','ok');
+    viewUser(userId); // refresh modal
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.removeDevice = async (userId, deviceDocId) => {
+  try{
+    await db.collection('users').doc(userId,'devices',deviceDocId).delete();
+    toast('تم حذف الجهاز ✓','ok');
     viewUser(userId);
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
-window.removeDevice = async (userId, sessionDocId) => {
-  try{
-    await db.collection('users').doc(userId).collection('sessions').doc(sessionDocId).update({
-      status:'kicked',
-      kickedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      kickedBy:'admin'
-    });
-    toast('تم طرد الجهاز ✓','ok');
-    logActivity('📱','طرد جهاز طالب', userId);
-    viewUser(userId);
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-};
-
-window.setMaxDevices = async (userId, valOverride) => {
-  const val = parseInt(valOverride || document.getElementById('maxDevSel')?.value || 3);
-  if(!val||val<1){ toast('رقم غير صحيح','err'); return; }
+window.setMaxDevices = async (userId) => {
+  const val = parseInt(document.getElementById('maxDevSel').value);
   try{
     await db.collection('users').doc(userId).update({maxDevices:val});
     toast('تم تحديد الحد: '+val+' أجهزة ✓','ok');
-    logActivity('⚙️','تعديل حد الأجهزة', 'مستخدم '+userId+' → '+val);
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
@@ -3308,12 +3221,14 @@ window.copyBCMsg = ()=>{
   toast('تم نسخ الرسالة ✓','ok');
 };
 
-let _bi=0, _bl=[], _bm='';
+let _bi=0, _bl=[], _bm='', _bSending=false;
 window.startBC = ()=>{
+  if(_bSending){ toast('الإرسال شغال — انتظر','err'); return; }
   const t = document.getElementById('bc-target').value;
   const gradeFilter = document.getElementById('bc-grade')?.value||'';
   const u = window._users||[];
   _bm = document.getElementById('bc-msg').value;
+  if(!_bm.trim()){ toast('اكتب رسالة أولاً','err'); return; }
   if(t==='all') _bl=u;
   else if(t==='active') _bl=u.filter(x=>x.subscriptionActive&&!x.blocked);
   else if(t==='inactive') _bl=u.filter(x=>!x.subscriptionActive&&!x.blocked);
@@ -3328,13 +3243,15 @@ window.startBC = ()=>{
   // Filter out users with no phone
   _bl = _bl.filter(x=>x.phone&&x.phone.replace(/\D/g,'').length>=10);
   if(!_bl.length){ toast('لا يوجد طلاب بأرقام هواتف','err'); return; }
-  _bi=0;
+  if(!confirm(`هتبعت لـ ${_bl.length} طالب — متأكد؟`)){ return; }
+  _bi=0; _bSending=true;
   document.getElementById('bcProgressCard').style.display='block';
   sendNext();
 };
 
 function sendNext(){
   if(_bi>=_bl.length){
+    _bSending=false;
     toast('تم الإرسال لكل الطلاب ✓','ok');
     document.getElementById('bcCurrentUser').textContent = '✅ اكتمل الإرسال!';
     return;
@@ -3356,7 +3273,10 @@ function sendNext(){
   document.getElementById('bcCurrentUser').textContent = '📤 جاري الإرسال لـ: '+s.name+' ('+s.phone+')';
   toast('واتساب لـ '+s.name+' ('+_bi+'/'+_bl.length+')','info');
   if(_bi<_bl.length){
-    setTimeout(()=>{ if(confirm('أرسلت الرسالة لـ '+s.name+'؟\nاضغط موافق للتالي')) sendNext(); else toast('توقف الإرسال','err'); },400);
+    setTimeout(()=>{
+      if(confirm('أرسلت الرسالة لـ '+s.name+'؟\nاضغط موافق للتالي')) sendNext();
+      else { _bSending=false; toast('توقف الإرسال','err'); }
+    },400);
   }
 }
 
@@ -5329,12 +5249,11 @@ window.openStudentDetail = async (id)=>{
   try{
     const [ud, devSnap] = await Promise.all([
       db.collection('users').doc(id).get(),
-      db.collection('users').doc(id).collection('sessions').get()
+      db.collection('users').doc(id).collection('devices').get()
     ]);
     if(!ud.exists){ content.innerHTML='<div class="empty"><p>الطالب مش موجود</p></div>'; return; }
     const d = ud.data();
-    const allSessions = devSnap.docs.map(dd=>({id:dd.id,...dd.data()}));
-    const devices = allSessions.filter(s=>s.status==='active');
+    const devices = devSnap.docs.map(dd=>({id:dd.id,...dd.data()}));
     const stageMap={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي',univ:'جامعة'};
     const maxDev = d.maxDevices||3;
     const now = new Date();
@@ -5499,28 +5418,25 @@ window.openStudentDetail = async (id)=>{
 
       <!-- Devices card -->
       <div class="card">
-        <h4>📱 الأجهزة المتصلة <span style="color:${devices.length>=maxDev?'var(--err)':'var(--ok)'};font-size:11px">${devices.length}/${maxDev}</span></h4>
+        <h4>📱 الأجهزة <span style="color:${devices.length>=maxDev?'var(--err)':'var(--ok)'};font-size:11px">${devices.length}/${maxDev}</span></h4>
         <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap">
           <select id="sd-maxdev" style="padding:5px 8px;background:var(--inp);border:1px solid var(--b2);border-radius:7px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px">
-            ${[1,2,3,5,10].map(n=>`<option value="${n}" ${maxDev===n?'selected':''}>${n} ${n===1?'جهاز':'أجهزة'}</option>`).join('')}
+            ${[1,2,3,5].map(n=>`<option value="${n}" ${maxDev===n?'selected':''}>${n} أجهزة</option>`).join('')}
           </select>
-          <button onclick="setMaxDevices('${id}',document.getElementById('sd-maxdev').value)" class="btn ghost sm" style="font-size:11px">حفظ الحد</button>
-          <button onclick="resetDevices('${id}')" style="padding:5px 10px;border:1px solid var(--err);border-radius:7px;background:rgba(255,77,109,0.08);color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">⛔ طرد الكل</button>
+          <button onclick="setMaxDevices('${id}',document.getElementById('sd-maxdev').value)" class="btn ghost sm" style="font-size:11px">تحديث</button>
+          <button onclick="resetDevices('${id}')" style="padding:5px 10px;border:1px solid var(--err);border-radius:7px;background:rgba(255,77,109,0.08);color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700">🔄 Reset الكل</button>
         </div>
-        ${devices.length===0?'<div style="color:var(--muted);font-size:12px;text-align:center;padding:12px">لا يوجد أجهزة متصلة حالياً</div>':
-          devices.map((dv,i)=>{
-            const lastSeen = dv.lastSeen?.toDate?.() || (dv.lastSeen ? new Date(dv.lastSeen) : null);
-            const timeAgo = lastSeen ? (() => { const diff=Math.floor((new Date()-lastSeen)/60000); return diff<1?'الآن':diff<60?diff+' د':Math.floor(diff/60)+' س'; })() : '—';
-            const devIcon = dv.deviceInfo?.includes('Android')||dv.deviceInfo?.includes('iOS')?'📱':dv.deviceInfo?.includes('Windows')||dv.deviceInfo?.includes('Mac')?'💻':'📱';
-            return `<div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(74,127,212,0.04);border:1px solid var(--b2);border-radius:8px;margin-bottom:6px;font-size:11px">
-              <span style="font-size:16px">${devIcon}</span>
-              <div style="flex:1;min-width:0">
-                <div style="font-weight:700">${dv.deviceInfo||'جهاز '+(i+1)}</div>
-                <div style="color:var(--muted);margin-top:2px">آخر نشاط: ${timeAgo}</div>
-              </div>
-              <button onclick="removeDevice('${id}','${dv.id}')" style="padding:3px 8px;border:1px solid var(--err);border-radius:5px;background:rgba(255,77,109,0.07);color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px;font-weight:700">⚡ طرد</button>
-            </div>`;
-          }).join('')}
+        ${devices.length===0?'<div style="color:var(--muted);font-size:12px;text-align:center;padding:12px">لا يوجد أجهزة</div>':
+          devices.map((dv,i)=>`
+          <div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(74,127,212,0.04);border:1px solid var(--b2);border-radius:8px;margin-bottom:6px;font-size:11px">
+            <span style="font-size:16px">📱</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-weight:700">جهاز ${i+1}</div>
+              <div style="color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(dv.userAgent||'—').slice(0,55)}</div>
+              <div style="color:var(--muted);margin-top:2px">آخر دخول: ${dv.lastSeen?new Date(dv.lastSeen).toLocaleString('ar-EG'):'—'}</div>
+            </div>
+            <button onclick="removeDevice('${id}','${dv.id}')" style="padding:3px 8px;border:1px solid var(--err);border-radius:5px;background:transparent;color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:10px">حذف</button>
+          </div>`).join('')}
       </div>
 
       <!-- ══ PERFORMANCE CARD ══ -->
@@ -6038,6 +5954,16 @@ window.saveStudentNote = async (id)=>{
     }
     toast('✅ تم حفظ الملاحظة وإرسالها للطالب','ok');
     logActivity('📌','ملاحظة على طالب', note.slice(0,40));
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// Override setMaxDevices to support both contexts
+const _origSetMaxDevices = window.setMaxDevices;
+window.setMaxDevices = async (userId, valOverride)=>{
+  const val = parseInt(valOverride||document.getElementById('maxDevSel')?.value||3);
+  try{
+    await db.collection('users').doc(userId).update({maxDevices:val});
+    toast('تم تحديد الحد: '+val+' أجهزة ✓','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
@@ -7328,6 +7254,44 @@ async function buildOverviewWidgets(){
           </div>
         </div>`).join('');
     }
+  }
+
+  // ── آخر نشاطات الطلاب (تسليمات + امتحانات) ──
+  const feedEl = document.getElementById('ov-student-feed');
+  if(feedEl && window._fbReady){
+    try{
+      const [hwSnap, exSnap] = await Promise.all([
+        db.collection('homeworkSubmissions').orderBy('submittedAt','desc').limit(6).get(),
+        db.collection('examSubmissions').orderBy('submittedAt','desc').limit(6).get()
+      ]);
+      const hwItems = hwSnap.docs.map(d=>({...d.data(), _type:'hw', _id:d.id}));
+      const exItems = exSnap.docs.map(d=>({...d.data(), _type:'exam', _id:d.id}));
+      const combined = [...hwItems,...exItems]
+        .sort((a,b)=>(b.submittedAt?.toDate?.()?.getTime()||0)-(a.submittedAt?.toDate?.()?.getTime()||0))
+        .slice(0,8);
+      if(!combined.length){
+        feedEl.innerHTML='<div style="text-align:center;font-size:11px;color:var(--muted);padding:10px">لا يوجد نشاط</div>';
+      } else {
+        feedEl.innerHTML = combined.map(s=>{
+          const isHw = s._type==='hw';
+          const ico  = isHw?'📬':'📝';
+          const clr  = isHw?'var(--purple)':'var(--gold)';
+          const lbl  = isHw?'واجب':'امتحان';
+          const score= (!isHw && s.finalScore!=null) ? ` · <span style="color:var(--ok);font-weight:800">${s.finalScore}/${s.totalScore||100}</span>` : '';
+          const time = s.submittedAt?.toDate?.()?.toLocaleString('ar-EG',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'})||'—';
+          return `<div style="display:flex;gap:8px;padding:7px 4px;border-bottom:1px solid var(--b2);align-items:flex-start">
+            <span style="font-size:16px;flex-shrink:0">${ico}</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                <span style="color:${clr};font-size:10px;font-weight:800;border:1px solid ${clr};border-radius:4px;padding:0 4px;margin-left:4px">${lbl}</span>
+                ${s.studentName||s.userName||'—'}${score}
+              </div>
+              <div style="font-size:10px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.examTitle||s.hwTitle||'—'} · ${time}</div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }catch(e){ feedEl.innerHTML='<div style="text-align:center;font-size:11px;color:var(--muted);padding:10px">—</div>'; }
   }
 }
 
@@ -8796,7 +8760,12 @@ function dsCalcScore(sub){
   sub.answers.forEach((ans,i)=>{
     const q=sub.questions?.[i]||{};
     const t=q.type||ans.type||'mcq';
-    if(t==='mcq'||t==='truefalse') ans.earnedPoints = ans.answer===q.correctAnswer?(q.points||1):0;
+    if(t==='mcq'||t==='truefalse'){
+      // normalize: both to string for safe comparison (true→"true", 0→"0")
+      const userAns = String(ans.answer??'').toLowerCase().trim();
+      const corrAns = String(q.correctAnswer??'').toLowerCase().trim();
+      ans.earnedPoints = (userAns===corrAns && userAns!=='') ? (q.points||1) : 0;
+    }
   });
   const earned=sub.answers.reduce((s,a)=>s+(a.earnedPoints||0),0);
   const total=sub.questions?.reduce((s,q)=>s+(q.points||1),0)||sub.totalScore||100;
@@ -9028,15 +8997,40 @@ window.exportHwCsv = ()=>{
   toast('تم التصدير ✓','ok');
 };
 
-// ── load hw count on startup for sidebar badge ──
-(async ()=>{
+// ── Real-time listener للـ homework submissions (بدل polling) ──
+(function startHwListener(){
   try{
-    const snap = await db.collection('homeworkSubmissions').where('reviewed','==',false).get();
-    const cnt = snap.size;
-    const b1 = document.getElementById('hwSbBadge');
-    const b2 = document.getElementById('hwPendingBadge');
-    if(b1){ b1.textContent=cnt; b1.style.display=cnt>0?'flex':'none'; }
-    if(b2){ b2.textContent=cnt; b2.style.display=cnt>0?'inline-flex':'none'; }
+    db.collection('homeworkSubmissions').where('reviewed','==',false)
+      .onSnapshot(snap=>{
+        const cnt = snap.size;
+        const b1 = document.getElementById('hwSbBadge');
+        const b2 = document.getElementById('hwPendingBadge');
+        if(b1){ b1.textContent=cnt; b1.style.display=cnt>0?'flex':'none'; }
+        if(b2){ b2.textContent=cnt; b2.style.display=cnt>0?'inline-flex':'none'; }
+        // إشعار صوتي خفيف لو جاء تسليم جديد
+        if(cnt>0 && window._lastHwCount!==undefined && cnt>window._lastHwCount){
+          toast(`📬 واجب جديد سُلّم! (${cnt} في الانتظار)`,'ok');
+        }
+        window._lastHwCount = cnt;
+      }, _=>{}
+    );
+  }catch(_){}
+})();
+
+// ── Real-time listener للـ exam submissions غير المصححة ──
+(function startExamListener(){
+  try{
+    db.collection('examSubmissions').where('finalScore','==',null)
+      .onSnapshot(snap=>{
+        const cnt = snap.size;
+        const eb = document.getElementById('examSbBadge');
+        if(eb){ eb.textContent=cnt; eb.style.display=cnt>0?'flex':'none'; }
+        if(cnt>0 && window._lastExamCount!==undefined && cnt>window._lastExamCount){
+          toast(`📝 امتحان جديد يحتاج تصحيح! (${cnt})`,'ok');
+        }
+        window._lastExamCount = cnt;
+      }, _=>{}
+    );
   }catch(_){}
 })();
 
