@@ -141,28 +141,37 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;
   color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
 .hero-bar{background:linear-gradient(135deg,var(--navy),rgba(26,50,112,0.6));
   border-bottom:1px solid var(--b1);padding:clamp(14px,4vw,20px) clamp(14px,4vw,24px);
-  display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.hero-bar h1{font-size:clamp(15px,4vw,20px);font-weight:900}
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:relative;overflow:hidden}
+.hero-bar::before{content:'';position:absolute;top:-60%;left:-10%;width:280px;height:280px;
+  background:radial-gradient(circle,rgba(201,168,76,0.16),transparent 70%);pointer-events:none}
+.hero-bar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.5}
+.hero-bar>*{position:relative;z-index:1}
+.hero-bar h1{font-size:clamp(15px,4vw,20px);font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero-bar p{font-size:clamp(11px,2.5vw,13px);color:rgba(255,255,255,.65);margin-top:3px}
 .hero-stats{display:flex;gap:clamp(14px,4vw,28px);margin-right:auto}
 .hs{text-align:center}
-.hs-v{font-size:clamp(18px,4vw,24px);font-weight:900;color:var(--gold2)}
+.hs-v{font-size:clamp(18px,4vw,24px);font-weight:900;color:var(--gold2);text-shadow:0 0 18px rgba(201,168,76,0.35)}
 .hs-l{font-size:10px;color:rgba(255,255,255,.55);font-weight:600}
 .section{padding:clamp(14px,4vw,24px) clamp(14px,4vw,24px)}
 .section-head{display:flex;align-items:center;gap:10px;margin-bottom:clamp(14px,3vw,18px)}
-.sh-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sh-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  border:1px solid transparent;transition:transform .2s}
 .sh-icon svg{width:17px;height:17px}
-.sh-icon.green{background:rgba(0,214,143,0.12);color:var(--ok)}
-.sh-icon.gold{background:rgba(201,168,76,0.12);color:var(--gold)}
-.sh-icon.blue{background:rgba(74,127,212,0.12);color:var(--blue)}
+.sh-icon.green{background:rgba(0,214,143,0.12);color:var(--ok);border-color:rgba(0,214,143,0.2)}
+.sh-icon.gold{background:rgba(201,168,76,0.12);color:var(--gold);border-color:rgba(201,168,76,0.25)}
+.sh-icon.blue{background:rgba(74,127,212,0.12);color:var(--blue);border-color:rgba(74,127,212,0.2)}
 .section-head h2{font-size:clamp(15px,3.5vw,17px);font-weight:900}
 .section-head p{font-size:11px;color:var(--muted);margin-top:2px}
 .sdiv{height:1px;background:var(--b2);margin:0 clamp(14px,4vw,24px)}
 .grades-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(145px,28vw,190px),1fr));gap:clamp(10px,2.5vw,14px)}
-.grade-card{background:var(--s2);border:1px solid var(--b2);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s;position:relative}
-.grade-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,0.4);border-color:var(--b1)}
+.grade-card{background:linear-gradient(180deg,var(--s2),rgba(10,16,34,0.9));border:1px solid var(--b2);
+  border-radius:14px;overflow:hidden;cursor:pointer;transition:all .25s;position:relative}
+.grade-card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,0.45),0 0 0 1px rgba(201,168,76,0.25);border-color:var(--gold)}
 .gc-img{width:100%;height:clamp(90px,18vw,120px);object-fit:cover;display:block;background:linear-gradient(135deg,var(--navy),var(--blue))}
-.gc-badge{position:absolute;top:7px;right:7px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700}
+.gc-badge{position:absolute;top:7px;right:7px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;
+  backdrop-filter:blur(6px);box-shadow:0 2px 8px rgba(0,0,0,0.3)}
 .gc-badge.mine{background:rgba(0,214,143,0.85);color:#000}
 .gc-body{padding:clamp(10px,2.5vw,13px)}
 .gc-title{font-size:clamp(12px,3vw,13px);font-weight:800;margin-bottom:3px}
@@ -887,7 +896,7 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, collection, setDoc, addDoc, updateDoc, increment, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, getDocs, collection, setDoc, addDoc, updateDoc, increment, serverTimestamp, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const app  = initializeApp({apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",authDomain:"plusinmath-web.firebaseapp.com",projectId:"plusinmath-web",storageBucket:"plusinmath-web.firebasestorage.app",messagingSenderId:"444492731461",appId:"1:444492731461:web:14529f08d9ccf047dabf2c"});
 const auth = getAuth(app);
@@ -922,7 +931,7 @@ onAuthStateChanged(auth,async(user)=>{
   window._user=user;
   try{
     const ud=await getDoc(doc(db,'users',user.uid));
-    if(!ud.exists()||!ud.data().subscriptionActive){window.location.href='plus-math-auth.html';return;}
+    if(!ud.exists()||ud.data().blocked||!ud.data().subscriptionActive){window.location.href='plus-math-auth.html';return;}
     _userData=ud.data();
     if(_userData.expiresAt){
       const exp=_userData.expiresAt.toDate?_userData.expiresAt.toDate():new Date(_userData.expiresAt);
@@ -945,6 +954,17 @@ onAuthStateChanged(auth,async(user)=>{
     document.getElementById('statGrade').textContent=_userData.grade||'—';
     document.getElementById('statStage').textContent={primary:'ابتدائي',prep:'إعدادي',sec:'ثانوي'}[_userData.stage]||'—';
     window._userData = _userData;
+    // ── مراقبة حظر/إلغاء الاشتراك لحظياً — لو الأدمن حظر أو ألغى الاشتراك وهو داخل، يتم طرده فوراً ──
+    onSnapshot(doc(db,'users',user.uid),(liveSnap)=>{
+      if(!liveSnap.exists()){
+        signOut(auth).finally(()=>{ window.location.href='plus-math-auth.html'; });
+        return;
+      }
+      const liveData = liveSnap.data();
+      if(liveData.blocked || !liveData.subscriptionActive){
+        signOut(auth).finally(()=>{ window.location.href='plus-math-auth.html'; });
+      }
+    });
     // ── آخر وقت دخول ──
     updateDoc(doc(db,'users',user.uid),{
       lastSeen: serverTimestamp(),

@@ -923,6 +923,23 @@ select { appearance: none; }
       </button>
     </div>
 
+    <!-- ══ STEP: BLOCKED ══ -->
+    <div class="step" id="step-blocked">
+      <div style="text-align:center;padding:20px 10px">
+        <div style="width:64px;height:64px;border-radius:18px;background:rgba(255,77,109,0.1);border:1.5px solid rgba(255,77,109,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ff4d6d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+        </div>
+        <h3 style="font-size:16px;font-weight:900;margin-bottom:8px">الحساب محظور</h3>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.9;margin-bottom:18px">تم إيقاف الوصول لهذا الحساب من إدارة المنصة.<br>لو حصل خطأ تواصل مع الأستاذ مهدي على واتساب.</p>
+        <button class="btn-wa" onclick="openWaRegister()" style="margin-bottom:10px">
+          <svg><use href="#i-wa"/></svg>تواصل مع الأستاذ
+        </button>
+        <button class="btn ghost" onclick="doSignOut()">
+          <span class="btn-text">تسجيل الخروج</span>
+        </button>
+      </div>
+    </div>
+
     <!-- ══ STEP: PROFILE ══ -->
     <div class="step" id="step-profile">
       <!-- Avatar + name -->
@@ -1135,9 +1152,9 @@ function showStep(id){
     if(!el) return;
     el.className='sp-step '+(states[i]||'');
   });
-  // Hide progress on success/onboard
+  // Hide progress on success/onboard/blocked
   const prog = document.getElementById('stepsProgress');
-  if(prog) prog.style.display = (id==='step-onboard') ? 'none' : 'flex';
+  if(prog) prog.style.display = (id==='step-onboard'||id==='step-blocked') ? 'none' : 'flex';
 }
 
 // Remember me — save/load login ID
@@ -1261,9 +1278,7 @@ function showPaymentStep(gradeKey, gradeName){
         +'<button onclick="cpPayNum(\''+m.num+'\')" style="padding:4px 10px;border:1px solid var(--border2);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-family:\'Tajawal\',sans-serif;font-size:11px">نسخ</button></div>';
     }).join('') : '<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px">طرق الدفع هتتحدد قريباً — تواصل مع الأستاذ</div>';
   }).catch(function(){});
-  db.collection('settings').doc('subscription').get().then(function(sd){
-    if(sd.exists){ var pv=document.getElementById('payment-price-val'); if(pv) pv.innerHTML=(sd.data().price||'—')+'<span style="font-size:12px;color:var(--muted)"> جنيه</span>'; }
-  }).catch(function(){});
+  applyPriceForGrade(gradeKey, 'payment-price-val');
   showStep('step-payment');
 }
 
@@ -1316,9 +1331,7 @@ function showExpiredStep(gradeName, gradeKey){
         +'<button onclick="cpRenewNum(\''+m.num+'\')" style="padding:4px 10px;border:1px solid var(--border2);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-family:\'Tajawal\',sans-serif;font-size:11px">نسخ</button></div>';
     }).join('');
   }).catch(function(){});
-  db.collection('settings').doc('subscription').get().then(function(sd){
-    if(sd.exists){ var pv=document.getElementById('renew-price-val'); if(pv) pv.innerHTML=(sd.data().price||'—')+'<span style="font-size:12px;color:var(--muted)"> جنيه</span>'; }
-  }).catch(function(){});
+  applyPriceForGrade(gradeKey, 'renew-price-val');
   showStep('step-renew');
 }
 
@@ -1593,6 +1606,7 @@ async function sendTicket(){
 // ── SESSION MANAGEMENT (max 3 devices) ──
 var MAX_DEVICES = 3;
 var _sessionListener = null;
+var _blockListener = null;
 
 // جمع معلومات عن المتصفح الحالي
 function getDeviceInfo(){
@@ -1693,11 +1707,22 @@ function listenToMySession(uid){
     }, function(){ /* تجاهل أخطاء الـ listener */ });
 }
 
+// يراقب حالة الحظر لحظياً — لو الأدمن حظر الطالب وهو داخل، يتم طرده فوراً
+// وما يقدرش يستخدم شاشة الدفع/الكود عشان يفعّل الاشتراك بنفسه ويتحايل على الحظر
+function listenToMyBlockStatus(uid){
+  if(_blockListener) _blockListener();
+  _blockListener = db.collection('users').doc(uid).onSnapshot(function(snap){
+    if(!snap.exists) return;
+    if(snap.data().blocked) showBlockedStep();
+  }, function(){ /* تجاهل أخطاء الـ listener */ });
+}
+
 function doSignOut(){
   var uid = auth.currentUser?.uid;
   var did = getDeviceId();
   // إلغاء الـ listener أولاً
   if(_sessionListener){ _sessionListener(); _sessionListener = null; }
+  if(_blockListener){ _blockListener(); _blockListener = null; }
   // مسح الـ session من Firestore
   var cleanup = uid
     ? db.collection('users').doc(uid).collection('sessions').doc(did)
@@ -1726,6 +1751,8 @@ auth.onAuthStateChanged(function(user){
   loadBanner(); loadPrice();
   if(!user){
     if(_sessionListener){ _sessionListener(); _sessionListener = null; }
+    if(_blockListener){ _blockListener(); _blockListener = null; }
+    if(_justBlocked){ _justBlocked=false; showStep('step-blocked'); return; }
     showStep('step-auth');
     return;
   }
@@ -1748,8 +1775,9 @@ auth.onAuthStateChanged(function(user){
       return;
     }
 
-    // ابدأ الاستماع للـ session
+    // ابدأ الاستماع للـ session وحالة الحظر
     listenToMySession(user.uid);
+    listenToMyBlockStatus(user.uid);
 
     db.collection('users').doc(user.uid).get().then(function(ud){
       if(!ud.exists){
@@ -1757,6 +1785,7 @@ auth.onAuthStateChanged(function(user){
           db.collection('users').doc(user.uid).get().then(function(ud2){
             if(!ud2.exists){ showStep('step-auth'); return; }
             var data2 = ud2.data();
+            if(data2.blocked){ showBlockedStep(); return; }
             if(!data2.subscriptionActive){
               routeAfterGrade(data2);
               return;
@@ -1767,6 +1796,7 @@ auth.onAuthStateChanged(function(user){
         return;
       }
       var data = ud.data();
+      if(data.blocked){ showBlockedStep(); return; }
       if(!data.subscriptionActive){
         routeAfterGrade(data);
         return;
@@ -1786,9 +1816,11 @@ auth.onAuthStateChanged(function(user){
   }).catch(function(){
     // لو فشل التسجيل، استمر عادي
     listenToMySession(user.uid);
+    listenToMyBlockStatus(user.uid);
     db.collection('users').doc(user.uid).get().then(function(ud){
       if(!ud.exists){ showStep('step-auth'); return; }
       var data = ud.data();
+      if(data.blocked){ showBlockedStep(); return; }
       if(!data.subscriptionActive){
         routeAfterGrade(data);
         return;
@@ -1797,6 +1829,17 @@ auth.onAuthStateChanged(function(user){
     }).catch(function(){ showStep('step-auth'); });
   });
 });
+
+// ── BLOCKED ACCOUNT ──
+// يمنع أي محاولة لإعادة الاشتراك أو الدخول لحساب محظور من الأدمن
+var _justBlocked = false;
+function showBlockedStep(){
+  if(_sessionListener){ _sessionListener(); _sessionListener = null; }
+  if(_blockListener){ _blockListener(); _blockListener = null; }
+  showStep('step-blocked');
+  _justBlocked = true;
+  auth.signOut().catch(function(){});
+}
 
 // ── Helpers ──
 function phoneToEmail(p){ return '20'+p.replace(/\D/g,'').replace(/^0/,'')+'@plusinmath.edu'; }
@@ -1974,6 +2017,9 @@ var DYNAMIC_GRADE_OPTS = {
   univ:   []
 };
 
+// أسعار الصفوف — تُستخدم لو التسعير المنفصل (perGrade) مفعّل من الأدمن
+var GRADE_PRICES = {};
+
 // تحميل المراحل الإضافية من Firestore
 (function loadAuthGrades(){
   try{
@@ -1987,11 +2033,26 @@ var DYNAMIC_GRADE_OPTS = {
         var exists=DYNAMIC_GRADE_OPTS[g.stage].some(function(o){return o.startsWith(g.key+'|');});
         if(!exists) DYNAMIC_GRADE_OPTS[g.stage].push(g.label+'|'+g.key);
         GRADE_LABELS[g.key]=g.label;
+        if(g.price) GRADE_PRICES[g.key]=g.price;
       });
       if(document.getElementById('grade-stage').value) updateGradeOptions();
     });
   }catch(e){}
 })();
+
+// يرجع السعر المناسب حسب وضع التسعير (موحد أو منفصل لكل صف)، مع تحديث العنصر بالـ id المُمرّر
+function applyPriceForGrade(gradeKey, elId){
+  db.collection('settings').doc('subscription').get().then(function(sd){
+    var el = document.getElementById(elId);
+    if(!el) return;
+    var sub = sd.exists ? sd.data() : {};
+    var price = sub.price || '—';
+    if(sub.pricingMode === 'perGrade' && gradeKey && GRADE_PRICES[gradeKey]){
+      price = GRADE_PRICES[gradeKey];
+    }
+    el.innerHTML = price+'<span style="font-size:12px;color:var(--muted)"> جنيه</span>';
+  }).catch(function(){});
+}
 
 function updateGradeOptions(){
   var stage = document.getElementById('grade-stage').value;
