@@ -593,8 +593,12 @@ select { appearance: none; }
         <div class="sp-dot">٢</div>
         <div class="sp-lbl">الصف</div>
       </div>
-      <div class="sp-step" id="sp-code">
+      <div class="sp-step" id="sp-payment">
         <div class="sp-dot">٣</div>
+        <div class="sp-lbl">الدفع</div>
+      </div>
+      <div class="sp-step" id="sp-code">
+        <div class="sp-dot">٤</div>
         <div class="sp-lbl">الكود</div>
       </div>
       <div class="sp-step" id="sp-done">
@@ -718,6 +722,7 @@ select { appearance: none; }
         <h3 id="code-step-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;margin-left:6px;vertical-align:middle"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> أدخل كود الاشتراك</h3>
         <p id="code-step-desc">ادخل الكود اللي وصلك من المدرس لتفعيل اشتراكك</p>
       </div>
+      <a href="#" id="code-back-payment" onclick="event.preventDefault();showPaymentStep(window._savedGradeKey, window._savedGrade)" style="display:none;font-size:12px;color:var(--blue);text-decoration:none;font-weight:600;margin:-8px 0 12px;text-align:center">→ الرجوع لصفحة الدفع</a>
       <!-- Grade display (shown when renewing) -->
       <div id="code-grade-info" style="display:none;padding:10px 14px;background:rgba(74,127,212,0.07);border:1px solid rgba(74,127,212,0.2);border-radius:10px;font-size:13px;color:var(--muted);margin-bottom:14px">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-left:4px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> الصف: <strong id="code-grade-name" style="color:var(--gold2)"></strong>
@@ -789,6 +794,40 @@ select { appearance: none; }
       <button class="btn" id="grade-btn" onclick="saveGradeAndGoCode()">
         <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>التالي — أدخل الكود</span>
         <div class="spin"></div>
+      </button>
+    </div>
+
+    <!-- ══ STEP: PAYMENT ══ -->
+    <div class="step" id="step-payment">
+      <div class="step-info">
+        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;margin-left:6px;vertical-align:middle"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> الدفع لتفعيل الاشتراك</h3>
+        <p>ادفع بإحدى الطرق دي وابعت الإيصال على واتساب — أو لو عندك كود بالفعل اضغط "تخطي"</p>
+      </div>
+      <div style="padding:10px 14px;background:rgba(74,127,212,0.07);border:1px solid rgba(74,127,212,0.2);border-radius:10px;font-size:13px;color:var(--muted);margin-bottom:14px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-left:4px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> الصف: <strong id="payment-grade-name" style="color:var(--gold2)"></strong>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:11px;margin-bottom:12px">
+        <div>
+          <div style="font-size:13px;font-weight:800">اشتراك Plus Mathematics</div>
+          <div style="font-size:11px;color:var(--muted)">مدة 29 يوم</div>
+        </div>
+        <div style="font-size:22px;font-weight:900;color:var(--gold2)" id="payment-price-val">—<span style="font-size:12px;color:var(--muted)"> جنيه</span></div>
+      </div>
+      <div id="payment-methods-list" style="margin-bottom:12px"></div>
+      <div style="font-size:12px;color:var(--muted);line-height:2;margin-bottom:14px;padding:10px 12px;background:rgba(74,127,212,0.04);border:1px solid var(--border2);border-radius:10px">
+        <b style="color:var(--text)">خطوات الدفع:</b><br>
+        ١️⃣ حوّل المبلغ على أحد الأرقام أعلاه<br>
+        ٢️⃣ صوّر الإيصال<br>
+        ٣️⃣ ابعته على واتساب مع اسمك وصفك<br>
+        ٤️⃣ الأستاذ هيبعتلك كود التفعيل — ادخله في الخطوة الجاية
+      </div>
+      <div class="msg" id="payment-msg"></div>
+      <button class="btn-wa" onclick="paymentSendWA()" style="margin-bottom:10px">
+        <svg><use href="#i-wa"/></svg>تواصل واتساب لإرسال الإيصال
+      </button>
+      <div class="divider">لقد حصلت على كود بالفعل؟</div>
+      <button class="btn" onclick="skipToCode()">
+        <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>تخطي - لقد حصلت على كود</span>
       </button>
     </div>
 
@@ -1083,14 +1122,15 @@ function showStep(id){
   document.getElementById(id).classList.add('active');
   // Update progress steps
   const stepMap = {
-    'step-auth':   ['active','','',''],
-    'step-grade':  ['done','active','',''],
-    'step-code':   ['done','done','active',''],
-    'step-success':['done','done','done','active'],
-    'step-onboard':['done','done','done','done']
+    'step-auth':   ['active','','','',''],
+    'step-grade':  ['done','active','','',''],
+    'step-payment':['done','done','active','',''],
+    'step-code':   ['done','done','done','active',''],
+    'step-success':['done','done','done','done','active'],
+    'step-onboard':['done','done','done','done','done']
   };
-  const states = stepMap[id]||['active','','',''];
-  ['sp-auth','sp-grade','sp-code','sp-done'].forEach((sp,i)=>{
+  const states = stepMap[id]||['active','','','',''];
+  ['sp-auth','sp-grade','sp-payment','sp-code','sp-done'].forEach((sp,i)=>{
     const el=document.getElementById(sp);
     if(!el) return;
     el.className='sp-step '+(states[i]||'');
@@ -1171,14 +1211,83 @@ function showMsg(id,txt,type){
   el.className='msg show '+type;
 }
 function setLoad(btn,state){ btn.disabled=state; btn.classList.toggle('loading',state); }
+// Unsubscribed user with a saved grade always lands on the payment step
+// (they can tap "skip" there if they already have a code).
+function routeAfterGrade(data){
+  if(!data.gradeKey){ showStep('step-grade'); return; }
+  showPaymentStep(data.gradeKey, data.grade);
+}
+
 function showCodeStep(gradeKey, gradeName){
   window._savedGradeKey = gradeKey;
+  window._savedGrade = gradeName||GRADE_LABELS[gradeKey]||gradeKey;
   document.getElementById('code-grade-info').style.display = 'block';
-  document.getElementById('code-grade-name').textContent = gradeName||GRADE_LABELS[gradeKey]||gradeKey;
+  document.getElementById('code-grade-name').textContent = window._savedGrade;
   document.getElementById('code-step-title').textContent = '🔑 أدخل كود الاشتراك';
   document.getElementById('code-step-desc').textContent  = 'ادخل الكود المخصص لصفك';
+  var backLink = document.getElementById('code-back-payment');
+  if(backLink) backLink.style.display = 'block';
   showStep('step-code');
 }
+
+// ── PAYMENT STEP ──
+function showPaymentStep(gradeKey, gradeName){
+  window._savedGradeKey = gradeKey;
+  window._savedGrade = gradeName||GRADE_LABELS[gradeKey]||gradeKey;
+  document.getElementById('payment-grade-name').textContent = window._savedGrade;
+  // Payment methods — same ones configured in the admin page
+  db.collection('settings').doc('payment').get().then(function(pd){
+    var el = document.getElementById('payment-methods-list');
+    if(!el) return;
+    if(!pd.exists){ el.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px">طرق الدفع هتتحدد قريباً — تواصل مع الأستاذ</div>'; return; }
+    var p = pd.data();
+    var methods = [];
+    if(p.vodafone) methods.push({ico:'🔴',name:'Vodafone Cash',num:p.vodafone,owner:p.ownerName||''});
+    if(p.instapay) methods.push({ico:'💙',name:'InstaPay',num:p.instapay,owner:p.ownerName||''});
+    if(p.visaEnabled && p.visaLink) methods.push({ico:'💳',name:'فيزا / بطاقة بنكية',link:p.visaLink});
+    el.innerHTML = methods.length ? methods.map(function(m){
+      if(m.link){
+        return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.25);border-radius:10px;margin-bottom:7px">'
+          +'<span style="font-size:20px">'+m.ico+'</span>'
+          +'<div style="flex:1"><div style="font-size:12px;font-weight:800">'+m.name+'</div>'
+          +'<div style="font-size:10px;color:var(--muted)">ادفع مباشرة أونلاين بأمان</div></div>'
+          +'<a href="'+m.link+'" target="_blank" style="padding:6px 14px;border:none;border-radius:7px;background:linear-gradient(135deg,var(--gold),#8a5810);color:#fff;cursor:pointer;font-family:\'Tajawal\',sans-serif;font-size:11px;font-weight:800;text-decoration:none">ادفع الآن</a></div>';
+      }
+      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(74,127,212,0.04);border:1px solid var(--border2);border-radius:10px;margin-bottom:7px">'
+        +'<span style="font-size:20px">'+m.ico+'</span>'
+        +'<div style="flex:1"><div style="font-size:12px;font-weight:800">'+m.name+'</div>'
+        +'<div style="font-size:15px;font-weight:900;color:var(--gold2);direction:ltr;letter-spacing:1px">'+m.num+'</div>'
+        +(m.owner?'<div style="font-size:10px;color:var(--muted)">'+m.owner+'</div>':'')+'</div>'
+        +'<button onclick="cpPayNum(\''+m.num+'\')" style="padding:4px 10px;border:1px solid var(--border2);border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;font-family:\'Tajawal\',sans-serif;font-size:11px">نسخ</button></div>';
+    }).join('') : '<div style="font-size:12px;color:var(--muted);text-align:center;padding:10px">طرق الدفع هتتحدد قريباً — تواصل مع الأستاذ</div>';
+  }).catch(function(){});
+  db.collection('settings').doc('subscription').get().then(function(sd){
+    if(sd.exists){ var pv=document.getElementById('payment-price-val'); if(pv) pv.innerHTML=(sd.data().price||'—')+'<span style="font-size:12px;color:var(--muted)"> جنيه</span>'; }
+  }).catch(function(){});
+  showStep('step-payment');
+}
+
+function cpPayNum(num){
+  if(navigator.clipboard) navigator.clipboard.writeText(num).catch(function(){});
+  showMsg('payment-msg','تم نسخ الرقم ✓','success');
+}
+
+function paymentSendWA(){
+  var user = auth.currentUser;
+  var name = user && user.displayName || '';
+  db.collection('settings').doc('payment').get().then(function(pd){
+    var wa = pd.exists && pd.data().whatsapp ? '20'+pd.data().whatsapp.replace(/^0/,'').replace(/\D/g,'') : '201007586279';
+    var msg = encodeURIComponent('مرحباً أستاذ مهدي 👋\nدفعت اشتراك Plus Mathematics وعايز أفعّل اشتراكي\n'+(name?'اسمي: '+name+'\n':'')+'الصف: '+(window._savedGrade||''));
+    window.open('https://wa.me/'+wa+'?text='+msg,'_blank');
+  }).catch(function(){
+    window.open('https://wa.me/201007586279?text='+encodeURIComponent('مرحباً أستاذ مهدي 👋\nدفعت اشتراك Plus Mathematics وعايز أفعّل اشتراكي'),'_blank');
+  });
+}
+
+function skipToCode(){
+  showCodeStep(window._savedGradeKey, window._savedGrade);
+}
+
 function showExpiredStep(gradeName, gradeKey){
   window._savedGradeKey = gradeKey;
   window._savedGrade = gradeName;
@@ -1189,8 +1298,16 @@ function showExpiredStep(gradeName, gradeKey){
     var methods = [];
     if(p.vodafone) methods.push({ico:'🔴',name:'Vodafone Cash',num:p.vodafone,owner:p.ownerName||''});
     if(p.instapay) methods.push({ico:'💙',name:'InstaPay',num:p.instapay,owner:p.ownerName||''});
+    if(p.visaEnabled && p.visaLink) methods.push({ico:'💳',name:'فيزا / بطاقة بنكية',link:p.visaLink});
     var el = document.getElementById('renew-pay-methods');
     if(el) el.innerHTML = methods.map(function(m){
+      if(m.link){
+        return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.25);border-radius:10px;margin-bottom:7px">'
+          +'<span style="font-size:20px">'+m.ico+'</span>'
+          +'<div style="flex:1"><div style="font-size:12px;font-weight:800">'+m.name+'</div>'
+          +'<div style="font-size:10px;color:var(--muted)">ادفع مباشرة أونلاين بأمان</div></div>'
+          +'<a href="'+m.link+'" target="_blank" style="padding:6px 14px;border:none;border-radius:7px;background:linear-gradient(135deg,var(--gold),#8a5810);color:#fff;cursor:pointer;font-family:\'Tajawal\',sans-serif;font-size:11px;font-weight:800;text-decoration:none">ادفع الآن</a></div>';
+      }
       return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(74,127,212,0.04);border:1px solid var(--border2);border-radius:10px;margin-bottom:7px">'
         +'<span style="font-size:20px">'+m.ico+'</span>'
         +'<div style="flex:1"><div style="font-size:12px;font-weight:800">'+m.name+'</div>'
@@ -1641,8 +1758,7 @@ auth.onAuthStateChanged(function(user){
             if(!ud2.exists){ showStep('step-auth'); return; }
             var data2 = ud2.data();
             if(!data2.subscriptionActive){
-              if(data2.gradeKey) showCodeStep(data2.gradeKey, data2.grade);
-              else showStep('step-grade');
+              routeAfterGrade(data2);
               return;
             }
             showProfileStep(data2);
@@ -1652,8 +1768,7 @@ auth.onAuthStateChanged(function(user){
       }
       var data = ud.data();
       if(!data.subscriptionActive){
-        if(data.gradeKey) showCodeStep(data.gradeKey, data.grade);
-        else showStep('step-grade');
+        routeAfterGrade(data);
         return;
       }
       if(data.expiresAt){
@@ -1675,8 +1790,7 @@ auth.onAuthStateChanged(function(user){
       if(!ud.exists){ showStep('step-auth'); return; }
       var data = ud.data();
       if(!data.subscriptionActive){
-        if(data.gradeKey) showCodeStep(data.gradeKey, data.grade);
-        else showStep('step-grade');
+        routeAfterGrade(data);
         return;
       }
       showProfileStep(data);
@@ -1911,7 +2025,7 @@ function saveGradeAndGoCode(){
     stage:stage, gradeKey:gradeKey, grade:GRADE_LABELS[gradeKey]||gradeKey
   }).then(function(){
     window._savedGradeKey = gradeKey;
-    showCodeStep(gradeKey, GRADE_LABELS[gradeKey]);
+    showPaymentStep(gradeKey, GRADE_LABELS[gradeKey]);
   }).catch(function(e){
     showMsg('grade-msg','خطأ: '+e.message,'error');
     setLoad(btn,false);
