@@ -1416,6 +1416,24 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="sh"><div class="sh-title"><svg><use href="#ic-settings"/></svg>الإعدادات</div></div>
         <div class="cgrid">
 
+          <div class="card" style="border-color:rgba(245,166,35,0.3)">
+            <h4>🔐 فحص صلاحيات الأدمن (مهم)</h4>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px">
+              لو الحظر أو الإعدادات بترجع لوحدها بعد ثانية، السبب غالباً إن حساب المتصفح الحالي مش معرّف كأدمن في Firestore.
+              اضغط "افحص الصلاحيات" وشوف النتيجة.
+            </p>
+            <div class="ff"><label>معرّف الجهاز الحالي (UID)</label>
+              <div style="display:flex;gap:8px">
+                <input type="text" id="diag-uid" readonly placeholder="اضغط افحص الصلاحيات..." style="flex:1;font-family:monospace;font-size:11px"/>
+                <button class="btn ghost sm" onclick="const el=document.getElementById('diag-uid'); if(el.value){navigator.clipboard.writeText(el.value); toast('تم النسخ ✓','ok');}">نسخ</button>
+              </div>
+            </div>
+            <button class="btn primary" style="width:100%;justify-content:center;margin:10px 0" onclick="checkAdminPermissions()">
+              <svg><use href="#ic-check"/></svg>افحص الصلاحيات الآن
+            </button>
+            <div id="diag-result" style="font-size:12px;line-height:1.9"></div>
+          </div>
+
           <div class="card">
             <h4>🎨 لون الثيم</h4>
             <p style="font-size:12px;color:var(--muted);margin-bottom:10px">اختار لون الداشبورد</p>
@@ -2589,6 +2607,42 @@ window.db = db;
 // تسجيل دخول مجهول تلقائي عشان Firestore يسمح بالقراءة
 // (الأدمن بيسجل دخول بـ username/password — مش Firebase Auth)
 firebase.auth().signInAnonymously().catch(e => console.warn('anon auth:', e.message));
+
+// ── فحص صلاحيات الأدمن ──
+// بيتأكد إن حساب Firebase الحالي (Anonymous) معرّف فعلاً في /admins أو /supervisors
+// لأن ده اللي بيحدد هل الكتابة (حظر، تعديل إعدادات...) هتنجح ولا هترجع لوحدها
+window.checkAdminPermissions = async ()=>{
+  const resEl = document.getElementById('diag-result');
+  const uidEl = document.getElementById('diag-uid');
+  if(resEl) resEl.innerHTML = 'جاري الفحص...';
+  try{
+    let user = firebase.auth().currentUser;
+    if(!user){
+      // لو لسه ما سجلش دخول، استنى شوية وحاول تاني
+      await new Promise(r=>setTimeout(r,1200));
+      user = firebase.auth().currentUser;
+    }
+    if(!user){
+      if(resEl) resEl.innerHTML = '<span style="color:var(--err);font-weight:800">⚠️ لسه مسجلتش دخول في Firebase. حدّث الصفحة وحاول تاني.</span>';
+      return;
+    }
+    if(uidEl) uidEl.value = user.uid;
+    const [adminDoc, supDoc] = await Promise.all([
+      db.collection('admins').doc(user.uid).get(),
+      db.collection('supervisors').doc(user.uid).get()
+    ]);
+    if(!resEl) return;
+    if(adminDoc.exists || supDoc.exists){
+      resEl.innerHTML = '<span style="color:var(--ok);font-weight:800">✅ الحساب ده معرّف صح في Firestore — الحظر وتعديل الإعدادات المفروض يشتغلوا تمام.</span>';
+    } else {
+      resEl.innerHTML = '<span style="color:var(--err);font-weight:800">❌ الحساب الحالي (اللي فوق) مش موجود لا في admins ولا في supervisors.<br>'
+        + 'عشان كده أي حظر أو تعديل بيرجع لوحده بعد ثانية — لأن Firestore Rules بترفض الكتابة بصمت والمتصفح بيرجّع القيمة القديمة.<br>'
+        + '<b>الحل:</b> افتح Firebase Console ← Firestore Database ← اعمل collection اسمها admins (لو مش موجودة) ← ضيف document جديد ومعرّفه (Document ID) هو الـ UID اللي فوق بالظبط، وسيبه فاضي أو حط فيه أي حقل زي name.</span>';
+    }
+  }catch(e){
+    if(resEl) resEl.innerHTML = '<span style="color:var(--err);font-weight:800">خطأ أثناء الفحص: '+e.message+'</span>';
+  }
+};
 
 
 // ── LOAD ALL ──
