@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>  العناية بالموقع</title>
+<title> العناية بالموقع</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -1434,6 +1434,22 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <div id="diag-result" style="font-size:12px;line-height:1.9"></div>
           </div>
 
+          <div class="card" style="border-color:rgba(255,77,109,0.35)">
+            <h4 style="color:var(--err)">🚧 وضع الصيانة</h4>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:10px">
+              لما تفعّله، الطلاب هيشوفوا رسالة "الموقع تحت الصيانة" بدل الدخول على الكورسات وصفحة التسجيل، وإنت (الأدمن) هتفضل تقدر تدخل عادي.
+            </p>
+            <div class="toggle-row">
+              <label>تفعيل وضع الصيانة الآن</label>
+              <label class="tog"><input type="checkbox" id="maint-enabled"/><span class="tog-sl"></span></label>
+            </div>
+            <div class="ff"><label>رسالة الصيانة اللي هتظهر للطلاب</label>
+              <textarea id="maint-msg" rows="3" placeholder="الموقع تحت الصيانة حالياً، هيرجع قريباً إن شاء الله 🙏"></textarea></div>
+            <button class="btn" style="width:100%;justify-content:center;background:linear-gradient(135deg,var(--err),#8a0026);color:#fff" onclick="saveMaintenance()">
+              <svg><use href="#ic-check"/></svg>حفظ حالة الصيانة
+            </button>
+          </div>
+
           <div class="card">
             <h4>🎨 لون الثيم</h4>
             <p style="font-size:12px;color:var(--muted);margin-bottom:10px">اختار لون الداشبورد</p>
@@ -2744,6 +2760,12 @@ window.wloadSettings = async ()=>{
     }
     const adm = await db.collection('settings').doc('admin').get();
     if(adm.exists) window._ap = adm.data().pass;
+    // Load maintenance mode
+    const maint = await db.collection('settings').doc('maintenance').get();
+    if(maint.exists){
+      document.getElementById('maint-enabled').checked = !!maint.data().enabled;
+      document.getElementById('maint-msg').value = maint.data().message||'';
+    }
     // Load payment settings
     const pay = await db.collection('settings').doc('payment').get();
     if(pay.exists){
@@ -2802,6 +2824,21 @@ window.saveAnn = async ()=>{
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     toast('تم حفظ الإعلان ✓','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── SAVE MAINTENANCE MODE ──
+window.saveMaintenance = async ()=>{
+  try{
+    const enabled = document.getElementById('maint-enabled').checked;
+    const message = document.getElementById('maint-msg').value.trim();
+    await db.collection('settings').doc('maintenance').set({
+      enabled: enabled,
+      message: message || 'الموقع تحت الصيانة حالياً، هيرجع قريباً إن شاء الله 🙏',
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast(enabled ? '🚧 تم تفعيل وضع الصيانة — الطلاب مش هيقدروا يدخلوا' : '✅ تم إلغاء وضع الصيانة — الموقع شغال عادي','ok');
+    logActivity?.('🚧', enabled?'تفعيل وضع الصيانة':'إلغاء وضع الصيانة', message);
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
