@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plus Math - المناهج الدراسية</title>
+<title>Plus In Math - المناهج الدراسية</title>
 <meta name="theme-color" content="#04060f"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -135,8 +135,8 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   font-size:12px;font-weight:600;color:#fff;
   background:linear-gradient(135deg,var(--navy),var(--blue));box-shadow:0 2px 12px rgba(74,127,212,0.4)}
 #annBanner.show{display:flex}
-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;align-items:center;justify-content:space-around;gap:0;
-  padding:0 8px;background:var(--s1);backdrop-filter:blur(20px);border-top:1px solid var(--b2);safe-area-inset-bottom:env(safe-area-inset-bottom)}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:calc(58px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:space-around;gap:0;
+  padding:0 8px calc(env(safe-area-inset-bottom,0px));background:var(--s1);backdrop-filter:blur(20px);border-top:1px solid var(--b2)}
 .nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
 .nav-logo img{width:32px;height:32px;object-fit:contain}
 .nav-logo h2{font-size:13px;font-weight:900;background:linear-gradient(135deg,#fff,var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -409,6 +409,38 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;
   background:rgba(0,0,0,.55);font-size:9px;font-weight:800;color:#fff;text-align:center;padding:3px}
 .hw-img-placeholder{width:100%;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:26px}
 .hw-drive-tile{flex-direction:column;background:linear-gradient(135deg,rgba(66,133,244,0.08),rgba(0,172,71,0.06));border:1.5px solid rgba(66,133,244,0.2)}
+
+/* ══ TOUCH FEEDBACK (hover:hover means "real mouse" — phones/tablets get :active instead) ══ */
+@media (hover:hover){
+  .video-item:hover,.exam-item:hover,.hw-item:hover,.book-card-sm:hover,.grade-card:hover{border-color:var(--gold)}
+}
+@media (hover:none){
+  .grade-card:active{transform:scale(.97);border-color:var(--gold);transition:transform .1s}
+  .book-card-sm:active{transform:scale(.97);border-color:var(--gold);transition:transform .1s}
+  .video-item:active,.exam-item:active,.hw-item:active{border-color:var(--blue);background:rgba(74,127,212,0.04)}
+  .video-row:active .vthumb,.exam-item:active .exam-ico,.hw-item:active .hw-ico{filter:brightness(1.15)}
+  .btn:active,.mcq-submit:active,.wa-buy-btn:active,.bc-buy:active,.pbtn:active{transform:scale(.97)}
+  .cv-tab:active,.nav-btn:active{opacity:.7}
+}
+
+/* ══ SMALL-SCREEN FINE-TUNING (narrow phones, ~360px and under) ══ */
+@media (max-width:400px){
+  .grades-grid{grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px}
+  .hero-stats{gap:14px;margin-right:0;width:100%;justify-content:space-between;order:3}
+  .hero-bar{gap:10px}
+  .cv-tab{padding:11px 12px;font-size:12px}
+  .hw-img-grid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr))}
+  .video-row{gap:9px}
+  .exam-ico,.hw-ico{width:36px;height:36px}
+}
+@media (max-width:340px){
+  .grades-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ══ COMFORTABLE TOUCH TARGETS for small icon buttons ══ */
+.mclose,.bs-close,.lb-close-btn,.lb-nav-btn{min-width:40px;min-height:40px}
+.cv-back{min-width:40px;min-height:40px}
+
 </style>
 </head>
 <body>
@@ -504,7 +536,7 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:200;height:58px;display:flex;
   </div>
   <div id="notifList"><div style="text-align:center;font-size:12px;color:var(--muted);padding:16px">لا يوجد إشعارات</div></div>
 </div>
-<main id="mainContent" style="display:none;padding-bottom:68px">
+<main id="mainContent" style="display:none;padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))">
 
   <div class="hero-bar">
     <div><h1>مرحباً في Plus Mathematics 🎓</h1><p>اضغط على صفك لتبدأ</p></div>
