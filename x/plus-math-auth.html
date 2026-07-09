@@ -578,7 +578,7 @@ select { appearance: none; }
     <img src="https://plusedu.vercel.app/store/1/fonts/221.png" alt="Plus" class="logo-img"
       onerror="this.style.opacity='.5'"/>
     <h1>Plus Mathematics</h1>
-    <p>منصة مراجعة الرياضيات · 2026</p>
+    <p>منصة مستر مهدي حسن</p>
   </div>
 
   <div class="auth-body">
@@ -725,7 +725,10 @@ select { appearance: none; }
       <a href="#" id="code-back-payment" onclick="event.preventDefault();showPaymentStep(window._savedGradeKey, window._savedGrade)" style="display:none;font-size:12px;color:var(--blue);text-decoration:none;font-weight:600;margin:-8px 0 12px;text-align:center">→ الرجوع لصفحة الدفع</a>
       <!-- Grade display (shown when renewing) -->
       <div id="code-grade-info" style="display:none;padding:10px 14px;background:rgba(74,127,212,0.07);border:1px solid rgba(74,127,212,0.2);border-radius:10px;font-size:13px;color:var(--muted);margin-bottom:14px">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-left:4px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> الصف: <strong id="code-grade-name" style="color:var(--gold2)"></strong>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-left:4px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> الصف: <strong id="code-grade-name" style="color:var(--gold2)"></strong></span>
+          <button type="button" onclick="openEditGradeStage('code')" style="padding:4px 10px;border:1px solid rgba(201,168,76,0.35);background:rgba(201,168,76,0.08);color:var(--gold2);border-radius:8px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;white-space:nowrap">✏️ تعديل الصف/المرحلة</button>
+        </div>
       </div>
       <div class="field">
         <label>كود الاشتراك</label>
@@ -804,7 +807,10 @@ select { appearance: none; }
         <p>ادفع بإحدى الطرق دي وابعت الإيصال على واتساب — أو لو عندك كود بالفعل اضغط "تخطي"</p>
       </div>
       <div style="padding:10px 14px;background:rgba(74,127,212,0.07);border:1px solid rgba(74,127,212,0.2);border-radius:10px;font-size:13px;color:var(--muted);margin-bottom:14px">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-left:4px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> الصف: <strong id="payment-grade-name" style="color:var(--gold2)"></strong>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-left:4px"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> الصف: <strong id="payment-grade-name" style="color:var(--gold2)"></strong></span>
+          <button type="button" onclick="openEditGradeStage('payment')" style="padding:4px 10px;border:1px solid rgba(201,168,76,0.35);background:rgba(201,168,76,0.08);color:var(--gold2);border-radius:8px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:11px;font-weight:700;white-space:nowrap">✏️ تعديل الصف/المرحلة</button>
+        </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:11px;margin-bottom:12px">
         <div>
@@ -894,7 +900,7 @@ select { appearance: none; }
         <p>اشتراكك انتهى — جدد عن طريق الدفع وإرسال إيصال للأستاذ</p>
       </div>
       <!-- Status -->
-      <div style="class="renew-expired-badge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> اشتراكك منتهي — ادفع وابعت للأستاذ</div
+      <div class="renew-expired-badge"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> اشتراكك منتهي — ادفع وابعت للأستاذ</div>
       <!-- Price -->
       <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:11px;margin-bottom:12px">
         <div>
@@ -2338,6 +2344,26 @@ function openWaRegister(){
 function openWaCode(){
   var grade = document.getElementById('code-grade-name').textContent||'';
   var m=encodeURIComponent('مرحباً أستاذ مهدي 👋\nعايز كود اشتراك في Plus Mathematics\n\nرقم هاتفي: \nالصف: '+grade);
+  window.open('https://wa.me/201007586279?text='+m,'_blank');
+}
+
+// ── EDIT GRADE/STAGE REQUEST (during registration) ──
+// Grade is locked once chosen (so codes can't be misused across grades),
+// so changing it must go through the teacher via WhatsApp.
+function openEditGradeStage(context){
+  var elId = context==='payment' ? 'payment-grade-name' : 'code-grade-name';
+  var gradeName = (document.getElementById(elId)||{}).textContent || window._savedGrade || '';
+  var user = auth.currentUser;
+  var name = (user && user.displayName) || '';
+  if(!confirm('تعديل الصف/المرحلة بيتم عن طريق الأستاذ فقط، للحفاظ على أمان الكودات.\nهل تريد التواصل معه على واتساب الآن لطلب التعديل؟')) return;
+  var m = encodeURIComponent(
+    'مرحباً أستاذ مهدي 👋\nعايز أعدّل الصف/المرحلة الخاصة بحسابي في Plus Mathematics\n\n' +
+    'اسمي: ' + name + '\n' +
+    'رقم هاتفي: \n' +
+    'الصف المسجل حالياً: ' + gradeName + '\n' +
+    'الصف/المرحلة الصحيحة المطلوبة: \n\n' +
+    'من فضلك عدّلها لي في النظام 🙏'
+  );
   window.open('https://wa.me/201007586279?text='+m,'_blank');
 }
 function closeBanner(){
