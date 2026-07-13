@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>استمارة حجز وتنسيق مشترك للعام الدراسي 2026 / 2027</title>
+    <title>استمارة حجز وتنسيق مشترك للعام الدراسي 2026 / 2027 م</title>
     <style>
         :root {
             --primary-color: #0f172a;
@@ -145,6 +145,7 @@
         .rule-list {
             padding-right: 20px;
             margin: 0;
+            list-style-type: none;
         }
 
         .rule-list li {
@@ -152,16 +153,28 @@
             text-align: justify;
             color: #475569;
             font-size: 15.5px;
+            position: relative;
         }
 
-        .rule-list li strong {
+        .rule-list li::before {
+            content: "🔹";
+            position: absolute;
+            right: -25px;
+            top: 0;
+        }
+
+        .rule-list.square-list li::before {
+            content: "▪";
             color: var(--primary-color);
+            right: -20px;
+            font-size: 18px;
         }
 
         .payment-container {
             display: flex;
             gap: 20px;
             margin-top: 15px;
+            margin-bottom: 20px;
         }
 
         .payment-box {
@@ -269,6 +282,15 @@
             border-top: 2px solid #e2e8f0;
         }
 
+        .signature-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--brand-color);
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 5px;
+        }
+
         .submit-btn {
             background-color: var(--brand-color);
             color: #ffffff;
@@ -289,6 +311,17 @@
             background-color: #1d4ed8;
             transform: translateY(-3px);
             box-shadow: 0 15px 30px rgba(30, 64, 175, 0.35);
+        }
+
+        .inline-input {
+            display: inline-block;
+            width: 120px;
+            padding: 4px 8px !important;
+            margin: 0 5px;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 6px !important;
+            font-size: 14px !important;
+            background-color: #fff !important;
         }
 
         @media (max-width: 768px) {
@@ -314,35 +347,33 @@
         <div class="header-section">
             <div class="basmala">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
             <h1>استمارة حجز وتنسيق مشترك</h1>
-            <p>للعام الدراسي 2026 / 2027</p>
+            <p>للعام الدراسي 2026 / 2027 م</p>
         </div>
 
         <div class="intro-text">
-            حرصًا على تحقيق أفضل مستوى تعليمي للطالب، وتنظيم العلاقة التربوية والتعليمية بين الطرفين، فقد تم الاتفاق بالتراضي بين كل من:
+            حرصًا على تحقيق أفضل مستوى تعليمي للطالب، وتنظيم العلاقة التربوية والتعليمية بين الطرفين، تم الاتفاق بين كلٍّ من الطرفين الموضحين أدناه للالتزام ببنود هذه الاستمارة.
         </div>
 
-        <!-- البيانات الأساسية التفاعلية -->
+        <!-- الطرف الأول والثاني -->
         <div class="form-row">
             <div class="form-group">
                 <label>الطرف الأول:</label>
-                <input type="text" name="الطرف الأول (المدرس)" value="مستر / مهدي حسن (مدرس الرياضيات)" readonly style="background-color: #e2e8f0; font-weight: bold; border-color: #cbd5e1;">
+                <input type="text" name="الطرف الأول" value="مستر / مهدي حسن (مدرس الرياضيات)" readonly style="background-color: #e2e8f0; font-weight: bold; border-color: #cbd5e1;">
             </div>
-        </div>
-
-        <div class="form-row">
             <div class="form-group">
-                <label for="parent_name">الطرف الثاني (ولي أمر الطالب):</label>
-                <input type="text" id="parent_name" name="اسم ولي الأمر" placeholder="أدخل اسم ولي الأمر بالكامل" required>
+                <label for="parent_name_top">الطرف الثاني (ولي الأمر):</label>
+                <input type="text" id="parent_name_top" name="الطرف الثاني (ولي الأمر)" placeholder="أدخل اسم ولي الأمر هنا" required>
             </div>
         </div>
 
+        <!-- الطالب والصف -->
         <div class="form-row">
             <div class="form-group">
                 <label for="student_name">اسم الطالب:</label>
                 <input type="text" id="student_name" name="اسم الطالب" placeholder="أدخل اسم الطالب بالكامل" required>
             </div>
             <div class="form-group">
-                <label for="grade">الصف الدراسي:</label>
+                <label for="grade">الصف الدراسي (من 4 ابتدائى لـ 3 إعدادى):</label>
                 <select id="grade" name="الصف الدراسي" required>
                     <option value="" disabled selected>اختر الصف الدراسي...</option>
                     <optgroup label="المرحلة الابتدائية">
@@ -359,65 +390,70 @@
             </div>
         </div>
 
-        <!-- البنود والشروط كاملة دون أي نقص -->
+        <!-- أولًا -->
         <div class="section-card">
-            <div class="section-title">📌 أولًا: التزامات الطرف الأول (مستر مهدي حسن)</div>
-            <ol class="rule-list">
+            <div class="section-title">أولًا: التزامات الطرف الأول (مستر مهدي حسن)</div>
+            <ul class="rule-list">
                 <li>شرح المنهج الدراسي كاملًا وفقًا لخطة زمنية واضحة ومحددة.</li>
-                <li>تقديم من <strong>8 إلى 10 حصص شهريًا</strong> حسب خطة الدراسة والإجازات الرسمية.</li>
+                <li>تقديم من 8 إلى 10 حصص شهريًا حسب خطة الدراسة والإجازات الرسمية.</li>
                 <li>إجراء اختبار تقييمي بعد الانتهاء من كل وحدة لقياس مستوى الطالب الاستيعابي.</li>
                 <li>عمل مراجعات دورية وشاملة للمناهج قبل امتحانات الفصل الدراسي.</li>
-                <li>متابعة مستوى الطالب بدقة وإبلاغ ولي الأمر بأي انخفاض ملحوظ في المستوى أو الغياب.</li>
+                <li>متابعة مستوى الطالب بدقة، وإبلاغ ولي الأمر بأي انخفاض ملحوظ في المستوى أو الغياب.</li>
                 <li>توفير الملخصات والملزمات التعليمية والاقتصادية الداعمة للطالب عند الحاجة.</li>
                 <li>الالتزام التام بمواعيد الحصص المعلنة، وفي حالة وجود أي تعديل طارئ يتم إبلاغ الطلاب مسبقًا بوقت مناسب.</li>
                 <li>توفير بيئة تعليمية محفزة وقائمة على الاحترام المتبادل والانضباط التام.</li>
-            </ol>
+            </ul>
         </div>
 
+        <!-- ثانيًا -->
         <div class="section-card">
-            <div class="section-title">📌 ثانيًا: التزامات ولي الأمر والطالب</div>
-            <ol class="rule-list">
+            <div class="section-title">ثانيًا: التزامات ولي الأمر والطالب</div>
+            <ul class="rule-list">
                 <li>الالتزام التام بالحضور في المواعيد المحددة دون تأخير.</li>
-                <li>سداد الرسوم الدراسية المستحقة في الموعد المتفق عليه دون تأخير.</li>
+                <li>سداد الرسوم الدراسية المستحقة في المواعيد المتفق عليها دون تأخير.</li>
                 <li>الالتزام بحل الواجبات المدرسية الموكلة للطالب والمراجعة اليومية المستمرة.</li>
                 <li>إحضار كافة الأدوات والكتب والملخصات التعليمية المطلوبة لكل حصة.</li>
                 <li>احترام القوانين الداخلية للسنتر والمحافظة الكاملة على ممتلكاته.</li>
-                <li>عدم اصطحاب أو استخدام الهاتف المحمول أثناء الحصة إلا في حالات الضرورة القصوى ووفق إذن المدرس.</li>
+                <li>عدم اصطحاب أو استخدام الهاتف المحمول أثناء الحصة إلا في حالات الضرورة القصوى ووفقًا لإذن المدرس.</li>
                 <li>المتابعة المستمرة لنتائج الامتحانات الدورية والتواصل المباشر مع المدرس عند وجود أي تدنٍ في المستوى.</li>
                 <li>إبلاغ المدرس أو إدارة السنتر مسبقًا في حالة غياب الطالب لأسباب قهرية.</li>
-            </ol>
+            </ul>
         </div>
 
+        <!-- ثالثًا -->
         <div class="section-card">
-            <div class="section-title">📌 ثالثًا: سياسة الغياب والحضور</div>
-            <ul class="rule-list" style="list-style-type: square;">
+            <div class="section-title">ثالثًا: سياسة الغياب والحضور</div>
+            <ul class="rule-list">
                 <li>غياب الطالب عن الحصة الأساسية لا يمنحه الحق في المطالبة بإعادة الحصة بشكل خاص.</li>
                 <li>في حالة الغياب بعذر مقبول، يتم توفير ما أمكن من المحتوى التعليمي أو التعويض وفقًا لنظام المجموعة المتاح.</li>
                 <li>تكرار غياب الطالب يؤثر سلبًا على مستواه الدراسي، ويتحمل ولي الأمر المسؤولية الكاملة المترتبة على ذلك.</li>
             </ul>
         </div>
 
+        <!-- رابعًا -->
         <div class="section-card">
-            <div class="section-title">📌 رابعًا: سياسة التقييم والامتحانات</div>
-            <ul class="rule-list" style="list-style-type: square;">
+            <div class="section-title">رابعًا: سياسة التقييم والامتحانات</div>
+            <ul class="rule-list">
                 <li>تعتبر الامتحانات الدورية جزءًا أساسيًا ولا يتجزأ من العملية التقييمية للطالب.</li>
                 <li>يجب على الطالب حضور جميع الامتحانات المعلن عنها في مواعيدها المحددة.</li>
                 <li>في حالة الغياب بدون عذر مقبول، يعتبر الطالب متغيبًا ولا يحق له إعادة الامتحان إلا في الحالات الاستثنائية التي يقدرها الطرف الأول.</li>
             </ul>
         </div>
 
+        <!-- خامسًا -->
         <div class="section-card">
-            <div class="section-title">📌 خامسًا: سياسة الرسوم والاشتراكات</div>
-            <ul class="rule-list" style="list-style-type: square;">
+            <div class="section-title">خامسًا: سياسة الرسوم والاشتراكات</div>
+            <ul class="rule-list">
                 <li>يتم سداد الاشتراك الدراسي في الموعد المحدد والمتفق عليه بين الطرفين.</li>
                 <li>التأخير المتكرر في سداد المستحقات قد يؤدي إلى إيقاف حضور الطالب للحصص حتى تسوية الأمور المالية.</li>
-                <li>الرسوم والمصروفات المدفوعة لا تُسترد بعد بدء الدراسة الفنية للمجموعة.</li>
+                <li>الرسوم والمصروفات المدفوعة لا تُسترد بعد بدء الدراسة الفعلية للمجموعة.</li>
             </ul>
         </div>
 
+        <!-- سادسًا -->
         <div class="section-card">
-            <div class="section-title">📌 سادسًا: قواعد عامة وسلوكية</div>
-            <ul class="rule-list" style="list-style-type: square;">
+            <div class="section-title">سادسًا: قواعد عامة وسلوكية</div>
+            <ul class="rule-list">
                 <li>الاحترام المتبادل هو الأساس السائد في التعامل بين المدرس، الطالب، وولي الأمر.</li>
                 <li>يُمنع منعًا باتًا تصوير، تسجيل، أو نشر أي جزء من المحتوى التعليمي أو الملزمات دون إذن كتابي مسبق من المستر.</li>
                 <li>للمستر الحق الكامل في اتخاذ الإجراءات التربوية المناسبة (والتي قد تصل للاستبعاد) في حالة الإخلال بالنظام أو السلوك غير اللائق.</li>
@@ -425,83 +461,103 @@
             </ul>
         </div>
 
+        <!-- سابعًا ونظام السداد -->
         <div class="section-card">
-            <div class="section-title">📌 سابعًا: نظام سداد المصروفات الدراسية</div>
-            <p style="margin: 0 0 15px 0; font-size: 14.5px; color: #475569;">حرصًا على توفير خيارات مرنة تناسب جميع أولياء الأمور، يحق لولي الأمر اختيار إحدى طريقتي السداد التاليتين عند بداية الاشتراك:</p>
+            <div class="section-title">سابعًا: نظام سداد المصروفات الدراسية</div>
+            <p style="margin: 0 0 20px 0; font-size: 14.5px; color: #475569;">حرصًا على توفير خيارات مرنة تناسب جميع أولياء الأمور، يحق لولي الأمر اقتراح إحدى طريقتي السداد التاليتين عند بداية الاشتراك وسيتم تطبيق الوسيلة الأفضل للجميع فيما بعد:</p>
             
             <div class="payment-container">
+                <!-- النظام الأول -->
                 <div class="payment-box">
                     <h4>■ النظام الأول: السداد بالحصة الواحدة</h4>
-                    <p>يتم سداد قيمة كل حصة مباشرة قبل أو أثناء حضورها. وفي حالة غياب الطالب، تطبق سياسة الغياب العامة المتفق عليها أعلاه.</p>
+                    <p style="margin-bottom: 15px;">
+                        قيمة الحصة المقترحة من ولي الأمر: 
+                        <input type="number" name="قيمة الحصة المقترحة" class="inline-input" placeholder="...."> جنيه.
+                    </p>
+                    <ul class="rule-list square-list">
+                        <li>يتم سداد قيمة كل حصة مباشرة قبل أو أثناء حضورها.</li>
+                        <li>في حالة غياب الطالب، تطبق سياسة الغياب العامة المتفق عليها أعلاه.</li>
+                    </ul>
                 </div>
+                
+                <!-- النظام الثاني -->
                 <div class="payment-box">
                     <h4>■ النظام الثاني: السداد بالاشتراك الشهري المقدم</h4>
-                    <p>يتم سداد الاشتراك كاملًا مقدمًا قبل بداية كل شهر دراسي. يلتزم ولي الأمر بالسداد في الموعد لضمان استمرار حجز مكان الطالب في المجموعة. لا يتم خصم أو استقطاع أي جزء من الاشتراك الشهري بسبب غياب الطالب.</p>
+                    <p style="margin-bottom: 15px;">
+                        قيمة الاشتراك الشهري المقترح من ولي الأمر: 
+                        <input type="number" name="قيمة الاشتراك الشهري المقترح" class="inline-input" placeholder="...."> جنيه.
+                    </p>
+                    <ul class="rule-list square-list">
+                        <li>يتم سداد الاشتراك كاملًا مقدمًا قبل بداية كل شهر دراسي.</li>
+                        <li>يلتزم ولي الأمر بالسداد في الموعد لضمان استمرار حجز مكان الطالب في المجموعة.</li>
+                        <li>لا يتم خصم أو استقطاع أي جزء من الاشتراك الشهري بسبب غياب الطالب، إلا في الحالات الخاصة التي يقدرها الطرف الأول.</li>
+                    </ul>
                 </div>
             </div>
         </div>
 
-        <!-- الإقرار التفاعلي الإلكتروني -->
+        <!-- الإقرار والاختيار التفاعلي -->
         <div class="acknowledgement-section">
-            <h3>📝 إقرار واختيار ولي الأمر:</h3>
+            <h3>إقرار واختيار ولي الأمر:</h3>
             <p style="margin: 0; font-weight: 500;">لقد اطلعت على الأنظمة المتاحة وأختار نظام:</p>
             
             <div class="radio-group">
                 <label class="radio-label">
-                    <input type="radio" name="إقرار ولي الأمر بنظام السداد" value="السداد بالحصة" required>
-                    السداد بالحصة الواحدة
+                    <input type="radio" name="نظام السداد المختار" value="السداد بالحصة" required>
+                    السداد بالحصة
                 </label>
                 <label class="radio-label">
-                    <input type="radio" name="إقرار ولي الأمر بنظام السداد" value="السداد الشهري" required>
-                    السداد بالاشتراك الشهري المقدم
+                    <input type="radio" name="نظام السداد المختار" value="السداد الشهري" required>
+                    السداد الشهري
                 </label>
             </div>
 
-            <p style="margin: 20px 0 10px 0; font-weight: 600; color: #78350f;">بناءً عليه، يتم تحديد القيم المالية أدناه بالتنسيق مع الإدارة:</p>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="per_lesson">قيمة الحصة المقررة (جنيه):</label>
-                    <input type="number" id="per_lesson" name="قيمة الحصة المحددة تفصيلاً" placeholder="أدخل القيمة المتفق عليها" required>
-                </div>
-                <div class="form-group">
-                    <label for="monthly">قيمة الاشتراك الشهري (جنيه):</label>
-                    <input type="number" id="monthly" name="قيمة الاشتراك الشهري المحدد تفصيلاً" placeholder="أدخل القيمة المتفق عليها" required>
-                </div>
-            </div>
+            <p style="margin: 20px 0 10px 0; font-weight: 600; color: #78350f;">
+                بناءً عليه، تكون قيمة الحصة المتفق عليها: 
+                <input type="number" name="قيمة الحصة المتفق عليها نهائيا" class="inline-input" style="width: 90px;" placeholder="...."> جنيه، 
+                وقيمة الاشتراك الشهري: 
+                <input type="number" name="قيمة الاشتراك الشهري المتفق عليه نهائيا" class="inline-input" style="width: 90px;" placeholder="...."> جنيه
+            </p>
         </div>
 
         <!-- الرؤية -->
         <div class="vision-box">
-            <h4>"رؤيتنا وهدفنا المشترك"</h4>
+            <h4>رؤيتنا وهدفنا المشترك</h4>
             <p>"نؤمن أن النجاح والتميز لا يعتمدان على الشرح الأكاديمي فقط، بل ركيزته الأساسية هي الالتزام المتبادل، المتابعة الدقيقة، الانضباط، والتعاون المثمر بين المدرس، ولي الأمر، والطالب."<br><br>
-            <strong>مع مستر مهدي حسن... هدفنا ليس مجرد شرح المنهج، بل بناء طالب فاهم، واثق من نفسه، وقادر على التفكير وحل المشكلات.</strong></p>
+            مع مستر مهدي حسن... هدفنا ليس مجرد شرح المنهج، بل بناء طالب فاهم، واثق من نفسه، وقادر على التفكير وحل المشكلات.</p>
         </div>
 
-        <!-- التوقيع الإلكتروني المطور -->
+        <!-- التوقيعات والبيانات السفلية -->
         <div class="signature-section">
             <div class="form-row">
-                <div class="form-group">
-                    <label>الطرف الأول (المدرس):</label>
-                    <input type="text" value="التوقيع الرقمي: مستر مهدي حسن" readonly style="background-color: #f1f5f9; font-style: italic; border-color: #cbd5e1; color: #1e3a8a; font-weight: bold;">
+                <!-- الطرف الأول -->
+                <div class="form-group" style="border-left: 2px solid #e2e8f0; padding-left: 20px;">
+                    <div class="signature-title">الطرف الأول (المدرس)</div>
+                    <label>الاسم:</label>
+                    <input type="text" value="مستر مهدي حسن" readonly style="background-color: #f1f5f9; font-weight: bold; border-color: #cbd5e1;">
+                    <label style="margin-top: 15px;">التوقيع:</label>
+                    <input type="text" value="توقيع رقمي معتمد" readonly style="background-color: #f1f5f9; font-style: italic; border-color: #cbd5e1; color: #1e40af;">
                 </div>
-                <div class="form-group">
-                    <label for="parent_sign">توقيع الطرف الثاني (ولي الأمر):</label>
-                    <input type="text" id="parent_sign" name="توقيع ولي الأمر الإلكتروني" placeholder="اكتب اسمك الثلاثي هنا بمثابة توقيع إلكتروني" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="phone_num">رقم هاتف التواصل للتوثيق:</label>
-                    <input type="tel" id="phone_num" name="رقم الهاتف للاتصال" placeholder="أدخل رقم الهاتف الشخصي" required>
-                </div>
-                <div class="form-group">
-                    <label for="sign_date">تاريخ التوقيع الإلكتروني:</label>
-                    <input type="date" id="sign_date" name="تاريخ التوقيع الإلكتروني" required>
+                
+                <!-- الطرف الثاني -->
+                <div class="form-group" style="padding-right: 10px;">
+                    <div class="signature-title">الطرف الثاني (ولي الأمر)</div>
+                    <label for="parent_name_bottom">اسم ولي الأمر:</label>
+                    <input type="text" id="parent_name_bottom" name="اسم ولي الأمر بالتوقيع" placeholder="أدخل اسم ولي الأمر" required>
+                    
+                    <label style="margin-top: 15px;" for="phone">رقم الهاتف:</label>
+                    <input type="tel" id="phone" name="رقم الهاتف" placeholder="أدخل رقم الهاتف" required>
+                    
+                    <label style="margin-top: 15px;" for="date">التاريخ:</label>
+                    <input type="date" id="date" name="التاريخ" required>
+                    
+                    <label style="margin-top: 15px;" for="parent_sign">التوقيع:</label>
+                    <input type="text" id="parent_sign" name="توقيع ولي الأمر" placeholder="اكتب اسمك الثلاثي بمثابة توقيعك" required>
                 </div>
             </div>
         </div>
 
-        <button type="submit" class="submit-btn">الموافقة الإلكترونية وإرسال استمارة التنسيق</button>
+        <button type="submit" class="submit-btn">إرسال وتأكيد الاستمارة إلكترونيًا</button>
     </form>
 </div>
 
