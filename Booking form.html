@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج الاتصال وتسجيل البيانات | PlusInMath</title>
+    <style>
+        :root {
+            --primary-color: #2b5cb7;
+            --accent-color: #ff9800;
+            --bg-color: #f4f7f6;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 550px;
+            padding: 30px;
+            border-top: 6px solid var(--primary-color);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-header h2 {
+            color: var(--primary-color);
+            margin: 0 0 10px 0;
+            font-size: 24px;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+            font-size: 14px;
+        }
+
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: inherit;
+            font-size: 15px;
+            transition: border-color 0.3s ease;
+            background-color: #fafafa;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus, 
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            background-color: #fff;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 12px rgba(43, 92, 183, 0.2);
+        }
+
+        .btn-submit:hover {
+            background-color: #1e448a;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        @media (max-width: 480px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            body {
+                padding: 10px;
+            }
+            .form-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <div class="form-header">
+        <h2>منصة PlusInMath البرمجية</h2>
+        <p>يرجى ملء النموذج أدناه، وسيتم إرسال البيانات فوراً إلى الإدارة لمراجعتها.</p>
+    </div>
+
+    <!-- تم ربط النموذج بنجاح بالرابط الخاص بك -->
+    <form action="https://formspree.io/f/xbdnjlro" method="POST">
+        
+        <div class="form-group">
+            <label for="name">الاسم الكامل:</label>
+            <input type="text" id="name" name="الاسم" placeholder="أدخل اسمك الثلاثي" required>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="email">البريد الإلكتروني:</label>
+                <input type="email" id="email" name="البريد الإلكتروني" placeholder="example@mail.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">رقم الهاتف / الواتساب:</label>
+                <input type="tel" id="phone" name="رقم الهاتف" placeholder="01007586279" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="subject">الموضوع / نوع الطلب:</label>
+            <select id="subject" name="نوع الطلب" required>
+                <option value="" disabled selected>اختر نوع الطلب...</option>
+                <option value="استفسار عن الكورسات">استفسار عن كورسات الرياضيات</option>
+                <option value="طلب دعم برمي">طلب دعم أو تعديل برمي</option>
+                <option value="شكوى أو اقتراح">شكوى أو اقتراح</option>
+                <option value="آخر">أخرى</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="message">تفاصيل الرسالة أو الطلب:</label>
+            <textarea id="message" name="تفاصيل الرسالة" placeholder="اكتب تفاصيل طلبك هنا بشكل واضح..." required></textarea>
+        </div>
+
+        <!-- حقول إضافية خفية للتوثيق الداخلي في رسالة الإيميل -->
+        <input type="hidden" name="إشعار لـ" value="plusinmath@gmail.com">
+        <input type="hidden" name="رقم الدعم" value="01007586279">
+
+        <button type="submit" class="btn-submit">إرسال البيانات وتأكيد الطلب</button>
+    </form>
+
+    <div class="form-footer">
+        &copy; 2026 PlusInMath. جميع الحقوق محفوظة.
+    </div>
+</div>
+
+</body>
+</html>
