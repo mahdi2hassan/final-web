@@ -2,143 +2,118 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>استمارة حجز وتنسيق مشترك للعام الدراسي 2026 / 2027</title>
     <style>
-        :root {
-            --primary-color: #0f172a;
-            --brand-color: #1e40af;
-            --brand-light: #eff6ff;
-            --accent-color: #b45309;
-            --accent-light: #fef3c7;
-            --text-color: #334155;
-            --border-color: #cbd5e1;
-            --success-color: #15803d;
-            --success-light: #f0fdf4;
+        @page {
+            size: A4;
+            margin: 20mm 15mm;
+            background-color: #fdfdfd;
+            @bottom-center {
+                content: "صفحة " counter(page) " من " counter(pages);
+                font-family: 'Segoe UI', Arial, sans-serif;
+                font-size: 9pt;
+                color: #64748b;
+            }
+        }
+        
+        *, *::before, *::after {
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f1f5f9;
-            color: var(--text-color);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #fdfdfd;
+            color: #334155;
             margin: 0;
-            padding: 40px 20px;
-            line-height: 1.8;
-        }
-
-        .contract-container {
-            background-color: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 50px 40px;
-            border-top: 12px solid var(--brand-color);
-            box-sizing: border-box;
+            padding: 0;
+            line-height: 1.6;
+            font-size: 11pt;
         }
 
         .header-section {
             text-align: center;
-            border-bottom: 2px dashed var(--border-color);
-            padding-bottom: 35px;
-            margin-bottom: 40px;
-        }
-
-        .header-section h1 {
-            color: var(--brand-color);
-            font-size: 30px;
-            margin: 15px 0 5px 0;
-            font-weight: 800;
+            border-bottom: 2px dashed #cbd5e1;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .header-section .basmala {
-            font-size: 22px;
+            font-size: 14pt;
             color: #475569;
-            font-weight: 600;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .header-section h1 {
+            color: #1e40af;
+            font-size: 20pt;
+            margin: 10px 0 5px 0;
+            font-weight: 800;
         }
 
         .header-section p {
-            font-size: 16px;
+            font-size: 12pt;
             color: #64748b;
             margin: 5px 0 0 0;
-            font-weight: 500;
+            font-weight: bold;
         }
 
         .intro-text {
-            font-size: 16px;
+            font-size: 11pt;
             text-align: justify;
-            margin-bottom: 35px;
-            background-color: var(--brand-light);
-            padding: 20px 25px;
-            border-radius: 14px;
-            border-right: 6px solid var(--brand-color);
+            margin-bottom: 25px;
+            background-color: #eff6ff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border-right: 5px solid #1e40af;
             color: #1e3a8a;
             font-weight: 500;
         }
 
-        .form-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .form-group {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: var(--primary-color);
-            font-size: 14px;
-        }
-
-        .form-group input[type="text"],
-        .form-group input[type="tel"],
-        .form-group input[type="number"],
-        .form-group input[type="date"],
-        .form-group select {
-            padding: 14px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 15px;
-            background-color: #f8fafc;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-sizing: border-box;
+        .form-table {
             width: 100%;
-            color: var(--primary-color);
+            border-collapse: collapse;
+            margin-bottom: 20px;
         }
 
-        .form-group input:focus, .form-group select:focus {
-            border-color: var(--brand-color);
-            background-color: #fff;
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.15);
+        .form-table td {
+            padding: 8px 10px;
+            vertical-align: middle;
+        }
+
+        .form-label {
+            font-weight: bold;
+            color: #0f172a;
+            font-size: 11pt;
+            width: 25%;
+        }
+
+        .form-value {
+            border-bottom: 1px dotted #64748b;
+            color: #334155;
+            font-size: 11pt;
+            padding-bottom: 4px;
+        }
+
+        .form-value.static {
+            font-weight: bold;
+            color: #1e40af;
+            border-bottom: none;
         }
 
         .section-card {
-            background-color: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 25px 30px;
-            margin-top: 35px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            margin-top: 20px;
+            page-break-inside: avoid;
         }
 
         .section-title {
-            color: var(--brand-color);
+            color: #1e40af;
             margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 19px;
+            margin-bottom: 12px;
+            font-size: 12pt;
             font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 10px;
+            border-bottom: 2px solid #eff6ff;
+            padding-bottom: 6px;
         }
 
         .rule-list {
@@ -147,360 +122,311 @@
         }
 
         .rule-list li {
-            margin-bottom: 14px;
+            margin-bottom: 8px;
             text-align: justify;
             color: #475569;
-            font-size: 15.5px;
+            font-size: 10.5pt;
         }
 
         .rule-list li strong {
-            color: var(--primary-color);
+            color: #0f172a;
         }
 
-        .payment-container {
-            display: flex;
-            gap: 20px;
-            margin-top: 15px;
+        .payment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .payment-cell {
+            width: 50%;
+            padding: 10px;
+            vertical-align: top;
         }
 
         .payment-box {
-            flex: 1;
             background-color: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 14px;
-            padding: 25px;
-            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            height: 100%;
         }
 
         .payment-box h4 {
-            margin: 0 0 12px 0;
-            color: var(--brand-color);
-            font-size: 16px;
+            margin: 0 0 8px 0;
+            color: #1e40af;
+            font-size: 11pt;
             font-weight: 700;
         }
 
         .payment-box p {
             margin: 0;
-            font-size: 14px;
+            font-size: 10pt;
             color: #64748b;
             text-align: justify;
-            line-height: 1.7;
+            line-height: 1.5;
         }
 
         .acknowledgement-section {
-            background-color: var(--accent-light);
-            border: 2px solid #fde68a;
-            padding: 30px;
-            border-radius: 16px;
-            margin-top: 40px;
-            border-right: 8px solid var(--accent-color);
+            background-color: #fef3c7;
+            border: 1px solid #fde68a;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+            border-right: 5px solid #b45309;
+            page-break-inside: avoid;
         }
 
         .acknowledgement-section h3 {
-            margin: 0 0 15px 0;
+            margin: 0 0 10px 0;
             color: #78350f;
-            font-size: 19px;
+            font-size: 12pt;
             font-weight: 800;
         }
 
-        .radio-group {
-            display: flex;
-            gap: 25px;
-            margin: 20px 0;
+        .checkbox-container {
+            margin: 12px 0;
         }
 
-        .radio-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            font-weight: 700;
+        .checkbox-item {
+            display: inline-block;
+            margin-left: 30px;
+            font-weight: bold;
             color: #78350f;
+            font-size: 11pt;
+        }
+
+        .checkbox-box {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid #b45309;
+            margin-left: 8px;
+            vertical-align: middle;
             background: #fff;
-            padding: 14px 24px;
-            border-radius: 12px;
-            border: 2px solid #fde68a;
-            transition: all 0.2s;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .radio-label input[type="radio"] {
-            width: 22px;
-            height: 22px;
-            accent-color: var(--accent-color);
-            cursor: pointer;
-        }
-
-        .radio-label:hover {
-            box-shadow: 0 6px 12px rgba(217, 119, 6, 0.1);
-            border-color: var(--accent-color);
         }
 
         .vision-box {
             text-align: center;
-            background-color: var(--success-light);
-            border: 2px solid #bbf7d0;
-            padding: 30px;
-            border-radius: 16px;
-            margin-top: 45px;
-            border-right: 8px solid var(--success-color);
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+            border-right: 5px solid #15803d;
+            page-break-inside: avoid;
         }
 
         .vision-box h4 {
-            margin: 0 0 12px 0;
+            margin: 0 0 8px 0;
             color: #14532d;
-            font-size: 19px;
+            font-size: 12pt;
             font-weight: 800;
         }
 
         .vision-box p {
             margin: 0;
             color: #166534;
-            font-size: 16px;
-            font-weight: 500;
-            text-align: justify;
+            font-size: 10.5pt;
+            text-align: center;
+            line-height: 1.6;
         }
 
         .signature-section {
-            margin-top: 40px;
-            padding-top: 25px;
+            margin-top: 30px;
+            padding-top: 15px;
             border-top: 2px solid #e2e8f0;
+            page-break-inside: avoid;
         }
 
-        .submit-btn {
-            background-color: var(--brand-color);
-            color: #ffffff;
-            border: none;
-            padding: 20px 40px;
-            font-size: 19px;
-            font-weight: 800;
-            border-radius: 14px;
-            cursor: pointer;
+        .signature-table {
             width: 100%;
-            margin-top: 40px;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 25px rgba(30, 64, 175, 0.25);
+            border-collapse: collapse;
         }
 
-        .submit-btn:hover {
-            background-color: #1d4ed8;
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(30, 64, 175, 0.35);
-        }
-
-        @media (max-width: 768px) {
-            .form-row, .payment-container, .radio-group {
-                flex-direction: column;
-                gap: 15px;
-            }
-            .contract-container {
-                padding: 30px 20px;
-            }
-            body {
-                padding: 20px 10px;
-            }
+        .signature-table td {
+            padding: 10px;
+            width: 50%;
+            vertical-align: middle;
         }
     </style>
 </head>
 <body>
 
 <div class="contract-container">
-    <form action="https://formspree.io/f/xbdnjlro" method="POST">
+    
+    <!-- الهيدر -->
+    <div class="header-section">
+        <div class="basmala">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+        <h1>استمارة حجز وتنسيق مشترك</h1>
+        <p>للعام الدراسي 2026 / 2027</p>
+    </div>
+
+    <div class="intro-text">
+        حرصًا على تحقيق أفضل مستوى تعليمي للطالب، وتنظيم العلاقة التربوية والتعليمية بين الطرفين، فقد تم الاتفاق بالتراضي بين كل من:
+    </div>
+
+    <!-- البيانات الأساسية -->
+    <table class="form-table">
+        <tr>
+            <td class="form-label">الطرف الأول (المدرس):</td>
+            <td class="form-value static" colspan="3">مستر / مهدي حسن (مدرس الرياضيات)</td>
+        </tr>
+        <tr>
+            <td class="form-label">الطرف الثاني (ولي الأمر):</td>
+            <td class="form-value" colspan="3">........................................................................................................</td>
+        </tr>
+        <tr>
+            <td class="form-label">اسم الطالب بالكامل:</td>
+            <td class="form-value" style="width: 40%;">...........................................................</td>
+            <td class="form-label" style="width: 15%; padding-right: 20px;">الصف الدراسي:</td>
+            <td class="form-value">...................................................</td>
+        </tr>
+    </table>
+
+    <!-- البنود والالتزامات -->
+    <div class="section-card">
+        <div class="section-title">📌 أولًا: التزامات الطرف الأول (مستر مهدي حسن)</div>
+        <ol class="rule-list">
+            <li>شرح المنهج الدراسي كاملًا وفقًا لخطة زمنية واضحة ومحددة.</li>
+            <li>تقديم من <strong>8 إلى 10 حصص شهريًا</strong> حسب خطة الدراسة والإجازات الرسمية.</li>
+            <li>إجراء اختبار تقييمي بعد الانتهاء من كل وحدة لقياس مستوى الطالب الاستيعابي.</li>
+            <li>عمل مراجعات دورية وشاملة للمناهج قبل امتحانات الفصل الدراسي.</li>
+            <li>متابعة مستوى الطالب بدقة وإبلاغ ولي الأمر بأي انخفاض ملحوظ في المستوى أو الغياب.</li>
+            <li>توفير الملخصات والملزمات التعليمية والاقتصادية الداعمة للطالب عند الحاجة.</li>
+            <li>الالتزام التام بمواعيد الحصص المعلنة، وفي حالة وجود أي تعديل طارئ يتم إبلاغ الطلاب مسبقًا بوقت مناسب.</li>
+            <li>توفير بيئة تعليمية محفزة وقائمة على الاحترام المتبادل والانضباط التام.</li>
+        </ol>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">📌 ثانيًا: التزامات ولي الأمر والطالب</div>
+        <ol class="rule-list">
+            <li>الالتزام التام بالحضور في المواعيد المحددة دون تأخير.</li>
+            <li>سداد الرسوم الدراسية المستحقة في الموعد المتفق عليه دون تأخير.</li>
+            <li>الالتزام بحل الواجبات المدرسية الموكلة للطالب والمراجعة اليومية المستمرة.</li>
+            <li>إحضار كافة الأدوات والكتب والملخصات التعليمية المطلوبة لكل حصة.</li>
+            <li>احترام القوانين الداخلية للسنتر والمحافظة الكاملة على ممتلكاته.</li>
+            <li>عدم اصطحاب أو استخدام الهاتف المحمول أثناء الحصة إلا في حالات الضرورة القصوى ووفق إذن المدرس.</li>
+            <li>المتابعة المستمرة لنتائج الامتحانات الدورية والتواصل المباشر مع المدرس عند وجود أي تدنٍ في المستوى.</li>
+            <li>إبلاغ المدرس أو إدارة السنتر مسبقًا في حالة غياب الطالب لأسباب قهرية.</li>
+        </ol>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">📌 ثالثًا: سياسة الغياب والحضور</div>
+        <ul class="rule-list" style="list-style-type: square;">
+            <li>غياب الطالب عن الحصة الأساسية لا يمنحه الحق في المطالبة بإعادة الحصة بشكل خاص.</li>
+            <li>في حالة الغياب بعذر مقبول، يتم توفير ما أمكن من المحتوى التعليمي أو التعويض وفقًا لنظام المجموعة المتاح.</li>
+            <li>تكرار غياب الطالب يؤثر سلبًا على مستواه الدراسي، ويتحمل ولي الأمر المسؤولية الكاملة المترتبة على ذلك.</li>
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">📌 رابعًا: سياسة التقييم والامتحانات</div>
+        <ul class="rule-list" style="list-style-type: square;">
+            <li>تعتبر الامتحانات الدورية جزءًا أساسيًا ولا يتجزأ من العملية التقييمية للطالب.</li>
+            <li>يجب على الطالب حضور جميع الامتحانات المعلن عنها في مواعيدها المحددة.</li>
+            <li>في حالة الغياب بدون عذر مقبول، يعتبر الطالب متغيبًا ولا يحق له إعادة الامتحان إلا في الحالات الاستثنائية التي يقدرها الطرف الأول.</li>
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">📌 خامسًا: سياسة الرسوم والاشتراكات</div>
+        <ul class="rule-list" style="list-style-type: square;">
+            <li>يتم سداد الاشتراك الدراسي في الموعد المحدد والمتفق عليه بين الطرفين.</li>
+            <li>التأخير المتكرر في سداد المستحقات قد يؤدي إلى إيقاف حضور الطالب للحصص حتى تسوية الأمور المالية.</li>
+            <li>الرسوم والمصروفات المدفوعة لا تُسترد بعد بدء الدراسة الفنية للمجموعة.</li>
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">📌 سادسًا: قواعد عامة وسلوكية</div>
+        <ul class="rule-list" style="list-style-type: square;">
+            <li>الاحترام المتبادل هو الأساس السائد في التعامل بين المدرس، الطالب، وولي الأمر.</li>
+            <li>يُمنع منعًا باتًا تصوير، تسجيل، أو نشر أي جزء من المحتوى التعليمي أو الملزمات دون إذن كتابي مسبق من المستر.</li>
+            <li>للمستر الحق الكامل في اتخاذ الإجراءات التربوية المناسبة (والتي قد تصل للاستبعاد) في حالة الإخلال بالنظام أو السلوك غير اللائق.</li>
+            <li>الهدف الأسمى والأساسي من هذا الاتفاق هو تغليب مصلحة الطالب العلمية والتربوية.</li>
+        </ul>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">📌 سابعًا: نظام سداد المصروفات الدراسية</div>
+        <p style="margin: 0 0 10px 0; font-size: 10.5pt; color: #475569;">حرصًا على توفير خيارات مرنة تناسب جميع أولياء الأمور، يحق لولي الأمر اختيار إحدى طريقتي السداد التاليتين عند بداية الاشتراك:</p>
         
-        <!-- الهيدر -->
-        <div class="header-section">
-            <div class="basmala">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
-            <h1>استمارة حجز وتنسيق مشترك</h1>
-            <p>للعام الدراسي 2026 / 2027</p>
+        <table class="payment-table">
+            <tr>
+                <td class="payment-cell">
+                    <div class="payment-box">
+                        <h4>■ النظام الأول: السداد بالحصة الواحدة</h4>
+                        <p>يتم سداد قيمة كل حصة مباشرة قبل أو أثناء حضورها. وفي حالة غياب الطالب، تطبق سياسة الغياب العامة المتفق عليها أعلاه.</p>
+                    </div>
+                </td>
+                <td class="payment-cell">
+                    <div class="payment-box">
+                        <h4>■ النظام الثاني: السداد بالاشتراك الشهري المقدم</h4>
+                        <p>يتم سداد الاشتراك كاملًا مقدمًا قبل بداية كل شهر دراسي. يلتزم ولي الأمر بالسداد في الموعد لضمان استمرار حجز مكان الطالب في المجموعة. لا يتم خصم أو استقطاع أي جزء من الاشتراك الشهري بسبب غياب الطالب.</p>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- الإقرار واختيار النظام للطباعة -->
+    <div class="acknowledgement-section">
+        <h3>📝 إقرار واختيار ولي الأمر:</h3>
+        <p style="margin: 0; font-weight: bold;">لقد اطلعت على الأنظمة المتاحة وأختار نظام:</p>
+        
+        <div class="checkbox-container">
+            <div class="checkbox-item"><span class="checkbox-box"></span> السداد بالحصة الواحدة</div>
+            <div class="checkbox-item"><span class="checkbox-box"></span> السداد بالاشتراك الشهري المقدم</div>
         </div>
 
-        <div class="intro-text">
-            حرصًا على تحقيق أفضل مستوى تعليمي للطالب، وتنظيم العلاقة التربوية والتعليمية بين الطرفين، فقد تم الاتفاق بالتراضي بين كل من:
-        </div>
+        <p style="margin: 15px 0 10px 0; font-weight: bold; color: #78350f;">بناءً عليه، يتم تحديد القيم المالية أدناه بالتنسيق مع الإدارة:</p>
+        
+        <table class="form-table">
+            <tr>
+                <td class="form-label" style="width: 30%;">قيمة الحصة المقررة (جنيه):</td>
+                <td class="form-value" style="width: 20%;">............................</td>
+                <td class="form-label" style="width: 30%; padding-right: 20px;">قيمة الاشتراك الشهري (جنيه):</td>
+                <td class="form-value">............................</td>
+            </tr>
+        </table>
+    </div>
 
-        <!-- البيانات التفاعلية للأطراف -->
-        <div class="form-row">
-            <div class="form-group">
-                <label>الطرف الأول:</label>
-                <input type="text" name="الطرف الأول (المدرس)" value="مستر / مهدي حسن (مدرس الرياضيات)" readonly style="background-color: #e2e8f0; font-weight: bold; border-color: #cbd5e1;">
-            </div>
-        </div>
+    <!-- الرؤية -->
+    <div class="vision-box">
+        <h4>"رؤيتنا وهدفنا المشترك"</h4>
+        <p>"نؤمن أن النجاح والتميز لا يعتمدان على الشرح الأكاديمي فقط، بل ركيزته الأساسية هي الالتزام المتبادل، المتابعة الدقيقة، الانضباط، والتعاون المثمر بين المدرس، ولي الأمر، والطالب."<br>
+        <strong>مع مستر مهدي حسن... هدفنا ليس مجرد شرح المنهج، بل بناء طالب فاهم، واثق من نفسه، وقادر على التفكير وحل المشكلات.</strong></p>
+    </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="parent_name">الطرف الثاني (ولي أمر الطالب):</label>
-                <input type="text" id="parent_name" name="اسم ولي الأمر" placeholder="أدخل اسم ولي الأمر بالكامل" required>
-            </div>
-        </div>
+    <!-- قسم التوقيعات والتوثيق -->
+    <div class="signature-section">
+        <table class="signature-table">
+            <tr>
+                <td>
+                    <span class="form-label">توقيع الطرف الأول (المدرس):</span><br><br>
+                    <span style="font-style: italic; color: #1e40af; font-weight: bold;">مستر مهدي حسن</span>
+                </td>
+                <td>
+                    <span class="form-label">توقيع الطرف الثاني (ولي الأمر):</span><br><br>
+                    <span>...................................................</span>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <span class="form-label">رقم هاتف التواصل للتوثيق:</span><br><br>
+                    <span>...................................................</span>
+                </td>
+                <td>
+                    <span class="form-label">تاريخ التوقيع:</span><br><br>
+                    <span>.... / .... / ..........</span>
+                </td>
+            </tr>
+        </table>
+    </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label for="student_name">اسم الطالب:</label>
-                <input type="text" id="student_name" name="اسم الطالب" placeholder="أدخل اسم الطالب بالكامل" required>
-            </div>
-            <div class="form-group">
-                <label for="grade">الصف الدراسي:</label>
-                <select id="grade" name="الصف الدراسي" required>
-                    <option value="" disabled selected>اختر الصف الدراسي...</option>
-                    <optgroup label="المرحلة الابتدائية">
-                        <option value="الرابع الابتدائي">الرابع الابتدائي</option>
-                        <option value="الخامس الابتدائي">الخامس الابتدائي</option>
-                        <option value="السادس الابتدائي">السادس الابتدائي</option>
-                    </optgroup>
-                    <optgroup label="المرحلة الإعدادية">
-                        <option value="الأول الإعدادي">الأول الإعدادي</option>
-                        <option value="الثاني الإعدادي">الثاني الإعدادي</option>
-                        <option value="الثالث الإعدادي">الثالث الإعدادي</option>
-                    </optgroup>
-                </select>
-            </div>
-        </div>
-
-        <!-- أولاً وثانياً وثالثاً بالتفصيل وبدون حذف -->
-        <div class="section-card">
-            <div class="section-title">📌 أولًا: التزامات الطرف الأول (مستر مهدي حسن)</div>
-            <ol class="rule-list">
-                <li>شرح المنهج الدراسي كاملًا وفقًا لخطة زمنية واضحة ومحددة.</li>
-                <li>تقديم من <strong>8 إلى 10 حصص شهريًا</strong> حسب خطة الدراسة والإجازات الرسمية.</li>
-                <li>إجراء اختبار تقييمي بعد الانتهاء من كل وحدة لقياس مستوى الطالب الاستيعابي.</li>
-                <li>عمل مراجعات دورية وشاملة للمناهج قبل امتحانات الفصل الدراسي.</li>
-                <li>متابعة مستوى الطالب بدقة وإبلاغ ولي الأمر بأي انخفاض ملحوظ في المستوى أو الغياب.</li>
-                <li>توفير الملخصات والملزمات التعليمية والاقتصادية الداعمة للطالب عند الحاجة.</li>
-                <li>الالتزام التام بمواعيد الحصص المعلنة، وفي حالة وجود أي تعديل طارئ يتم إبلاغ الطلاب مسبقًا بوقت مناسب.</li>
-                <li>توفير بيئة تعليمية محفزة وقائمة على الاحترام المتبادل والانضباط التام.</li>
-            </ol>
-        </div>
-
-        <div class="section-card">
-            <div class="section-title">📌 ثانيًا: التزامات ولي الأمر والطالب</div>
-            <ol class="rule-list">
-                <li>الالتزام التام بالحضور في المواعيد المحددة دون تأخير.</li>
-                <li>سداد الرسوم الدراسية المستحقة في الموعد المتفق عليه دون تأخير.</li>
-                <li>الالتزام بحل الواجبات المدرسية الموكلة للطالب والمراجعة اليومية المستمرة.</li>
-                <li>إحضار كافة الأدوات والكتب والملخصات التعليمية المطلوبة لكل حصة.</li>
-                <li>احترام القوانين الداخلية للسنتر والمحافظة الكاملة على ممتلكاته.</li>
-                <li>عدم اصطحاب أو استخدام الهاتف المحمول أثناء الحصة إلا في حالات الضرورة القصوى ووفق إذن المدرس.</li>
-                <li>المتابعة المستمرة لنتائج الامتحانات الدورية والتواصل المباشر مع المدرس عند وجود أي تدنٍ في المستوى.</li>
-                <li>إبلاغ المدرس أو إدارة السنتر مسبقًا في حالة غياب الطالب لأسباب قهرية.</li>
-            </ol>
-        </div>
-
-        <div class="section-card">
-            <div class="section-title">📌 ثالثًا: سياسة الغياب والحضور</div>
-            <ul class="rule-list" style="list-style-type: square;">
-                <li>غياب الطالب عن الحصة الأساسية لا يمنحه الحق في المطالبة بإعادة الحصة بشكل خاص.</li>
-                <li>في حالة الغياب بعذر مقبول، يتم توفير ما أمكن من المحتوى التعليمي أو التعويض وفقًا لنظام المجموعة المتاح.</li>
-                <li>تكرار غياب الطالب يؤثر سلبًا على مستواه الدراسي، ويتحمل ولي الأمر المسؤولية الكاملة المترتبة على ذلك.</li>
-            </ul>
-        </div>
-
-        <div class="section-card">
-            <div class="section-title">📌 رابعًا: سياسة التقييم والامتحانات</div>
-            <ul class="rule-list" style="list-style-type: square;">
-                <li>تعتبر الامتحانات الدورية جزءًا أساسيًا ولا يتجزأ من العملية التقييمية للطالب.</li>
-                <li>يجب على الطالب حضور جميع الامتحانات المعلن عنها في مواعيدها المحددة.</li>
-                <li>في حالة الغياب بدون عذر مقبول، يعتبر الطالب متغيبًا ولا يحق له إعادة الامتحان إلا في الحالات الاستثنائية التي يقدرها الطرف الأول.</li>
-            </ul>
-        </div>
-
-        <div class="section-card">
-            <div class="section-title">📌 خامسًا: سياسة الرسوم والاشتراكات</div>
-            <ul class="rule-list" style="list-style-type: square;">
-                <li>يتم سداد الاشتراك الدراسي في الموعد المحدد والمتفق عليه بين الطرفين.</li>
-                <li>التأخير المتكرر في سداد المستحقات قد يؤدي إلى إيقاف حضور الطالب للحصص حتى تسوية الأمور المالية.</li>
-                <li>الرسوم والمصروفات المدفوعة لا تُسترد بعد بدء الدراسة الفنية للمجموعة.</li>
-            </ul>
-        </div>
-
-        <div class="section-card">
-            <div class="section-title">📌 سادسًا: قواعد عامة وسلوكية</div>
-            <ul class="rule-list" style="list-style-type: square;">
-                <li>الاحترام المتبادل هو الأساس السائد في التعامل بين المدرس، الطالب، وولي الأمر.</li>
-                <li>يُمنع منعًا باتًا تصوير، تسجيل، أو نشر أي جزء من المحتوى التعليمي أو الملزمات دون إذن كتابي مسبق من المستر.</li>
-                <li>للمستر الحق الكامل في اتخاذ الإجراءات التربوية المناسبة (والتي قد تصل للاستبعاد) في حالة الإخلال بالنظام أو السلوك غير اللائق.</li>
-                <li>الهدف الأسمى والأساسي من هذا الاتفاق هو تغليب مصلحة الطالب العلمية والتربوية.</li>
-            </ul>
-        </div>
-
-        <div class="section-card">
-            <div class="section-title">📌 سابعًا: نظام سداد المصروفات الدراسية</div>
-            <p style="margin: 0 0 15px 0; font-size: 14.5px; color: #475569;">حرصًا على توفير خيارات مرنة تناسب جميع أولياء الأمور، يحق لولي الأمر اختيار إحدى طريقتي السداد التاليتين عند بداية الاشتراك:</p>
-            
-            <div class="payment-container">
-                <div class="payment-box">
-                    <h4>■ النظام الأول: السداد بالحصة الواحدة</h4>
-                    <p>يتم سداد قيمة كل حصة مباشرة قبل أو أثناء حضورها. وفي حالة غياب الطالب، تطبق سياسة الغياب العامة المتفق عليها أعلاه.</p>
-                </div>
-                <div class="payment-box">
-                    <h4>■ النظام الثاني: السداد بالاشتراك الشهري المقدم</h4>
-                    <p>يتم سداد الاشتراك كاملًا مقدمًا قبل بداية كل شهر دراسي. يلتزم ولي الأمر بالسداد في الموعد لضمان استمرار حجز مكان الطالب في المجموعة. لا يتم خصم أو استقطاع أي جزء من الاشتراك الشهري بسبب غياب الطالب، إلا في الحالات الخاصة التي يقدرها الطرف الأول.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- الإقرار التفاعلي الكامل بالأسعار -->
-        <div class="acknowledgement-section">
-            <h3>📝 إقرار واختيار ولي الأمر:</h3>
-            <p style="margin: 0; font-weight: 500;">لقد اطلعت على الأنظمة المتاحة وأختار نظام:</p>
-            
-            <div class="radio-group">
-                <label class="radio-label">
-                    <input type="radio" name="إقرار ولي الأمر بنظام السداد" value="السداد بالحصة" required>
-                    ⬜ السداد بالحصة
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="إقرار ولي الأمر بنظام السداد" value="السداد الشهري" required>
-                    ⬜ السداد الشهري
-                </label>
-            </div>
-
-            <p style="margin: 20px 0 10px 0; font-weight: 600; color: #78350f;">بناءً عليه، يتم تحديد القيم المالية أدناه بالتنسيق مع الإدارة:</p>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="per_lesson">قيمة الحصة المقررة (جنيه):</label>
-                    <input type="number" id="per_lesson" name="قيمة الحصة المحددة تفصيلاً" placeholder="أدخل القيمة المتفق عليها" required>
-                </div>
-                <div class="form-group">
-                    <label for="monthly">قيمة الاشتراك الشهري (جنيه):</label>
-                    <input type="number" id="monthly" name="قيمة الاشتراك الشهري المحدد تفصيلاً" placeholder="أدخل القيمة المتفق عليها" required>
-                </div>
-            </div>
-        </div>
-
-        <!-- الرؤية -->
-        <div class="vision-box">
-            <h4>"رؤيتنا وهدفنا المشترك"</h4>
-            <p>"نؤمن أن النجاح والتميز لا يعتمدان على الشرح الأكاديمي فقط، بل ركيزته الأساسية هي الالتزام المتبادل، المتابعة الدقيقة، الانضباط، والتعاون المثمر بين المدرس، ولي الأمر، والطالب."<br><br>
-            <strong>مع مستر مهدي حسن... هدفنا ليس مجرد شرح المنهج، بل بناء طالب فاهم، واثق من نفسه، وقادر على التفكير وحل المشكلات.</strong></p>
-        </div>
-
-        <!-- قسم التوقيعات والتوثيق الإلكتروني المطور -->
-        <div class="signature-section">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>الطرف الأول (المدرس):</label>
-                    <input type="text" value="التوقيع الرقمي: مستر مهدي حسن" readonly style="background-color: #f1f5f9; font-style: italic; border-color: #cbd5e1; color: #1e3a8a;">
-                </div>
-                <div class="form-group">
-                    <label for="parent_sign">توقيع الطرف الثاني (ولي الأمر):</label>
-                    <input type="text" id="parent_sign" name="توقيع ولي الأمر الإلكتروني" placeholder="اكتب اسمك الثلاثي هنا بمثابة توقيع إلكتروني" required>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="phone_num">رقم هاتف التواصل للتوثيق:</label>
-                    <input type="tel" id="phone_num" name="رقم الهاتف للاتصال" placeholder="أدخل رقم الهاتف الشخصي" required>
-                </div>
-                <div class="form-group">
-                    <label for="sign_date">تاريخ التوقيع الإلكتروني:</label>
-                    <input type="date" id="sign_date" name="تاريخ التوقيع الإلكتروني" required>
-                </div>
-            </div>
-        </div>
-
-        <button type="submit" class="submit-btn">الموافقة الإلكترونية وإرسال استمارة التنسيق</button>
-    </form>
 </div>
 
 </body>
