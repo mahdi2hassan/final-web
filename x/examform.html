@@ -7,14 +7,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-blue: #0b1b32;
-            --accent-blue: #1a62a3;
-            --light-blue: #f0f6ff;
-            --gold: #d97706;
-            --gold-light: #fffbe3;
-            --dark-card-bg: #111827;
-            --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-            --shadow-bold: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --primary-blue: #0c2340;
+            --accent-blue: #1d72b8;
+            --light-blue: #f0f7ff;
+            --gold: #f39c12;
+            --gold-light: #fef9e7;
+            --border-color: #0c2340;
+            --shadow: 0 10px 25px rgba(12, 35, 64, 0.1);
         }
 
         * {
@@ -25,24 +24,23 @@
         }
 
         body {
-            background-color: #0f172a;
+            background-color: #eef2f7;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 25px 20px;
-            color: #334155;
+            padding: 20px;
         }
 
         /* ----- شريط التحكم والأزرار العلوي ----- */
         .admin-controls {
             width: 210mm;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--accent-blue);
             border-radius: 16px;
-            padding: 16px 22px;
-            margin-bottom: 22px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
@@ -62,37 +60,36 @@
             border: none;
             padding: 10px 18px;
             border-radius: 10px;
-            font-weight: 800;
-            font-size: 13.5px;
+            font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.12);
         }
 
-        .btn-success { background: linear-gradient(135deg, #059669, #10b981); }
-        .btn-warning { background: linear-gradient(135deg, #d97706, #f59e0b); }
-        .btn-danger { background: linear-gradient(135deg, #dc2626, #ef4444); }
-        .btn-print { background: linear-gradient(135deg, #334155, #475569); }
+        .btn-success { background: linear-gradient(135deg, #27ae60, #2dc997); }
+        .btn-warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .btn-print { background: linear-gradient(135deg, #2c3e50, #34495e); }
 
         .edit-panel {
             display: none;
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px dashed rgba(255, 255, 255, 0.2);
+            background: #f8fafc;
+            border: 1px dashed var(--accent-blue);
             border-radius: 12px;
-            padding: 16px;
+            padding: 15px;
             margin-top: 10px;
             gap: 12px;
             flex-direction: column;
-            color: #e2e8f0;
         }
 
         .input-group {
@@ -104,15 +101,13 @@
 
         .input-group label {
             font-weight: 700;
-            color: #f1f5f9;
+            color: var(--primary-blue);
             font-size: 13px;
         }
 
         .input-group input, .input-group select {
             padding: 8px 14px;
-            border: 1.5px solid #475569;
-            background: #1e293b;
-            color: #fff;
+            border: 1.5px solid #cbd5e1;
             border-radius: 8px;
             font-family: inherit;
             outline: none;
@@ -121,7 +116,7 @@
 
         .input-group input:focus, .input-group select:focus {
             border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(26, 98, 163, 0.3);
+            box-shadow: 0 0 0 3px rgba(29, 114, 184, 0.15);
         }
 
         /* ----- ورقة الامتحان A4 ----- */
@@ -129,53 +124,58 @@
             width: 210mm;
             min-height: 297mm;
             background: #ffffff;
-            border-radius: 16px;
-            padding: 25px 32px;
-            box-shadow: var(--shadow-bold);
+            border-radius: 12px;
+            padding: 25px 30px;
+            box-shadow: var(--shadow);
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: all 0.3s ease;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
-        /* 🎨 أنماط الخلفيات الغامقة والمتنوعة */
-        .math-bg {
+        /* 🎨 خلفيات ظليّة ومجهزة للطباعة */
+        .math-bg-shadow {
             position: absolute;
             font-weight: 900;
-            color: rgba(11, 27, 50, 0.04);
+            color: rgba(12, 35, 64, 0.06);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.12);
             user-select: none;
             z-index: 0;
             pointer-events: none;
         }
 
-        /* خلفية 1: فاتحة تقليدية مع معادلات */
-        .bg-pattern1 .bg-1 { top: 35px; left: 40px; font-size: 32px; }
-        .bg-pattern1 .bg-2 { top: 160px; left: 25px; font-size: 26px; }
-        .bg-pattern1 .bg-3 { bottom: 100px; left: 35px; font-size: 36px; }
-        .bg-pattern1 .bg-4 { bottom: 140px; right: 45px; font-size: 24px; }
+        /* خلفية 1: رموز ظلية بارزة */
+        .bg-pattern-1 .bg-1 { top: 35px; left: 40px; font-size: 32px; }
+        .bg-pattern-1 .bg-2 { top: 160px; left: 25px; font-size: 26px; }
+        .bg-pattern-1 .bg-3 { bottom: 110px; left: 35px; font-size: 36px; }
+        .bg-pattern-1 .bg-4 { bottom: 150px; right: 45px; font-size: 24px; }
 
-        /* خلفية 2: داكنة - أزرق كحلي فاخر (Dark Navy) */
-        .bg-pattern2 {
-            background: #0b1329 !important;
-            color: #f8fafc;
-        }
-        .bg-pattern2 .math-bg { color: rgba(255, 255, 255, 0.05); }
-
-        /* خلفية 3: داكنة - رسم بياني هندسي نيون (Dark Grid) */
-        .bg-pattern3 {
-            background: #0f172a !important;
-            background-image: linear-gradient(to right, rgba(56, 189, 248, 0.06) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(56, 189, 248, 0.06) 1px, transparent 1px) !important;
-            background-size: 20px 20px !important;
-            color: #f8fafc;
+        /* خلفية 2: دفتر رسم بياني مع ظلال شبكية */
+        .bg-pattern-2 {
+            background-image: linear-gradient(to right, rgba(29, 114, 184, 0.08) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(29, 114, 184, 0.08) 1px, transparent 1px);
+            background-size: 20px 20px;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.03);
         }
 
-        /* خلفية 4: داكنة - رمادي فحمي فاخر (Charcoal Premium) */
-        .bg-pattern4 {
-            background: #18181b !important;
-            color: #f4f4f5;
+        /* خلفية 3: مائل هندسي مع ظلال عميقة */
+        .bg-pattern-3 {
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(243, 156, 18, 0.03),
+                rgba(243, 156, 18, 0.03) 15px,
+                rgba(29, 114, 184, 0.04) 15px,
+                rgba(29, 114, 184, 0.04) 30px
+            );
+        }
+
+        /* خلفية 4: نقاط الدفتر المنقط مع ظلال */
+        .bg-pattern-4 {
+            background-image: radial-gradient(rgba(12, 35, 64, 0.15) 1px, transparent 1px);
+            background-size: 16px 16px;
         }
 
         .content-wrap {
@@ -183,69 +183,86 @@
             z-index: 1;
         }
 
-        /* ----- 1. الهيدر ورأس الصفحة ----- */
+        /* ----- 1. الهيدر وكارت المعلم المبتكر ----- */
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            gap: 15px;
         }
 
-        .teacher-card {
-            border: 2px solid var(--accent-blue);
-            border-radius: 16px;
-            padding: 8px 20px;
+        /* كارت اسم المعلم والمادة بتصميم مميز */
+        .teacher-card-featured {
+            background: linear-gradient(135deg, #0c2340 0%, #1d72b8 100%);
+            border-radius: 18px;
+            padding: 10px 22px;
+            color: #ffffff;
+            box-shadow: 0 8px 18px rgba(12, 35, 64, 0.25);
+            min-width: 170px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #64b5f6;
             text-align: center;
-            background: #ffffff;
-            box-shadow: var(--shadow-soft);
-            min-width: 155px;
-        }
-        .bg-pattern2 .teacher-card, .bg-pattern3 .teacher-card, .bg-pattern4 .teacher-card {
-            background: #1e293b;
-            border-color: #38bdf8;
-            color: #fff;
         }
 
-        .teacher-card .badge {
-            background: linear-gradient(135deg, var(--gold), #b45309);
-            color: #fff;
-            padding: 2px 14px;
+        .teacher-card-featured::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .teacher-card-featured .badge {
+            background: #f39c12;
+            color: #0c2340;
+            padding: 3px 14px;
             border-radius: 12px;
             font-size: 11px;
-            font-weight: 800;
-            display: inline-block;
-            margin-bottom: 4px;
-        }
-        .teacher-card .name {
-            color: var(--primary-blue);
             font-weight: 900;
-            font-size: 16px;
-        }
-        .bg-pattern2 .teacher-card .name, .bg-pattern3 .teacher-card .name, .bg-pattern4 .teacher-card .name {
-            color: #38bdf8;
+            display: inline-block;
+            margin-bottom: 5px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            text-transform: uppercase;
         }
 
-        .teacher-card .subject {
-            color: var(--accent-blue);
-            font-size: 12px;
+        .teacher-card-featured .name {
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            color: #ffffff;
+        }
+
+        .teacher-card-featured .subject-tag {
+            background: rgba(255, 255, 255, 0.18);
+            border-radius: 10px;
+            padding: 2px 10px;
+            font-size: 12.5px;
             font-weight: 800;
-            border-top: 1px dashed #cbd5e1;
-            margin-top: 4px;
-            padding-top: 3px;
+            margin-top: 6px;
+            display: inline-block;
+            color: #eef6ff;
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
+        /* عنوان الامتحان الرئيسي */
         .main-title-box {
             background: linear-gradient(135deg, #1d5b96 0%, var(--primary-blue) 100%);
             color: #fff;
             padding: 12px 42px;
-            border-radius: 32px;
+            border-radius: 30px;
             text-align: center;
-            border: 3px solid #38bdf8;
-            box-shadow: 0 10px 25px rgba(11, 27, 50, 0.3);
+            border: 3px solid #64b5f6;
+            box-shadow: 0 8px 20px rgba(12, 35, 64, 0.2);
             position: relative;
         }
         .main-title-box h1 {
-            font-size: 25px;
+            font-size: 24px;
             font-weight: 900;
             letter-spacing: 0.5px;
         }
@@ -260,12 +277,12 @@
         }
         .main-title-box .sub-text {
             background: rgba(255, 255, 255, 0.2);
-            padding: 3px 18px;
-            border-radius: 14px;
+            padding: 2px 16px;
+            border-radius: 12px;
             font-size: 12px;
             margin-top: 4px;
             display: inline-block;
-            font-weight: 800;
+            font-weight: 700;
         }
 
         /* شريط بيانات الطالب */
@@ -276,19 +293,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 22px;
+            padding: 10px 20px;
             margin-bottom: 25px;
             font-size: 13.5px;
             font-weight: 800;
             color: var(--primary-blue);
-            box-shadow: var(--shadow-soft);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
-        .bg-pattern2 .student-info-bar, .bg-pattern3 .student-info-bar, .bg-pattern4 .student-info-bar {
-            background: #1e293b;
-            color: #f1f5f9;
-            border-color: #38bdf8;
-        }
-
         .info-item {
             display: flex;
             align-items: center;
@@ -305,46 +316,39 @@
             background: #fff;
             border: 2px solid var(--gold);
             border-radius: 12px;
-            padding: 2px 14px;
-            color: var(--gold);
+            padding: 2px 12px;
+            color: #d35400;
             font-weight: 900;
-        }
-        .bg-pattern2 .score-box, .bg-pattern3 .score-box, .bg-pattern4 .score-box {
-            background: #0f172a;
-            color: #f59e0b;
         }
 
         /* ----- 2. صناديق الأسئلة ----- */
         .question-card {
             border-radius: 22px;
             position: relative;
-            margin-bottom: 26px;
-            padding: 40px 22px 20px 22px;
-            background: #ffffff;
+            margin-bottom: 25px;
+            padding: 38px 22px 20px 22px;
+            background: rgba(255, 255, 255, 0.98);
             min-height: 210px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .bg-pattern2 .question-card, .bg-pattern3 .question-card, .bg-pattern4 .question-card {
-            background: #1e293b;
-            color: #f8fafc;
+            transition: all 0.3s;
         }
 
         .q-blue {
             border: 2.5px solid var(--accent-blue);
+            box-shadow: 0 6px 15px rgba(29, 114, 184, 0.08);
         }
         .q-blue .q-header {
-            background: linear-gradient(135deg, #1a62a3, var(--primary-blue));
+            background: linear-gradient(135deg, #1d72b8, var(--primary-blue));
         }
 
         .q-gold {
             border: 2.5px solid var(--gold);
+            box-shadow: 0 6px 15px rgba(243, 156, 18, 0.08);
         }
         .q-gold .q-header {
-            background: linear-gradient(135deg, #d97706, #92400e);
+            background: linear-gradient(135deg, #f39c12, #d35400);
         }
 
         .q-header {
@@ -353,14 +357,14 @@
             right: 50%;
             transform: translateX(50%);
             color: #fff;
-            padding: 6px 30px;
+            padding: 5px 28px;
             border-radius: 25px;
             font-weight: 900;
             font-size: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.18);
         }
         .q-circle {
             background: #fff;
@@ -381,13 +385,13 @@
             line-height: 1.7;
             outline: none;
             padding: 6px;
+            color: #1e293b;
         }
 
-        /* عند تفعيل الوضع التفاعلي للتعديل */
         [contenteditable="true"] {
             border: 1.5px dashed var(--accent-blue) !important;
             border-radius: 8px;
-            background: rgba(56, 189, 248, 0.05);
+            background: #f8fafc;
         }
 
         .q-img {
@@ -397,7 +401,8 @@
             margin-top: 12px;
             border-radius: 10px;
             display: block;
-            border: 1px solid #cbd5e1;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
         .q-score-bottom {
@@ -409,10 +414,6 @@
             font-size: 12.5px;
             font-weight: 800;
             color: var(--primary-blue);
-        }
-        .bg-pattern2 .q-score-bottom, .bg-pattern3 .q-score-bottom, .bg-pattern4 .q-score-bottom {
-            background: #0f172a;
-            color: #f59e0b;
         }
 
         .q-controls {
@@ -433,15 +434,15 @@
             background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue), var(--primary-blue));
             color: #fff;
             text-align: center;
-            padding: 11px;
+            padding: 10px;
             border-radius: 22px;
             font-weight: 900;
-            font-size: 15px;
+            font-size: 14.5px;
             letter-spacing: 0.5px;
-            box-shadow: var(--shadow-soft);
+            box-shadow: 0 4px 12px rgba(12, 35, 64, 0.15);
         }
 
-        /* إعدادات الطباعة والمعاينة القياسية */
+        /* إعدادات الطباعة والمعاينة الاحترافية مع الحفاظ على الخلفيات والظلال */
         @media print {
             body {
                 background: none;
@@ -459,6 +460,12 @@
                 border-radius: 0;
                 width: 100%;
                 height: 100vh;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .math-bg-shadow {
+                color: rgba(12, 35, 64, 0.08) !important;
+                text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1) !important;
             }
         }
     </style>
@@ -486,12 +493,12 @@
             </div>
 
             <div class="input-group">
-                <label>اختيار خلفية ورقة الامتحان:</label>
+                <label>اختيار خلفية المادة الظليّة:</label>
                 <select id="bgSelect" onchange="changeBackground()">
-                    <option value="pattern1">☀️ خلفية فاتحة (رموز ومعادلات)</option>
-                    <option value="pattern2">🌙 خلفية غامقة 1 (أزرق كحلي فاخر)</option>
-                    <option value="pattern3">🌙 خلفية غامقة 2 (شبكة بيانية نيون)</option>
-                    <option value="pattern4">🌙 خلفية غامقة 3 (رمادي فحمي احترافي)</option>
+                    <option value="pattern1">خلفية 1 (معادلات ورموز ظليّة ببروز)</option>
+                    <option value="pattern2">خلفية 2 (شبكة دفتر رسم بياني)</option>
+                    <option value="pattern3">خلفية 3 (خطوط مائلة بظلال عميقة)</option>
+                    <option value="pattern4">خلفية 4 (نقاط الدفتر الظليّة)</option>
                 </select>
                 <button class="btn btn-success" onclick="addQuestion()">➕ إضافة سؤال جديد</button>
             </div>
@@ -499,17 +506,17 @@
     </div>
 
     <!-- ورقة الامتحان -->
-    <div class="page bg-pattern1" id="examPage">
-        <!-- طبقة خلفية الرموز الرياضية -->
+    <div class="page bg-pattern-1" id="examPage">
+        <!-- طبقة خلفية الرموز الرياضية ذات الظلال -->
         <div id="bgSymbols">
-            <div class="math-bg bg-1">f(x) = x²</div>
-            <div class="math-bg bg-2">a² + b² = c²</div>
-            <div class="math-bg bg-3">√x</div>
-            <div class="math-bg bg-4">π</div>
+            <div class="math-bg-shadow bg-1">f(x) = x²</div>
+            <div class="math-bg-shadow bg-2">a² + b² = c²</div>
+            <div class="math-bg-shadow bg-3">√x</div>
+            <div class="math-bg-shadow bg-4">π</div>
         </div>
 
         <div class="content-wrap">
-            <!-- 1. الهيدر -->
+            <!-- 1. الهيدر ورأس الصفحة -->
             <div class="header-top">
                 <div style="font-weight: bold; color: var(--accent-blue); font-size: 15px;">
                     f(x) = x²
@@ -521,10 +528,11 @@
                     <div class="sub-text">المادة: <span class="displaySubject editable-element">الرياضيات</span></div>
                 </div>
 
-                <div class="teacher-card">
-                    <span class="badge editable-element">إعداد</span>
+                <!-- كارت الأستاذ والمادة البارز والمميز -->
+                <div class="teacher-card-featured">
+                    <span class="badge editable-element">إعداد المعلم</span>
                     <div class="name editable-element" id="displayTeacherName">مهدي حسن</div>
-                    <div class="subject">المادة: <span class="displaySubject editable-element">الرياضيات</span></div>
+                    <div class="subject-tag">المادة: <span class="displaySubject editable-element">الرياضيات</span></div>
                 </div>
             </div>
 
@@ -606,7 +614,7 @@
         </div>
     </div>
 
-    <!-- السكريبت والبرمجة -->
+    <!-- البرمجة والخوارزميات -->
     <script>
         let isEditMode = false;
         let isDirectEditMode = false;
@@ -644,7 +652,7 @@
 
         function toggleDirectEdit() {
             if (!isDirectEditMode) {
-                let pwd = prompt("أدخل كود المعلم لتفعيل التعديل المباشر:");
+                let pwd = prompt("أدخل كود المعلم لتفعيل التعديل المباشر على العناصر:");
                 if (validateTeacherCode(pwd)) {
                     isDirectEditMode = true;
                     enableContentEditable(true);
