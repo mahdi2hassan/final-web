@@ -33,7 +33,7 @@
             min-height: 100vh;
         }
 
-        /* ----- شريط التحكم المتجاوب ----- */
+        /* ----- شريط التحكم ----- */
         .admin-controls {
             width: 100%;
             max-width: 210mm;
@@ -165,8 +165,8 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 140px;
-            height: 100px;
+            width: 130px;
+            height: 95px;
             background: linear-gradient(135deg, var(--primary-navy) 80%, transparent 80%);
             z-index: 0;
             pointer-events: none;
@@ -178,8 +178,8 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 155px;
-            height: 110px;
+            width: 145px;
+            height: 105px;
             border-bottom: 3.5px solid var(--accent-gold);
             transform: rotate(-10deg);
             transform-origin: top left;
@@ -190,13 +190,13 @@
         .decor-symbol-math {
             position: absolute;
             top: 8px;
-            left: 10px;
+            left: 8px;
             color: #ffffff;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
             z-index: 1;
             pointer-events: none;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .content-wrap {
@@ -204,12 +204,12 @@
             z-index: 2;
         }
 
-        /* ----- 1. الهيدر وتوسيط المعلم والمادة ----- */
+        /* ----- 1. الهيدر والتصنيف الجديد لكارت المعلم والمادة ----- */
         .header-top {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 16px;
             padding-left: 0;
         }
@@ -232,15 +232,15 @@
         @media (min-width: 520px) {
             .title-brand {
                 justify-content: flex-start;
-                padding-left: 90px;
+                padding-left: 70px;
             }
         }
 
         .title-brand .brand-icon-box {
             background: #f1f5f9;
             color: var(--primary-navy);
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -260,54 +260,63 @@
             font-size: 22px;
         }
 
-        /* كارت المعلم والمادة المتموضع في منتصف الصفحة */
-        .teacher-card {
-            background: #ffffff;
-            border: 1.5px solid #e2e8f0;
-            border-radius: var(--radius-md);
-            padding: 8px 16px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            min-width: 170px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .teacher-card-line {
+        /* التصميم العصري الرائع لكارت المعلم والمادة في المنتصف */
+        .teacher-hero-badge {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1.5px solid #cbd5e1;
+            border-radius: 30px;
+            padding: 6px 18px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 10px;
+            justify-content: center;
+            gap: 12px;
+            margin: 0 auto;
+            position: relative;
         }
 
-        .teacher-card-line .text-group {
-            text-align: right;
+        .teacher-hero-badge .hero-chunk {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .teacher-card-line .sub {
-            font-size: 9.5px;
-            color: #64748b;
-            font-weight: 700;
-        }
-
-        .teacher-card-line .val {
-            font-size: 12.5px;
-            font-weight: 900;
-            color: var(--primary-navy);
-        }
-
-        .teacher-card-line .badge-icon {
-            background: #f1f5f9;
-            color: var(--primary-navy);
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
+        .teacher-hero-badge .hero-icon {
+            background: var(--primary-navy);
+            color: #ffffff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+        }
+
+        .teacher-hero-badge .hero-text {
+            display: flex;
+            flex-direction: column;
+            text-align: right;
+        }
+
+        .teacher-hero-badge .hero-label {
+            font-size: 9px;
+            color: #64748b;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .teacher-hero-badge .hero-value {
+            font-size: 13px;
+            font-weight: 900;
+            color: var(--primary-navy);
+            line-height: 1.2;
+        }
+
+        .teacher-hero-badge .hero-divider {
+            width: 1px;
+            height: 22px;
+            background-color: #cbd5e1;
         }
 
         /* شريط معلومات الطالب */
@@ -540,7 +549,7 @@
         </div>
 
         <div class="content-wrap">
-            <!-- 1. الهيدر مع وضع اسم المعلم والمادة في منتصف الصفحة تماماً -->
+            <!-- 1. الهيدر بتصميم كارت المعلم والمادة الرائع في المنتصف -->
             <div class="header-top">
                 <div class="title-brand">
                     <div class="brand-icon-box">
@@ -552,31 +561,34 @@
                     </div>
                 </div>
 
-                <!-- كارت المعلم والمادة متموضع في المنتصف -->
-                <div class="teacher-card">
-                    <!-- سطر اسم المعلم -->
-                    <div class="teacher-card-line">
-                        <div class="badge-icon">
-                            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <!-- كارت المعلم والمادة المبتكر بالمنتصف (Hero Badge) -->
+                <div class="teacher-hero-badge">
+                    <!-- المعلم -->
+                    <div class="hero-chunk">
+                        <div class="hero-icon">
+                            <svg class="svg-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
                         </div>
-                        <div class="text-group">
-                            <div class="sub">إعداد</div>
-                            <div class="val editable-element" id="displayTeacherName">أ. مهدي حسن</div>
+                        <div class="hero-text">
+                            <span class="hero-label">إعداد المعلم</span>
+                            <span class="hero-value editable-element" id="displayTeacherName">أ. مهدي حسن</span>
                         </div>
                     </div>
-                    <!-- سطر المادة -->
-                    <div class="teacher-card-line">
-                        <div class="badge-icon">
-                            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H8v-2h4V6h2v4h4v2z"/></svg>
+
+                    <div class="hero-divider"></div>
+
+                    <!-- المادة -->
+                    <div class="hero-chunk">
+                        <div class="hero-icon" style="background: var(--accent-gold);">
+                            <svg class="svg-icon" style="width: 14px; height: 14px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H8v-2h4V6h2v4h4v2z"/></svg>
                         </div>
-                        <div class="text-group">
-                            <div class="sub">المادة</div>
-                            <div class="val displaySubject editable-element">الرياضيات</div>
+                        <div class="hero-text">
+                            <span class="hero-label">مادة</span>
+                            <span class="hero-value displaySubject editable-element">الرياضيات</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- مساحة موازية لموازنة المنتصف -->
+                <!-- مساحة لموازنة الهيدر -->
                 <div></div>
             </div>
 
