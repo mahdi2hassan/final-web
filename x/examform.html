@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>امتحان حصة - رياضيات احترافي</title>
+    <title>امتحان الحصة - رياضيات</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-blue: #0c2340;
-            --accent-blue: #1d72b8;
-            --light-blue: #f0f7ff;
-            --gold: #f39c12;
-            --gold-light: #fef9e7;
-            --border-color: #0c2340;
-            --shadow: 0 10px 25px rgba(12, 35, 64, 0.1);
+            --primary-navy: #0e2a47;
+            --accent-gold: #d49a24;
+            --light-gold: #fdf8eb;
+            --gray-bg: #f4f6f9;
+            --border-color: #0e2a47;
         }
 
         * {
@@ -34,13 +32,12 @@
         /* ----- شريط التحكم والأزرار العلوي ----- */
         .admin-controls {
             width: 210mm;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 2px solid var(--accent-blue);
-            border-radius: 16px;
-            padding: 15px 20px;
+            background: #ffffff;
+            border: 2px solid var(--primary-navy);
+            border-radius: 12px;
+            padding: 12px 20px;
             margin-bottom: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
@@ -55,40 +52,38 @@
         }
 
         .btn {
-            background-color: var(--accent-blue);
+            background-color: var(--primary-navy);
             color: #fff;
             border: none;
-            padding: 10px 18px;
-            border-radius: 10px;
+            padding: 8px 16px;
+            border-radius: 8px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13.5px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+            opacity: 0.9;
         }
 
-        .btn-success { background: linear-gradient(135deg, #27ae60, #2dc997); }
-        .btn-warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
-        .btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .btn-print { background: linear-gradient(135deg, #2c3e50, #34495e); }
+        .btn-success { background-color: #27ae60; }
+        .btn-warning { background-color: #f39c12; }
+        .btn-danger { background-color: #e74c3c; }
+        .btn-print { background-color: #2c3e50; }
 
         .edit-panel {
             display: none;
             width: 100%;
             background: #f8fafc;
-            border: 1px dashed var(--accent-blue);
-            border-radius: 12px;
-            padding: 15px;
+            border: 1px dashed var(--primary-navy);
+            border-radius: 10px;
+            padding: 12px;
             margin-top: 10px;
-            gap: 12px;
+            gap: 10px;
             flex-direction: column;
         }
 
@@ -101,32 +96,25 @@
 
         .input-group label {
             font-weight: 700;
-            color: var(--primary-blue);
+            color: var(--primary-navy);
             font-size: 13px;
         }
 
         .input-group input, .input-group select {
-            padding: 8px 14px;
+            padding: 6px 12px;
             border: 1.5px solid #cbd5e1;
-            border-radius: 8px;
+            border-radius: 6px;
             font-family: inherit;
-            outline: none;
-            transition: 0.2s;
         }
 
-        .input-group input:focus, .input-group select:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(29, 114, 184, 0.15);
-        }
-
-        /* ----- ورقة الامتحان A4 ----- */
+        /* ----- ورقة الامتحان A4 (تصميم المايسترو الجديد) ----- */
         .page {
             width: 210mm;
             min-height: 297mm;
             background-color: #ffffff !important;
-            border-radius: 12px;
-            padding: 25px 30px;
-            box-shadow: var(--shadow);
+            border-radius: 6px;
+            padding: 20px 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
             display: flex;
@@ -136,289 +124,300 @@
             print-color-adjust: exact !important;
         }
 
-        /* 🎨 خلفيات مخصصة ثابته وبارزة للطباعة */
-        .math-bg-shadow {
+        /* ----- زخارف الزوايا والأركان الهندسية ----- */
+        .corner-decor-top-left {
             position: absolute;
-            font-weight: 900;
-            color: rgba(12, 35, 64, 0.08) !important;
-            user-select: none;
+            top: 0;
+            left: 0;
+            width: 220px;
+            height: 160px;
+            background: linear-gradient(135deg, var(--primary-navy) 70%, transparent 70%);
             z-index: 0;
             pointer-events: none;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
 
-        .bg-pattern-1 .bg-1 { top: 35px; left: 40px; font-size: 32px; }
-        .bg-pattern-1 .bg-2 { top: 160px; left: 25px; font-size: 26px; }
-        .bg-pattern-1 .bg-3 { bottom: 110px; left: 35px; font-size: 36px; }
-        .bg-pattern-1 .bg-4 { bottom: 150px; right: 45px; font-size: 24px; }
-
-        .bg-pattern-2 {
-            background-image: linear-gradient(to right, rgba(29, 114, 184, 0.1) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(29, 114, 184, 0.1) 1px, transparent 1px) !important;
-            background-size: 20px 20px !important;
+        .corner-decor-top-left-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 235px;
+            height: 175px;
+            border-bottom: 5px solid var(--accent-gold);
+            transform: rotate(-12deg);
+            transform-origin: top left;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        .bg-pattern-3 {
-            background: repeating-linear-gradient(
-                45deg,
-                rgba(243, 156, 18, 0.05),
-                rgba(243, 156, 18, 0.05) 15px,
-                rgba(29, 114, 184, 0.05) 15px,
-                rgba(29, 114, 184, 0.05) 30px
-            ) !important;
+        .corner-decor-bottom-right {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 200px;
+            height: 150px;
+            background: linear-gradient(-45deg, var(--primary-navy) 70%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
-        .bg-pattern-4 {
-            background-image: radial-gradient(rgba(12, 35, 64, 0.18) 1.2px, transparent 1.2px) !important;
-            background-size: 18px 18px !important;
+        .corner-decor-bottom-left {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 180px;
+            height: 100px;
+            background: linear-gradient(45deg, var(--primary-navy) 60%, transparent 60%);
+            z-index: 0;
+            pointer-events: none;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        /* الرموز والأشكال التزيينية داخل الزوايا */
+        .decor-symbols-left {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: #ffffff;
+            z-index: 1;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.8;
+            pointer-events: none;
         }
 
         .content-wrap {
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
 
         /* ----- 1. الهيدر ورأس الصفحة ----- */
         .header-top {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-left: 180px; /* ترك مساحة للركن الأيسر */
+        }
+
+        /* عنوان امتحان الحصة مع اللوجو */
+        .header-title-container {
+            display: flex;
             align-items: center;
-            margin-bottom: 20px;
             gap: 15px;
+            margin-top: 10px;
         }
 
-        .teacher-card-featured {
-            background: linear-gradient(135deg, #0c2340 0%, #1d72b8 100%) !important;
-            border-radius: 18px;
-            padding: 10px 22px;
-            color: #ffffff !important;
-            box-shadow: 0 6px 16px rgba(12, 35, 64, 0.2);
-            min-width: 170px;
+        .clipboard-icon {
+            font-size: 45px;
+            line-height: 1;
+        }
+
+        .title-text-group h1 {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--primary-navy);
+            line-height: 1.1;
+        }
+
+        .title-text-group .gold-subtitle {
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--accent-gold);
+            line-height: 1.1;
+        }
+
+        /* كارت المدرس المائل يمين الأعلى */
+        .teacher-badge-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-top: none;
+            border-right: none;
+            border-radius: 0 0 0 25px;
+            padding: 10px 20px 10px 25px;
+            box-shadow: -4px 4px 10px rgba(0,0,0,0.05);
             position: relative;
-            overflow: hidden;
-            border: 2px solid #64b5f6 !important;
-            text-align: center;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+            min-width: 190px;
         }
 
-        .teacher-card-featured .badge {
-            background: #f39c12 !important;
-            color: #0c2340 !important;
-            padding: 3px 14px;
-            border-radius: 12px;
+        .teacher-badge-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-gold);
+        }
+
+        .teacher-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .teacher-info-row .label-group {
+            text-align: right;
+        }
+
+        .teacher-info-row .sub-label {
             font-size: 11px;
-            font-weight: 900;
-            display: inline-block;
-            margin-bottom: 5px;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-
-        .teacher-card-featured .name {
-            font-size: 18px;
-            font-weight: 900;
-            color: #ffffff !important;
-        }
-
-        .teacher-card-featured .subject-tag {
-            background: rgba(255, 255, 255, 0.2) !important;
-            border-radius: 10px;
-            padding: 2px 10px;
-            font-size: 12.5px;
             font-weight: 800;
-            margin-top: 6px;
-            display: inline-block;
-            color: #ffffff !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+            color: var(--primary-navy);
         }
 
-        .main-title-box {
-            background: linear-gradient(135deg, #1d5b96 0%, var(--primary-blue) 100%) !important;
-            color: #fff !important;
-            padding: 12px 42px;
-            border-radius: 30px;
-            text-align: center;
-            border: 3px solid #64b5f6 !important;
-            box-shadow: 0 8px 20px rgba(12, 35, 64, 0.2);
-            position: relative;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .main-title-box h1 {
-            font-size: 24px;
+        .teacher-info-row .main-value {
+            font-size: 15px;
             font-weight: 900;
-        }
-        .main-title-box .num-box {
-            background: #fff !important;
-            color: var(--primary-blue) !important;
-            display: inline-block;
-            padding: 0 16px;
-            border-radius: 10px;
-            margin: 2px 0;
-            font-weight: 900;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .main-title-box .sub-text {
-            background: rgba(255, 255, 255, 0.2) !important;
-            padding: 2px 16px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-top: 4px;
-            display: inline-block;
-            font-weight: 700;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+            color: var(--primary-navy);
         }
 
-        /* شريط بيانات الطالب */
-        .student-info-bar {
-            border: 2px solid var(--accent-blue) !important;
-            background: linear-gradient(to right, var(--light-blue), #ffffff) !important;
+        .teacher-info-row .icon-box {
+            background: var(--primary-navy);
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        /* شريط بيانات الطالب المغلق */
+        .student-data-box {
+            border: 2px solid var(--primary-navy);
             border-radius: 20px;
+            padding: 8px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
-            margin-bottom: 25px;
-            font-size: 13.5px;
+            margin-bottom: 20px;
+            background: #fff;
+            font-size: 13px;
             font-weight: 800;
-            color: var(--primary-blue) !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+            color: var(--primary-navy);
         }
-        .info-item {
+
+        .data-item {
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        .dots-line {
-            border-bottom: 2px dotted #94a3b8;
+
+        .dots-field {
+            border-bottom: 1.5px dotted #718096;
             display: inline-block;
-            flex-grow: 1;
-            min-width: 80px;
-            height: 12px;
-        }
-        .score-box {
-            background: #fff !important;
-            border: 2px solid var(--gold) !important;
-            border-radius: 12px;
-            padding: 2px 12px;
-            color: #d35400 !important;
-            font-weight: 900;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+            min-width: 90px;
+            height: 14px;
         }
 
-        /* ----- 2. صناديق الأسئلة ----- */
-        .question-card {
-            border-radius: 22px;
+        .score-pill {
+            border: 1.5px solid var(--accent-gold);
+            background: var(--light-gold);
+            border-radius: 12px;
+            padding: 2px 14px;
+            color: var(--accent-gold);
+            font-weight: 900;
+        }
+
+        /* ----- 2. صناديق الأسئلة بطراز المايسترو ----- */
+        .question-box {
+            border: 2px solid var(--primary-navy);
+            border-radius: 18px;
+            padding: 25px 20px 15px 20px;
+            margin-bottom: 20px;
             position: relative;
-            margin-bottom: 25px;
-            padding: 38px 22px 20px 22px;
-            background: rgba(255, 255, 255, 0.98) !important;
-            min-height: 210px;
+            background: #fff;
+            min-height: 220px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
         }
 
-        .q-blue {
-            border: 2.5px solid var(--accent-blue) !important;
-        }
-        .q-blue .q-header {
-            background: linear-gradient(135deg, #1d72b8, var(--primary-blue)) !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-
-        .q-gold {
-            border: 2.5px solid var(--gold) !important;
-        }
-        .q-gold .q-header {
-            background: linear-gradient(135deg, #f39c12, #d35400) !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-
-        .q-header {
+        /* شريط عنوان السؤال المائل يسار الأعلى */
+        .q-title-ribbon {
             position: absolute;
-            top: -20px;
-            right: 50%;
-            transform: translateX(50%);
-            color: #fff !important;
-            padding: 5px 28px;
-            border-radius: 25px;
-            font-weight: 900;
-            font-size: 15px;
+            top: -2px;
+            right: -2px;
+            background: var(--primary-navy);
+            color: #fff;
+            padding: 6px 25px 6px 35px;
+            border-radius: 0 16px 0 25px;
             display: flex;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+            font-weight: 900;
+            font-size: 15px;
+            box-shadow: -2px 2px 6px rgba(0,0,0,0.15);
         }
-        .q-circle {
-            background: #fff !important;
-            color: #000 !important;
-            width: 26px;
-            height: 26px;
+
+        .q-title-ribbon::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: -8px;
+            border-style: solid;
+            border-width: 8px 8px 0 0;
+            border-color: var(--accent-gold) transparent transparent transparent;
+        }
+
+        .q-number-circle {
+            background: #fff;
+            color: var(--primary-navy);
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             display: flex;
-            justify-content: center;
             align-items: center;
-            font-size: 14px;
+            justify-content: center;
+            font-size: 13px;
             font-weight: 900;
         }
 
-        .q-body {
-            margin-bottom: 15px;
-            font-size: 15.5px;
-            line-height: 1.7;
-            outline: none;
-            padding: 6px;
-            color: #1e293b;
+        .q-content-area {
+            margin-top: 20px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #2d3748;
+            line-height: 2;
         }
 
-        [contenteditable="true"] {
-            border: 1.5px dashed var(--accent-blue) !important;
-            border-radius: 8px;
-            background: #f8fafc;
+        /* السطور المنقطة داخل السؤال */
+        .answer-lines {
+            margin-top: 10px;
+            width: 100%;
         }
 
-        .q-img {
-            max-width: 100%;
-            max-height: 260px;
-            object-fit: contain;
-            margin-top: 12px;
-            border-radius: 10px;
-            display: block;
-            border: 1px solid #e2e8f0;
+        .line-item {
+            border-bottom: 1.5px dotted #a0aec0;
+            height: 32px;
+            width: 100%;
         }
 
-        .q-score-bottom {
+        .q-footer-score {
             align-self: flex-start;
-            border: 1.5px solid var(--gold) !important;
-            background: var(--gold-light) !important;
-            padding: 4px 14px;
-            border-radius: 12px;
+            border: 1.5px solid var(--accent-gold);
+            background: var(--light-gold);
+            border-radius: 10px;
+            padding: 3px 15px;
             font-size: 12.5px;
             font-weight: 800;
-            color: var(--primary-blue) !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+            color: var(--primary-navy);
+            margin-top: 10px;
         }
 
         .q-controls {
             display: none;
-            margin-top: 12px;
+            margin-top: 10px;
             gap: 10px;
             border-top: 1px dashed #cbd5e1;
-            padding-top: 12px;
+            padding-top: 10px;
         }
 
         .edit-mode-active .q-controls {
@@ -426,22 +425,24 @@
             flex-wrap: wrap;
         }
 
-        /* ----- 3. الفوتر ----- */
-        .footer-banner {
-            background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue), var(--primary-blue)) !important;
-            color: #fff !important;
-            text-align: center;
-            padding: 10px;
-            border-radius: 22px;
-            font-weight: 900;
-            font-size: 14.5px;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 12px rgba(12, 35, 64, 0.15);
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
+        .q-img {
+            max-width: 100%;
+            max-height: 220px;
+            object-fit: contain;
+            margin-top: 10px;
+            border-radius: 8px;
+            display: block;
         }
 
-        /* إعدادات إجباريّة لإظهار الألوان والخلفيات عند الطباعة */
+        /* التعديل المباشر قابلية الضغط */
+        [contenteditable="true"] {
+            border: 1.5px dashed var(--accent-gold) !important;
+            border-radius: 6px;
+            background: #fffdfa;
+            padding: 2px 5px;
+        }
+
+        /* ----- إعدادات الطباعة النظيفة ----- */
         @media print {
             @page {
                 size: A4;
@@ -469,11 +470,6 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            .math-bg-shadow {
-                color: rgba(12, 35, 64, 0.08) !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
         }
     </style>
 </head>
@@ -490,7 +486,7 @@
         <div id="editPanel" class="edit-panel">
             <div class="input-group">
                 <label>اسم المعلم:</label>
-                <input type="text" id="teacherNameInput" value="مهدي حسن" oninput="updateHeaderInfo()">
+                <input type="text" id="teacherNameInput" value="أ. مهدي حسن" oninput="updateHeaderInfo()">
                 
                 <label>المادة:</label>
                 <input type="text" id="subjectInput" value="الرياضيات" oninput="updateHeaderInfo()">
@@ -500,86 +496,104 @@
             </div>
 
             <div class="input-group">
-                <label>اختيار خلفية المادة للطباعة:</label>
-                <select id="bgSelect" onchange="changeBackground()">
-                    <option value="pattern1">خلفية 1 (رموز ومعادلات ظاهرة بالطباعة)</option>
-                    <option value="pattern2">خلفية 2 (شبكة دفتر رسم بياني)</option>
-                    <option value="pattern3">خلفية 3 (خطوط مائلة هندسية)</option>
-                    <option value="pattern4">خلفية 4 (نقاط الدفتر المنقط)</option>
-                </select>
                 <button class="btn btn-success" onclick="addQuestion()">➕ إضافة سؤال جديد</button>
             </div>
         </div>
     </div>
 
     <!-- ورقة الامتحان -->
-    <div class="page bg-pattern-1" id="examPage">
-        <!-- طبقة خلفية الرموز الرياضية الظاهرة بالطباعة -->
-        <div id="bgSymbols">
-            <div class="math-bg-shadow bg-1">f(x) = x²</div>
-            <div class="math-bg-shadow bg-2">a² + b² = c²</div>
-            <div class="math-bg-shadow bg-3">√x</div>
-            <div class="math-bg-shadow bg-4">π</div>
+    <div class="page" id="examPage">
+
+        <!-- زخارف الأركان الزاوية الكحلية والذهبية -->
+        <div class="corner-decor-top-left"></div>
+        <div class="corner-decor-top-left-accent"></div>
+        <div class="corner-decor-bottom-right"></div>
+        <div class="corner-decor-bottom-left"></div>
+
+        <!-- رموز رياضية داخل الزاوية اليسرى -->
+        <div class="decor-symbols-left">
+            <div>📈 y = x²</div>
+            <div>a² + b² = c²</div>
+            <div style="font-size: 20px; margin-top: 5px;">π</div>
         </div>
 
         <div class="content-wrap">
             <!-- 1. الهيدر ورأس الصفحة -->
             <div class="header-top">
-                <div style="font-weight: bold; color: var(--accent-blue); font-size: 15px;">
-                    f(x) = x²
+                <!-- اللوجو والعنوان الرئيسي -->
+                <div class="header-title-container">
+                    <div class="clipboard-icon">📋</div>
+                    <div class="title-text-group">
+                        <div class="editable-element">امتحان</div>
+                        <div class="gold-subtitle editable-element">الحصة</div>
+                    </div>
                 </div>
 
-                <div class="main-title-box">
-                    <h1 class="editable-element">امتحان</h1>
-                    <div>حصة رقم <span class="num-box editable-element" id="displayLessonNum">1</span></div>
-                    <div class="sub-text">المادة: <span class="displaySubject editable-element">الرياضيات</span></div>
-                </div>
-
-                <!-- كارت الأستاذ والمادة البارز والمميز -->
-                <div class="teacher-card-featured">
-                    <span class="badge editable-element">إعداد المعلم</span>
-                    <div class="name editable-element" id="displayTeacherName">مهدي حسن</div>
-                    <div class="subject-tag">المادة: <span class="displaySubject editable-element">الرياضيات</span></div>
+                <!-- كارت إعداد المدرس -->
+                <div class="teacher-badge-card">
+                    <!-- المادة -->
+                    <div class="teacher-info-row">
+                        <div class="label-group">
+                            <div class="sub-label">المادة:</div>
+                            <div class="main-value displaySubject editable-element">الرياضيات</div>
+                        </div>
+                        <div class="icon-box">🧮</div>
+                    </div>
+                    <!-- المدرس -->
+                    <div class="teacher-info-row" style="margin-bottom: 0;">
+                        <div class="label-group">
+                            <div class="sub-label">إعداد:</div>
+                            <div class="main-value editable-element" id="displayTeacherName">أ. مهدي حسن</div>
+                        </div>
+                        <div class="icon-box">👤</div>
+                    </div>
                 </div>
             </div>
 
             <!-- شريط بيانات الطالب -->
-            <div class="student-info-bar">
-                <div class="info-item">
+            <div class="student-data-box">
+                <div class="data-item">
                     <span>👤 اسم الطالب:</span>
-                    <span class="dots-line" style="min-width: 140px;"></span>
+                    <span class="dots-field" style="min-width: 130px;"></span>
                 </div>
-                <div class="info-item">
+                <div class="data-item">
                     <span>🎓 الصف:</span>
-                    <span class="dots-line" style="min-width: 80px;"></span>
+                    <span class="dots-field" style="min-width: 70px;"></span>
                 </div>
-                <div class="info-item">
+                <div class="data-item">
                     <span>📅 التاريخ:</span>
-                    <span>20 &nbsp; / &nbsp;&nbsp;&nbsp;&nbsp; /</span>
+                    <span>20... / ...... / ......</span>
                 </div>
-                <div class="info-item">
-                    <span>⭐ الدرجة الكلية:</span>
-                    <span class="score-box">&nbsp;&nbsp;&nbsp;&nbsp; / &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <div class="data-item">
+                    <span>⭐ الدرجة:</span>
+                    <span class="score-pill">....... / .......</span>
                 </div>
             </div>
 
             <!-- 2. منطقة الأسئلة -->
             <div id="questionsContainer">
                 
-                <!-- سؤال افتراضي 1 -->
-                <div class="question-card q-blue" id="q-1">
-                    <div class="q-header">
-                        <span class="q-circle q-num">1</span>
-                        <span class="editable-element">💡 السؤال الأول</span>
+                <!-- السؤال الأول -->
+                <div class="question-box" id="q-1">
+                    <div class="q-title-ribbon">
+                        <span class="q-number-circle q-num">1</span>
+                        <span class="editable-element">السؤال الأول</span>
                     </div>
-                    
-                    <div class="q-body editable-element" contenteditable="false">
-                        اكتب نص السؤال الأول هنا...
-                    </div>
-                    <img class="q-img" id="img-q-1" style="display:none;" />
 
-                    <div class="q-score-bottom editable-element">
-                        ⭐ الدرجة: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="q-content-area">
+                        <div class="q-body editable-element" contenteditable="false">💡 اكتب نص السؤال الأول هنا...</div>
+                        <img class="q-img" id="img-q-1" style="display:none;" />
+                        
+                        <!-- السطور المنقطة للإجابة -->
+                        <div class="answer-lines">
+                            <div class="line-item"></div>
+                            <div class="line-item"></div>
+                            <div class="line-item"></div>
+                        </div>
+                    </div>
+
+                    <div class="q-footer-score editable-element">
+                        الدرجة: .........
                     </div>
 
                     <div class="q-controls">
@@ -589,20 +603,27 @@
                     </div>
                 </div>
 
-                <!-- سؤال افتراضي 2 -->
-                <div class="question-card q-gold" id="q-2">
-                    <div class="q-header">
-                        <span class="q-circle q-num">2</span>
-                        <span class="editable-element">π السؤال الثاني</span>
+                <!-- السؤال الثاني -->
+                <div class="question-box" id="q-2">
+                    <div class="q-title-ribbon">
+                        <span class="q-number-circle q-num">2</span>
+                        <span class="editable-element">السؤال الثاني</span>
                     </div>
-                    
-                    <div class="q-body editable-element" contenteditable="false">
-                        اكتب نص السؤال الثاني هنا...
-                    </div>
-                    <img class="q-img" id="img-q-2" style="display:none;" />
 
-                    <div class="q-score-bottom editable-element">
-                        ⭐ الدرجة: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <div class="q-content-area">
+                        <div class="q-body editable-element" contenteditable="false">🎯 اكتب نص السؤال الثاني هنا...</div>
+                        <img class="q-img" id="img-q-2" style="display:none;" />
+                        
+                        <!-- السطور المنقطة للإجابة -->
+                        <div class="answer-lines">
+                            <div class="line-item"></div>
+                            <div class="line-item"></div>
+                            <div class="line-item"></div>
+                        </div>
+                    </div>
+
+                    <div class="q-footer-score editable-element">
+                        الدرجة: .........
                     </div>
 
                     <div class="q-controls">
@@ -615,18 +636,17 @@
             </div>
         </div>
 
-        <!-- 3. الفوتر -->
-        <div class="footer-banner editable-element">
-            ⭐ بالتوفيق والنجاح للجميع ⭐
+        <!-- أشكال هندسية صغيرة بالأسفل -->
+        <div style="position: absolute; bottom: 15px; right: 25px; color: #fff; font-size: 16px; z-index: 2; pointer-events: none;">
+            ✏️ f(x)
         </div>
     </div>
 
-    <!-- البرمجة والخوارزميات الخفية -->
+    <!-- البرمجة والخوارزميات -->
     <script>
         let isEditMode = false;
         let isDirectEditMode = false;
 
-        // دالة التحقق الخفية من كود التحرير
         function validateTeacherCode(inputCode) {
             if (!inputCode) return false;
             const cleanCode = inputCode.trim().toUpperCase();
@@ -635,7 +655,7 @@
 
         function unlockEditMode() {
             if (!isEditMode) {
-                let pwd = prompt("أدخل كود مرور المعلم:");
+                let pwd = prompt("أدخل كود مرور المعلم لتفعيل التعديل الشامل:");
                 
                 if (validateTeacherCode(pwd)) {
                     isEditMode = true;
@@ -644,7 +664,7 @@
                     document.getElementById('toggleEditBtn').classList.replace('btn-warning', 'btn-danger');
                     document.body.classList.add('edit-mode-active');
                     enableContentEditable(true);
-                    alert("تم تفعيل وضع التحرير بنجاح! ✨");
+                    alert("تم تفعيل وضع التحرير بنجاح! ✨يمكنك الآن التعديل على أي عنصر بالضغط عليه.");
                 } else {
                     alert("❌ كود المرور غير صحيح!");
                 }
@@ -685,45 +705,33 @@
         function updateHeaderInfo() {
             const teacher = document.getElementById('teacherNameInput').value;
             const subject = document.getElementById('subjectInput').value;
-            const lesson = document.getElementById('lessonNumInput').value;
 
             document.getElementById('displayTeacherName').innerText = teacher;
             document.querySelectorAll('.displaySubject').forEach(el => el.innerText = subject);
-            document.getElementById('displayLessonNum').innerText = lesson;
-        }
-
-        function changeBackground() {
-            const bgType = document.getElementById('bgSelect').value;
-            const page = document.getElementById('examPage');
-            const symbols = document.getElementById('bgSymbols');
-
-            page.className = `page bg-${bgType}`;
-
-            if (bgType === 'pattern1') {
-                symbols.style.display = 'block';
-            } else {
-                symbols.style.display = 'none';
-            }
         }
 
         function addQuestion() {
             const qId = `q-${Date.now()}`;
-            const isEven = document.querySelectorAll('.question-card').length % 2 === 1;
-            const styleClass = isEven ? 'q-gold' : 'q-blue';
-            const icon = isEven ? 'π' : '💡';
 
             const card = document.createElement('div');
-            card.className = `question-card ${styleClass}`;
+            card.className = `question-box`;
             card.id = qId;
 
             card.innerHTML = `
-                <div class="q-header">
-                    <span class="q-circle q-num"></span>
-                    <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">${icon} السؤال</span>
+                <div class="q-title-ribbon">
+                    <span class="q-number-circle q-num"></span>
+                    <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">السؤال</span>
                 </div>
-                <div class="q-body editable-element" contenteditable="${isDirectEditMode || isEditMode}">اكتب نص السؤال الجديد هنا...</div>
-                <img class="q-img" id="img-${qId}" style="display:none;" />
-                <div class="q-score-bottom editable-element" contenteditable="${isDirectEditMode || isEditMode}">⭐ الدرجة: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                <div class="q-content-area">
+                    <div class="q-body editable-element" contenteditable="${isDirectEditMode || isEditMode}">اكتب نص السؤال الجديد هنا...</div>
+                    <img class="q-img" id="img-${qId}" style="display:none;" />
+                    <div class="answer-lines">
+                        <div class="line-item"></div>
+                        <div class="line-item"></div>
+                        <div class="line-item"></div>
+                    </div>
+                </div>
+                <div class="q-footer-score editable-element" contenteditable="${isDirectEditMode || isEditMode}">الدرجة: .........</div>
                 <div class="q-controls">
                     <input type="text" placeholder="رابط صورة (Drive/Web)" onchange="setImgFromLink(this, '${qId}')">
                     <input type="file" accept="image/*" onchange="setImgFromFile(this, '${qId}')">
@@ -744,7 +752,7 @@
         }
 
         function reindexQuestions() {
-            const cards = document.querySelectorAll('.question-card');
+            const cards = document.querySelectorAll('.question-box');
             cards.forEach((card, idx) => {
                 const numSpan = card.querySelector('.q-num');
                 if (numSpan) numSpan.innerText = idx + 1;
