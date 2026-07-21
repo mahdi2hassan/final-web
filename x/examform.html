@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>امتحان رياضيات احترافي متكامل</title>
+    <title>منظومه الامتحان</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- مكتبة MathJax لكتابة المعادلات الرياضية المعقدة (LaTeX) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         :root {
             --primary-navy: #0f172a;
@@ -29,7 +32,30 @@
             --light-gold: #ffe4e6;
         }
 
-        /* التحكم في إخفاء الهامش عند تفعيل الخيار */
+        /* وضع توفير الأحبار Eco-Print */
+        body.eco-print {
+            --primary-navy: #000000 !important;
+            --accent-gold: #000000 !important;
+            --light-gold: #ffffff !important;
+            --accent-blue: #000000 !important;
+        }
+        body.eco-print .decor-shape-top,
+        body.eco-print .decor-line-gold {
+            display: none !important;
+        }
+        body.eco-print .question-card,
+        body.eco-print .student-bar,
+        body.eco-print .teacher-hero-badge,
+        body.eco-print .teacher-notes-box {
+            border-color: #000000 !important;
+            background: #ffffff !important;
+        }
+        body.eco-print .q-number-badge {
+            background: #000000 !important;
+            color: #ffffff !important;
+        }
+
+        /* التحكم في إخفاء الهامش */
         body.hide-scratchpad .q-scratchpad {
             display: none !important;
         }
@@ -110,6 +136,7 @@
         .btn-print { background-color: #334155; }
         .btn-answerKey { background-color: #0284c7; }
         .btn-purple { background-color: #7c3aed; }
+        .btn-eco { background-color: #475569; }
 
         .svg-icon {
             width: 16px;
@@ -172,6 +199,21 @@
             print-color-adjust: exact !important;
         }
 
+        /* العلامة المائية Watermark */
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 5rem;
+            font-weight: 900;
+            color: rgba(15, 23, 42, 0.04);
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 1;
+            user-select: none;
+        }
+
         .decor-shape-top {
             position: absolute;
             top: 0;
@@ -207,7 +249,6 @@
             flex-direction: column;
             gap: 8px;
             margin-bottom: 12px;
-            padding-left: 110px; /* مساحة تتسع للكيو ار المزدوَج */
         }
 
         .title-row {
@@ -238,37 +279,6 @@
             font-weight: 900;
             color: var(--primary-navy);
             line-height: 1;
-        }
-
-        /* الكيو ار المزدوَج (الاقتراح 3) */
-        .qr-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: flex;
-            gap: 6px;
-        }
-
-        .qr-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            background: #fff;
-            padding: 4px;
-            border-radius: 8px;
-            border: 1px solid #cbd5e1;
-        }
-
-        .qr-box img {
-            width: 40px;
-            height: 40px;
-        }
-
-        .qr-box span {
-            font-size: 7px;
-            font-weight: 800;
-            color: #64748b;
         }
 
         .teacher-info-row {
@@ -439,12 +449,23 @@
         .mcq-opt {
             border: 1px solid #cbd5e1;
             border-radius: 8px;
-            padding: 4px 8px;
+            padding: 6px 10px;
             font-size: 12.5px;
             font-weight: 700;
             display: flex;
             align-items: center;
             gap: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .mcq-opt:hover {
+            background-color: #f8fafc;
+        }
+
+        .mcq-opt.selected {
+            border-color: var(--accent-blue);
+            background-color: #eff6ff;
         }
 
         .mcq-opt .opt-circle {
@@ -593,7 +614,7 @@
             display: block;
         }
 
-        /* صندوق ملاحظات ولي الأمر / المعلم (الاقتراح 1) */
+        /* صندوق ملاحظات ولي الأمر / المعلم */
         .teacher-notes-box {
             margin-top: 12px;
             border: 1.5px dashed var(--primary-navy);
@@ -708,13 +729,21 @@
                 <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 تعديل مباشر
             </button>
-            <!-- زر إخفاء/إظهار المسودة (الاقتراح 2) -->
+
+            <!-- زر إخفاء/إظهار المسودة -->
             <button id="toggleScratchpadBtn" class="btn btn-purple" onclick="toggleScratchpad()">
                 📝 إخفاء المسودة
             </button>
+
+            <!-- زر التوفير الاقتصادي Eco-Print -->
+            <button id="toggleEcoBtn" class="btn btn-eco" onclick="toggleEcoMode()">
+                🌱 وضع توفير الأحبار
+            </button>
+
             <button id="toggleAnswerKeyBtn" class="btn btn-answerKey" onclick="toggleAnswerKeyMode()">
                 👁️ عرض الإجابة النموذجية
             </button>
+            
             <button class="btn btn-print" onclick="window.print()">
                 <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-4 11H9v-5h6v5zm4-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2-9H7v4h10V3z"/></svg>
                 طباعة الورقة
@@ -749,11 +778,14 @@
     <!-- ورقة الامتحان -->
     <div class="page" id="examPage">
 
+        <!-- العلامة المائية المخصصة باسم المعلم -->
+        <div class="watermark" id="watermarkText">أ. مهدي حسن</div>
+
         <div class="decor-shape-top"></div>
         <div class="decor-line-gold"></div>
 
         <div class="content-wrap">
-            <!-- الهيدر -->
+            <!-- الهيدر بدون باركود -->
             <div class="header-top">
                 <div class="title-row">
                     <div class="title-brand">
@@ -762,18 +794,6 @@
                         </div>
                         <div>
                             <h1 class="editable-element">امتحان</h1>
-                        </div>
-                    </div>
-
-                    <!-- نظام الكيو ار المزدوَج (الاقتراح 3) -->
-                    <div class="qr-container">
-                        <div class="qr-box">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://plusinmath.vercel.app/" alt="Plus in Math QR Code">
-                            <span>حلول الامتحان</span>
-                        </div>
-                        <div class="qr-box">
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://plusinmath.vercel.app/" alt="Course QR Code">
-                            <span>منصة الحجز</span>
                         </div>
                     </div>
                 </div>
@@ -830,7 +850,7 @@
                 </div>
             </div>
 
-            <!-- منطقة الأسئلة -->
+            <!-- منطقة الأسئلة (يدعم معادلات MathJax / LaTeX) -->
             <div id="questionsContainer">
                 
                 <div class="question-card" id="q-1" data-score="5">
@@ -838,7 +858,7 @@
                         <span>1</span>
                     </div>
 
-                    <div class="q-body editable-element" contenteditable="false">اكتب خطوات حل المسألة الرياضية الآتية:</div>
+                    <div class="q-body editable-element" contenteditable="false">اكتب خطوات حل المعادلة التالية: \( 2x + 5 = 15 \)</div>
                     <img class="q-img" id="img-q-1" style="display:none;" />
                     
                     <div class="q-scratchpad">
@@ -852,7 +872,7 @@
                     </div>
 
                     <div class="answer-key-box">
-                        <strong>🎯 الإجابة النموذجية:</strong> <span class="editable-element">الخطوة الأولى: 2x = 10 ⟸ x = 5</span>
+                        <strong>🎯 الإجابة النموذجية:</strong> <span class="editable-element">\( 2x = 10 \implies x = 5 \)</span>
                     </div>
 
                     <div class="q-footer-row">
@@ -874,10 +894,10 @@
                     <div class="q-body editable-element" contenteditable="false">أكمل الفراغات التالية بما يناسبها:</div>
                     
                     <div class="fill-blank-item editable-element">
-                        1- مجموع زوايا المثلث الداخلي يساوي <span class="blank-space">180°</span> درجة.
+                        1- مجموع زوايا المثلث الداخلي يساوي <span class="blank-space">\( 180^\circ \)</span> درجة.
                     </div>
                     <div class="fill-blank-item editable-element">
-                        2- العدد الأولي الزوجي الوحيد هو <span class="blank-space">2</span>.
+                        2- العدد الأولي الزوجي الوحيد هو <span class="blank-space">\( 2 \)</span>.
                     </div>
 
                     <div class="answer-key-box">
@@ -895,7 +915,7 @@
 
             </div>
 
-            <!-- صندوق ملاحظات المعلم وولي الأمر (الاقتراح 1) -->
+            <!-- صندوق ملاحظات ولي الأمر / المصحح -->
             <div class="teacher-notes-box">
                 <div class="teacher-notes-header">
                     <span>📌 ملاحظات المصحح / ولي الأمر:</span>
@@ -924,6 +944,7 @@
         let isDirectEditMode = false;
         let isAnswerKeyVisible = false;
         let isScratchpadHidden = false;
+        let isEcoMode = false;
 
         function validateTeacherCode(inputCode) {
             if (!inputCode) return false;
@@ -951,6 +972,7 @@
                 document.getElementById('toggleEditBtn').classList.replace('btn-danger', 'btn-warning');
                 document.body.classList.remove('edit-mode-active');
                 if(!isDirectEditMode) enableContentEditable(false);
+                refreshMath();
             }
         }
 
@@ -970,6 +992,7 @@
                 if(!isEditMode) enableContentEditable(false);
                 document.getElementById('quickEditBtn').innerText = '✏️ تعديل مباشر';
                 document.getElementById('quickEditBtn').classList.replace('btn-danger', 'btn-success');
+                refreshMath();
             }
         }
 
@@ -981,6 +1004,17 @@
             } else {
                 document.body.classList.remove('hide-scratchpad');
                 document.getElementById('toggleScratchpadBtn').innerText = '📝 إخفاء المسودة';
+            }
+        }
+
+        function toggleEcoMode() {
+            isEcoMode = !isEcoMode;
+            if(isEcoMode) {
+                document.body.classList.add('eco-print');
+                document.getElementById('toggleEcoBtn').innerText = '🎨 إعادة الألوان';
+            } else {
+                document.body.classList.remove('eco-print');
+                document.getElementById('toggleEcoBtn').innerText = '🌱 وضع توفير الأحبار';
             }
         }
 
@@ -1005,6 +1039,7 @@
             const subject = document.getElementById('subjectInput').value;
 
             document.getElementById('displayTeacherName').innerText = teacher;
+            document.getElementById('watermarkText').innerText = teacher;
             document.querySelectorAll('.displaySubject').forEach(el => el.innerText = subject);
         }
 
@@ -1013,6 +1048,7 @@
             if(isAnswerKeyVisible) document.body.classList.add('show-answer-key');
             if(isEditMode) document.body.classList.add('edit-mode-active');
             if(isScratchpadHidden) document.body.classList.add('hide-scratchpad');
+            if(isEcoMode) document.body.classList.add('eco-print');
             if (theme !== 'default') {
                 document.body.classList.add(`theme-${theme}`);
             }
@@ -1026,6 +1062,18 @@
                 total += val;
             });
             document.getElementById('totalScoreCalc').innerText = total;
+        }
+
+        function refreshMath() {
+            if (window.MathJax) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        function selectOption(optElement) {
+            const parent = optElement.parentElement;
+            parent.querySelectorAll('.mcq-opt').forEach(opt => opt.classList.remove('selected'));
+            optElement.classList.add('selected');
         }
 
         function addQuestion() {
@@ -1085,10 +1133,10 @@
                 </div>
                 <div class="q-body editable-element" contenteditable="${isDirectEditMode || isEditMode}">اختر الإجابة الصحيحة:</div>
                 <div class="mcq-options">
-                    <div class="mcq-opt"><span class="opt-circle"></span> <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">الخيار (أ)</span></div>
-                    <div class="mcq-opt"><span class="opt-circle"></span> <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">الخيار (ب)</span></div>
-                    <div class="mcq-opt"><span class="opt-circle"></span> <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">الخيار (جـ)</span></div>
-                    <div class="mcq-opt"><span class="opt-circle"></span> <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">الخيار (د)</span></div>
+                    <div class="mcq-opt" onclick="selectOption(this)"><span class="opt-circle"></span> <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">الخيار (أ)</span></div>
+                    <div class="mcq-opt" onclick="selectOption(this)"><span class="opt-circle"></span> <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">الخيار (ب)</span></div>
+                    <div class="mcq-opt" onclick="selectOption(this)"><span class="opt-circle"></span> <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">الخيار (جـ)</span></div>
+                    <div class="mcq-opt" onclick="selectOption(this)"><span class="opt-circle"></span> <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">الخيار (د)</span></div>
                 </div>
 
                 <div class="answer-key-box">
@@ -1235,6 +1283,7 @@
 
         window.onload = function() {
             calculateTotalScore();
+            refreshMath();
         };
     </script>
 </body>
