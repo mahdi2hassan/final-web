@@ -204,21 +204,21 @@
             z-index: 2;
         }
 
-        /* ----- 1. الهيدر وكارت المدرس الجُديد ----- */
+        /* ----- 1. الهيدر وتوسيط المعلم والمادة ----- */
         .header-top {
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 12px;
             margin-bottom: 16px;
-            padding-left: 90px;
+            padding-left: 0;
         }
 
-        @media (min-width: 480px) {
+        @media (min-width: 520px) {
             .header-top {
-                flex-direction: row;
-                justify-content: space-between;
+                display: grid;
+                grid-template-columns: 1fr auto 1fr;
                 align-items: center;
-                padding-left: 110px;
             }
         }
 
@@ -226,6 +226,14 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            justify-content: center;
+        }
+
+        @media (min-width: 520px) {
+            .title-brand {
+                justify-content: flex-start;
+                padding-left: 90px;
+            }
         }
 
         .title-brand .brand-icon-box {
@@ -252,24 +260,26 @@
             font-size: 22px;
         }
 
-        /* كارت المعلم والمادة في أسطر منفصلة */
+        /* كارت المعلم والمادة المتموضع في منتصف الصفحة */
         .teacher-card {
             background: #ffffff;
             border: 1.5px solid #e2e8f0;
             border-radius: var(--radius-md);
-            padding: 8px 14px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            padding: 8px 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
             display: flex;
             flex-direction: column;
             gap: 6px;
-            min-width: 155px;
+            min-width: 170px;
+            margin: 0 auto;
+            text-align: center;
         }
 
         .teacher-card-line {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
+            gap: 10px;
         }
 
         .teacher-card-line .text-group {
@@ -486,7 +496,7 @@
 </head>
 <body>
 
-    <!-- شريط التحكم والزرار -->
+    <!-- شريط التحكم -->
     <div class="admin-controls">
         <div class="btn-group">
             <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">
@@ -530,7 +540,7 @@
         </div>
 
         <div class="content-wrap">
-            <!-- 1. الهيدر وكارت المدرس والمادة المنفصلين -->
+            <!-- 1. الهيدر مع وضع اسم المعلم والمادة في منتصف الصفحة تماماً -->
             <div class="header-top">
                 <div class="title-brand">
                     <div class="brand-icon-box">
@@ -542,32 +552,35 @@
                     </div>
                 </div>
 
-                <!-- كارت المدرس والمادة (اسم المعلم في سطر، والمادة في سطر منفصل) -->
+                <!-- كارت المعلم والمادة متموضع في المنتصف -->
                 <div class="teacher-card">
                     <!-- سطر اسم المعلم -->
                     <div class="teacher-card-line">
+                        <div class="badge-icon">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
                         <div class="text-group">
                             <div class="sub">إعداد</div>
                             <div class="val editable-element" id="displayTeacherName">أ. مهدي حسن</div>
                         </div>
-                        <div class="badge-icon">
-                            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                        </div>
                     </div>
                     <!-- سطر المادة -->
                     <div class="teacher-card-line">
+                        <div class="badge-icon">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H8v-2h4V6h2v4h4v2z"/></svg>
+                        </div>
                         <div class="text-group">
                             <div class="sub">المادة</div>
                             <div class="val displaySubject editable-element">الرياضيات</div>
                         </div>
-                        <div class="badge-icon">
-                            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H8v-2h4V6h2v4h4v2z"/></svg>
-                        </div>
                     </div>
                 </div>
+
+                <!-- مساحة موازية لموازنة المنتصف -->
+                <div></div>
             </div>
 
-            <!-- شريط معلومات الطالب بأيقونات SVG -->
+            <!-- شريط معلومات الطالب -->
             <div class="student-bar">
                 <div class="info-item">
                     <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
