@@ -33,7 +33,7 @@
             min-height: 100vh;
         }
 
-        /* ----- شريط التحكم المتجاوب مع جميع الأجهزة ----- */
+        /* ----- شريط التحكم المتجاوب ----- */
         .admin-controls {
             width: 100%;
             max-width: 210mm;
@@ -92,6 +92,14 @@
         .btn-danger { background-color: #dc2626; }
         .btn-print { background-color: #334155; }
 
+        .svg-icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
         .edit-panel {
             display: none;
             width: 100%;
@@ -126,10 +134,10 @@
             flex: 1 1 140px;
         }
 
-        /* ----- ورقة الامتحان (تتلاءم مع الشاشات + A5/A4) ----- */
+        /* ----- ورقة الامتحان ----- */
         .page {
             width: 100%;
-            max-width: 148mm; /* تبدأ بمقاس A5 للموبايل والمعاينة */
+            max-width: 148mm;
             min-height: 210mm;
             background-color: var(--bg-page) !important;
             border-radius: var(--radius-lg);
@@ -145,7 +153,6 @@
             print-color-adjust: exact !important;
         }
 
-        /* تتوسع إلى A4 عند تكبير الشاشة أو زيادة الأسئلة */
         .page.a4-mode, @media (min-width: 800px) {
             .page {
                 max-width: 210mm;
@@ -153,7 +160,7 @@
             }
         }
 
-        /* زخارف أركان أنيقة وعصرية */
+        /* زخارف الهيدر والزوايا */
         .decor-shape-top {
             position: absolute;
             top: 0;
@@ -197,13 +204,13 @@
             z-index: 2;
         }
 
-        /* ----- 1. الهيدر العرفي المتجاوب ----- */
+        /* ----- 1. الهيدر وكارت المدرس الجُديد ----- */
         .header-top {
             display: flex;
             flex-direction: column;
             gap: 12px;
             margin-bottom: 16px;
-            padding-left: 90px; /* مساحة الزاوية للموبايل */
+            padding-left: 90px;
         }
 
         @media (min-width: 480px) {
@@ -218,11 +225,18 @@
         .title-brand {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .title-brand .icon {
-            font-size: 28px;
+        .title-brand .brand-icon-box {
+            background: #f1f5f9;
+            color: var(--primary-navy);
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .title-brand h1 {
@@ -238,52 +252,43 @@
             font-size: 22px;
         }
 
-        /* كارت بيانات المدرس العائم */
+        /* كارت المعلم والمادة في أسطر منفصلة */
         .teacher-card {
             background: #ffffff;
             border: 1.5px solid #e2e8f0;
             border-radius: var(--radius-md);
-            padding: 6px 12px;
+            padding: 8px 14px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.03);
             display: flex;
-            flex-direction: row;
-            justify-content: space-around;
-            gap: 12px;
-            width: 100%;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 155px;
         }
 
-        @media (min-width: 480px) {
-            .teacher-card {
-                flex-direction: column;
-                width: auto;
-                min-width: 135px;
-            }
-        }
-
-        .teacher-card-item {
+        .teacher-card-line {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 6px;
+            gap: 8px;
         }
 
-        .teacher-card-item .text-group {
+        .teacher-card-line .text-group {
             text-align: right;
         }
 
-        .teacher-card-item .sub {
+        .teacher-card-line .sub {
             font-size: 9.5px;
             color: #64748b;
             font-weight: 700;
         }
 
-        .teacher-card-item .val {
+        .teacher-card-line .val {
             font-size: 12.5px;
             font-weight: 900;
             color: var(--primary-navy);
         }
 
-        .teacher-card-item .badge-icon {
+        .teacher-card-line .badge-icon {
             background: #f1f5f9;
             color: var(--primary-navy);
             width: 24px;
@@ -292,10 +297,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            flex-shrink: 0;
         }
 
-        /* شريط معلومات الطالب المتجاوب */
+        /* شريط معلومات الطالب */
         .student-bar {
             border: 1.5px solid var(--primary-navy);
             border-radius: var(--radius-md);
@@ -310,6 +315,12 @@
             font-size: 11.5px;
             font-weight: 800;
             color: var(--primary-navy);
+        }
+
+        .student-bar .info-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .student-bar .dots {
@@ -328,7 +339,7 @@
             font-weight: 900;
         }
 
-        /* ----- 2. صناديق الأسئلة العصرية ----- */
+        /* ----- 2. صناديق الأسئلة (الترقيم الرقمي) ----- */
         .question-card {
             border: 1.5px solid #cbd5e1;
             border-radius: var(--radius-md);
@@ -342,7 +353,6 @@
             page-break-inside: avoid;
         }
 
-        /* شريط الترقيم الرقمي العريض */
         .q-number-badge {
             position: absolute;
             top: -12px;
@@ -378,7 +388,6 @@
             outline: none;
         }
 
-        /* أسطر الإجابة */
         .answer-lines {
             margin-top: 10px;
             width: 100%;
@@ -477,12 +486,21 @@
 </head>
 <body>
 
-    <!-- شريط التحكم المتجاوب -->
+    <!-- شريط التحكم والزرار -->
     <div class="admin-controls">
         <div class="btn-group">
-            <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">🔒 لوحة التحرير</button>
-            <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">✏️ تعديل مباشر</button>
-            <button class="btn btn-print" onclick="window.print()">🖨️ طباعة الورقة</button>
+            <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                لوحة التحرير
+            </button>
+            <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                تعديل مباشر
+            </button>
+            <button class="btn btn-print" onclick="window.print()">
+                <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-4 11H9v-5h6v5zm4-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-2-9H7v4h10V3z"/></svg>
+                طباعة الورقة
+            </button>
         </div>
         
         <div id="editPanel" class="edit-panel">
@@ -500,7 +518,7 @@
         </div>
     </div>
 
-    <!-- ورقة الامتحان المتجاوبة -->
+    <!-- ورقة الامتحان -->
     <div class="page" id="examPage">
 
         <!-- زخارف الأركان الهندسية -->
@@ -512,44 +530,64 @@
         </div>
 
         <div class="content-wrap">
-            <!-- 1. الهيدر ورأس الصفحة -->
+            <!-- 1. الهيدر وكارت المدرس والمادة المنفصلين -->
             <div class="header-top">
                 <div class="title-brand">
-                    <div class="icon">📋</div>
+                    <div class="brand-icon-box">
+                        <svg class="svg-icon" style="width: 24px; height: 24px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                    </div>
                     <div>
                         <h1 class="editable-element">امتحان</h1>
                         <span class="editable-element">الحصة</span>
                     </div>
                 </div>
 
-                <!-- كارت المدرس والمادة -->
+                <!-- كارت المدرس والمادة (اسم المعلم في سطر، والمادة في سطر منفصل) -->
                 <div class="teacher-card">
-                    <div class="teacher-card-item">
-                        <div class="text-group">
-                            <div class="sub">المادة</div>
-                            <div class="val displaySubject editable-element">الرياضيات</div>
-                        </div>
-                        <div class="badge-icon">🧮</div>
-                    </div>
-                    <div class="teacher-card-item">
+                    <!-- سطر اسم المعلم -->
+                    <div class="teacher-card-line">
                         <div class="text-group">
                             <div class="sub">إعداد</div>
                             <div class="val editable-element" id="displayTeacherName">أ. مهدي حسن</div>
                         </div>
-                        <div class="badge-icon">👤</div>
+                        <div class="badge-icon">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
+                    </div>
+                    <!-- سطر المادة -->
+                    <div class="teacher-card-line">
+                        <div class="text-group">
+                            <div class="sub">المادة</div>
+                            <div class="val displaySubject editable-element">الرياضيات</div>
+                        </div>
+                        <div class="badge-icon">
+                            <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H8v-2h4V6h2v4h4v2z"/></svg>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- شريط معلومات الطالب -->
+            <!-- شريط معلومات الطالب بأيقونات SVG -->
             <div class="student-bar">
-                <div>👤 الاسم: <span class="dots" style="min-width: 80px;"></span></div>
-                <div>🎓 الصف: <span class="dots" style="min-width: 40px;"></span></div>
-                <div>📅 التاريخ: <span>20... / ... / ...</span></div>
-                <div>⭐ الدرجة: <span class="score-pill">... / ...</span></div>
+                <div class="info-item">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                    الاسم: <span class="dots" style="min-width: 80px;"></span>
+                </div>
+                <div class="info-item">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
+                    الصف: <span class="dots" style="min-width: 40px;"></span>
+                </div>
+                <div class="info-item">
+                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/></svg>
+                    التاريخ: <span>20... / ... / ...</span>
+                </div>
+                <div class="info-item">
+                    <svg class="svg-icon" style="color: var(--accent-gold);" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                    الدرجة: <span class="score-pill">... / ...</span>
+                </div>
             </div>
 
-            <!-- 2. منطقة الأسئلة (الترقيم الرقمي) -->
+            <!-- 2. منطقة الأسئلة (ترقيم رقمي) -->
             <div id="questionsContainer">
                 
                 <!-- السؤال 1 -->
@@ -558,7 +596,7 @@
                         <span>1</span>
                     </div>
 
-                    <div class="q-body editable-element" contenteditable="false">💡 اكتب نص السؤال الأول هنا...</div>
+                    <div class="q-body editable-element" contenteditable="false">اكتب نص السؤال الأول هنا...</div>
                     <img class="q-img" id="img-q-1" style="display:none;" />
                     
                     <div class="answer-lines">
@@ -581,7 +619,7 @@
                         <span>2</span>
                     </div>
 
-                    <div class="q-body editable-element" contenteditable="false">🎯 اكتب نص السؤال الثاني هنا...</div>
+                    <div class="q-body editable-element" contenteditable="false">اكتب نص السؤال الثاني هنا...</div>
                     <img class="q-img" id="img-q-2" style="display:none;" />
                     
                     <div class="answer-lines">
