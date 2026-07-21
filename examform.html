@@ -30,7 +30,7 @@
             padding: 20px;
         }
 
-        /* ----- شريط التحكم بوضع التحرير ----- */
+        /* ----- شريط التحكم والزرار العلوي ----- */
         .admin-controls {
             width: 210mm;
             background: #ffffff;
@@ -46,6 +46,12 @@
             justify-content: space-between;
         }
 
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         .btn {
             background-color: var(--accent-blue);
             color: #fff;
@@ -55,6 +61,9 @@
             font-weight: 700;
             cursor: pointer;
             transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .btn:hover {
@@ -64,6 +73,7 @@
         .btn-success { background-color: #27ae60; }
         .btn-warning { background-color: #f39c12; }
         .btn-danger { background-color: #e74c3c; }
+        .btn-print { background-color: #2c3e50; }
 
         .edit-panel {
             display: none;
@@ -115,13 +125,11 @@
             pointer-events: none;
         }
 
-        /* النمط الأول: رموز الجبر والتفاضل */
         .bg-pattern-1 .bg-1 { top: 20px; left: 30px; font-size: 28px; }
         .bg-pattern-1 .bg-2 { top: 120px; left: 20px; font-size: 22px; }
         .bg-pattern-1 .bg-3 { bottom: 80px; left: 30px; font-size: 32px; }
         .bg-pattern-1 .bg-4 { bottom: 120px; right: 40px; font-size: 20px; }
 
-        /* النمط الثاني: الهندسة والشبكة */
         .bg-pattern-2 {
             background-image: radial-gradient(var(--accent-blue) 0.5px, transparent 0.5px);
             background-size: 20px 20px;
@@ -306,10 +314,11 @@
             padding: 5px;
         }
 
-        .q-body[contenteditable="true"] {
-            border: 1px dashed var(--accent-blue);
-            border-radius: 8px;
-            background: #fafafa;
+        /* حالة تمكين التحرير المباشر */
+        [contenteditable="true"] {
+            border: 1px dashed var(--accent-blue) !important;
+            border-radius: 6px;
+            background: #fdfdfd;
         }
 
         .q-img {
@@ -367,9 +376,9 @@
             .admin-controls, .q-controls {
                 display: none !important;
             }
-            .q-body[contenteditable="true"] {
-                border: none;
-                background: transparent;
+            [contenteditable="true"], .editable-element {
+                border: none !important;
+                background: transparent !important;
             }
             .page {
                 box-shadow: none;
@@ -384,7 +393,11 @@
 
     <!-- شريط الإدارة والتحكم -->
     <div class="admin-controls">
-        <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">🔒 تفعيل وضع التحرير</button>
+        <div class="btn-group">
+            <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">🔒 لوحة التحرير الشاملة</button>
+            <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">✏️ وضع التعديل المباشر (Edit Mode)</button>
+            <button class="btn btn-print" onclick="window.print()">🖨️ طباعة الورقة</button>
+        </div>
         
         <div id="editPanel" class="edit-panel">
             <div class="input-group">
@@ -427,15 +440,15 @@
                 </div>
 
                 <div class="main-title-box">
-                    <h1>امتحان</h1>
-                    <div>حصة رقم <span class="num-box" id="displayLessonNum">1</span></div>
-                    <div class="sub-text">المادة: <span class="displaySubject">الرياضيات</span></div>
+                    <h1 class="editable-element">امتحان</h1>
+                    <div>حصة رقم <span class="num-box editable-element" id="displayLessonNum">1</span></div>
+                    <div class="sub-text">المادة: <span class="displaySubject editable-element">الرياضيات</span></div>
                 </div>
 
                 <div class="teacher-card">
-                    <span class="badge">إعداد</span>
-                    <div class="name" id="displayTeacherName">مهدي حسن</div>
-                    <div class="subject">المادة: <span class="displaySubject">الرياضيات</span></div>
+                    <span class="badge editable-element">إعداد</span>
+                    <div class="name editable-element" id="displayTeacherName">مهدي حسن</div>
+                    <div class="subject">المادة: <span class="displaySubject editable-element">الرياضيات</span></div>
                 </div>
             </div>
 
@@ -466,15 +479,15 @@
                 <div class="question-card q-blue" id="q-1">
                     <div class="q-header">
                         <span class="q-circle q-num">1</span>
-                        <span>💡 السؤال الأول</span>
+                        <span class="editable-element">💡 السؤال الأول</span>
                     </div>
                     
-                    <div class="q-body" contenteditable="false">
+                    <div class="q-body editable-element" contenteditable="false">
                         اكتب نص السؤال الأول هنا...
                     </div>
                     <img class="q-img" id="img-q-1" style="display:none;" />
 
-                    <div class="q-score-bottom">
+                    <div class="q-score-bottom editable-element">
                         ⭐ الدرجة: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </div>
 
@@ -489,15 +502,15 @@
                 <div class="question-card q-gold" id="q-2">
                     <div class="q-header">
                         <span class="q-circle q-num">2</span>
-                        <span>π السؤال الثاني</span>
+                        <span class="editable-element">π السؤال الثاني</span>
                     </div>
                     
-                    <div class="q-body" contenteditable="false">
+                    <div class="q-body editable-element" contenteditable="false">
                         اكتب نص السؤال الثاني هنا...
                     </div>
                     <img class="q-img" id="img-q-2" style="display:none;" />
 
-                    <div class="q-score-bottom">
+                    <div class="q-score-bottom editable-element">
                         ⭐ الدرجة: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </div>
 
@@ -512,7 +525,7 @@
         </div>
 
         <!-- 3. الفوتر -->
-        <div class="footer-banner">
+        <div class="footer-banner editable-element">
             ⭐ بالتوفيق والنجاح للجميع ⭐
         </div>
     </div>
@@ -520,6 +533,7 @@
     <!-- السكريبت والبرمجة -->
     <script>
         let isEditMode = false;
+        let isDirectEditMode = false;
 
         // أكواد الدخول المعتمدة
         const ALLOWED_CODES = [
@@ -532,12 +546,12 @@
 
         function unlockEditMode() {
             if (!isEditMode) {
-                let pwd = prompt("أدخل أحد أكواد المعلم المعتمدة لتفعيل وضع التحرير:");
+                let pwd = prompt("أدخل أحد أكواد المعلم المعتمدة لتفعيل لوحة التحرير الشاملة:");
                 
                 if (pwd && ALLOWED_CODES.includes(pwd.trim().toUpperCase())) {
                     isEditMode = true;
                     document.getElementById('editPanel').style.display = 'flex';
-                    document.getElementById('toggleEditBtn').innerText = '🔒 إغلاق وضع التحرير';
+                    document.getElementById('toggleEditBtn').innerText = '🔒 إغلاق اللوحة';
                     document.getElementById('toggleEditBtn').classList.replace('btn-warning', 'btn-danger');
                     document.body.classList.add('edit-mode-active');
                     enableContentEditable(true);
@@ -548,16 +562,35 @@
             } else {
                 isEditMode = false;
                 document.getElementById('editPanel').style.display = 'none';
-                document.getElementById('toggleEditBtn').innerText = '🔒 تفعيل وضع التحرير';
+                document.getElementById('toggleEditBtn').innerText = '🔒 لوحة التحرير الشاملة';
                 document.getElementById('toggleEditBtn').classList.replace('btn-danger', 'btn-warning');
                 document.body.classList.remove('edit-mode-active');
-                enableContentEditable(false);
+                if(!isDirectEditMode) enableContentEditable(false);
+            }
+        }
+
+        function toggleDirectEdit() {
+            if (!isDirectEditMode) {
+                let pwd = prompt("أدخل كود المعلم لتفعيل التعديل المباشر على الصفحة:");
+                if (pwd && ALLOWED_CODES.includes(pwd.trim().toUpperCase())) {
+                    isDirectEditMode = true;
+                    enableContentEditable(true);
+                    document.getElementById('quickEditBtn').innerText = '✔️ حفظ وإيقاف التعديل المباشر';
+                    document.getElementById('quickEditBtn').classList.replace('btn-success', 'btn-danger');
+                } else {
+                    alert("❌ كود غير صحيح!");
+                }
+            } else {
+                isDirectEditMode = false;
+                if(!isEditMode) enableContentEditable(false);
+                document.getElementById('quickEditBtn').innerText = '✏️ وضع التعديل المباشر (Edit Mode)';
+                document.getElementById('quickEditBtn').classList.replace('btn-danger', 'btn-success');
             }
         }
 
         function enableContentEditable(status) {
-            const qBodies = document.querySelectorAll('.q-body');
-            qBodies.forEach(el => el.contentEditable = status);
+            const editables = document.querySelectorAll('.editable-element, .q-body');
+            editables.forEach(el => el.contentEditable = status);
         }
 
         function updateHeaderInfo() {
@@ -597,11 +630,11 @@
             card.innerHTML = `
                 <div class="q-header">
                     <span class="q-circle q-num"></span>
-                    <span>${icon} السؤال</span>
+                    <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">${icon} السؤال</span>
                 </div>
-                <div class="q-body" contenteditable="${isEditMode}">اكتب نص السؤال الجديد هنا...</div>
+                <div class="q-body editable-element" contenteditable="${isDirectEditMode || isEditMode}">اكتب نص السؤال الجديد هنا...</div>
                 <img class="q-img" id="img-${qId}" style="display:none;" />
-                <div class="q-score-bottom">⭐ الدرجة: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                <div class="q-score-bottom editable-element" contenteditable="${isDirectEditMode || isEditMode}">⭐ الدرجة: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
                 <div class="q-controls">
                     <input type="text" placeholder="رابط صورة (Drive/Web)" onchange="setImgFromLink(this, '${qId}')">
                     <input type="file" accept="image/*" onchange="setImgFromFile(this, '${qId}')">
