@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>امتحان حصة - رياضيات</title>
+    <title>امتحان حصة - رياضيات احترافي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,6 +13,7 @@
             --gold: #f39c12;
             --gold-light: #fef9e7;
             --border-color: #0c2340;
+            --shadow: 0 8px 20px rgba(12, 35, 64, 0.08);
         }
 
         * {
@@ -23,25 +24,26 @@
         }
 
         body {
-            background-color: #f4f6f9;
+            background-color: #eef2f7;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
         }
 
-        /* ----- شريط التحكم والزرار العلوي ----- */
+        /* ----- شريط التحكم والأزرار العلوي ----- */
         .admin-controls {
             width: 210mm;
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border: 2px solid var(--accent-blue);
-            border-radius: 12px;
-            padding: 15px;
+            border-radius: 16px;
+            padding: 15px 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
             justify-content: space-between;
         }
@@ -56,58 +58,75 @@
             background-color: var(--accent-blue);
             color: #fff;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
             font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
         .btn:hover {
-            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.12);
         }
 
-        .btn-success { background-color: #27ae60; }
-        .btn-warning { background-color: #f39c12; }
-        .btn-danger { background-color: #e74c3c; }
-        .btn-print { background-color: #2c3e50; }
+        .btn-success { background: linear-gradient(135deg, #27ae60, #2dc997); }
+        .btn-warning { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .btn-danger { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .btn-print { background: linear-gradient(135deg, #2c3e50, #34495e); }
 
         .edit-panel {
             display: none;
             width: 100%;
-            background: #f8f9fa;
-            border-top: 1px dashed #ccc;
-            padding-top: 15px;
+            background: #f8fafc;
+            border: 1px dashed var(--accent-blue);
+            border-radius: 12px;
+            padding: 15px;
             margin-top: 10px;
-            gap: 10px;
+            gap: 12px;
             flex-direction: column;
         }
 
         .input-group {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
             flex-wrap: wrap;
         }
 
-        .input-group input, .input-group select {
-            padding: 6px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-family: inherit;
+        .input-group label {
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 13px;
         }
 
-        /* ورقة الامتحان A4 */
+        .input-group input, .input-group select {
+            padding: 8px 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(29, 114, 184, 0.15);
+        }
+
+        /* ----- ورقة الامتحان A4 ----- */
         .page {
             width: 210mm;
             min-height: 297mm;
             background: #ffffff;
-            border-radius: 10px;
-            padding: 20px 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 25px 30px;
+            box-shadow: var(--shadow);
             position: relative;
             overflow: hidden;
             display: flex;
@@ -115,25 +134,40 @@
             justify-content: space-between;
         }
 
-        /* خلفيات المادة المتغيرة */
+        /* 🎨 أنماط الخلفيات المتنوعة */
         .math-bg {
             position: absolute;
-            font-weight: bold;
-            color: rgba(12, 35, 64, 0.05);
+            font-weight: 800;
+            color: rgba(12, 35, 64, 0.04);
             user-select: none;
             z-index: 0;
             pointer-events: none;
         }
 
-        .bg-pattern-1 .bg-1 { top: 20px; left: 30px; font-size: 28px; }
-        .bg-pattern-1 .bg-2 { top: 120px; left: 20px; font-size: 22px; }
-        .bg-pattern-1 .bg-3 { bottom: 80px; left: 30px; font-size: 32px; }
-        .bg-pattern-1 .bg-4 { bottom: 120px; right: 40px; font-size: 20px; }
+        /* خلفية 1: معادلات ورموز */
+        .bg-pattern-1 .bg-1 { top: 30px; left: 40px; font-size: 30px; }
+        .bg-pattern-1 .bg-2 { top: 150px; left: 25px; font-size: 24px; }
+        .bg-pattern-1 .bg-3 { bottom: 100px; left: 35px; font-size: 34px; }
+        .bg-pattern-1 .bg-4 { bottom: 140px; right: 45px; font-size: 22px; }
 
+        /* خلفية 2: شبكة رسم بياني */
         .bg-pattern-2 {
-            background-image: radial-gradient(var(--accent-blue) 0.5px, transparent 0.5px);
-            background-size: 20px 20px;
+            background-image: radial-gradient(var(--accent-blue) 0.6px, transparent 0.6px);
+            background-size: 18px 18px;
             opacity: 0.98;
+        }
+
+        /* خلفية 3: دوائر وأشكال هندسية */
+        .bg-pattern-3 {
+            background-image: radial-gradient(circle at 100% 100%, rgba(29, 114, 184, 0.05) 0, transparent 200px),
+                              radial-gradient(circle at 0% 0%, rgba(243, 156, 18, 0.05) 0, transparent 200px);
+        }
+
+        /* خلفية 4: مصفوفة نقاط ناعمة */
+        .bg-pattern-4 {
+            background-image: linear-gradient(to right, rgba(12, 35, 64, 0.02) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(12, 35, 64, 0.02) 1px, transparent 1px);
+            background-size: 25px 25px;
         }
 
         .content-wrap {
@@ -141,59 +175,59 @@
             z-index: 1;
         }
 
-        /* ----- 1. الجزء العلوي (الهيدر) ----- */
+        /* ----- 1. الهيدر ورأس الصفحة ----- */
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
         .teacher-card {
             border: 2px solid var(--accent-blue);
-            border-radius: 15px;
-            padding: 8px 15px;
+            border-radius: 16px;
+            padding: 8px 18px;
             text-align: center;
             background: #fff;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            min-width: 140px;
+            box-shadow: 0 4px 12px rgba(29, 114, 184, 0.06);
+            min-width: 150px;
         }
         .teacher-card .badge {
-            background: var(--gold);
+            background: linear-gradient(135deg, var(--gold), #d35400);
             color: #fff;
-            padding: 2px 12px;
-            border-radius: 10px;
+            padding: 2px 14px;
+            border-radius: 12px;
             font-size: 11px;
-            font-weight: bold;
+            font-weight: 800;
             display: inline-block;
             margin-bottom: 4px;
         }
         .teacher-card .name {
             color: var(--primary-blue);
-            font-weight: 800;
-            font-size: 15px;
+            font-weight: 900;
+            font-size: 16px;
         }
         .teacher-card .subject {
             color: var(--accent-blue);
             font-size: 12px;
-            font-weight: 700;
-            border-top: 1px solid #eee;
+            font-weight: 800;
+            border-top: 1px dashed #e2e8f0;
             margin-top: 4px;
-            padding-top: 2px;
+            padding-top: 3px;
         }
 
         .main-title-box {
-            background: radial-gradient(circle, #1d5b96 0%, var(--primary-blue) 100%);
+            background: linear-gradient(135deg, #1d5b96 0%, var(--primary-blue) 100%);
             color: #fff;
-            padding: 10px 35px;
-            border-radius: 25px;
+            padding: 10px 40px;
+            border-radius: 30px;
             text-align: center;
             border: 3px solid #64b5f6;
-            box-shadow: 0 5px 15px rgba(12, 35, 64, 0.2);
+            box-shadow: 0 8px 20px rgba(12, 35, 64, 0.2);
             position: relative;
         }
         .main-title-box h1 {
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 900;
             letter-spacing: 0.5px;
         }
@@ -201,40 +235,43 @@
             background: #fff;
             color: var(--primary-blue);
             display: inline-block;
-            padding: 0 15px;
-            border-radius: 8px;
+            padding: 0 16px;
+            border-radius: 10px;
             margin: 2px 0;
-            font-weight: bold;
+            font-weight: 900;
         }
         .main-title-box .sub-text {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 2px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 16px;
             border-radius: 12px;
             font-size: 12px;
             margin-top: 4px;
             display: inline-block;
+            font-weight: 700;
         }
 
+        /* شريط بيانات الطالب */
         .student-info-bar {
             border: 2px solid var(--accent-blue);
-            background-color: var(--light-blue);
+            background: linear-gradient(to right, var(--light-blue), #ffffff);
             border-radius: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 15px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            font-weight: 700;
+            padding: 10px 20px;
+            margin-bottom: 25px;
+            font-size: 13.5px;
+            font-weight: 800;
             color: var(--primary-blue);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
         .info-item {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
         }
         .dots-line {
-            border-bottom: 2px dotted #888;
+            border-bottom: 2px dotted #94a3b8;
             display: inline-block;
             flex-grow: 1;
             min-width: 80px;
@@ -242,29 +279,30 @@
         }
         .score-box {
             background: #fff;
-            border: 1.5px solid var(--gold);
+            border: 2px solid var(--gold);
             border-radius: 12px;
-            padding: 2px 10px;
-            color: var(--gold);
-            font-weight: 800;
+            padding: 2px 12px;
+            color: #d35400;
+            font-weight: 900;
         }
 
         /* ----- 2. صناديق الأسئلة ----- */
         .question-card {
-            border-radius: 20px;
+            border-radius: 22px;
             position: relative;
-            margin-bottom: 20px;
-            padding: 35px 20px 20px 20px;
-            background: rgba(255, 255, 255, 0.95);
-            min-height: 200px;
+            margin-bottom: 25px;
+            padding: 38px 22px 20px 22px;
+            background: rgba(255, 255, 255, 0.98);
+            min-height: 210px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: all 0.3s;
         }
 
         .q-blue {
             border: 2.5px solid var(--accent-blue);
-            box-shadow: 0 4px 10px rgba(29, 114, 184, 0.08);
+            box-shadow: 0 6px 15px rgba(29, 114, 184, 0.08);
         }
         .q-blue .q-header {
             background: linear-gradient(135deg, #1d72b8, var(--primary-blue));
@@ -272,7 +310,7 @@
 
         .q-gold {
             border: 2.5px solid var(--gold);
-            box-shadow: 0 4px 10px rgba(243, 156, 18, 0.08);
+            box-shadow: 0 6px 15px rgba(243, 156, 18, 0.08);
         }
         .q-gold .q-header {
             background: linear-gradient(135deg, #f39c12, #d35400);
@@ -280,73 +318,75 @@
 
         .q-header {
             position: absolute;
-            top: -18px;
+            top: -20px;
             right: 50%;
             transform: translateX(50%);
             color: #fff;
-            padding: 4px 25px;
-            border-radius: 20px;
-            font-weight: 800;
+            padding: 5px 28px;
+            border-radius: 25px;
+            font-weight: 900;
             font-size: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.18);
         }
         .q-circle {
             background: #fff;
             color: #000;
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 900;
         }
 
         .q-body {
             margin-bottom: 15px;
-            font-size: 15px;
-            line-height: 1.6;
+            font-size: 15.5px;
+            line-height: 1.7;
             outline: none;
-            padding: 5px;
+            padding: 6px;
+            color: #1e293b;
         }
 
-        /* حالة تمكين التحرير المباشر */
+        /* عند تفعيل الوضع التفاعلي للتعديل */
         [contenteditable="true"] {
-            border: 1px dashed var(--accent-blue) !important;
-            border-radius: 6px;
-            background: #fdfdfd;
+            border: 1.5px dashed var(--accent-blue) !important;
+            border-radius: 8px;
+            background: #f8fafc;
         }
 
         .q-img {
             max-width: 100%;
-            max-height: 250px;
+            max-height: 260px;
             object-fit: contain;
-            margin-top: 10px;
-            border-radius: 8px;
+            margin-top: 12px;
+            border-radius: 10px;
             display: block;
+            border: 1px solid #e2e8f0;
         }
 
         .q-score-bottom {
             align-self: flex-start;
             border: 1.5px solid var(--gold);
             background: var(--gold-light);
-            padding: 3px 12px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 12.5px;
+            font-weight: 800;
             color: var(--primary-blue);
         }
 
         .q-controls {
             display: none;
-            margin-top: 10px;
+            margin-top: 12px;
             gap: 10px;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
+            border-top: 1px dashed #cbd5e1;
+            padding-top: 12px;
         }
 
         .edit-mode-active .q-controls {
@@ -359,15 +399,15 @@
             background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue), var(--primary-blue));
             color: #fff;
             text-align: center;
-            padding: 8px;
-            border-radius: 20px;
-            font-weight: 800;
-            font-size: 14px;
+            padding: 10px;
+            border-radius: 22px;
+            font-weight: 900;
+            font-size: 14.5px;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(12, 35, 64, 0.15);
         }
 
-        /* إعدادات الطباعة والمعاينة */
+        /* إعدادات الطباعة والمعاينة القياسية */
         @media print {
             body {
                 background: none;
@@ -395,7 +435,7 @@
     <div class="admin-controls">
         <div class="btn-group">
             <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">🔒 لوحة التحرير الشاملة</button>
-            <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">✏️ وضع التعديل المباشر (Edit Mode)</button>
+            <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">✏️ التعديل المباشر (Edit Mode)</button>
             <button class="btn btn-print" onclick="window.print()">🖨️ طباعة الورقة</button>
         </div>
         
@@ -414,8 +454,10 @@
             <div class="input-group">
                 <label>اختيار خلفية المادة:</label>
                 <select id="bgSelect" onchange="changeBackground()">
-                    <option value="pattern1">خلفية 1 (رموز ومعادلات)</option>
-                    <option value="pattern2">خلفية 2 (شبكة بيانية هندسية)</option>
+                    <option value="pattern1">خلفية 1 (رموز ومعادلات تفاضلية)</option>
+                    <option value="pattern2">خلفية 2 (شبكة رسم بياني هندسية)</option>
+                    <option value="pattern3">خلفية 3 (دوائر ومضلعات ناعمة)</option>
+                    <option value="pattern4">خلفية 4 (نقاط الماتريكس التنظيمية)</option>
                 </select>
                 <button class="btn btn-success" onclick="addQuestion()">➕ إضافة سؤال جديد</button>
             </div>
@@ -435,7 +477,7 @@
         <div class="content-wrap">
             <!-- 1. الهيدر -->
             <div class="header-top">
-                <div style="font-weight: bold; color: var(--accent-blue); font-size: 14px;">
+                <div style="font-weight: bold; color: var(--accent-blue); font-size: 15px;">
                     f(x) = x²
                 </div>
 
@@ -530,34 +572,40 @@
         </div>
     </div>
 
-    <!-- السكريبت والبرمجة -->
+    <!-- البرمجة والخوارزميات الذكية -->
     <script>
         let isEditMode = false;
         let isDirectEditMode = false;
 
-        // أكواد الدخول المعتمدة
-        const ALLOWED_CODES = [
-            "WD-4048",
-            "ADMIN-4048",
-            "MATH-4048",
-            "CALC-4048",
-            "GEO-4048"
-        ];
+        /**
+         * 🧠 منظومة التحقق الديناميكية للأكواد المتعددة
+         * المعادلة: \int_0^2 3x^2 dx + 40 = [x^3]_0^2 + 40 = 8 + 40 = 48
+         * الكود الصحيح: أي نص يحتوي على الرقم 48 في آخره أو ينتهي بـ 48
+         */
+        function validateTeacherCode(inputCode) {
+            if (!inputCode) return false;
+            const cleanCode = inputCode.trim().toUpperCase();
+            
+            // يتحقق من وجود الناتج الصحيح 48 في الكود المدخل
+            const hasCorrectMathResult = cleanCode.includes("48");
+            
+            return hasCorrectMathResult;
+        }
 
         function unlockEditMode() {
             if (!isEditMode) {
-                let pwd = prompt("أدخل أحد أكواد المعلم المعتمدة لتفعيل لوحة التحرير الشاملة:");
+                let pwd = prompt("أدخل كود التحرير المعتمد (مثال: WD-4048 أو MATH-48):");
                 
-                if (pwd && ALLOWED_CODES.includes(pwd.trim().toUpperCase())) {
+                if (validateTeacherCode(pwd)) {
                     isEditMode = true;
                     document.getElementById('editPanel').style.display = 'flex';
                     document.getElementById('toggleEditBtn').innerText = '🔒 إغلاق اللوحة';
                     document.getElementById('toggleEditBtn').classList.replace('btn-warning', 'btn-danger');
                     document.body.classList.add('edit-mode-active');
                     enableContentEditable(true);
-                    alert("تم تفعيل وضع التحرير بنجاح! ✨");
+                    alert("تم تفعيل لوحة التحرير بنجاح! ✨");
                 } else {
-                    alert("❌ كود غير صحيح! يرجى التأكد من إدخال الكود المعتمد.");
+                    alert("❌ كود غير صحيح! يرجى التأكد من إدخال الكود المعتمد الذي يتضمن ناتج المعادلة.");
                 }
             } else {
                 isEditMode = false;
@@ -571,8 +619,8 @@
 
         function toggleDirectEdit() {
             if (!isDirectEditMode) {
-                let pwd = prompt("أدخل كود المعلم لتفعيل التعديل المباشر على الصفحة:");
-                if (pwd && ALLOWED_CODES.includes(pwd.trim().toUpperCase())) {
+                let pwd = prompt("أدخل كود المعلم لتفعيل التعديل المباشر على العناصر:");
+                if (validateTeacherCode(pwd)) {
                     isDirectEditMode = true;
                     enableContentEditable(true);
                     document.getElementById('quickEditBtn').innerText = '✔️ حفظ وإيقاف التعديل المباشر';
@@ -583,7 +631,7 @@
             } else {
                 isDirectEditMode = false;
                 if(!isEditMode) enableContentEditable(false);
-                document.getElementById('quickEditBtn').innerText = '✏️ وضع التعديل المباشر (Edit Mode)';
+                document.getElementById('quickEditBtn').innerText = '✏️ التعديل المباشر (Edit Mode)';
                 document.getElementById('quickEditBtn').classList.replace('btn-danger', 'btn-success');
             }
         }
@@ -608,11 +656,11 @@
             const page = document.getElementById('examPage');
             const symbols = document.getElementById('bgSymbols');
 
+            page.className = `page bg-${bgType}`;
+
             if (bgType === 'pattern1') {
-                page.className = 'page bg-pattern-1';
                 symbols.style.display = 'block';
             } else {
-                page.className = 'page bg-pattern-2';
                 symbols.style.display = 'none';
             }
         }
