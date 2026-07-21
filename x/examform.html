@@ -29,6 +29,11 @@
             --light-gold: #ffe4e6;
         }
 
+        /* التحكم في إخفاء الهامش عند تفعيل الخيار */
+        body.hide-scratchpad .q-scratchpad {
+            display: none !important;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -104,6 +109,7 @@
         .btn-danger { background-color: #dc2626; }
         .btn-print { background-color: #334155; }
         .btn-answerKey { background-color: #0284c7; }
+        .btn-purple { background-color: #7c3aed; }
 
         .svg-icon {
             width: 16px;
@@ -166,7 +172,6 @@
             print-color-adjust: exact !important;
         }
 
-        /* زخارف الهيدر */
         .decor-shape-top {
             position: absolute;
             top: 0;
@@ -202,7 +207,7 @@
             flex-direction: column;
             gap: 8px;
             margin-bottom: 12px;
-            padding-left: 70px;
+            padding-left: 110px; /* مساحة تتسع للكيو ار المزدوَج */
         }
 
         .title-row {
@@ -235,10 +240,16 @@
             line-height: 1;
         }
 
-        .qr-box {
+        /* الكيو ار المزدوَج (الاقتراح 3) */
+        .qr-container {
             position: absolute;
             top: 0;
             left: 0;
+            display: flex;
+            gap: 6px;
+        }
+
+        .qr-box {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -250,12 +261,12 @@
         }
 
         .qr-box img {
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
         }
 
         .qr-box span {
-            font-size: 7.5px;
+            font-size: 7px;
             font-weight: 800;
             color: #64748b;
         }
@@ -480,7 +491,6 @@
             color: var(--primary-navy);
         }
 
-        /* مسودة التفكير الجانبية للمفاهيم والرياضيات */
         .q-scratchpad {
             margin-top: 10px;
             border: 1.5px dashed #cbd5e1;
@@ -504,7 +514,6 @@
             border-bottom: 1px dotted #e2e8f0;
         }
 
-        /* الإجابة النموذجية المخفية للمعلم */
         .answer-key-box {
             display: none;
             margin-top: 10px;
@@ -582,6 +591,30 @@
             margin-top: 10px;
             border-radius: 6px;
             display: block;
+        }
+
+        /* صندوق ملاحظات ولي الأمر / المعلم (الاقتراح 1) */
+        .teacher-notes-box {
+            margin-top: 12px;
+            border: 1.5px dashed var(--primary-navy);
+            border-radius: 10px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            font-size: 11px;
+        }
+
+        .teacher-notes-header {
+            font-weight: 800;
+            color: var(--primary-navy);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .teacher-notes-line {
+            border-bottom: 1px dotted #cbd5e1;
+            height: 20px;
         }
 
         .rubric-bar {
@@ -675,6 +708,10 @@
                 <svg class="svg-icon" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                 تعديل مباشر
             </button>
+            <!-- زر إخفاء/إظهار المسودة (الاقتراح 2) -->
+            <button id="toggleScratchpadBtn" class="btn btn-purple" onclick="toggleScratchpad()">
+                📝 إخفاء المسودة
+            </button>
             <button id="toggleAnswerKeyBtn" class="btn btn-answerKey" onclick="toggleAnswerKeyMode()">
                 👁️ عرض الإجابة النموذجية
             </button>
@@ -712,7 +749,6 @@
     <!-- ورقة الامتحان -->
     <div class="page" id="examPage">
 
-        <!-- زخارف الأركان الهندسية -->
         <div class="decor-shape-top"></div>
         <div class="decor-line-gold"></div>
 
@@ -729,9 +765,16 @@
                         </div>
                     </div>
 
-                    <div class="qr-box">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://plusinmath.com" alt="QR Code">
-                        <span>حلول الامتحان</span>
+                    <!-- نظام الكيو ار المزدوَج (الاقتراح 3) -->
+                    <div class="qr-container">
+                        <div class="qr-box">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://plusinmath.vercel.app/" alt="Plus in Math QR Code">
+                            <span>حلول الامتحان</span>
+                        </div>
+                        <div class="qr-box">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://plusinmath.vercel.app/" alt="Course QR Code">
+                            <span>منصة الحجز</span>
+                        </div>
                     </div>
                 </div>
 
@@ -790,7 +833,6 @@
             <!-- منطقة الأسئلة -->
             <div id="questionsContainer">
                 
-                <!-- السؤال 1 (تحريري مع مسودة تفكير ونموذج إجابة) -->
                 <div class="question-card" id="q-1" data-score="5">
                     <div class="q-number-badge">
                         <span>1</span>
@@ -824,7 +866,6 @@
                     </div>
                 </div>
 
-                <!-- السؤال 2 (أكمل بالكلمات) -->
                 <div class="question-card" id="q-2" data-score="5">
                     <div class="q-number-badge">
                         <span>2</span>
@@ -854,6 +895,14 @@
 
             </div>
 
+            <!-- صندوق ملاحظات المعلم وولي الأمر (الاقتراح 1) -->
+            <div class="teacher-notes-box">
+                <div class="teacher-notes-header">
+                    <span>📌 ملاحظات المصحح / ولي الأمر:</span>
+                </div>
+                <div class="teacher-notes-line"></div>
+            </div>
+
             <!-- شريط تقدير المستويات -->
             <div class="rubric-bar">
                 <div class="rubric-item"><span class="rubric-box"></span> ممتاز (&ge; 90%)</div>
@@ -874,6 +923,7 @@
         let isEditMode = false;
         let isDirectEditMode = false;
         let isAnswerKeyVisible = false;
+        let isScratchpadHidden = false;
 
         function validateTeacherCode(inputCode) {
             if (!inputCode) return false;
@@ -923,6 +973,17 @@
             }
         }
 
+        function toggleScratchpad() {
+            isScratchpadHidden = !isScratchpadHidden;
+            if(isScratchpadHidden) {
+                document.body.classList.add('hide-scratchpad');
+                document.getElementById('toggleScratchpadBtn').innerText = '📝 إظهار المسودة';
+            } else {
+                document.body.classList.remove('hide-scratchpad');
+                document.getElementById('toggleScratchpadBtn').innerText = '📝 إخفاء المسودة';
+            }
+        }
+
         function toggleAnswerKeyMode() {
             isAnswerKeyVisible = !isAnswerKeyVisible;
             if(isAnswerKeyVisible) {
@@ -951,6 +1012,7 @@
             document.body.className = '';
             if(isAnswerKeyVisible) document.body.classList.add('show-answer-key');
             if(isEditMode) document.body.classList.add('edit-mode-active');
+            if(isScratchpadHidden) document.body.classList.add('hide-scratchpad');
             if (theme !== 'default') {
                 document.body.classList.add(`theme-${theme}`);
             }
@@ -1171,7 +1233,6 @@
             }
         }
 
-        // الحساب المبدئي للدرجات عند فتح الصفحة
         window.onload = function() {
             calculateTotalScore();
         };
