@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>امتحان الحصة - رياضيات</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-navy: #0e2a47;
-            --accent-gold: #d49a24;
-            --light-gold: #fdf8eb;
-            --gray-bg: #f4f6f9;
-            --border-color: #0e2a47;
+            --primary-navy: #0f172a;
+            --accent-blue: #2563eb;
+            --accent-gold: #d97706;
+            --light-gold: #fef3c7;
+            --bg-page: #ffffff;
+            --text-main: #1e293b;
         }
 
         * {
@@ -22,22 +23,23 @@
         }
 
         body {
-            background-color: #eef2f7;
+            background-color: #f1f5f9;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
         }
 
-        /* ----- شريط التحكم والأزرار العلوي ----- */
+        /* ----- شريط التحكم العائم الأنيق ----- */
         .admin-controls {
-            width: 210mm;
+            width: 100%;
+            max-width: 210mm;
             background: #ffffff;
-            border: 2px solid var(--primary-navy);
-            border-radius: 12px;
-            padding: 12px 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 14px 20px;
             margin-bottom: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
@@ -56,31 +58,32 @@
             color: #fff;
             border: none;
             padding: 8px 16px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 700;
-            font-size: 13.5px;
+            font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
 
         .btn:hover {
-            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .btn-success { background-color: #27ae60; }
-        .btn-warning { background-color: #f39c12; }
-        .btn-danger { background-color: #e74c3c; }
-        .btn-print { background-color: #2c3e50; }
+        .btn-success { background-color: #059669; }
+        .btn-warning { background-color: #d97706; }
+        .btn-danger { background-color: #dc2626; }
+        .btn-print { background-color: #334155; }
 
         .edit-panel {
             display: none;
             width: 100%;
             background: #f8fafc;
-            border: 1px dashed var(--primary-navy);
-            border-radius: 10px;
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
             padding: 12px;
             margin-top: 10px;
             gap: 10px;
@@ -100,94 +103,76 @@
             font-size: 13px;
         }
 
-        .input-group input, .input-group select {
+        .input-group input {
             padding: 6px 12px;
             border: 1.5px solid #cbd5e1;
-            border-radius: 6px;
+            border-radius: 8px;
             font-family: inherit;
+            outline: none;
         }
 
-        /* ----- ورقة الامتحان A4 (تصميم المايسترو الجديد) ----- */
+        /* ----- ورقة الامتحان (تبدأ بـ A5 ديناميكي) ----- */
         .page {
-            width: 210mm;
-            min-height: 297mm;
-            background-color: #ffffff !important;
-            border-radius: 6px;
-            padding: 20px 25px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 148mm;
+            min-height: 210mm; /* مقاس A5 افتراضي */
+            background-color: var(--bg-page) !important;
+            border-radius: 16px;
+            padding: 20px 22px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: all 0.3s ease;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
 
-        /* ----- زخارف الزوايا والأركان الهندسية ----- */
-        .corner-decor-top-left {
+        /* تحول تلقائي لـ A4 عند زيادة الأسئلة */
+        .page.a4-mode {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 25px 30px;
+        }
+
+        /* زخارف جانبية هندسية عصرية */
+        .decor-shape-top {
             position: absolute;
             top: 0;
             left: 0;
-            width: 220px;
-            height: 160px;
-            background: linear-gradient(135deg, var(--primary-navy) 70%, transparent 70%);
+            width: 180px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--primary-navy) 80%, transparent 80%);
             z-index: 0;
             pointer-events: none;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
 
-        .corner-decor-top-left-accent {
+        .decor-line-gold {
             position: absolute;
             top: 0;
             left: 0;
-            width: 235px;
-            height: 175px;
-            border-bottom: 5px solid var(--accent-gold);
-            transform: rotate(-12deg);
+            width: 195px;
+            height: 130px;
+            border-bottom: 4px solid var(--accent-gold);
+            transform: rotate(-10deg);
             transform-origin: top left;
             z-index: 0;
             pointer-events: none;
         }
 
-        .corner-decor-bottom-right {
+        .decor-symbol-math {
             position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 200px;
-            height: 150px;
-            background: linear-gradient(-45deg, var(--primary-navy) 70%, transparent 70%);
-            z-index: 0;
-            pointer-events: none;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-
-        .corner-decor-bottom-left {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 180px;
-            height: 100px;
-            background: linear-gradient(45deg, var(--primary-navy) 60%, transparent 60%);
-            z-index: 0;
-            pointer-events: none;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-
-        /* الرموز والأشكال التزيينية داخل الزوايا */
-        .decor-symbols-left {
-            position: absolute;
-            top: 15px;
-            left: 15px;
+            top: 10px;
+            left: 12px;
             color: #ffffff;
+            font-size: 11px;
+            font-weight: 800;
             z-index: 1;
-            font-size: 13px;
-            font-weight: 700;
-            line-height: 1.8;
             pointer-events: none;
+            line-height: 1.6;
         }
 
         .content-wrap {
@@ -195,228 +180,196 @@
             z-index: 2;
         }
 
-        /* ----- 1. الهيدر ورأس الصفحة ----- */
+        /* ----- 1. الهيدر العرفي الحديث ----- */
         .header-top {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-            padding-left: 180px; /* ترك مساحة للركن الأيسر */
+            align-items: center;
+            margin-bottom: 18px;
+            padding-left: 130px; /* مساحة الزاوية */
         }
 
-        /* عنوان امتحان الحصة مع اللوجو */
-        .header-title-container {
+        .title-brand {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-top: 10px;
+            gap: 10px;
         }
 
-        .clipboard-icon {
-            font-size: 45px;
-            line-height: 1;
-        }
-
-        .title-text-group h1 {
+        .title-brand .icon {
             font-size: 32px;
+        }
+
+        .title-brand h1 {
+            font-size: 24px;
             font-weight: 900;
             color: var(--primary-navy);
             line-height: 1.1;
         }
 
-        .title-text-group .gold-subtitle {
-            font-size: 36px;
-            font-weight: 900;
+        .title-brand span {
             color: var(--accent-gold);
-            line-height: 1.1;
+            display: block;
+            font-size: 26px;
         }
 
-        /* كارت المدرس المائل يمين الأعلى */
-        .teacher-badge-card {
+        /* كارت بيانات المدرس العائم */
+        .teacher-card {
             background: #ffffff;
-            border: 2px solid #e2e8f0;
-            border-top: none;
-            border-right: none;
-            border-radius: 0 0 0 25px;
-            padding: 10px 20px 10px 25px;
-            box-shadow: -4px 4px 10px rgba(0,0,0,0.05);
-            position: relative;
-            min-width: 190px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 8px 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 140px;
         }
 
-        .teacher-badge-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--accent-gold);
-        }
-
-        .teacher-info-row {
+        .teacher-card-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 6px;
+            gap: 8px;
         }
 
-        .teacher-info-row .label-group {
+        .teacher-card-item .text-group {
             text-align: right;
         }
 
-        .teacher-info-row .sub-label {
-            font-size: 11px;
-            font-weight: 800;
-            color: var(--primary-navy);
+        .teacher-card-item .sub {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 700;
         }
 
-        .teacher-info-row .main-value {
-            font-size: 15px;
+        .teacher-card-item .val {
+            font-size: 13px;
             font-weight: 900;
             color: var(--primary-navy);
         }
 
-        .teacher-info-row .icon-box {
-            background: var(--primary-navy);
-            color: #fff;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+        .teacher-card-item .badge-icon {
+            background: #f1f5f9;
+            color: var(--primary-navy);
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 13px;
         }
 
-        /* شريط بيانات الطالب المغلق */
-        .student-data-box {
-            border: 2px solid var(--primary-navy);
-            border-radius: 20px;
-            padding: 8px 18px;
+        /* شريط معلومات الطالب */
+        .student-bar {
+            border: 1.5px solid var(--primary-navy);
+            border-radius: 14px;
+            padding: 8px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
             background: #fff;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 800;
             color: var(--primary-navy);
         }
 
-        .data-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .dots-field {
-            border-bottom: 1.5px dotted #718096;
+        .student-bar .dots {
+            border-bottom: 1.5px dotted #94a3b8;
             display: inline-block;
-            min-width: 90px;
-            height: 14px;
+            min-width: 60px;
+            height: 12px;
         }
 
         .score-pill {
             border: 1.5px solid var(--accent-gold);
             background: var(--light-gold);
-            border-radius: 12px;
-            padding: 2px 14px;
+            border-radius: 8px;
+            padding: 2px 10px;
             color: var(--accent-gold);
             font-weight: 900;
         }
 
-        /* ----- 2. صناديق الأسئلة بطراز المايسترو ----- */
-        .question-box {
-            border: 2px solid var(--primary-navy);
-            border-radius: 18px;
-            padding: 25px 20px 15px 20px;
-            margin-bottom: 20px;
+        /* ----- 2. صناديق الأسئلة (الترقيم الرقمي فقط) ----- */
+        .question-card {
+            border: 1.5px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 20px 16px 14px 16px;
+            margin-bottom: 18px;
             position: relative;
-            background: #fff;
-            min-height: 220px;
+            background: #ffffff;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            page-break-inside: avoid; /* منع انقسام السؤال بين الصفحات عند الطباعة */
         }
 
-        /* شريط عنوان السؤال المائل يسار الأعلى */
-        .q-title-ribbon {
+        /* شريط الترقيم الرقمي العريض */
+        .q-number-badge {
             position: absolute;
-            top: -2px;
-            right: -2px;
+            top: -14px;
+            right: 16px;
             background: var(--primary-navy);
-            color: #fff;
-            padding: 6px 25px 6px 35px;
-            border-radius: 0 16px 0 25px;
+            color: #ffffff;
+            padding: 3px 16px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-weight: 900;
-            font-size: 15px;
-            box-shadow: -2px 2px 6px rgba(0,0,0,0.15);
+            gap: 6px;
+            box-shadow: 0 4px 8px rgba(15, 23, 42, 0.15);
         }
 
-        .q-title-ribbon::after {
+        .q-number-badge::after {
             content: '';
             position: absolute;
-            bottom: -8px;
-            left: -8px;
+            bottom: -4px;
+            left: 10px;
             border-style: solid;
-            border-width: 8px 8px 0 0;
+            border-width: 4px 4px 0 0;
             border-color: var(--accent-gold) transparent transparent transparent;
         }
 
-        .q-number-circle {
-            background: #fff;
-            color: var(--primary-navy);
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 900;
-        }
-
-        .q-content-area {
-            margin-top: 20px;
-            font-size: 15px;
-            font-weight: 700;
-            color: #2d3748;
-            line-height: 2;
-        }
-
-        /* السطور المنقطة داخل السؤال */
-        .answer-lines {
+        .q-body {
             margin-top: 10px;
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.8;
+            outline: none;
+        }
+
+        /* أسطر الإجابة */
+        .answer-lines {
+            margin-top: 12px;
             width: 100%;
         }
 
         .line-item {
-            border-bottom: 1.5px dotted #a0aec0;
-            height: 32px;
+            border-bottom: 1.5px dotted #cbd5e1;
+            height: 28px;
             width: 100%;
         }
 
-        .q-footer-score {
+        .q-score-tag {
             align-self: flex-start;
             border: 1.5px solid var(--accent-gold);
             background: var(--light-gold);
-            border-radius: 10px;
-            padding: 3px 15px;
-            font-size: 12.5px;
+            border-radius: 8px;
+            padding: 2px 12px;
+            font-size: 11.5px;
             font-weight: 800;
             color: var(--primary-navy);
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
         .q-controls {
             display: none;
             margin-top: 10px;
             gap: 10px;
-            border-top: 1px dashed #cbd5e1;
+            border-top: 1px dashed #e2e8f0;
             padding-top: 10px;
         }
 
@@ -427,26 +380,26 @@
 
         .q-img {
             max-width: 100%;
-            max-height: 220px;
+            max-height: 200px;
             object-fit: contain;
             margin-top: 10px;
             border-radius: 8px;
             display: block;
         }
 
-        /* التعديل المباشر قابلية الضغط */
+        /* التعديل المباشر */
         [contenteditable="true"] {
             border: 1.5px dashed var(--accent-gold) !important;
             border-radius: 6px;
             background: #fffdfa;
-            padding: 2px 5px;
+            padding: 2px 6px;
         }
 
-        /* ----- إعدادات الطباعة النظيفة ----- */
+        /* ----- الطباعة الذكية والصفحات المتعددة ----- */
         @media print {
             @page {
-                size: A4;
-                margin: 0;
+                size: auto;
+                margin: 10mm;
             }
             body {
                 background: none;
@@ -464,22 +417,25 @@
             .page {
                 box-shadow: none;
                 border-radius: 0;
-                width: 210mm;
-                height: 297mm;
-                padding: 15mm 20mm;
+                width: 100% !important;
+                min-height: auto !important;
+                padding: 0;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
+            }
+            .question-card {
+                page-break-inside: avoid; /* نقل السؤال كاملاً للصفحة التالية تلقائياً إذا لم يكفِ المكان */
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- شريط الإدارة والتحكم -->
+    <!-- شريط التحكم والإدارة -->
     <div class="admin-controls">
         <div class="btn-group">
-            <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">🔒 لوحة التحرير الشاملة</button>
-            <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">✏️ التعديل المباشر (Edit Mode)</button>
+            <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">🔒 لوحة التحرير</button>
+            <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">✏️ تعديل مباشر</button>
             <button class="btn btn-print" onclick="window.print()">🖨️ طباعة الورقة</button>
         </div>
         
@@ -490,9 +446,6 @@
                 
                 <label>المادة:</label>
                 <input type="text" id="subjectInput" value="الرياضيات" oninput="updateHeaderInfo()">
-                
-                <label>رقم الحصة:</label>
-                <input type="text" id="lessonNumInput" value="1" oninput="updateHeaderInfo()">
             </div>
 
             <div class="input-group">
@@ -501,144 +454,105 @@
         </div>
     </div>
 
-    <!-- ورقة الامتحان -->
+    <!-- ورقة الامتحان (تبدأ بمقاس A5 ثم تتكيف تلقائياً) -->
     <div class="page" id="examPage">
 
-        <!-- زخارف الأركان الزاوية الكحلية والذهبية -->
-        <div class="corner-decor-top-left"></div>
-        <div class="corner-decor-top-left-accent"></div>
-        <div class="corner-decor-bottom-right"></div>
-        <div class="corner-decor-bottom-left"></div>
-
-        <!-- رموز رياضية داخل الزاوية اليسرى -->
-        <div class="decor-symbols-left">
-            <div>📈 y = x²</div>
+        <!-- الأشكال الزخرفية للزوايا -->
+        <div class="decor-shape-top"></div>
+        <div class="decor-line-gold"></div>
+        <div class="decor-symbol-math">
+            <div>f(x) = x²</div>
             <div>a² + b² = c²</div>
-            <div style="font-size: 20px; margin-top: 5px;">π</div>
         </div>
 
         <div class="content-wrap">
             <!-- 1. الهيدر ورأس الصفحة -->
             <div class="header-top">
-                <!-- اللوجو والعنوان الرئيسي -->
-                <div class="header-title-container">
-                    <div class="clipboard-icon">📋</div>
-                    <div class="title-text-group">
-                        <div class="editable-element">امتحان</div>
-                        <div class="gold-subtitle editable-element">الحصة</div>
+                <div class="title-brand">
+                    <div class="icon">📋</div>
+                    <div>
+                        <h1 class="editable-element">امتحان</h1>
+                        <span class="editable-element">الحصة</span>
                     </div>
                 </div>
 
-                <!-- كارت إعداد المدرس -->
-                <div class="teacher-badge-card">
-                    <!-- المادة -->
-                    <div class="teacher-info-row">
-                        <div class="label-group">
-                            <div class="sub-label">المادة:</div>
-                            <div class="main-value displaySubject editable-element">الرياضيات</div>
+                <!-- كارت المدرس والمادة -->
+                <div class="teacher-card">
+                    <div class="teacher-card-item">
+                        <div class="text-group">
+                            <div class="sub">المادة</div>
+                            <div class="val displaySubject editable-element">الرياضيات</div>
                         </div>
-                        <div class="icon-box">🧮</div>
+                        <div class="badge-icon">🧮</div>
                     </div>
-                    <!-- المدرس -->
-                    <div class="teacher-info-row" style="margin-bottom: 0;">
-                        <div class="label-group">
-                            <div class="sub-label">إعداد:</div>
-                            <div class="main-value editable-element" id="displayTeacherName">أ. مهدي حسن</div>
+                    <div class="teacher-card-item">
+                        <div class="text-group">
+                            <div class="sub">إعداد</div>
+                            <div class="val editable-element" id="displayTeacherName">أ. مهدي حسن</div>
                         </div>
-                        <div class="icon-box">👤</div>
+                        <div class="badge-icon">👤</div>
                     </div>
                 </div>
             </div>
 
-            <!-- شريط بيانات الطالب -->
-            <div class="student-data-box">
-                <div class="data-item">
-                    <span>👤 اسم الطالب:</span>
-                    <span class="dots-field" style="min-width: 130px;"></span>
-                </div>
-                <div class="data-item">
-                    <span>🎓 الصف:</span>
-                    <span class="dots-field" style="min-width: 70px;"></span>
-                </div>
-                <div class="data-item">
-                    <span>📅 التاريخ:</span>
-                    <span>20... / ...... / ......</span>
-                </div>
-                <div class="data-item">
-                    <span>⭐ الدرجة:</span>
-                    <span class="score-pill">....... / .......</span>
-                </div>
+            <!-- شريط معلومات الطالب -->
+            <div class="student-bar">
+                <div>👤 الاسم: <span class="dots" style="min-width: 90px;"></span></div>
+                <div>🎓 الصف: <span class="dots" style="min-width: 50px;"></span></div>
+                <div>📅 التاريخ: <span>20... / ... / ...</span></div>
+                <div>⭐ الدرجة: <span class="score-pill">... / ...</span></div>
             </div>
 
-            <!-- 2. منطقة الأسئلة -->
+            <!-- 2. منطقة الأسئلة (ترقيم رقمي فقط) -->
             <div id="questionsContainer">
                 
-                <!-- السؤال الأول -->
-                <div class="question-box" id="q-1">
-                    <div class="q-title-ribbon">
-                        <span class="q-number-circle q-num">1</span>
-                        <span class="editable-element">السؤال الأول</span>
+                <!-- السؤال 1 -->
+                <div class="question-card" id="q-1">
+                    <div class="q-number-badge">
+                        <span>1</span>
                     </div>
 
-                    <div class="q-content-area">
-                        <div class="q-body editable-element" contenteditable="false">💡 اكتب نص السؤال الأول هنا...</div>
-                        <img class="q-img" id="img-q-1" style="display:none;" />
-                        
-                        <!-- السطور المنقطة للإجابة -->
-                        <div class="answer-lines">
-                            <div class="line-item"></div>
-                            <div class="line-item"></div>
-                            <div class="line-item"></div>
-                        </div>
+                    <div class="q-body editable-element" contenteditable="false">💡 اكتب نص السؤال الأول هنا...</div>
+                    <img class="q-img" id="img-q-1" style="display:none;" />
+                    
+                    <div class="answer-lines">
+                        <div class="line-item"></div>
+                        <div class="line-item"></div>
                     </div>
 
-                    <div class="q-footer-score editable-element">
-                        الدرجة: .........
-                    </div>
+                    <div class="q-score-tag editable-element">الدرجة: .........</div>
 
                     <div class="q-controls">
-                        <input type="text" placeholder="رابط صورة (Drive/Web)" onchange="setImgFromLink(this, 'q-1')">
+                        <input type="text" placeholder="رابط صورة" onchange="setImgFromLink(this, 'q-1')">
                         <input type="file" accept="image/*" onchange="setImgFromFile(this, 'q-1')">
                         <button class="btn btn-danger" onclick="removeQuestion('q-1')">حذف السؤال</button>
                     </div>
                 </div>
 
-                <!-- السؤال الثاني -->
-                <div class="question-box" id="q-2">
-                    <div class="q-title-ribbon">
-                        <span class="q-number-circle q-num">2</span>
-                        <span class="editable-element">السؤال الثاني</span>
+                <!-- السؤال 2 -->
+                <div class="question-card" id="q-2">
+                    <div class="q-number-badge">
+                        <span>2</span>
                     </div>
 
-                    <div class="q-content-area">
-                        <div class="q-body editable-element" contenteditable="false">🎯 اكتب نص السؤال الثاني هنا...</div>
-                        <img class="q-img" id="img-q-2" style="display:none;" />
-                        
-                        <!-- السطور المنقطة للإجابة -->
-                        <div class="answer-lines">
-                            <div class="line-item"></div>
-                            <div class="line-item"></div>
-                            <div class="line-item"></div>
-                        </div>
+                    <div class="q-body editable-element" contenteditable="false">🎯 اكتب نص السؤال الثاني هنا...</div>
+                    <img class="q-img" id="img-q-2" style="display:none;" />
+                    
+                    <div class="answer-lines">
+                        <div class="line-item"></div>
+                        <div class="line-item"></div>
                     </div>
 
-                    <div class="q-footer-score editable-element">
-                        الدرجة: .........
-                    </div>
+                    <div class="q-score-tag editable-element">الدرجة: .........</div>
 
                     <div class="q-controls">
-                        <input type="text" placeholder="رابط صورة (Drive/Web)" onchange="setImgFromLink(this, 'q-2')">
+                        <input type="text" placeholder="رابط صورة" onchange="setImgFromLink(this, 'q-2')">
                         <input type="file" accept="image/*" onchange="setImgFromFile(this, 'q-2')">
                         <button class="btn btn-danger" onclick="removeQuestion('q-2')">حذف السؤال</button>
                     </div>
                 </div>
 
             </div>
-        </div>
-
-        <!-- أشكال هندسية صغيرة بالأسفل -->
-        <div style="position: absolute; bottom: 15px; right: 25px; color: #fff; font-size: 16px; z-index: 2; pointer-events: none;">
-            ✏️ f(x)
         </div>
     </div>
 
@@ -649,14 +563,12 @@
 
         function validateTeacherCode(inputCode) {
             if (!inputCode) return false;
-            const cleanCode = inputCode.trim().toUpperCase();
-            return cleanCode.includes("48");
+            return inputCode.trim().toUpperCase().includes("48");
         }
 
         function unlockEditMode() {
             if (!isEditMode) {
-                let pwd = prompt("أدخل كود مرور المعلم لتفعيل التعديل الشامل:");
-                
+                let pwd = prompt("أدخل كود المرور لتفعيل وضع التحرير:");
                 if (validateTeacherCode(pwd)) {
                     isEditMode = true;
                     document.getElementById('editPanel').style.display = 'flex';
@@ -664,14 +576,14 @@
                     document.getElementById('toggleEditBtn').classList.replace('btn-warning', 'btn-danger');
                     document.body.classList.add('edit-mode-active');
                     enableContentEditable(true);
-                    alert("تم تفعيل وضع التحرير بنجاح! ✨يمكنك الآن التعديل على أي عنصر بالضغط عليه.");
+                    alert("تم تفعيل وضع التحرير بنجاح! ✨");
                 } else {
                     alert("❌ كود المرور غير صحيح!");
                 }
             } else {
                 isEditMode = false;
                 document.getElementById('editPanel').style.display = 'none';
-                document.getElementById('toggleEditBtn').innerText = '🔒 لوحة التحرير الشاملة';
+                document.getElementById('toggleEditBtn').innerText = '🔒 لوحة التحرير';
                 document.getElementById('toggleEditBtn').classList.replace('btn-danger', 'btn-warning');
                 document.body.classList.remove('edit-mode-active');
                 if(!isDirectEditMode) enableContentEditable(false);
@@ -680,11 +592,11 @@
 
         function toggleDirectEdit() {
             if (!isDirectEditMode) {
-                let pwd = prompt("أدخل كود مرور المعلم:");
+                let pwd = prompt("أدخل كود المرور:");
                 if (validateTeacherCode(pwd)) {
                     isDirectEditMode = true;
                     enableContentEditable(true);
-                    document.getElementById('quickEditBtn').innerText = '✔️ حفظ وإيقاف التعديل المباشر';
+                    document.getElementById('quickEditBtn').innerText = '✔️ حفظ وتوقف';
                     document.getElementById('quickEditBtn').classList.replace('btn-success', 'btn-danger');
                 } else {
                     alert("❌ كود المرور غير صحيح!");
@@ -692,7 +604,7 @@
             } else {
                 isDirectEditMode = false;
                 if(!isEditMode) enableContentEditable(false);
-                document.getElementById('quickEditBtn').innerText = '✏️ التعديل المباشر (Edit Mode)';
+                document.getElementById('quickEditBtn').innerText = '✏️ تعديل مباشر';
                 document.getElementById('quickEditBtn').classList.replace('btn-danger', 'btn-success');
             }
         }
@@ -710,30 +622,38 @@
             document.querySelectorAll('.displaySubject').forEach(el => el.innerText = subject);
         }
 
+        function checkAndAdjustPageSize() {
+            const page = document.getElementById('examPage');
+            const qCount = document.querySelectorAll('.question-card').length;
+
+            // إذا زاد عدد الأسئلة عن 2 تتحول الورقة تلقائياً لتنسيق A4 لتقبل الأسئلة والصفحات الجديدة
+            if (qCount > 2) {
+                page.classList.add('a4-mode');
+            } else {
+                page.classList.remove('a4-mode');
+            }
+        }
+
         function addQuestion() {
             const qId = `q-${Date.now()}`;
 
             const card = document.createElement('div');
-            card.className = `question-box`;
+            card.className = `question-card`;
             card.id = qId;
 
             card.innerHTML = `
-                <div class="q-title-ribbon">
-                    <span class="q-number-circle q-num"></span>
-                    <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">السؤال</span>
+                <div class="q-number-badge">
+                    <span class="q-num"></span>
                 </div>
-                <div class="q-content-area">
-                    <div class="q-body editable-element" contenteditable="${isDirectEditMode || isEditMode}">اكتب نص السؤال الجديد هنا...</div>
-                    <img class="q-img" id="img-${qId}" style="display:none;" />
-                    <div class="answer-lines">
-                        <div class="line-item"></div>
-                        <div class="line-item"></div>
-                        <div class="line-item"></div>
-                    </div>
+                <div class="q-body editable-element" contenteditable="${isDirectEditMode || isEditMode}">اكتب نص السؤال الجديد هنا...</div>
+                <img class="q-img" id="img-${qId}" style="display:none;" />
+                <div class="answer-lines">
+                    <div class="line-item"></div>
+                    <div class="line-item"></div>
                 </div>
-                <div class="q-footer-score editable-element" contenteditable="${isDirectEditMode || isEditMode}">الدرجة: .........</div>
+                <div class="q-score-tag editable-element" contenteditable="${isDirectEditMode || isEditMode}">الدرجة: .........</div>
                 <div class="q-controls">
-                    <input type="text" placeholder="رابط صورة (Drive/Web)" onchange="setImgFromLink(this, '${qId}')">
+                    <input type="text" placeholder="رابط صورة" onchange="setImgFromLink(this, '${qId}')">
                     <input type="file" accept="image/*" onchange="setImgFromFile(this, '${qId}')">
                     <button class="btn btn-danger" onclick="removeQuestion('${qId}')">حذف السؤال</button>
                 </div>
@@ -741,6 +661,7 @@
 
             document.getElementById('questionsContainer').appendChild(card);
             reindexQuestions();
+            checkAndAdjustPageSize();
         }
 
         function removeQuestion(id) {
@@ -748,11 +669,12 @@
             if (card) {
                 card.remove();
                 reindexQuestions();
+                checkAndAdjustPageSize();
             }
         }
 
         function reindexQuestions() {
-            const cards = document.querySelectorAll('.question-box');
+            const cards = document.querySelectorAll('.question-card');
             cards.forEach((card, idx) => {
                 const numSpan = card.querySelector('.q-num');
                 if (numSpan) numSpan.innerText = idx + 1;
