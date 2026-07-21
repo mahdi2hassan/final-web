@@ -123,7 +123,7 @@
         .page {
             width: 210mm;
             min-height: 297mm;
-            background: #ffffff;
+            background-color: #ffffff !important;
             border-radius: 12px;
             padding: 25px 30px;
             box-shadow: var(--shadow);
@@ -132,50 +132,46 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
-        /* 🎨 خلفيات ظليّة ومجهزة للطباعة */
+        /* 🎨 خلفيات مخصصة ثابته وبارزة للطباعة */
         .math-bg-shadow {
             position: absolute;
             font-weight: 900;
-            color: rgba(12, 35, 64, 0.06);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.12);
+            color: rgba(12, 35, 64, 0.08) !important;
             user-select: none;
             z-index: 0;
             pointer-events: none;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
-        /* خلفية 1: رموز ظلية بارزة */
         .bg-pattern-1 .bg-1 { top: 35px; left: 40px; font-size: 32px; }
         .bg-pattern-1 .bg-2 { top: 160px; left: 25px; font-size: 26px; }
         .bg-pattern-1 .bg-3 { bottom: 110px; left: 35px; font-size: 36px; }
         .bg-pattern-1 .bg-4 { bottom: 150px; right: 45px; font-size: 24px; }
 
-        /* خلفية 2: دفتر رسم بياني مع ظلال شبكية */
         .bg-pattern-2 {
-            background-image: linear-gradient(to right, rgba(29, 114, 184, 0.08) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(29, 114, 184, 0.08) 1px, transparent 1px);
-            background-size: 20px 20px;
-            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.03);
+            background-image: linear-gradient(to right, rgba(29, 114, 184, 0.1) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(29, 114, 184, 0.1) 1px, transparent 1px) !important;
+            background-size: 20px 20px !important;
         }
 
-        /* خلفية 3: مائل هندسي مع ظلال عميقة */
         .bg-pattern-3 {
             background: repeating-linear-gradient(
                 45deg,
-                rgba(243, 156, 18, 0.03),
-                rgba(243, 156, 18, 0.03) 15px,
-                rgba(29, 114, 184, 0.04) 15px,
-                rgba(29, 114, 184, 0.04) 30px
-            );
+                rgba(243, 156, 18, 0.05),
+                rgba(243, 156, 18, 0.05) 15px,
+                rgba(29, 114, 184, 0.05) 15px,
+                rgba(29, 114, 184, 0.05) 30px
+            ) !important;
         }
 
-        /* خلفية 4: نقاط الدفتر المنقط مع ظلال */
         .bg-pattern-4 {
-            background-image: radial-gradient(rgba(12, 35, 64, 0.15) 1px, transparent 1px);
-            background-size: 16px 16px;
+            background-image: radial-gradient(rgba(12, 35, 64, 0.18) 1.2px, transparent 1.2px) !important;
+            background-size: 18px 18px !important;
         }
 
         .content-wrap {
@@ -183,7 +179,7 @@
             z-index: 1;
         }
 
-        /* ----- 1. الهيدر وكارت المعلم المبتكر ----- */
+        /* ----- 1. الهيدر ورأس الصفحة ----- */
         .header-top {
             display: flex;
             justify-content: space-between;
@@ -192,103 +188,97 @@
             gap: 15px;
         }
 
-        /* كارت اسم المعلم والمادة بتصميم مميز */
         .teacher-card-featured {
-            background: linear-gradient(135deg, #0c2340 0%, #1d72b8 100%);
+            background: linear-gradient(135deg, #0c2340 0%, #1d72b8 100%) !important;
             border-radius: 18px;
             padding: 10px 22px;
-            color: #ffffff;
-            box-shadow: 0 8px 18px rgba(12, 35, 64, 0.25);
+            color: #ffffff !important;
+            box-shadow: 0 6px 16px rgba(12, 35, 64, 0.2);
             min-width: 170px;
             position: relative;
             overflow: hidden;
-            border: 2px solid #64b5f6;
+            border: 2px solid #64b5f6 !important;
             text-align: center;
-        }
-
-        .teacher-card-featured::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
-            pointer-events: none;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         .teacher-card-featured .badge {
-            background: #f39c12;
-            color: #0c2340;
+            background: #f39c12 !important;
+            color: #0c2340 !important;
             padding: 3px 14px;
             border-radius: 12px;
             font-size: 11px;
             font-weight: 900;
             display: inline-block;
             margin-bottom: 5px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            text-transform: uppercase;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         .teacher-card-featured .name {
             font-size: 18px;
             font-weight: 900;
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            color: #ffffff;
+            color: #ffffff !important;
         }
 
         .teacher-card-featured .subject-tag {
-            background: rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.2) !important;
             border-radius: 10px;
             padding: 2px 10px;
             font-size: 12.5px;
             font-weight: 800;
             margin-top: 6px;
             display: inline-block;
-            color: #eef6ff;
-            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
-        /* عنوان الامتحان الرئيسي */
         .main-title-box {
-            background: linear-gradient(135deg, #1d5b96 0%, var(--primary-blue) 100%);
-            color: #fff;
+            background: linear-gradient(135deg, #1d5b96 0%, var(--primary-blue) 100%) !important;
+            color: #fff !important;
             padding: 12px 42px;
             border-radius: 30px;
             text-align: center;
-            border: 3px solid #64b5f6;
+            border: 3px solid #64b5f6 !important;
             box-shadow: 0 8px 20px rgba(12, 35, 64, 0.2);
             position: relative;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
         .main-title-box h1 {
             font-size: 24px;
             font-weight: 900;
-            letter-spacing: 0.5px;
         }
         .main-title-box .num-box {
-            background: #fff;
-            color: var(--primary-blue);
+            background: #fff !important;
+            color: var(--primary-blue) !important;
             display: inline-block;
             padding: 0 16px;
             border-radius: 10px;
             margin: 2px 0;
             font-weight: 900;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
         .main-title-box .sub-text {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.2) !important;
             padding: 2px 16px;
             border-radius: 12px;
             font-size: 12px;
             margin-top: 4px;
             display: inline-block;
             font-weight: 700;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         /* شريط بيانات الطالب */
         .student-info-bar {
-            border: 2px solid var(--accent-blue);
-            background: linear-gradient(to right, var(--light-blue), #ffffff);
+            border: 2px solid var(--accent-blue) !important;
+            background: linear-gradient(to right, var(--light-blue), #ffffff) !important;
             border-radius: 20px;
             display: flex;
             justify-content: space-between;
@@ -297,8 +287,9 @@
             margin-bottom: 25px;
             font-size: 13.5px;
             font-weight: 800;
-            color: var(--primary-blue);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            color: var(--primary-blue) !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
         .info-item {
             display: flex;
@@ -313,12 +304,14 @@
             height: 12px;
         }
         .score-box {
-            background: #fff;
-            border: 2px solid var(--gold);
+            background: #fff !important;
+            border: 2px solid var(--gold) !important;
             border-radius: 12px;
             padding: 2px 12px;
-            color: #d35400;
+            color: #d35400 !important;
             font-weight: 900;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         /* ----- 2. صناديق الأسئلة ----- */
@@ -327,28 +320,31 @@
             position: relative;
             margin-bottom: 25px;
             padding: 38px 22px 20px 22px;
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(255, 255, 255, 0.98) !important;
             min-height: 210px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: all 0.3s;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         .q-blue {
-            border: 2.5px solid var(--accent-blue);
-            box-shadow: 0 6px 15px rgba(29, 114, 184, 0.08);
+            border: 2.5px solid var(--accent-blue) !important;
         }
         .q-blue .q-header {
-            background: linear-gradient(135deg, #1d72b8, var(--primary-blue));
+            background: linear-gradient(135deg, #1d72b8, var(--primary-blue)) !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         .q-gold {
-            border: 2.5px solid var(--gold);
-            box-shadow: 0 6px 15px rgba(243, 156, 18, 0.08);
+            border: 2.5px solid var(--gold) !important;
         }
         .q-gold .q-header {
-            background: linear-gradient(135deg, #f39c12, #d35400);
+            background: linear-gradient(135deg, #f39c12, #d35400) !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         .q-header {
@@ -356,7 +352,7 @@
             top: -20px;
             right: 50%;
             transform: translateX(50%);
-            color: #fff;
+            color: #fff !important;
             padding: 5px 28px;
             border-radius: 25px;
             font-weight: 900;
@@ -367,8 +363,8 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.18);
         }
         .q-circle {
-            background: #fff;
-            color: #000;
+            background: #fff !important;
+            color: #000 !important;
             width: 26px;
             height: 26px;
             border-radius: 50%;
@@ -402,18 +398,19 @@
             border-radius: 10px;
             display: block;
             border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
         .q-score-bottom {
             align-self: flex-start;
-            border: 1.5px solid var(--gold);
-            background: var(--gold-light);
+            border: 1.5px solid var(--gold) !important;
+            background: var(--gold-light) !important;
             padding: 4px 14px;
             border-radius: 12px;
             font-size: 12.5px;
             font-weight: 800;
-            color: var(--primary-blue);
+            color: var(--primary-blue) !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         .q-controls {
@@ -431,8 +428,8 @@
 
         /* ----- 3. الفوتر ----- */
         .footer-banner {
-            background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue), var(--primary-blue));
-            color: #fff;
+            background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue), var(--primary-blue)) !important;
+            color: #fff !important;
             text-align: center;
             padding: 10px;
             border-radius: 22px;
@@ -440,13 +437,21 @@
             font-size: 14.5px;
             letter-spacing: 0.5px;
             box-shadow: 0 4px 12px rgba(12, 35, 64, 0.15);
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
-        /* إعدادات الطباعة والمعاينة الاحترافية مع الحفاظ على الخلفيات والظلال */
+        /* إعدادات إجباريّة لإظهار الألوان والخلفيات عند الطباعة */
         @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
             body {
                 background: none;
                 padding: 0;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
             .admin-controls, .q-controls {
                 display: none !important;
@@ -458,14 +463,16 @@
             .page {
                 box-shadow: none;
                 border-radius: 0;
-                width: 100%;
-                height: 100vh;
+                width: 210mm;
+                height: 297mm;
+                padding: 15mm 20mm;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
             .math-bg-shadow {
                 color: rgba(12, 35, 64, 0.08) !important;
-                text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.1) !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
         }
     </style>
@@ -493,12 +500,12 @@
             </div>
 
             <div class="input-group">
-                <label>اختيار خلفية المادة الظليّة:</label>
+                <label>اختيار خلفية المادة للطباعة:</label>
                 <select id="bgSelect" onchange="changeBackground()">
-                    <option value="pattern1">خلفية 1 (معادلات ورموز ظليّة ببروز)</option>
+                    <option value="pattern1">خلفية 1 (رموز ومعادلات ظاهرة بالطباعة)</option>
                     <option value="pattern2">خلفية 2 (شبكة دفتر رسم بياني)</option>
-                    <option value="pattern3">خلفية 3 (خطوط مائلة بظلال عميقة)</option>
-                    <option value="pattern4">خلفية 4 (نقاط الدفتر الظليّة)</option>
+                    <option value="pattern3">خلفية 3 (خطوط مائلة هندسية)</option>
+                    <option value="pattern4">خلفية 4 (نقاط الدفتر المنقط)</option>
                 </select>
                 <button class="btn btn-success" onclick="addQuestion()">➕ إضافة سؤال جديد</button>
             </div>
@@ -507,7 +514,7 @@
 
     <!-- ورقة الامتحان -->
     <div class="page bg-pattern-1" id="examPage">
-        <!-- طبقة خلفية الرموز الرياضية ذات الظلال -->
+        <!-- طبقة خلفية الرموز الرياضية الظاهرة بالطباعة -->
         <div id="bgSymbols">
             <div class="math-bg-shadow bg-1">f(x) = x²</div>
             <div class="math-bg-shadow bg-2">a² + b² = c²</div>
@@ -614,11 +621,12 @@
         </div>
     </div>
 
-    <!-- البرمجة والخوارزميات -->
+    <!-- البرمجة والخوارزميات الخفية -->
     <script>
         let isEditMode = false;
         let isDirectEditMode = false;
 
+        // دالة التحقق الخفية من كود التحرير
         function validateTeacherCode(inputCode) {
             if (!inputCode) return false;
             const cleanCode = inputCode.trim().toUpperCase();
@@ -627,7 +635,7 @@
 
         function unlockEditMode() {
             if (!isEditMode) {
-                let pwd = prompt("أدخل كود التحرير المعتمد (مثال: WD-4048 أو MATH-48):");
+                let pwd = prompt("أدخل كود مرور المعلم:");
                 
                 if (validateTeacherCode(pwd)) {
                     isEditMode = true;
@@ -636,9 +644,9 @@
                     document.getElementById('toggleEditBtn').classList.replace('btn-warning', 'btn-danger');
                     document.body.classList.add('edit-mode-active');
                     enableContentEditable(true);
-                    alert("تم تفعيل لوحة التحرير بنجاح! ✨");
+                    alert("تم تفعيل وضع التحرير بنجاح! ✨");
                 } else {
-                    alert("❌ كود غير صحيح! يرجى التأكد من إدخال الكود المعتمد.");
+                    alert("❌ كود المرور غير صحيح!");
                 }
             } else {
                 isEditMode = false;
@@ -652,14 +660,14 @@
 
         function toggleDirectEdit() {
             if (!isDirectEditMode) {
-                let pwd = prompt("أدخل كود المعلم لتفعيل التعديل المباشر على العناصر:");
+                let pwd = prompt("أدخل كود مرور المعلم:");
                 if (validateTeacherCode(pwd)) {
                     isDirectEditMode = true;
                     enableContentEditable(true);
                     document.getElementById('quickEditBtn').innerText = '✔️ حفظ وإيقاف التعديل المباشر';
                     document.getElementById('quickEditBtn').classList.replace('btn-success', 'btn-danger');
                 } else {
-                    alert("❌ كود غير صحيح!");
+                    alert("❌ كود المرور غير صحيح!");
                 }
             } else {
                 isDirectEditMode = false;
