@@ -1,32 +1,34 @@
 <!DOCTYPE html>
-<html lang="ar" dirهذا مشروع متكامل ورائع. بما أنك طلبت صفحة HTML واحدة (Single Page Application) تعمل بدون سيرفر معقد، سأقوم ببناء نظام يعتمد على **LocalStorage** في المتصفح لحفظ البيانات (بحيث لا تضيع عند إغلاق الصفحة)، مع استخدام مكتبة **Bootstrap 5** للتصميم الحديث والمتجاوب، ومكتبة **Chart.js** للرسوم البيانية.
-
-إليك الكود الكامل. قم بنسخه وحفظه في ملف باسم `index.html` وشغله في أي متصفح حديث (Chrome, Edge, Firefox).
-
-```html
-<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة محل الموبايلات</title>
+    <title>نظام إدارة المبيعات الذكي</title>
     
     <!-- Bootstrap 5 RTL & FontAwesome -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .sidebar { min-height: 100vh; background: #2c3e50; color: white; }
-        .nav-link { color: rgba(255,255,255,0.8); margin-bottom: 5px; cursor: pointer; }
-        .nav-link:hover, .nav-link.active { background: #34495e; color: white; border-radius: 5px; }
-        .card { border: none; box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075); margin-bottom: 20px; }
-        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 0.8em; }
-        .bg-activated { background-color: #d1e7dd; color: #0f5132; }
-        .bg-not-activated { background-color: #f8d7da; color: #842029; }
-        .fab-btn { position: fixed; bottom: 20px; left: 20px; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; display: flex; align-items: center; justify-content: center; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
-        /* Print styles */
-        @media print { .no-print { display: none !important; } }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { min-height: 100vh; background: #1a202e; color: white; }
+        .nav-link { color: rgba(255,255,255,0.7); margin-bottom: 8px; cursor: pointer; border-radius: 8px; padding: 10px 15px; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background: #2c3e50; color: #fff; transform: translateX(-5px); }
+        .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; transition: 0.3s; }
+        .card:hover { transform: translateY(-2px); }
+        .fab-btn { position: fixed; bottom: 25px; left: 25px; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; display: flex; align-items: center; justify-content: center; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); background: #e74c3c; color: white; border: none; }
+        
+        /* Warranty Alert Box */
+        .warranty-box {
+            background: #fff3cd;
+            border-right: 5px solid #ffc107;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 5px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -35,25 +37,27 @@
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-2 sidebar p-3 d-none d-md-block no-print">
-            <h4 class="text-center mb-4"><i class="fas fa-mobile-alt"></i> موبايل شوب</h4>
+            <h4 class="text-center mb-4 fw-bold"><i class="fas fa-mobile-alt me-2"></i> موبايل برو</h4>
             <ul class="nav flex-column">
-                <li class="nav-item"><a class="nav-link active" onclick="showSection('dashboard')"><i class="fas fa-chart-line me-2"></i> لوحة التحكم</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="showSection('inventory')"><i class="fas fa-boxes me-2"></i> المخزون والأجهزة</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="showSection('companies')"><i class="fas fa-building me-2"></i> إدارة الشركات</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="showSection('reports')"><i class="fas fa-file-invoice-dollar me-2"></i> التقارير والأرباح</a></li>
+                <li class="nav-item"><a class="nav-link active" onclick="showSection('dashboard')"><i class="fas fa-home me-2"></i> الرئيسية</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('inventory')"><i class="fas fa-box-open me-2"></i> المخزون (Stock)</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('sales')"><i class="fas fa-cash-register me-2"></i> نقطة البيع (Sales)</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('history')"><i class="fas fa-history me-2"></i> سجل المبيعات</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('companies')"><i class="fas fa-building me-2"></i> الشركات</a></li>
             </ul>
         </div>
 
-        <!-- Mobile Navbar -->
-        <div class="col-12 bg-dark text-white p-2 d-md-none no-print d-flex justify-content-between align-items-center">
-            <span>موبايل شوب</span>
-            <button class="btn btn-sm btn-outline-light" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu">القائمة</button>
+        <!-- Mobile Header -->
+        <div class="col-12 bg-dark text-white p-3 d-md-none d-flex justify-content-between align-items-center">
+            <h5 class="m-0"><i class="fas fa-mobile-alt"></i> موبايل برو</h5>
+            <button class="btn btn-sm btn-outline-light" data-bs-toggle="collapse" data-bs-target="#mobileMenu"><i class="fas fa-bars"></i></button>
         </div>
-        <div class="collapse bg-dark p-2 d-md-none no-print" id="mobileMenu">
-             <a class="nav-link text-white" onclick="showSection('dashboard')">لوحة التحكم</a>
+        <div class="collapse bg-dark p-2 d-md-none" id="mobileMenu">
+             <a class="nav-link text-white" onclick="showSection('dashboard')">الرئيسية</a>
              <a class="nav-link text-white" onclick="showSection('inventory')">المخزون</a>
+             <a class="nav-link text-white" onclick="showSection('sales')">نقطة البيع</a>
+             <a class="nav-link text-white" onclick="showSection('history')">السجل</a>
              <a class="nav-link text-white" onclick="showSection('companies')">الشركات</a>
-             <a class="nav-link text-white" onclick="showSection('reports')">التقارير</a>
         </div>
 
         <!-- Main Content -->
@@ -61,62 +65,70 @@
             
             <!-- Dashboard Section -->
             <div id="dashboard" class="section">
-                <h3 class="mb-4">لوحة المعلومات</h3>
-                <div class="row">
+                <h3 class="mb-4 fw-bold text-dark">لوحة المعلومات</h3>
+                <div class="row g-3">
                     <div class="col-md-3">
                         <div class="card p-3 bg-primary text-white">
-                            <h5>إجمالي الأجهزة</h5>
-                            <h2 id="totalDevicesCount">0</h2>
+                            <div class="d-flex justify-content-between">
+                                <div><small>إجمالي الأصناف</small><h3 id="totalModels">0</h3></div>
+                                <i class="fas fa-layer-group fa-2x opacity-50"></i>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="card p-3 bg-success text-white">
-                            <h5>قيمة المخزون (شراء)</h5>
-                            <h2 id="totalStockValue">0 ج.م</h2>
+                            <div class="d-flex justify-content-between">
+                                <div><small>المبيعات اليوم</small><h3 id="todaySales">0 ج.م</h3></div>
+                                <i class="fas fa-chart-line fa-2x opacity-50"></i>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="card p-3 bg-warning text-dark">
-                            <h5>المتوقع بيعه (قطاعي)</h5>
-                            <h2 id="totalRetailValue">0 ج.م</h2>
+                            <div class="d-flex justify-content-between">
+                                <div><small>قيمة المخزون</small><h3 id="stockValue">0 ج.م</h3></div>
+                                <i class="fas fa-coins fa-2x opacity-50"></i>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="card p-3 bg-info text-white">
-                            <h5>عدد الشركات</h5>
-                            <h2 id="companiesCount">0</h2>
+                            <div class="d-flex justify-content-between">
+                                <div><small>الأرباح التقديرية</small><h3 id="estProfit">0 ج.م</h3></div>
+                                <i class="fas fa-hand-holding-usd fa-2x opacity-50"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="row mt-4">
                     <div class="col-md-8">
-                        <div class="card p-3">
-                            <h5>توزيع المخزون حسب الشركة</h5>
-                            <canvas id="stockChart" style="max-height: 300px;"></canvas>
+                        <div class="card p-4">
+                            <h5 class="mb-3">تحليل المخزون</h5>
+                            <canvas id="mainChart" style="max-height: 300px;"></canvas>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="card p-3">
-                            <h5>آخر الإضافات</h5>
-                            <ul class="list-group list-group-flush" id="recentAdditions">
-                                <!-- JS will populate this -->
-                            </ul>
+                        <div class="card p-3 h-100">
+                            <h5>آخر العمليات</h5>
+                            <ul class="list-group list-group-flush mt-2" id="recentOps"></ul>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Inventory Section -->
+            <!-- Inventory Section (Stock Only - No Serials Here) -->
             <div id="inventory" class="section d-none">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3>المخزون والأجهزة</h3>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal"><i class="fas fa-plus"></i> إضافة جهاز</button>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3>إدارة المخزون (النماذج)</h3>
+                    <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
+                        <i class="fas fa-plus-circle me-1"></i> إضافة صنف جديد
+                    </button>
                 </div>
                 
-                <div class="input-group mb-3">
-                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                    <input type="text" class="form-control" id="searchInput" placeholder="بحث باسم الجهاز، السيريال، أو اللون..." onkeyup="renderInventory()">
+                <div class="input-group mb-3 shadow-sm">
+                    <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                    <input type="text" class="form-control border-start-0" id="stockSearch" placeholder="ابحث باسم الموديل..." onkeyup="renderInventory()">
                 </div>
 
                 <div class="table-responsive bg-white rounded shadow-sm p-2">
@@ -124,17 +136,106 @@
                         <thead class="table-light">
                             <tr>
                                 <th>الشركة</th>
-                                <th>الجهاز</th>
+                                <th>الموديل</th>
                                 <th>المواصفات</th>
-                                <th>السعر (جملة/قطاعي)</th>
-                                <th>الكمية</th>
-                                <th>الحالة</th>
+                                <th>سعر الشراء</th>
+                                <th>سعر البيع</th>
+                                <th>الكمية المتوفرة</th>
                                 <th>إجراءات</th>
                             </tr>
                         </thead>
-                        <tbody id="inventoryTableBody">
-                            <!-- Data goes here -->
-                        </tbody>
+                        <tbody id="inventoryTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sales Point (The Unique Logic) -->
+            <div id="sales" class="section d-none">
+                <h3 class="mb-4">تسجيل عملية بيع (فريد)</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card p-4 shadow-sm">
+                            <h5 class="mb-3 border-bottom pb-2">بيانات الجهاز المباع</h5>
+                            
+                            <!-- Step 1: Search Model -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">1. اختر الموديل (من المخزون)</label>
+                                <select class="form-select form-select-lg" id="saleModelSelect" onchange="updateSaleInfo()">
+                                    <option value="">-- اختر الموديل --</option>
+                                </select>
+                            </div>
+
+                            <!-- Step 2: Serial Input -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">2. الرقم المسلسل (IMEI/SN)</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="saleSerial" placeholder="اكتب السيريال هنا...">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('saleSerial').value=''"><i class="fas fa-times"></i></button>
+                                </div>
+                                <small class="text-muted">هذا الرقم سيُسجل بشكل فريد لهذا الجهاز.</small>
+                            </div>
+
+                            <!-- Step 3: Activation Status -->
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">3. حالة الجهاز</label>
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="activationStatus" id="statusNotActive" autocomplete="off" checked onchange="toggleWarrantyBox(false)">
+                                    <label class="btn btn-outline-danger" for="statusNotActive">غير مفعل (New)</label>
+
+                                    <input type="radio" class="btn-check" name="activationStatus" id="statusActive" autocomplete="off" onchange="toggleWarrantyBox(true)">
+                                    <label class="btn btn-outline-success" for="statusActive">مفعل (Used/Activated)</label>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Warranty Box -->
+                            <div id="warrantyAlert" class="warranty-box">
+                                <h6 class="fw-bold text-danger"><i class="fas fa-exclamation-triangle"></i> تنبيه: الجهاز غير مفعل</h6>
+                                <p class="mb-2 small">يجب التأكد من تاريخ بدء الضمان. اضغط الزر أدناه للتحقق:</p>
+                                <a href="#" id="warrantyCheckLink" target="_blank" class="btn btn-warning btn-sm w-100">
+                                    <i class="fas fa-shield-alt"></i> فتح صفحة التحقق من الضمان
+                                </a>
+                            </div>
+
+                            <hr>
+                            
+                            <div class="d-grid gap-2">
+                                <button class="btn btn-success btn-lg" onclick="processSale()">
+                                    <i class="fas fa-check-circle me-2"></i> إتمام البيع وحفظ البيانات
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="alert alert-info">
+                            <h5><i class="fas fa-info-circle"></i> تعليمات</h5>
+                            <ul>
+                                <li>قم باختيار الموديل أولاً لتحديد السعر.</li>
+                                <li>أدخل رقم السيريال بدقة.</li>
+                                <li>إذا كان الجهاز <strong>غير مفعل</strong>، سيظهر لك زر فحص الضمان تلقائياً للتأكد من العميل.</li>
+                                <li>عند الضغط على "إتمام البيع"، سيتم خصم قطعة واحدة من المخزون وتسجيل العملية.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales History -->
+            <div id="history" class="section d-none">
+                <h3>سجل المبيعات التفصيلي</h3>
+                <div class="table-responsive bg-white rounded shadow-sm p-2 mt-3">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>التاريخ</th>
+                                <th>الموديل</th>
+                                <th>السيريال</th>
+                                <th>الحالة</th>
+                                <th>سعر البيع</th>
+                                <th>الربح</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesHistoryBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -142,47 +243,23 @@
             <!-- Companies Section -->
             <div id="companies" class="section d-none">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3>إدارة الشركات</h3>
+                    <h3>إدارة الشركات وروابط الضمان</h3>
                     <button class="btn btn-success" onclick="openCompanyModal()"><i class="fas fa-plus"></i> شركة جديدة</button>
                 </div>
-                <div class="row" id="companiesList">
-                    <!-- Company Cards go here -->
-                </div>
-            </div>
-
-            <!-- Reports Section -->
-            <div id="reports" class="section d-none">
-                <h3>التقارير المالية</h3>
-                <div class="alert alert-info">
-                    هذه الأرقام تعتمد على الفرق بين سعر البيع (الافتراضي) وسعر الشراء. يمكنك تعديل الأسعار لزيادة الدقة.
-                </div>
-                <div class="table-responsive bg-white rounded shadow-sm p-2">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>الشركة</th>
-                                <th>عدد الأجهزة المباعة (تقديري)</th>
-                                <th>إجمالي رأس المال</th>
-                                <th>إجمالي القيمة البيعية</th>
-                                <th>صافي الربح المتوقع</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reportTableBody"></tbody>
-                    </table>
-                </div>
+                <div class="row" id="companiesList"></div>
             </div>
 
         </div>
     </div>
 </div>
 
-<!-- Add Device Modal -->
+<!-- Add Device Modal (Stock Only) -->
 <div class="modal fade" id="addDeviceModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">إضافة جهاز جديد</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">إضافة صنف للمخزون</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="deviceForm">
@@ -192,31 +269,20 @@
                             <select class="form-select" id="devCompany" required></select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">اسم الجهاز (الموديل)</label>
-                            <input type="text" class="form-control" id="devName" required placeholder="مثال: Samsung A54">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">رقم السيريال (IMEI/SN)</label>
-                            <input type="text" class="form-control" id="devSerial" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">حالة التفعيل</label>
-                            <select class="form-select" id="devStatus">
-                                <option value="not_activated">غير مفعل (جديد)</option>
-                                <option value="activated">مفعل (مستعمل/عرض)</option>
-                            </select>
+                            <label class="form-label">اسم الموديل</label>
+                            <input type="text" class="form-control" id="devName" required placeholder="مثال: Samsung A54 5G">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">اللون</label>
                             <input type="text" class="form-control" id="devColor">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">الرام/التخزين</label>
-                            <input type="text" class="form-control" id="devSpecs" placeholder="مثال: 8/256">
+                            <label class="form-label">الذاكرة (RAM/ROM)</label>
+                            <input type="text" class="form-control" id="devSpecs" placeholder="8/128">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">الكمية</label>
-                            <input type="number" class="form-control" id="devQty" value="1" min="1">
+                            <label class="form-label">الكمية الأولية</label>
+                            <input type="number" class="form-control" id="devQty" value="0" min="0">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">سعر الجملة (التكلفة)</label>
@@ -226,22 +292,18 @@
                             <label class="form-label">سعر القطاعي (البيع)</label>
                             <input type="number" class="form-control" id="devRetail" required>
                         </div>
-                        <div class="col-12">
-                            <label class="form-label">ملاحظات</label>
-                            <textarea class="form-control" id="devNotes"></textarea>
-                        </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
-                <button type="button" class="btn btn-primary" onclick="saveDevice()">حفظ الجهاز</button>
+                <button type="button" class="btn btn-primary" onclick="saveDevice()">حفظ الصنف</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Manage Company Modal -->
+<!-- Company Modal -->
 <div class="modal fade" id="companyModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -256,9 +318,8 @@
                     <input type="text" class="form-control" id="compName" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">رابط التحقق من الضمان</label>
+                    <label class="form-label">رابط فحص الضمان</label>
                     <input type="url" class="form-control" id="compWarrantyUrl" placeholder="https://...">
-                    <small class="text-muted">سيتم فتح هذا الرابط عند الضغط على زر التحقق.</small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -269,41 +330,44 @@
     </div>
 </div>
 
-<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    // --- Data Management ---
-    let companies = JSON.parse(localStorage.getItem('mobileShop_companies')) || [
+    // --- Data State ---
+    let companies = JSON.parse(localStorage.getItem('ms_companies')) || [
         { id: 1, name: 'Samsung', warrantyUrl: 'https://www.samsung.com/eg/support/warranty-check/' },
         { id: 2, name: 'Xiaomi', warrantyUrl: 'https://www.mi.com/global/service/warranty/' },
         { id: 3, name: 'Oppo', warrantyUrl: 'https://support.oppo.com/en/warranty-check/' },
         { id: 4, name: 'Realme', warrantyUrl: 'https://www.realme.com/global/support/warranty-query' },
         { id: 5, name: 'Honor', warrantyUrl: 'https://www.hihonor.com/global/support/warranty/' },
-        { id: 6, name: 'Huawei', warrantyUrl: 'https://consumer.huawei.com/en/support/warranty-query/' },
-        { id: 7, name: 'Vivo', warrantyUrl: 'https://www.vivo.com/global/support/warranty' }
+        { id: 6, name: 'Huawei', warrantyUrl: 'https://consumer.huawei.com/en/support/warranty-query/' }
     ];
 
-    let devices = JSON.parse(localStorage.getItem('mobileShop_devices')) || [];
+    // Devices now represent Models/Stock Types (No unique serials here)
+    let devices = JSON.parse(localStorage.getItem('ms_devices')) || [];
+    
+    // Sales History (Stores unique items with serials)
+    let salesHistory = JSON.parse(localStorage.getItem('ms_sales')) || [];
 
     function saveData() {
-        localStorage.setItem('mobileShop_companies', JSON.stringify(companies));
-        localStorage.setItem('mobileShop_devices', JSON.stringify(devices));
+        localStorage.setItem('ms_companies', JSON.stringify(companies));
+        localStorage.setItem('ms_devices', JSON.stringify(devices));
+        localStorage.setItem('ms_sales', JSON.stringify(salesHistory));
         updateDashboard();
     }
 
     // --- Navigation ---
-    function showSection(sectionId) {
+    function showSection(id) {
         document.querySelectorAll('.section').forEach(el => el.classList.add('d-none'));
-        document.getElementById(sectionId).classList.remove('d-none');
+        document.getElementById(id).classList.remove('d-none');
         document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
         
-        // Highlight active link logic (simple version)
-        if(sectionId === 'dashboard') renderCharts();
-        if(sectionId === 'inventory') renderInventory();
-        if(sectionId === 'companies') renderCompanies();
-        if(sectionId === 'reports') renderReports();
+        if(id === 'dashboard') renderCharts();
+        if(id === 'inventory') renderInventory();
+        if(id === 'sales') prepareSalesPage();
+        if(id === 'history') renderHistory();
+        if(id === 'companies') renderCompanies();
     }
 
     // --- Companies Logic ---
@@ -311,21 +375,16 @@
         const container = document.getElementById('companiesList');
         container.innerHTML = '';
         companies.forEach(comp => {
-            const deviceCount = devices.filter(d => d.companyId == comp.id).length;
             container.innerHTML += `
                 <div class="col-md-4 mb-3">
-                    <div class="card h-100">
+                    <div class="card h-100 border-start border-4 border-primary">
                         <div class="card-body">
                             <h5 class="card-title">${comp.name}</h5>
-                            <p class="card-text text-muted small">${comp.warrantyUrl || 'لا يوجد رابط ضمان'}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-secondary">${deviceCount} جهاز</span>
-                                <button class="btn btn-sm btn-outline-primary" onclick="editCompany(${comp.id})">تعديل</button>
-                            </div>
+                            <p class="card-text small text-muted text-truncate">${comp.warrantyUrl || 'لا يوجد رابط'}</p>
+                            <button class="btn btn-sm btn-outline-primary float-end" onclick="editCompany(${comp.id})">تعديل</button>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
         });
     }
 
@@ -334,33 +393,29 @@
         document.getElementById('compName').value = '';
         document.getElementById('compWarrantyUrl').value = '';
         document.getElementById('deleteCompBtn').classList.add('d-none');
-        
         if (id) {
             const comp = companies.find(c => c.id === id);
             document.getElementById('compName').value = comp.name;
             document.getElementById('compWarrantyUrl').value = comp.warrantyUrl;
             document.getElementById('deleteCompBtn').classList.remove('d-none');
         }
-        
         new bootstrap.Modal(document.getElementById('companyModal')).show();
     }
-
+    
     function editCompany(id) { openCompanyModal(id); }
 
     function saveCompany() {
         const id = document.getElementById('compId').value;
         const name = document.getElementById('compName').value;
         const url = document.getElementById('compWarrantyUrl').value;
-
         if (!name) return alert('الاسم مطلوب');
 
         if (id) {
-            const index = companies.findIndex(c => c.id == id);
-            companies[index] = { ...companies[index], name, warrantyUrl: url };
+            const idx = companies.findIndex(c => c.id == id);
+            companies[idx] = { ...companies[idx], name, warrantyUrl: url };
         } else {
             companies.push({ id: Date.now(), name, warrantyUrl: url });
         }
-        
         saveData();
         bootstrap.Modal.getInstance(document.getElementById('companyModal')).hide();
         renderCompanies();
@@ -369,144 +424,210 @@
 
     function deleteCompany() {
         const id = document.getElementById('compId').value;
-        if(confirm('هل أنت متأكد؟ سيتم حذف الشركة ولكن ستبقى الأجهزة مرتبطة بها.')) {
+        if(confirm('هل أنت متأكد؟')) {
             companies = companies.filter(c => c.id != id);
             saveData();
             bootstrap.Modal.getInstance(document.getElementById('companyModal')).hide();
             renderCompanies();
-            populateCompanySelect();
         }
     }
 
-    // --- Devices Logic ---
+    // --- Inventory Logic (Models Only) ---
     function populateCompanySelect() {
         const select = document.getElementById('devCompany');
         select.innerHTML = '<option value="">اختر الشركة...</option>';
-        companies.forEach(c => {
-            select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-        });
+        companies.forEach(c => select.innerHTML += `<option value="${c.id}">${c.name}</option>`);
     }
 
     function saveDevice() {
         const companyId = document.getElementById('devCompany').value;
         if(!companyId) return alert('يرجى اختيار الشركة');
 
-        const newDevice = {
+        const newDev = {
             id: Date.now(),
             companyId: parseInt(companyId),
             name: document.getElementById('devName').value,
-            serial: document.getElementById('devSerial').value,
-            status: document.getElementById('devStatus').value,
             color: document.getElementById('devColor').value,
             specs: document.getElementById('devSpecs').value,
-            qty: parseInt(document.getElementById('devQty').value),
+            qty: parseInt(document.getElementById('devQty').value) || 0,
             wholesale: parseFloat(document.getElementById('devWholesale').value),
-            retail: parseFloat(document.getElementById('devRetail').value),
-            notes: document.getElementById('devNotes').value,
-            dateAdded: new Date().toLocaleDateString('ar-EG')
+            retail: parseFloat(document.getElementById('devRetail').value)
         };
 
-        devices.push(newDevice);
+        devices.push(newDev);
         saveData();
         bootstrap.Modal.getInstance(document.getElementById('addDeviceModal')).hide();
         document.getElementById('deviceForm').reset();
         renderInventory();
-        alert('تمت الإضافة بنجاح');
     }
 
     function renderInventory() {
         const tbody = document.getElementById('inventoryTableBody');
-        const search = document.getElementById('searchInput').value.toLowerCase();
+        const search = document.getElementById('stockSearch').value.toLowerCase();
         tbody.innerHTML = '';
 
-        const filtered = devices.filter(d => 
-            d.name.toLowerCase().includes(search) || 
-            d.serial.toLowerCase().includes(search) ||
-            d.color.toLowerCase().includes(search)
-        );
-
-        filtered.forEach(d => {
-            const company = companies.find(c => c.id === d.companyId);
-            const companyName = company ? company.name : 'غير معروف';
-            const statusClass = d.status === 'activated' ? 'bg-activated' : 'bg-not-activated';
-            const statusText = d.status === 'activated' ? 'مفعل' : 'غير مفعل';
-
+        devices.filter(d => d.name.toLowerCase().includes(search)).forEach(d => {
+            const comp = companies.find(c => c.id === d.companyId);
             tbody.innerHTML += `
                 <tr>
-                    <td>${companyName}</td>
-                    <td><strong>${d.name}</strong></td>
+                    <td>${comp ? comp.name : '-'}</td>
+                    <td class="fw-bold">${d.name}</td>
+                    <td><small>${d.specs} | ${d.color}</small></td>
+                    <td>${d.wholesale}</td>
+                    <td class="text-success fw-bold">${d.retail}</td>
+                    <td><span class="badge bg-${d.qty > 0 ? 'primary' : 'danger'} rounded-pill">${d.qty}</span></td>
                     <td>
-                        <small>${d.specs}<br>${d.color}</small>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteDevice(${d.id})"><i class="fas fa-trash"></i></button>
                     </td>
-                    <td>
-                        <div class="small">شراء: ${d.wholesale}</div>
-                        <div class="fw-bold text-success">بيع: ${d.retail}</div>
-                    </td>
-                    <td>${d.qty}</td>
-                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-info text-white" onclick="checkWarranty(${d.id})" title="تحقق من الضمان"><i class="fas fa-shield-alt"></i></button>
-                        <button class="btn btn-sm btn-danger" onclick="deleteDevice(${d.id})"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>
-            `;
+                </tr>`;
         });
     }
 
-    function checkWarranty(deviceId) {
-        const device = devices.find(d => d.id === deviceId);
-        const company = companies.find(c => c.id === device.companyId);
-        
-        if (company && company.warrantyUrl) {
-            // محاولة تمرير السيريال إذا كان الرابط يدعم GET params (بسيط)
-            // ملاحظة: معظم مواقع الشركات تتطلب إدخال السيريال يدوياً بسبب حماية CSRF
-            let url = company.warrantyUrl;
-            
-            // منطق بسيط: إذا كان الرابط لا يحتوي على query string، نحاول إضافتها (قد لا تعمل مع كل المواقع)
-            if (!url.includes('?')) {
-                 // هذا مجرد تخمين، الأفضل فتح الصفحة الرئيسية للضمان
-                 window.open(url, '_blank');
-            } else {
-                 window.open(url, '_blank');
-            }
-            
-            // نسخ السيريال للحافظة لتسهيل اللصق
-            navigator.clipboard.writeText(device.serial).then(() => {
-                alert(`تم فتح موقع ${company.name}. تم نسخ رقم السيريال (${device.serial}) لاستخدامه.`);
-            });
-        } else {
-            alert('لا يوجد رابط تحقق مسجل لهذه الشركة.');
-        }
-    }
-
     function deleteDevice(id) {
-        if(confirm('حذف هذا الجهاز نهائياً؟')) {
+        if(confirm('حذف هذا الصنف سيؤثر على التقارير.')) {
             devices = devices.filter(d => d.id !== id);
             saveData();
             renderInventory();
         }
     }
 
-    // --- Dashboard & Reports ---
+    // --- Sales Logic (The Core Request) ---
+    function prepareSalesPage() {
+        const select = document.getElementById('saleModelSelect');
+        select.innerHTML = '<option value="">-- اختر الموديل --</option>';
+        devices.forEach(d => {
+            if(d.qty > 0) {
+                const comp = companies.find(c => c.id === d.companyId);
+                select.innerHTML += `<option value="${d.id}" data-price="${d.retail}" data-cost="${d.wholesale}" data-comp="${d.companyId}">${comp.name} - ${d.name} (${d.qty} متاح)</option>`;
+            }
+        });
+        // Reset fields
+        document.getElementById('saleSerial').value = '';
+        toggleWarrantyBox(false);
+    }
+
+    function updateSaleInfo() {
+        // Just a helper if needed later
+    }
+
+    function toggleWarrantyBox(isActivated) {
+        const box = document.getElementById('warrantyAlert');
+        const serial = document.getElementById('saleSerial').value;
+        const modelId = document.getElementById('saleModelSelect').value;
+
+        if (!isActivated && modelId) {
+            box.style.display = 'block';
+            // Get Company URL
+            const dev = devices.find(d => d.id == modelId);
+            const comp = companies.find(c => c.id === dev.companyId);
+            
+            const link = document.getElementById('warrantyCheckLink');
+            if(comp && comp.warrantyUrl) {
+                link.href = comp.warrantyUrl;
+                link.style.display = 'inline-block';
+                link.innerHTML = `<i class="fas fa-external-link-alt"></i> فحص ضمان ${comp.name}`;
+            } else {
+                link.style.display = 'none';
+            }
+        } else {
+            box.style.display = 'none';
+        }
+    }
+
+    // Watch serial input to update warranty link dynamically if needed
+    document.getElementById('saleSerial').addEventListener('input', function() {
+        const isActive = document.getElementById('statusActive').checked;
+        if(!isActive) toggleWarrantyBox(false);
+    });
+
+    function processSale() {
+        const modelId = document.getElementById('saleModelSelect').value;
+        const serial = document.getElementById('saleSerial').value.trim();
+        const isActivated = document.getElementById('statusActive').checked;
+
+        if (!modelId) return alert('يرجى اختيار الموديل');
+        if (!serial) return alert('يرجى إدخال الرقم المسلسل (السيريال)');
+
+        // Find Device Model
+        const devIndex = devices.findIndex(d => d.id == modelId);
+        if (devIndex === -1 || devices[devIndex].qty <= 0) return alert('الكمية غير متوفرة!');
+
+        // Deduct Stock
+        devices[devIndex].qty -= 1;
+
+        // Record Sale
+        const saleRecord = {
+            id: Date.now(),
+            deviceId: modelId,
+            deviceName: devices[devIndex].name,
+            companyId: devices[devIndex].companyId,
+            serial: serial,
+            isActivated: isActivated,
+            price: devices[devIndex].retail,
+            cost: devices[devIndex].wholesale,
+            date: new Date().toLocaleDateString('ar-EG') + ' ' + new Date().toLocaleTimeString('ar-EG')
+        };
+
+        salesHistory.unshift(saleRecord); // Add to top
+        saveData();
+
+        alert('تم تسجيل البيع بنجاح!');
+        
+        // Refresh Sales Page
+        prepareSalesPage();
+    }
+
+    function renderHistory() {
+        const tbody = document.getElementById('salesHistoryBody');
+        tbody.innerHTML = '';
+        salesHistory.forEach(s => {
+            const profit = s.price - s.cost;
+            tbody.innerHTML += `
+                <tr>
+                    <td>${s.date}</td>
+                    <td>${s.deviceName}</td>
+                    <td class="font-monospace">${s.serial}</td>
+                    <td>
+                        <span class="badge ${s.isActivated ? 'bg-success' : 'bg-danger'}">
+                            ${s.isActivated ? 'مفعل' : 'غير مفعل'}
+                        </span>
+                    </td>
+                    <td>${s.price}</td>
+                    <td class="text-success">+${profit}</td>
+                </tr>
+            `;
+        });
+    }
+
+    // --- Dashboard Charts ---
     let chartInstance = null;
-
     function updateDashboard() {
-        document.getElementById('totalDevicesCount').innerText = devices.length;
-        document.getElementById('companiesCount').innerText = companies.length;
+        document.getElementById('totalModels').innerText = devices.length;
+        
+        const totalStockVal = devices.reduce((sum, d) => sum + (d.wholesale * d.qty), 0);
+        document.getElementById('stockValue').innerText = totalStockVal.toLocaleString() + ' ج.م';
 
-        const totalWholesale = devices.reduce((sum, d) => sum + (d.wholesale * d.qty), 0);
-        const totalRetail = devices.reduce((sum, d) => sum + (d.retail * d.qty), 0);
+        // Calc Profits
+        const totalProfit = salesHistory.reduce((sum, s) => sum + (s.price - s.cost), 0);
+        document.getElementById('estProfit').innerText = totalProfit.toLocaleString() + ' ج.م';
 
-        document.getElementById('totalStockValue').innerText = totalWholesale.toLocaleString() + ' ج.م';
-        document.getElementById('totalRetailValue').innerText = totalRetail.toLocaleString() + ' ج.م';
+        // Today Sales
+        const todayStr = new Date().toLocaleDateString('ar-EG');
+        const todayTotal = salesHistory
+            .filter(s => s.date.includes(todayStr))
+            .reduce((sum, s) => sum + s.price, 0);
+        document.getElementById('todaySales').innerText = todayTotal.toLocaleString() + ' ج.م';
 
-        // Recent additions
-        const recentList = document.getElementById('recentAdditions');
-        recentList.innerHTML = '';
-        devices.slice(-5).reverse().forEach(d => {
-            recentList.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center">
-                ${d.name}
-                <span class="badge bg-primary rounded-pill">${d.dateAdded}</span>
+        // Recent Ops
+        const list = document.getElementById('recentOps');
+        list.innerHTML = '';
+        salesHistory.slice(0, 5).forEach(s => {
+            list.innerHTML += `<li class="list-group-item d-flex justify-content-between lh-sm">
+                <div>
+                    <h6 class="my-0">${s.deviceName}</h6>
+                    <small class="text-muted">${s.serial}</small>
+                </div>
+                <span class="text-success">+${s.price}</span>
             </li>`;
         });
 
@@ -514,50 +635,25 @@
     }
 
     function renderCharts() {
-        const ctx = document.getElementById('stockChart');
+        const ctx = document.getElementById('mainChart');
         if(!ctx) return;
         
-        // Prepare data for chart
         const labels = companies.map(c => c.name);
-        const data = companies.map(c => {
-            return devices.filter(d => d.companyId === c.id).reduce((sum, d) => sum + d.qty, 0);
-        });
+        const data = companies.map(c => devices.filter(d => d.companyId === c.id).reduce((sum, d) => sum + d.qty, 0));
 
         if(chartInstance) chartInstance.destroy();
-
         chartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'عدد الأجهزة في المخزن',
+                    label: 'الكمية المتاحة',
                     data: data,
-                    backgroundColor: '#3498db'
+                    backgroundColor: '#3498db',
+                    borderRadius: 5
                 }]
             },
-            options: { responsive: true }
-        });
-    }
-
-    function renderReports() {
-        const tbody = document.getElementById('reportTableBody');
-        tbody.innerHTML = '';
-
-        companies.forEach(c => {
-            const compDevices = devices.filter(d => d.companyId === c.id);
-            const totalCost = compDevices.reduce((sum, d) => sum + (d.wholesale * d.qty), 0);
-            const totalSalesPotential = compDevices.reduce((sum, d) => sum + (d.retail * d.qty), 0);
-            const profit = totalSalesPotential - totalCost;
-
-            tbody.innerHTML += `
-                <tr>
-                    <td>${c.name}</td>
-                    <td>${compDevices.reduce((sum, d) => sum + d.qty, 0)}</td>
-                    <td>${totalCost.toLocaleString()}</td>
-                    <td>${totalSalesPotential.toLocaleString()}</td>
-                    <td class="text-success fw-bold">${profit.toLocaleString()}</td>
-                </tr>
-            `;
+            options: { responsive: true, plugins: { legend: { display: false } } }
         });
     }
 
@@ -566,7 +662,6 @@
         populateCompanySelect();
         updateDashboard();
     };
-
 </script>
 </body>
 </html>
