@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>امتحانك بلس - EXAM PLUS Ultimate Edition</title>
+    <title>امتحانك بلس - EXAM PLUS</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
     <!-- MathJax Configuration -->
@@ -113,6 +113,15 @@
         .btn-print { background-color: #334155; }
         .btn-purple { background-color: #7c3aed; }
         .btn-eco { background-color: #475569; }
+        .btn-ai { background-color: #2563eb; color: white; }
+        .btn-voice { background-color: #e11d48; color: white; }
+        .btn-voice.recording { animation: pulse 1s infinite; background-color: #991b1b; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
 
         .edit-panel { display: none; width: 100%; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px; gap: 8px; flex-direction: column; color: #0f172a; }
         .input-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -213,7 +222,7 @@
         .q-score-tag { border: 1px solid var(--badge-bg); background: #fef3c7; border-radius: 4px; padding: 1px 8px; font-size: 10.5px; font-weight: 800; color: var(--primary-color); }
 
         .q-controls { display: none; margin-top: 8px; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; flex-wrap: wrap; }
-        .edit-mode-active .q-controls { display: flex; }
+        .edit-mode-active .q-controls { display: flex !important; }
 
         .exam-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; color: var(--primary-color); margin-top: 8px; border-top: 1px dashed var(--card-border); padding-top: 4px; }
 
@@ -287,6 +296,8 @@
             <div class="btn-group">
                 <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">لوحة التحرير</button>
                 <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">تعديل مباشر</button>
+                <button class="btn btn-ai" onclick="generateAIQuestion()">🤖 توليد أسئلة بالذكاء الاصطناعي</button>
+                <button id="voiceBtn" class="btn btn-voice" onclick="toggleVoiceTyping()">🎤 كتابة بالصوت</button>
                 <button class="btn btn-purple" style="background-color: #0284c7;" onclick="toggleAnswerKey()">نموذج الإجابة</button>
                 <button class="btn btn-purple" style="background-color: #d97706;" onclick="toggleBubbleSheet()">ورقة Bubble Sheet</button>
                 <button class="btn btn-purple" onclick="toggleHomeworkMode()">وضع الواجب</button>
@@ -301,6 +312,7 @@
                 <button class="btn btn-warning" style="background-color:#c026d3;" onclick="shuffleQuestionsAB()">توليد نموذج A/B</button>
                 <button class="btn btn-eco" onclick="toggleEcoMode()">توفير الأحبار</button>
                 <button class="btn btn-warning" style="background-color:#0284c7;" onclick="undoLastDelete()">↩️ تراجع عن الحذف</button>
+                <button class="btn btn-danger" onclick="clearAllQuestions()">🗑️ حذف كافة الأسئلة</button>
                 <button class="btn btn-success" style="background-color: #0d9488;" onclick="exportToImages()">تصدير كصور HD</button>
                 <button class="btn btn-purple" style="background-color: #059669;" onclick="saveExamJSON()">حفظ الملف (JSON)</button>
                 <button class="btn btn-purple" style="background-color: #0d9488;" onclick="document.getElementById('jsonFileInput').click()">رفع ملف (JSON)</button>
@@ -588,6 +600,27 @@
             "English": ["English (General)", "English Literature", "Grammar & Structure", "Writing & Essays"]
         };
 
+        // قاعدة بيانات توليد الأسئلة الذكية (AI Generator Database)
+        const aiQuestionBank = {
+            "الرياضيات": [
+                { type: "mcq", q: "إذا كانت $f(x) = x^2 + 3x$ فإن $f'(2)$ تساوي:", options: ["7", "8", "10", "12"], key: "7", score: 2 },
+                { type: "essay", q: "أوجد قيمة المحصلة للقوتين $F_1 = 30N$ و $F_2 = 40N$ إذا كانت الزاوية بينهما $90^\\circ$:", key: "المحصلة R = 50 نيوتن", score: 5 },
+                { type: "tf", q: "مجموع زوايا المثلث الداخلي يساوي $180^\\circ$.", score: 2 }
+            ],
+            "اللغة العربية": [
+                { type: "mcq", q: "الكلمة المرفوعة بالضمة المقدرة هي:", options: ["القاضي", "الرجل", "العلماء", "المعلمون"], key: "القاضي", score: 2 },
+                { type: "essay", q: "اعرب ما تحته خط: العلمُ **نورٌ** للجميع.", key: "نورٌ: خبر مرفوع وعلامة رفعه الضمة الظاهرة.", score: 4 }
+            ],
+            "الفيزياء": [
+                { type: "mcq", q: "وحدة قياس شدة التيار الكهربائي في النظام الدولي هي:", options: ["فولت", "أمبير", "أوم", "جول"], key: "أمبير", score: 2 },
+                { type: "essay", q: "اذكر نص قانون أوم للدائرة المغلقة مع كتابة صيغته الرياضية.", key: "V = I * R", score: 4 }
+            ],
+            "English": [
+                { type: "mcq", q: "She _______ to the market yesterday.", options: ["go", "went", "gone", "going"], key: "went", score: 2 },
+                { type: "essay", q: "Write a short paragraph about your future aspirations.", key: "Sample response...", score: 5 }
+            ]
+        };
+
         let currentMainSubject = "الرياضيات";
         let isAuthenticated = false;
         let isEditMode = false;
@@ -602,6 +635,8 @@
         let isEnglishLTR = false;
         let deletedQuestionsHistory = [];
         let questionBankStorage = [];
+        let recognition = null;
+        let isRecording = false;
 
         function requestAccessWithPassword() {
             if(!isAuthenticated) {
@@ -638,6 +673,7 @@
             if(isEcoMode) document.body.classList.add('eco-print');
             if(isDualColumn) document.body.classList.add('dual-column-mode');
             if(isEnglishLTR) document.body.classList.add('ltr-mode');
+            if(isEditMode) document.body.classList.add('edit-mode-active');
             saveExamToLocalStorage();
         }
 
@@ -649,7 +685,6 @@
             saveExamToLocalStorage();
         }
 
-        /* التعامل مع اختيار المواد والفروع والمادة المخصصة */
         function handleSubjectChange(val) {
             const branchSelect = document.getElementById('branchSelect');
             const customInput = document.getElementById('customSubjectInput');
@@ -707,7 +742,6 @@
             }
         }
 
-        /* دعم اللغة الإنجليزية والتحويل اليمين واليسار LTR */
         function updateSubjectInfo(subject) {
             document.getElementById('displaySubjectBadge').innerText = subject;
             document.getElementById('displaySubjectText').innerText = subject;
@@ -770,7 +804,6 @@
             saveExamToLocalStorage();
         }
 
-        /* إضافة رسم بياني للهندسة والدوال بـ Canvas */
         function addGraphCanvas(qId) {
             const card = document.getElementById(qId);
             let container = card.querySelector('.q-canvas-container');
@@ -784,15 +817,13 @@
             const ctx = cvs.getContext('2d');
             ctx.clearRect(0, 0, cvs.width, cvs.height);
 
-            // رسم محاور إحداثيات
             ctx.beginPath();
             ctx.strokeStyle = "#94a3b8";
             ctx.lineWidth = 1.5;
-            ctx.moveTo(120, 10); ctx.lineTo(120, 170); // Y-axis
-            ctx.moveTo(10, 90); ctx.lineTo(230, 90);   // X-axis
+            ctx.moveTo(120, 10); ctx.lineTo(120, 170);
+            ctx.moveTo(10, 90); ctx.lineTo(230, 90);
             ctx.stroke();
 
-            // رسم دالة تربعة parabola كنموذج رائع
             ctx.beginPath();
             ctx.strokeStyle = "#0891b2";
             ctx.lineWidth = 2.5;
@@ -808,7 +839,6 @@
             saveExamToLocalStorage();
         }
 
-        /* حساب وتحديث مستويات بلوم لحظياً */
         function updateBloomAnalytics() {
             let rem = 0, app = 0, ana = 0;
             document.querySelectorAll('.q-bloom-tag').forEach(tag => {
@@ -822,7 +852,6 @@
             document.getElementById('bloomAnalyzeCount').innerText = ana;
         }
 
-        /* توزيع الدرجات التلقائي بالتساوي */
         function autoDistributeScores() {
             const cards = document.querySelectorAll('.question-card');
             if(cards.length === 0) return;
@@ -879,6 +908,116 @@
             } else {
                 alert('بنك الأسئلة فارغ حالياً!');
             }
+        }
+
+        /* توليد أسئلة بالذكاء الاصطناعي (AI Generator) */
+        function generateAIQuestion() {
+            const key = aiQuestionBank[currentMainSubject] ? currentMainSubject : "الرياضيات";
+            const pool = aiQuestionBank[key];
+            const item = pool[Math.floor(Math.random() * pool.length)];
+
+            const qId = `q-${Date.now()}`;
+            const card = document.createElement('div');
+            card.className = 'question-card'; 
+            card.id = qId; 
+            card.setAttribute('data-type', item.type);
+
+            if (item.type === 'mcq') {
+                card.innerHTML = `
+                    <div class="q-number-badge"><span class="q-num"></span></div>
+                    <div class="q-bloom-tag" onclick="cycleBloomTag(this)">فهم</div>
+                    <div class="q-body editable-element" contenteditable="${isDirectEditMode || isEditMode}">${item.q}</div>
+                    <div class="mcq-options">
+                        ${item.options.map(opt => `<div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">${opt}</span></div>`).join('')}
+                    </div>
+                    <div class="answer-key-box"><strong>الإجابة الصحيحة:</strong> <span class="editable-element">${item.key}</span></div>
+                    <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">${item.score}</span></div></div>
+                    <div class="q-controls">
+                        <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('${qId}')">➕ إضافة سؤال فرعي</button>
+                        <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
+                    </div>`;
+            } else if (item.type === 'essay') {
+                card.innerHTML = `
+                    <div class="q-number-badge"><span class="q-num"></span></div>
+                    <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تطبيق</div>
+                    <div class="q-body editable-element" contenteditable="${isDirectEditMode || isEditMode}">${item.q}</div>
+                    <div class="answer-lines" id="lines-${qId}"><div class="line-item"></div><div class="line-item"></div></div>
+                    <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">${item.key}</span></div>
+                    <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">${item.score}</span></div></div>
+                    <div class="q-controls">
+                        <button class="btn btn-purple" style="font-size:10px;" onclick="addLines('${qId}')">+ أسطر إجابة</button>
+                        <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
+                    </div>`;
+            } else {
+                card.innerHTML = `
+                    <div class="q-number-badge"><span class="q-num"></span></div>
+                    <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تذكر</div>
+                    <div class="q-body editable-element">${item.q}</div>
+                    <div class="tf-container">
+                        <div class="tf-row"><span contenteditable="true">صحة العبارة الموضحة أعلاه.</span><span class="tf-box">(  )</span></div>
+                    </div>
+                    <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">${item.score}</span></div></div>
+                    <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
+            }
+
+            document.getElementById('questionsContainer').appendChild(card);
+            reindexQuestions(); 
+            calculateAnalytics(); 
+            attachMathJaxBlur();
+            if (window.MathJax) MathJax.typesetPromise();
+        }
+
+        /* خاصية الكتابة بالصوت (Voice Typing) */
+        function toggleVoiceTyping() {
+            const btn = document.getElementById('voiceBtn');
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert('عذراً، متصفحك لا يدعم خاصية التعرف على الصوت.');
+                return;
+            }
+
+            if (isRecording) {
+                recognition.stop();
+                isRecording = false;
+                btn.classList.remove('recording');
+                btn.innerHTML = '🎤 كتابة بالصوت';
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.lang = isEnglishLTR ? 'en-US' : 'ar-SA';
+            recognition.continuous = true;
+            recognition.interimResults = false;
+
+            recognition.onstart = function() {
+                isRecording = true;
+                btn.classList.add('recording');
+                btn.innerHTML = '🔴 جاري التسجيل...';
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[event.results.length - 1][0].transcript;
+                const activeEl = document.activeElement;
+                if (activeEl && activeEl.isContentEditable) {
+                    activeEl.innerText += ' ' + transcript;
+                } else {
+                    alert('المحتوى الصوتي: ' + transcript + '\n\nقم بالضغط داخل أي خانة نصية للكتابة المباشرة.');
+                }
+            };
+
+            recognition.onerror = function() {
+                isRecording = false;
+                btn.classList.remove('recording');
+                btn.innerHTML = '🎤 كتابة بالصوت';
+            };
+
+            recognition.onend = function() {
+                isRecording = false;
+                btn.classList.remove('recording');
+                btn.innerHTML = '🎤 كتابة بالصوت';
+            };
+
+            recognition.start();
         }
 
         function addSubQuestion(qId) {
@@ -1116,12 +1255,22 @@
             alert('تم توليد نموذج جديد بإعادة ترتيب الأسئلة بنجاح!');
         }
 
+        /* تصحيح دالة الحذف للعمل المطلق في وضع التعديل والعادي */
         function removeQuestion(id) {
             const card = document.getElementById(id);
             if (card) {
                 deletedQuestionsHistory.push(card.cloneNode(true));
                 card.remove(); 
                 reindexQuestions(); 
+                calculateAnalytics();
+            }
+        }
+
+        function clearAllQuestions() {
+            if (confirm('هل أنت تأكد من رغبتك في حذف كافة الأسئلة؟')) {
+                const container = document.getElementById('questionsContainer');
+                container.innerHTML = '';
+                reindexQuestions();
                 calculateAnalytics();
             }
         }
