@@ -3,33 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منظومه الامتحان</title>
+    <title>منصة الامتحانات السريعة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- مكتبة MathJax لكتابة المعادلات الرياضية المعقدة (LaTeX) -->
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         :root {
             --primary-navy: #0f172a;
-            --accent-blue: #2563eb;
+            --accent-blue: #0284c7;
             --accent-gold: #d97706;
             --light-gold: #fef3c7;
             --bg-page: #ffffff;
             --text-main: #1e293b;
             --radius-lg: 16px;
             --radius-md: 12px;
+            --card-border: #cbd5e1;
         }
 
-        body.theme-emerald {
-            --primary-navy: #064e3b;
-            --accent-gold: #059669;
-            --light-gold: #d1fae5;
+        /* ----- التصاميم الجديدة المضافة من الصور ----- */
+        body.theme-cyan {
+            --primary-navy: #0891b2;
+            --accent-blue: #06b6d4;
+            --accent-gold: #155e75;
+            --light-gold: #ecfeff;
+            --card-border: #a5f3fc;
         }
 
-        body.theme-burgundy {
-            --primary-navy: #881337;
-            --accent-gold: #e11d48;
-            --light-gold: #ffe4e6;
+        body.theme-navy-sand {
+            --primary-navy: #1e293b;
+            --accent-blue: #334155;
+            --accent-gold: #d97706;
+            --light-gold: #fef3c7;
+            --card-border: #cbd5e1;
+        }
+
+        body.theme-gold-math {
+            --primary-navy: #1e1b4b;
+            --accent-blue: #312e81;
+            --accent-gold: #eab308;
+            --light-gold: #fef9c3;
+            --card-border: #fef08a;
+        }
+
+        body.theme-duo-cyan {
+            --primary-navy: #0f766e;
+            --accent-blue: #14b8a6;
+            --accent-gold: #f59e0b;
+            --light-gold: #fef3c7;
+            --card-border: #99f6e4;
         }
 
         /* وضع توفير الأحبار Eco-Print */
@@ -38,9 +59,11 @@
             --accent-gold: #000000 !important;
             --light-gold: #ffffff !important;
             --accent-blue: #000000 !important;
+            --card-border: #000000 !important;
         }
         body.eco-print .decor-shape-top,
-        body.eco-print .decor-line-gold {
+        body.eco-print .decor-line-gold,
+        body.eco-print .math-bg-decor {
             display: none !important;
         }
         body.eco-print .question-card,
@@ -55,7 +78,6 @@
             color: #ffffff !important;
         }
 
-        /* التحكم في إخفاء الهامش */
         body.hide-scratchpad .q-scratchpad {
             display: none !important;
         }
@@ -207,20 +229,34 @@
             transform: translate(-50%, -50%) rotate(-30deg);
             font-size: 5rem;
             font-weight: 900;
-            color: rgba(15, 23, 42, 0.04);
+            color: rgba(15, 23, 42, 0.03);
             white-space: nowrap;
             pointer-events: none;
             z-index: 1;
             user-select: none;
         }
 
+        /* الزخارف العلمية العلوية المستوحاة من الصور */
+        .math-bg-decor {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 11px;
+            font-weight: 800;
+            color: rgba(15, 23, 42, 0.15);
+            line-height: 1.5;
+            pointer-events: none;
+            z-index: 1;
+            text-align: right;
+        }
+
         .decor-shape-top {
             position: absolute;
             top: 0;
             left: 0;
-            width: 120px;
-            height: 85px;
-            background: linear-gradient(135deg, var(--primary-navy) 80%, transparent 80%);
+            width: 130px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--primary-navy) 75%, transparent 75%);
             z-index: 0;
             pointer-events: none;
         }
@@ -229,10 +265,10 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 135px;
-            height: 95px;
+            width: 145px;
+            height: 100px;
             border-bottom: 3.5px solid var(--accent-gold);
-            transform: rotate(-10deg);
+            transform: rotate(-8deg);
             transform-origin: top left;
             z-index: 0;
             pointer-events: none;
@@ -247,8 +283,8 @@
         .header-top {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 12px;
+            margin-bottom: 15px;
         }
 
         .title-row {
@@ -266,9 +302,9 @@
         .title-brand .brand-icon-box {
             background: #f1f5f9;
             color: var(--primary-navy);
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -281,75 +317,47 @@
             line-height: 1;
         }
 
-        .teacher-info-row {
+        .session-badge {
+            background: #f1f5f9;
+            border: 1.5px dashed var(--primary-navy);
+            border-radius: 10px;
+            padding: 4px 12px;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary-navy);
+            display: inline-block;
+            margin-top: 4px;
+        }
+
+        .teacher-info-card {
+            border: 1.5px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 8px 14px;
+            background: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .teacher-info-item {
             display: flex;
             align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--primary-navy);
         }
 
-        .teacher-hero-badge {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border: 1.5px solid #cbd5e1;
-            border-radius: 20px;
-            padding: 4px 14px;
-            box-shadow: 0 3px 8px rgba(15, 23, 42, 0.04);
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .teacher-hero-badge .hero-chunk {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .teacher-hero-badge .hero-icon {
+        .teacher-info-item .icon-circle {
             background: var(--primary-navy);
             color: #ffffff;
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .teacher-hero-badge .hero-text {
-            display: flex;
-            flex-direction: column;
-            text-align: right;
-        }
-
-        .teacher-hero-badge .hero-label {
-            font-size: 8px;
-            color: #64748b;
-            font-weight: 800;
-            line-height: 1;
-        }
-
-        .teacher-hero-badge .hero-value {
-            font-size: 11.5px;
-            font-weight: 900;
-            color: var(--primary-navy);
-            line-height: 1.2;
-        }
-
-        .teacher-hero-badge .hero-divider {
-            width: 1px;
-            height: 18px;
-            background-color: #cbd5e1;
-        }
-
-        .instruction-banner {
-            background: #f8fafc;
-            border-right: 3px solid var(--accent-gold);
-            padding: 4px 10px;
             font-size: 11px;
-            font-weight: 700;
-            color: #475569;
-            margin-bottom: 12px;
-            border-radius: 4px;
         }
 
         .student-bar {
@@ -390,9 +398,9 @@
             font-weight: 900;
         }
 
-        /* ----- صناديق الأسئلة ----- */
+        /* ----- صناديق الأسئلة المستوحاة من التصاميم الجديدة ----- */
         .question-card {
-            border: 1.5px solid #cbd5e1;
+            border: 1.5px solid var(--card-border);
             border-radius: var(--radius-md);
             padding: 18px 14px 12px 14px;
             margin-bottom: 16px;
@@ -410,7 +418,7 @@
             right: 14px;
             background: var(--primary-navy);
             color: #ffffff;
-            padding: 2px 14px;
+            padding: 2px 16px;
             border-radius: 16px;
             font-weight: 900;
             font-size: 13px;
@@ -447,7 +455,7 @@
         }
 
         .mcq-opt {
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--card-border);
             border-radius: 8px;
             padding: 6px 10px;
             font-size: 12.5px;
@@ -501,7 +509,7 @@
         }
 
         .matching-table th, .matching-table td {
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--card-border);
             padding: 6px 10px;
             text-align: right;
             font-weight: 700;
@@ -514,7 +522,7 @@
 
         .q-scratchpad {
             margin-top: 10px;
-            border: 1.5px dashed #cbd5e1;
+            border: 1.5px dashed var(--card-border);
             background: #fafafa;
             border-radius: 8px;
             padding: 8px;
@@ -667,11 +675,11 @@
 
         .exam-footer {
             text-align: center;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 800;
-            color: #64748b;
+            color: var(--primary-navy);
             margin-top: 10px;
-            border-top: 1px dashed #cbd5e1;
+            border-top: 1px dashed var(--card-border);
             padding-top: 6px;
         }
 
@@ -730,12 +738,10 @@
                 تعديل مباشر
             </button>
 
-            <!-- زر إخفاء/إظهار المسودة -->
             <button id="toggleScratchpadBtn" class="btn btn-purple" onclick="toggleScratchpad()">
                 📝 إخفاء المسودة
             </button>
 
-            <!-- زر التوفير الاقتصادي Eco-Print -->
             <button id="toggleEcoBtn" class="btn btn-eco" onclick="toggleEcoMode()">
                 🌱 وضع توفير الأحبار
             </button>
@@ -758,11 +764,13 @@
                 <label>المادة:</label>
                 <input type="text" id="subjectInput" value="الرياضيات" oninput="updateHeaderInfo()">
 
-                <label>لون الهوية:</label>
+                <label>ستايل الهيكل والتصميم:</label>
                 <select onchange="changeTheme(this.value)">
-                    <option value="default">الكحلي الملكي</option>
-                    <option value="emerald">الأخضر الزمردي</option>
-                    <option value="burgundy">العنابي الرفيع</option>
+                    <option value="default">الكحلي الملكي (أساسي)</option>
+                    <option value="cyan">الازرق الحديث (قالب 1)</option>
+                    <option value="navy-sand">الكحلي مع البيج (قالب 2)</option>
+                    <option value="gold-math">الذهبي الأكاديمي (قالب 3)</option>
+                    <option value="duo-cyan">التجريدي المزدوج (قالب 4)</option>
                 </select>
             </div>
 
@@ -781,11 +789,18 @@
         <!-- العلامة المائية المخصصة باسم المعلم -->
         <div class="watermark" id="watermarkText">أ. مهدي حسن</div>
 
+        <!-- رموز علمية خفيفة خلفية -->
+        <div class="math-bg-decor">
+            \( f(x) = x^2 \)<br>
+            \( a^2 + b^2 = c^2 \)<br>
+            \( \pi \approx 3.14 \)
+        </div>
+
         <div class="decor-shape-top"></div>
         <div class="decor-line-gold"></div>
 
         <div class="content-wrap">
-            <!-- الهيدر بدون باركود -->
+            <!-- الهيدر -->
             <div class="header-top">
                 <div class="title-row">
                     <div class="title-brand">
@@ -793,60 +808,38 @@
                             <svg class="svg-icon" style="width: 22px; height: 22px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
                         </div>
                         <div>
-                            <h1 class="editable-element">امتحان</h1>
+                            <h1 class="editable-element">امتحان حصة رقم</h1>
+                            <div class="session-badge editable-element">( ..... )</div>
+                        </div>
+                    </div>
+
+                    <div class="teacher-info-card">
+                        <div class="teacher-info-item">
+                            <span class="icon-circle">👤</span>
+                            <span>اسم المعلم: <strong id="displayTeacherName" class="editable-element">أ. مهدي حسن</strong></span>
+                        </div>
+                        <div style="width: 15px;"></div>
+                        <div class="teacher-info-item">
+                            <span class="icon-circle">📖</span>
+                            <span>المادة: <strong class="displaySubject editable-element">الرياضيات</strong></span>
                         </div>
                     </div>
                 </div>
-
-                <div class="teacher-info-row">
-                    <div class="teacher-hero-badge">
-                        <div class="hero-chunk">
-                            <div class="hero-icon">
-                                <svg class="svg-icon" style="width: 12px; height: 12px;" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                            </div>
-                            <div class="hero-text">
-                                <span class="hero-label">إعداد</span>
-                                <span class="hero-value editable-element" id="displayTeacherName">أ. مهدي حسن</span>
-                            </div>
-                        </div>
-
-                        <div class="hero-divider"></div>
-
-                        <div class="hero-chunk">
-                            <div class="hero-icon" style="background: var(--accent-gold);">
-                                <svg class="svg-icon" style="width: 12px; height: 12px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H8v-2h4V6h2v4h4v2z"/></svg>
-                            </div>
-                            <div class="hero-text">
-                                <span class="hero-label">المادة</span>
-                                <span class="hero-value displaySubject editable-element">الرياضيات</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- شريط التوجيه والتحفيز -->
-            <div class="instruction-banner editable-element">
-                💡 **ملاحظة:** استعن بالله واقرأ الأسئلة بتركيز، أجب عن جميع الأسئلة الآتية.
             </div>
 
             <!-- شريط معلومات الطالب -->
             <div class="student-bar">
                 <div class="info-item">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-                    الاسم: <span class="dots" style="min-width: 75px;"></span>
+                    👤 اسم الطالب: <span class="dots" style="min-width: 90px;"></span>
                 </div>
                 <div class="info-item">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
-                    الصف: <span class="dots" style="min-width: 35px;"></span>
+                    🎓 الصف: <span class="dots" style="min-width: 45px;"></span>
                 </div>
                 <div class="info-item">
-                    <svg class="svg-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                    الزمن: <span class="editable-element">20 دقيقة</span>
+                    📅 التاريخ: <span class="editable-element">2026 / ... / ...</span>
                 </div>
                 <div class="info-item">
-                    <svg class="svg-icon" style="color: var(--accent-gold);" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                    الدرجة الكلية: <span class="score-pill" id="totalScoreCalc">0</span>
+                    ⭐ الدرجة الكلية: <span class="score-pill" id="totalScoreCalc">0</span>
                 </div>
             </div>
 
@@ -855,7 +848,7 @@
                 
                 <div class="question-card" id="q-1" data-score="5">
                     <div class="q-number-badge">
-                        <span>1</span>
+                        <span>السؤال الأول</span>
                     </div>
 
                     <div class="q-body editable-element" contenteditable="false">اكتب خطوات حل المعادلة التالية: \( 2x + 5 = 15 \)</div>
@@ -888,7 +881,7 @@
 
                 <div class="question-card" id="q-2" data-score="5">
                     <div class="q-number-badge">
-                        <span>2</span>
+                        <span>السؤال الثاني</span>
                     </div>
 
                     <div class="q-body editable-element" contenteditable="false">أكمل الفراغات التالية بما يناسبها:</div>
@@ -933,7 +926,7 @@
 
             <!-- تذييل الورقة -->
             <div class="exam-footer editable-element">
-                ✨ مع أطيب التمنيات بالتوفيق والنجاح ✨
+                ✨ بالتوفيق والنجاح للجميع ✨
             </div>
         </div>
     </div>
@@ -1248,9 +1241,10 @@
 
         function reindexQuestions() {
             const cards = document.querySelectorAll('.question-card');
+            const arabicNumbers = ["السؤال الأول", "السؤال الثاني", "السؤال الثالث", "السؤال الرابع", "السؤال الخامس", "السؤال السادس", "السؤال السابع"];
             cards.forEach((card, idx) => {
-                const numSpan = card.querySelector('.q-num');
-                if (numSpan) numSpan.innerText = idx + 1;
+                const numSpan = card.querySelector('.q-number-badge span');
+                if (numSpan) numSpan.innerText = arabicNumbers[idx] || `السؤال ${idx + 1}`;
             });
         }
 
