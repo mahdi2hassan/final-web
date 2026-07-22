@@ -6,8 +6,13 @@
     <title>امتحانك بلس - EXAM PLUS Ultimate Edition</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
-    <!-- MathJax -->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <!-- MathJax Configuration -->
+    <script>
+      window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+        svg: { fontCache: 'global' }
+      };
+    </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <!-- html2canvas & QR Code -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -105,6 +110,8 @@
         .math-toolbar { display: flex; gap: 4px; flex-wrap: wrap; background: #e2e8f0; padding: 6px; border-radius: 6px; }
         .math-btn { background: #fff; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold; }
 
+        .font-controls { display: flex; gap: 10px; align-items: center; background: #e0f2fe; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; color: #0369a1; }
+
         .page {
             width: 100%; max-width: 210mm; min-height: 297mm; background-color: var(--bg-page) !important;
             border-radius: 12px; padding: 20px 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -154,9 +161,10 @@
         /* صورة السؤال */
         .q-attached-img { max-width: 100%; max-height: 180px; object-fit: contain; margin-top: 8px; border-radius: 6px; border: 1px solid var(--card-border); display: none; }
 
-        /* الجدول الإحصائي */
-        .stats-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; }
-        .stats-table th, .stats-table td { border: 1px solid var(--primary-color); padding: 5px; text-align: center; }
+        /* الجدول الإحصائي الديناميكي */
+        .stats-table-wrapper { width: 100%; overflow-x: auto; margin-top: 8px; }
+        .stats-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .stats-table th, .stats-table td { border: 1px solid var(--primary-color); padding: 6px; text-align: center; }
         .stats-table th { background: var(--primary-color); color: #fff; }
 
         /* التوصيل */
@@ -178,6 +186,10 @@
         .answer-lines { margin-top: 8px; width: 100%; }
         .line-item { border-bottom: 1px dotted #cbd5e1; height: 20px; width: 100%; }
 
+        /* فاصل الصفحات اليدوي */
+        .manual-page-break { page-break-before: always; height: 1px; margin: 15px 0; border-top: 2px dashed #94a3b8; text-align: center; position: relative; }
+        .manual-page-break::after { content: '--- فاصل صفحات للطباعة ---'; background: #f1f5f9; padding: 0 10px; position: relative; top: -10px; font-size: 11px; color: #64748b; font-weight: bold; }
+
         /* نموذج الإجابة والبابل شيت */
         .answer-key-box { display: none; margin-top: 8px; background: #f0fdf4; border: 1px solid #22c55e; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 800; color: #15803d; }
         body.show-answer-key .answer-key-box { display: block !important; }
@@ -196,9 +208,10 @@
         [contenteditable="true"] { border: 1px dashed var(--badge-bg) !important; border-radius: 4px; background: #fffdfa; padding: 1px 4px; }
 
         @media print {
-            @page { size: A4; margin: 8mm; }
+            @page { size: A4 portrait; margin: 8mm; }
             body { background: none; padding: 0; color: #000; }
-            .settings-gear-btn, .admin-controls-wrapper, .q-controls { display: none !important; }
+            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .manual-page-break::after { display: none !important; }
+            .manual-page-break { border: none !important; margin: 0 !important; }
             [contenteditable="true"], .editable-element { border: none !important; background: transparent !important; }
             .page { box-shadow: none; border-radius: 0; width: 100% !important; max-width: 100% !important; min-height: auto !important; padding: 0; margin: 0; }
             .question-card { page-break-inside: avoid !important; }
@@ -226,6 +239,18 @@
                 </div>
             </div>
 
+            <!-- التحكم بالخطوط -->
+            <div class="font-controls">
+                <span>🔤 التحكم بالخطوط:</span>
+                <label>حجم الخط الأساسي:</label>
+                <input type="range" id="fontSizeSlider" min="11" max="20" step="0.5" value="14.5" oninput="changeFontSize(this.value)">
+                <span id="fontSizeVal">14.5px</span>
+                
+                <label style="margin-right:10px;">تباعد الأسطر:</label>
+                <input type="range" id="lineHeightSlider" min="1.2" max="2.5" step="0.1" value="1.7" oninput="changeLineHeight(this.value)">
+                <span id="lineHeightVal">1.7</span>
+            </div>
+
             <!-- محرر الرموز والرياضيات -->
             <div class="math-toolbar">
                 <span style="font-size:11px; font-weight:bold; align-self:center;">شريط الرياضيات والرموز:</span>
@@ -233,7 +258,7 @@
                 <button class="math-btn" onclick="insertSymbol('\\frac{a}{b}')">كسر $\frac{a}{b}$</button>
                 <button class="math-btn" onclick="insertSymbol('\\sqrt{x}')">جذر $\sqrt{x}$</button>
                 <button class="math-btn" onclick="insertSymbol('\\sum_{i=1}^{n}')">مجموع $\sum$</button>
-                <button class="math-btn" onclick="insertSymbol('\\theta')">زاوبة $\theta$</button>
+                <button class="math-btn" onclick="insertSymbol('\\theta')">زاوية $\theta$</button>
                 <button class="math-btn" onclick="insertSymbol('\\pi')">باي $\pi$</button>
             </div>
 
@@ -248,8 +273,11 @@
 
                 <button class="btn btn-warning" style="background-color:#c026d3;" onclick="shuffleQuestionsAB()">توليد نموذج A/B</button>
                 <button class="btn btn-eco" onclick="toggleEcoMode()">توفير الأحبار</button>
+                <button class="btn btn-warning" style="background-color:#0284c7;" onclick="undoLastDelete()">↩️ تراجع عن الحذف</button>
                 <button class="btn btn-success" style="background-color: #0d9488;" onclick="exportToImages()">تصدير كصور HD</button>
-                <button class="btn btn-purple" style="background-color: #059669;" onclick="saveExamJSON()">حفظ الملف</button>
+                <button class="btn btn-purple" style="background-color: #059669;" onclick="saveExamJSON()">حفظ الملف (JSON)</button>
+                <button class="btn btn-purple" style="background-color: #0d9488;" onclick="document.getElementById('jsonFileInput').click()">رفع ملف (JSON)</button>
+                <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="loadExamJSON(event)">
                 <button class="btn btn-print" onclick="window.print()">طباعة الورقة</button>
             </div>
             
@@ -281,6 +309,8 @@
                     <button class="btn btn-purple" style="background-color: #7c3aed;" onclick="addMatchQuestion()">+ سؤال توصيل</button>
                     <button class="btn btn-purple" style="background-color: #b45309;" onclick="addTrueFalseQuestion()">+ صواب/خطأ</button>
                     <button class="btn btn-warning" style="background-color: #ea580c;" onclick="addStatsQuestion()">📊 + سؤال إحصائي</button>
+                    <button class="btn btn-success" style="background-color: #0891b2;" onclick="addFillBlankQuestion()">✏️ + أكمل الفراغات</button>
+                    <button class="btn btn-eco" onclick="addPageBreak()">✂️ فاصل صفحات</button>
                 </div>
             </div>
         </div>
@@ -360,17 +390,17 @@
                 
                 <!-- مثال سؤال مقالي مع نقاط فرعية -->
                 <div class="question-card" id="q-1" data-type="essay">
-                    <div class="q-number-badge"><span>السؤال الأول</span></div>
+                    <div class="q-number-badge"><span class="q-num"></span></div>
                     <div class="q-bloom-tag">تطبيق</div>
                     <div class="q-body editable-element">أجب عن المسألة التالية بالتفصيل:</div>
                     
                     <!-- الأسئلة الفرعية -->
                     <div class="sub-questions-container" id="sub-container-q-1">
                         <div class="sub-question-item">
-                            <span>( أ ) أوجد قيمة $x$ إذا كان $2x + 4 = 10$.</span>
+                            <span contenteditable="true">( أ ) أوجد قيمة $x$ إذا كان $2x + 4 = 10$.</span>
                         </div>
                         <div class="sub-question-item">
-                            <span>( ب ) احسب المساحة الجانبية للشكل الموضح.</span>
+                            <span contenteditable="true">( ب ) احسب المساحة الجانبية للشكل الموضح.</span>
                         </div>
                     </div>
 
@@ -437,6 +467,7 @@
         let isBubbleSheetVisible = false;
         let isDualColumn = false;
         let isCoverVisible = false;
+        let deletedQuestionsHistory = [];
 
         function requestAccessWithPassword() {
             if(!isAuthenticated) {
@@ -472,12 +503,27 @@
             document.body.classList.add(layout);
             if(isEcoMode) document.body.classList.add('eco-print');
             if(isDualColumn) document.body.classList.add('dual-column-mode');
+            saveExamToLocalStorage();
         }
 
         function updateSubjectInfo(subject) {
             document.getElementById('displaySubjectBadge').innerText = subject;
             document.getElementById('displaySubjectText').innerText = subject;
             document.getElementById('coverSubject').innerText = `مادة ${subject}`;
+            saveExamToLocalStorage();
+        }
+
+        /* التحكم بالخطوط */
+        function changeFontSize(val) {
+            document.documentElement.style.setProperty('--base-font-size', `${val}px`);
+            document.getElementById('fontSizeVal').innerText = `${val}px`;
+            saveExamToLocalStorage();
+        }
+
+        function changeLineHeight(val) {
+            document.documentElement.style.setProperty('--base-line-height', val);
+            document.getElementById('lineHeightVal').innerText = val;
+            saveExamToLocalStorage();
         }
 
         /* إضافة سؤال فرعي */
@@ -489,9 +535,10 @@
 
             const subItem = document.createElement('div');
             subItem.className = 'sub-question-item';
-            subItem.innerHTML = `<span contenteditable="true">( ${letter} ) اكتب السؤال الفرعي هنا...</span> <button style="background:none; border:none; color:red; cursor:pointer;" onclick="this.parentElement.remove()">✕</button>`;
+            subItem.innerHTML = `<span contenteditable="true">( ${letter} ) اكتب السؤال الفرعي هنا...</span> <button style="background:none; border:none; color:red; cursor:pointer;" onclick="this.parentElement.remove(); calculateAnalytics();">✕</button>`;
             container.appendChild(subItem);
             calculateAnalytics();
+            attachMathJaxBlur();
         }
 
         function createSubContainer(qId) {
@@ -503,7 +550,7 @@
             return container;
         }
 
-        /* إضافة أنواع الأسئلة الشاملة */
+        /* إضافة أنواع الأسئلة */
         function addQuestion() {
             const qId = `q-${Date.now()}`;
             const card = document.createElement('div');
@@ -524,7 +571,7 @@
                     <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
                 </div>`;
             document.getElementById('questionsContainer').appendChild(card);
-            reindexQuestions(); calculateAnalytics();
+            reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
 
         function addMCQQuestion() {
@@ -550,7 +597,7 @@
                     <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
                 </div>`;
             document.getElementById('questionsContainer').appendChild(card);
-            reindexQuestions(); calculateAnalytics();
+            reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
 
         function addMatchQuestion() {
@@ -568,7 +615,7 @@
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">4</span></div></div>
                 <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
             document.getElementById('questionsContainer').appendChild(card);
-            reindexQuestions(); calculateAnalytics();
+            reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
 
         function addTrueFalseQuestion() {
@@ -586,9 +633,31 @@
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
                 <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
             document.getElementById('questionsContainer').appendChild(card);
-            reindexQuestions(); calculateAnalytics();
+            reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
 
+        function addFillBlankQuestion() {
+            const qId = `q-${Date.now()}`;
+            const card = document.createElement('div');
+            card.className = 'question-card'; card.id = qId; card.setAttribute('data-type', 'fill');
+            card.innerHTML = `
+                <div class="q-number-badge"><span class="q-num"></span></div>
+                <div class="q-bloom-tag">تذكر</div>
+                <div class="q-body editable-element" contenteditable="true">أكمل مكان الفراغات بما يناسبها:</div>
+                <div class="sub-questions-container" id="sub-container-${qId}">
+                    <div class="sub-question-item"><span contenteditable="true">1. ناتج جمع 2 + 3 يساوي .....................</span></div>
+                </div>
+                <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">5</span></div>
+                <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
+                <div class="q-controls">
+                    <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('${qId}')">➕ إضافة نقطة أكمل</button>
+                    <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
+                </div>`;
+            document.getElementById('questionsContainer').appendChild(card);
+            reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
+        }
+
+        /* السؤال الإحصائي المطور للتحكم في الأرقام والأعمدة */
         function addStatsQuestion() {
             const qId = `q-${Date.now()}`;
             const card = document.createElement('div');
@@ -596,22 +665,99 @@
             card.innerHTML = `
                 <div class="q-number-badge"><span class="q-num"></span></div>
                 <div class="q-bloom-tag">إحصاء</div>
-                <div class="q-body editable-element">احسب الجدول الإحصائي الآتي:</div>
-                <table class="stats-table">
-                    <thead><tr><th>الفئات</th><th contenteditable="true">10-</th><th contenteditable="true">20-</th><th contenteditable="true">30-</th></tr></thead>
-                    <tbody><tr><td>التكرار</td><td contenteditable="true">4</td><td contenteditable="true">6</td><td contenteditable="true">10</td></tr></tbody>
-                </table>
+                <div class="q-body editable-element">احسب من الجدول الإحصائي الآتي:</div>
+                <div class="stats-table-wrapper">
+                    <table class="stats-table" id="stats-table-${qId}">
+                        <thead>
+                            <tr id="stats-head-${qId}">
+                                <th contenteditable="true">الفئات</th>
+                                <th contenteditable="true">10-</th>
+                                <th contenteditable="true">20-</th>
+                                <th contenteditable="true">30-</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stats-body-${qId}">
+                            <tr>
+                                <td contenteditable="true">التكرار</td>
+                                <td contenteditable="true">4</td>
+                                <td contenteditable="true">6</td>
+                                <td contenteditable="true">10</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">6</span></div></div>
-                <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
+                <div class="q-controls">
+                    <button class="btn btn-success" style="font-size:10px;" onclick="addStatsColumn('${qId}')">➕ إضافة عمود</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="removeStatsColumn('${qId}')">➖ حذف عمود</button>
+                    <button class="btn btn-purple" style="font-size:10px;" onclick="addStatsRow('${qId}')">➕ إضافة صف بيانات</button>
+                    <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
+                </div>`;
             document.getElementById('questionsContainer').appendChild(card);
-            reindexQuestions(); calculateAnalytics();
+            reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
+        }
+
+        function addStatsColumn(qId) {
+            const headTr = document.getElementById(`stats-head-${qId}`);
+            const bodyTrs = document.querySelectorAll(`#stats-body-${qId} tr`);
+            
+            const newTh = document.createElement('th');
+            newTh.contentEditable = "true";
+            newTh.innerText = "جديد-";
+            headTr.appendChild(newTh);
+
+            bodyTrs.forEach(tr => {
+                const newTd = document.createElement('td');
+                newTd.contentEditable = "true";
+                newTd.innerText = "0";
+                tr.appendChild(newTd);
+            });
+            saveExamToLocalStorage();
+        }
+
+        function removeStatsColumn(qId) {
+            const headTr = document.getElementById(`stats-head-${qId}`);
+            const bodyTrs = document.querySelectorAll(`#stats-body-${qId} tr`);
+
+            if (headTr.children.length > 2) {
+                headTr.removeChild(headTr.lastElementChild);
+                bodyTrs.forEach(tr => tr.removeChild(tr.lastElementChild));
+            } else {
+                alert('لا يمكن حذف المزيد من الأعمدة!');
+            }
+            saveExamToLocalStorage();
+        }
+
+        function addStatsRow(qId) {
+            const headTr = document.getElementById(`stats-head-${qId}`);
+            const body = document.getElementById(`stats-body-${qId}`);
+            const colCount = headTr.children.length;
+
+            const newTr = document.createElement('tr');
+            for(let i = 0; i < colCount; i++) {
+                const td = document.createElement('td');
+                td.contentEditable = "true";
+                td.innerText = i === 0 ? "بيان جديد" : "0";
+                newTr.appendChild(td);
+            }
+            body.appendChild(newTr);
+            saveExamToLocalStorage();
+        }
+
+        function addPageBreak() {
+            const pageBreak = document.createElement('div');
+            pageBreak.className = 'manual-page-break';
+            document.getElementById('questionsContainer').appendChild(pageBreak);
+            calculateAnalytics();
+            saveExamToLocalStorage();
         }
 
         /* توليد نموذج A/B عشوائي */
         function shuffleQuestionsAB() {
             const container = document.getElementById('questionsContainer');
-            for (let i = container.children.length; i > 0; i--) {
-                container.appendChild(container.children[Math.floor(Math.random() * i)]);
+            const questions = Array.from(container.children).filter(el => el.classList.contains('question-card'));
+            for (let i = questions.length; i > 0; i--) {
+                container.appendChild(questions[Math.floor(Math.random() * i)]);
             }
             reindexQuestions();
             alert('تم توليد نموذج جديد بإعادة ترتيب الأسئلة بنجاح!');
@@ -619,12 +765,30 @@
 
         function removeQuestion(id) {
             const card = document.getElementById(id);
-            if (card) { card.remove(); reindexQuestions(); calculateAnalytics(); }
+            if (card) {
+                deletedQuestionsHistory.push(card.cloneNode(true));
+                card.remove(); 
+                reindexQuestions(); 
+                calculateAnalytics();
+            }
+        }
+
+        function undoLastDelete() {
+            if (deletedQuestionsHistory.length > 0) {
+                const restoredCard = deletedQuestionsHistory.pop();
+                document.getElementById('questionsContainer').appendChild(restoredCard);
+                reindexQuestions();
+                calculateAnalytics();
+                attachMathJaxBlur();
+                alert('تم إرجاع السؤال المحذوف بنجاح!');
+            } else {
+                alert('لا يوجد أسئلة محذوفة للتراجع عنها.');
+            }
         }
 
         function reindexQuestions() {
             const cards = document.querySelectorAll('.question-card');
-            const arabicNumbers = ["السؤال الأول", "السؤال الثاني", "السؤال الثالث", "السؤال الرابع", "السؤال الخامس", "السؤال السادس", "السؤال السابع"];
+            const arabicNumbers = ["السؤال الأول", "السؤال الثاني", "السؤال الثالث", "السؤال الرابع", "السؤال الخامس", "السؤال السادس", "السؤال السابع", "السؤال الثامن", "السؤال التاسع", "السؤال العاشر"];
             
             const headerRow = document.getElementById('gradingHeaderRow');
             const bodyRow = document.getElementById('gradingBodyRow');
@@ -642,6 +806,7 @@
             headerRow.innerHTML += '<th>المجموع</th>';
             bodyRow.innerHTML += '<td></td>';
             generateBubbleSheet(cards.length);
+            saveExamToLocalStorage();
         }
 
         function generateBubbleSheet(count) {
@@ -661,7 +826,7 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const img = document.getElementById(`img-${qId}`);
-                    if(img) { img.src = e.target.result; img.style.display = 'block'; calculateAnalytics(); }
+                    if(img) { img.src = e.target.result; img.style.display = 'block'; calculateAnalytics(); saveExamToLocalStorage(); }
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -671,7 +836,7 @@
             const url = prompt('أدخل رابط الصورة (Image URL):');
             if(url) {
                 const img = document.getElementById(`img-${qId}`);
-                if(img) { img.src = url; img.style.display = 'block'; calculateAnalytics(); }
+                if(img) { img.src = url; img.style.display = 'block'; calculateAnalytics(); saveExamToLocalStorage(); }
             }
         }
 
@@ -682,6 +847,7 @@
                 line.className = 'line-item';
                 container.appendChild(line);
                 calculateAnalytics();
+                saveExamToLocalStorage();
             }
         }
 
@@ -697,7 +863,6 @@
             document.getElementById('qCountCalc').innerText = cards.length;
             document.getElementById('estTimeCalc').innerText = `${cards.length * 3} دقيقة`;
 
-            // حساب استهلاك مساحة الورقة
             const pageHeight = document.getElementById('examPage').offsetHeight;
             const percentage = Math.min(Math.round((pageHeight / 1120) * 100), 100);
             const fill = document.getElementById('pageSpaceFill');
@@ -715,6 +880,15 @@
             }
         }
 
+        function attachMathJaxBlur() {
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                el.onblur = function() {
+                    if (window.MathJax) MathJax.typesetPromise();
+                    saveExamToLocalStorage();
+                };
+            });
+        }
+
         function unlockEditMode() {
             isEditMode = !isEditMode;
             document.getElementById('editPanel').style.display = isEditMode ? 'flex' : 'none';
@@ -728,7 +902,8 @@
         }
 
         function enableContentEditable(status) {
-            document.querySelectorAll('.editable-element').forEach(el => el.contentEditable = status);
+            document.querySelectorAll('.editable-element, .question-card [contenteditable]').forEach(el => el.contentEditable = status);
+            attachMathJaxBlur();
         }
 
         function toggleAnswerKey() {
@@ -766,15 +941,91 @@
             document.getElementById('displayTeacherName').innerText = teacher;
             document.getElementById('coverTeacher').innerText = teacher;
             document.getElementById('watermarkText').innerText = teacher;
+            saveExamToLocalStorage();
         }
 
+        /* حفظ واستيراد JSON حقيقي */
         function saveExamJSON() {
-            const htmlContent = document.getElementById('questionsContainer').innerHTML;
-            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const examData = {
+                teacherName: document.getElementById('teacherNameInput').value,
+                subject: document.getElementById('subjectSelect').value,
+                fontSize: document.getElementById('fontSizeSlider').value,
+                lineHeight: document.getElementById('lineHeightSlider').value,
+                htmlContent: document.getElementById('questionsContainer').innerHTML
+            };
+            const blob = new Blob([JSON.stringify(examData, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = 'امتحانك_بلس_محفوظ.html';
+            a.download = 'امتحانك_بلس_بيانات.json';
             a.click();
+        }
+
+        function loadExamJSON(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.teacherName) {
+                            document.getElementById('teacherNameInput').value = data.teacherName;
+                            updateHeaderInfo();
+                        }
+                        if (data.subject) {
+                            document.getElementById('subjectSelect').value = data.subject;
+                            updateSubjectInfo(data.subject);
+                        }
+                        if (data.fontSize) changeFontSize(data.fontSize);
+                        if (data.lineHeight) changeLineHeight(data.lineHeight);
+                        if (data.htmlContent) {
+                            document.getElementById('questionsContainer').innerHTML = data.htmlContent;
+                            reindexQuestions();
+                            calculateAnalytics();
+                            attachMathJaxBlur();
+                            if(window.MathJax) MathJax.typesetPromise();
+                        }
+                        alert('تم تحميل الامتحان بنجاح!');
+                    } catch (err) {
+                        alert('حدث خطأ أثناء تحميل الملف، يرجى التأكد من جودة الملف.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function saveExamToLocalStorage() {
+            const examData = {
+                teacherName: document.getElementById('teacherNameInput').value,
+                subject: document.getElementById('subjectSelect').value,
+                fontSize: document.getElementById('fontSizeSlider').value,
+                lineHeight: document.getElementById('lineHeightSlider').value,
+                htmlContent: document.getElementById('questionsContainer').innerHTML
+            };
+            localStorage.setItem('examPlusAutoSave', JSON.stringify(examData));
+        }
+
+        function loadExamFromLocalStorage() {
+            const saved = localStorage.getItem('examPlusAutoSave');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if (data.teacherName) {
+                        document.getElementById('teacherNameInput').value = data.teacherName;
+                        updateHeaderInfo();
+                    }
+                    if (data.subject) {
+                        document.getElementById('subjectSelect').value = data.subject;
+                        updateSubjectInfo(data.subject);
+                    }
+                    if (data.fontSize) changeFontSize(data.fontSize);
+                    if (data.lineHeight) changeLineHeight(data.lineHeight);
+                    if (data.htmlContent) {
+                        document.getElementById('questionsContainer').innerHTML = data.htmlContent;
+                        reindexQuestions();
+                        calculateAnalytics();
+                    }
+                } catch(e) {}
+            }
         }
 
         function exportToImages() {
@@ -788,8 +1039,10 @@
 
         window.onload = function() {
             initThemes();
+            loadExamFromLocalStorage();
             reindexQuestions();
             calculateAnalytics();
+            attachMathJaxBlur();
         };
     </script>
 </body>
