@@ -251,7 +251,7 @@
                 </div>
             </div>
 
-            <!-- إحصائيات تحليلات مستويات بلوم (الميزة رقم 3) -->
+            <!-- إحصائيات تحليلات مستويات بلوم -->
             <div class="bloom-stats-bar" id="bloomStatsBar">
                 <div>🧠 تذكر: <span id="bloomRememberCount">0</span></div>
                 <div>💡 فهم/تطبيق: <span id="bloomApplyCount">0</span></div>
@@ -314,14 +314,48 @@
                     <input type="text" id="teacherNameInput" value="أ. مهدي حسن" oninput="updateHeaderInfo()">
                     
                     <label>اختر المادة:</label>
-                    <select id="subjectSelect" onchange="updateSubjectInfo(this.value)">
-                        <option value="الرياضيات">الرياضيات</option>
-                        <option value="الإحصاء">الإحصاء</option>
-                        <option value="اللغة العربية">اللغة العربية</option>
-                        <option value="English">English (اللغة الإنجليزية)</option>
-                        <option value="العلوم">العلوم</option>
-                        <option value="الفيزياء">الفيزياء</option>
+                    <select id="subjectSelect" onchange="handleSubjectChange(this.value)">
+                        <optgroup label="📐 المواد العلمية والرياضيات">
+                            <option value="الرياضيات">الرياضيات (عامة)</option>
+                            <option value="العلوم">العلوم (عامة)</option>
+                            <option value="الفيزياء">الفيزياء</option>
+                            <option value="الكيمياء">الكيمياء</option>
+                            <option value="الأحياء">الأحياء</option>
+                            <option value="الجيولوجيا">الجيولوجيا وعلم الأرض</option>
+                            <option value="الحاسب الآلي">الحاسب الآلي والتكنولوجيا</option>
+                        </optgroup>
+                        <optgroup label="📚 اللغات والأدب">
+                            <option value="اللغة العربية">اللغة العربية</option>
+                            <option value="English">English (اللغة الإنجليزية)</option>
+                            <option value="اللغة الفرنسية">اللغة الفرنسية</option>
+                            <option value="اللغة الألمانية">اللغة الألمانية</option>
+                            <option value="اللغة الإيطالية">اللغة الإيطالية</option>
+                        </optgroup>
+                        <optgroup label="🌍 المواد الاجتماعية والإنسانية">
+                            <option value="الدراسات الاجتماعية">الدراسات الاجتماعية</option>
+                            <option value="التاريخ">التاريخ</option>
+                            <option value="الجغرافيا">الجغرافيا</option>
+                            <option value="الفلسفة والمنطق">الفلسفة والمنطق</option>
+                            <option value="علم النفس والاجتماع">علم النفس والاجتماع</option>
+                            <option value="التربية الدينية">التربية الدينية</option>
+                        </optgroup>
+                        <optgroup label="📊 المواد التجارية والإدارية">
+                            <option value="الإحصاء">الإحصاء</option>
+                            <option value="المحاسبة">المحاسبة</option>
+                            <option value="الإنتاج">إدارة الأعمال والإنتاج</option>
+                        </optgroup>
+                        <optgroup label="⚙️ خيارات مخصصة">
+                            <option value="CUSTOM">➕ مادة مخصصة...</option>
+                        </optgroup>
                     </select>
+
+                    <!-- اختيار الفروع المخصصة للمادة -->
+                    <select id="branchSelect" style="display:none;" onchange="handleBranchChange(this.value)">
+                        <option value="">-- اختر الفرع --</option>
+                    </select>
+
+                    <!-- حقل إضافة مادة مخصصة يدويًا -->
+                    <input type="text" id="customSubjectInput" placeholder="اكتب اسم المادة هنا..." style="display:none;" oninput="handleCustomSubjectInput(this.value)">
 
                     <label>اختر القالب (50 قالب):</label>
                     <select id="themeSelector" onchange="changeLayout(this.value)"></select>
@@ -540,11 +574,21 @@
                 'top1', 'top2', 'top3', 'top4', 'top5', 'pro1', 'pro2', 'pro3', 'pro4', 'pro5',
                 'test1', 'test2', 'test3', 'test4', 'test5', 'quiz1', 'quiz2', 'quiz3', 'quiz4', 'quiz5',
                 'vip101', 'vip102', 'vip103', 'vip104', 'vip105', 'vip106', 'vip107', 'vip108', 'vip109', 'vip110',
-                'safe1', 'safe2', 'safe3', 'safe4', 'safe5', 'sec1', 'sec2', 'sec3', 'sec4', 'sec5'
+                'safe1', 'safe2', 'safe3', 'safe4', 'safe5', 'sec1', 'sec2', 'sec3', 'sec4', 'sec5','free10'
             ];
             return list[i];
         });
 
+        // خريطة الفروع المخصصة للمواد
+        const subjectBranchesMap = {
+            "الرياضيات": ["الرياضيات (عامة)", "الرياضيات البحتا", "الرياضيات التطبيقية", "الجبر والهندسة الفضائية", "التفاضل والتكامل", "الاستاتيكا", "الديناميكا"],
+            "اللغة العربية": ["اللغة العربية (عامة)", "النحو والصرف", "البلاغة والأدب", "القراءة والنصوص", "التعبير والإملاء"],
+            "العلوم": ["العلوم (عامة)", "الكيمياء", "الفيزياء", "الأحياء والجيولوجيا"],
+            "الدراسات الاجتماعية": ["الدراسات الاجتماعية (عامة)", "التاريخ", "الجغرافيا", "المواطنة والصناعة"],
+            "English": ["English (General)", "English Literature", "Grammar & Structure", "Writing & Essays"]
+        };
+
+        let currentMainSubject = "الرياضيات";
         let isAuthenticated = false;
         let isEditMode = false;
         let isDirectEditMode = false;
@@ -605,19 +649,77 @@
             saveExamToLocalStorage();
         }
 
+        /* التعامل مع اختيار المواد والفروع والمادة المخصصة */
+        function handleSubjectChange(val) {
+            const branchSelect = document.getElementById('branchSelect');
+            const customInput = document.getElementById('customSubjectInput');
+
+            if (val === 'CUSTOM') {
+                branchSelect.style.display = 'none';
+                customInput.style.display = 'inline-block';
+                customInput.focus();
+                if(customInput.value.trim() !== '') updateSubjectInfo(customInput.value.trim());
+                return;
+            } else {
+                customInput.style.display = 'none';
+            }
+
+            currentMainSubject = val;
+
+            if (subjectBranchesMap[val]) {
+                branchSelect.innerHTML = '<option value="">-- اختر الفرع --</option>';
+                subjectBranchesMap[val].forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b;
+                    opt.innerText = b;
+                    branchSelect.appendChild(opt);
+                });
+                branchSelect.style.display = 'inline-block';
+            } else {
+                branchSelect.style.display = 'none';
+            }
+
+            updateSubjectInfo(val);
+        }
+
+        function handleBranchChange(branchVal) {
+            if(branchVal && branchVal.trim() !== '') {
+                updateSubjectInfo(branchVal);
+            } else {
+                updateSubjectInfo(currentMainSubject);
+            }
+        }
+
+        function handleCustomSubjectInput(val) {
+            const finalVal = val.trim() || "مادة مخصصة";
+            updateSubjectInfo(finalVal);
+        }
+
+        function uploadCenterLogo(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('centerLogoWatermark');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         /* دعم اللغة الإنجليزية والتحويل اليمين واليسار LTR */
         function updateSubjectInfo(subject) {
             document.getElementById('displaySubjectBadge').innerText = subject;
             document.getElementById('displaySubjectText').innerText = subject;
             document.getElementById('coverSubject').innerText = `مادة ${subject}`;
 
-            if(subject === 'English') {
+            if(subject === 'English' || subject.startsWith('English')) {
                 isEnglishLTR = true;
                 document.body.classList.add('ltr-mode');
                 document.getElementById('htmlRoot').dir = 'ltr';
                 document.getElementById('mainExamTitle').innerText = 'EXAM PLUS';
                 document.getElementById('lblTeacher').innerHTML = 'Teacher: <strong id="displayTeacherName" class="editable-element">' + document.getElementById('teacherNameInput').value + '</strong>';
-                document.getElementById('lblSubject').innerHTML = 'Subject: <strong id="displaySubjectText" class="editable-element">English</strong>';
+                document.getElementById('lblSubject').innerHTML = 'Subject: <strong id="displaySubjectText" class="editable-element">' + subject + '</strong>';
                 document.getElementById('lblStudentName').innerHTML = 'Student Name: <span class="dots" style="min-width: 80px;"></span>';
                 document.getElementById('lblClass').innerHTML = 'Class: <span class="dots" style="min-width: 40px;"></span>';
                 document.getElementById('lblDate').innerHTML = 'Date: <span class="editable-element">2026 / ... / ...</span>';
@@ -668,7 +770,7 @@
             saveExamToLocalStorage();
         }
 
-        /* الميزة رقم 2: إضافة رسم بياني للهندسة والدوال بـ Canvas */
+        /* إضافة رسم بياني للهندسة والدوال بـ Canvas */
         function addGraphCanvas(qId) {
             const card = document.getElementById(qId);
             let container = card.querySelector('.q-canvas-container');
@@ -706,7 +808,7 @@
             saveExamToLocalStorage();
         }
 
-        /* الميزة رقم 3: حساب وتحديث مستويات بلوم لحظياً */
+        /* حساب وتحديث مستويات بلوم لحظياً */
         function updateBloomAnalytics() {
             let rem = 0, app = 0, ana = 0;
             document.querySelectorAll('.q-bloom-tag').forEach(tag => {
@@ -1228,7 +1330,7 @@
                         }
                         if (data.subject) {
                             document.getElementById('subjectSelect').value = data.subject;
-                            updateSubjectInfo(data.subject);
+                            handleSubjectChange(data.subject);
                         }
                         if (data.fontSize) changeFontSize(data.fontSize);
                         if (data.lineHeight) changeLineHeight(data.lineHeight);
@@ -1270,7 +1372,7 @@
                     }
                     if (data.subject) {
                         document.getElementById('subjectSelect').value = data.subject;
-                        updateSubjectInfo(data.subject);
+                        handleSubjectChange(data.subject);
                     }
                     if (data.fontSize) changeFontSize(data.fontSize);
                     if (data.lineHeight) changeLineHeight(data.lineHeight);
