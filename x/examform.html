@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> امتحانات بلس </title>
+    <title>امتحانك بلس</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
     <!-- MathJax -->
@@ -26,7 +26,7 @@
             --base-line-height: 1.8;
         }
 
-        /* ----- مكتبة الـ 20 قالباً ومظهراً ----- */
+        /* القوالب العشرين */
         body.layout-cyan { --primary-color: #0891b2; --accent-color: #06b6d4; --badge-bg: #155e75; --card-border: #06b6d4; --card-bg: #f0fdf4; --card-radius: 20px 4px 20px 4px; }
         body.layout-navy-sand { --primary-color: #1e293b; --accent-color: #334155; --badge-bg: #d97706; --card-border: #cbd5e1; --card-bg: #fffbf5; --card-radius: 16px; }
         body.layout-gold-math { --primary-color: #1e1b4b; --accent-color: #312e81; --badge-bg: #eab308; --card-border: #eab308; --card-bg: #ffffff; --card-radius: 8px; }
@@ -101,7 +101,7 @@
         }
         canvas { border: 1.5px solid #cbd5e1; border-radius: 8px; background: #fff; cursor: crosshair; }
 
-        /* صفحة الغلاف المخصصة */
+        /* صفحة الغلاف */
         .cover-page {
             display: none; width: 100%; max-width: 210mm; min-height: 297mm; background: #ffffff;
             border-radius: 16px; padding: 40px; box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.07);
@@ -191,8 +191,8 @@
 </head>
 <body>
 
-    <!-- زر الترس العائم -->
-    <div class="settings-gear-btn" onclick="toggleControlsPanel()" title="إعدادات ورقة الامتحان">
+    <!-- زر الترس العائم الممتلئ بالحماية -->
+    <div class="settings-gear-btn" onclick="requestAccess()" title="إعدادات ورقة الامتحان">
         <svg viewBox="0 0 24 24">
             <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
         </svg>
@@ -211,13 +211,14 @@
                 <button class="btn btn-print" onclick="window.print()">🖨️ طباعة الورقة</button>
             </div>
 
-            <!-- أزرار الميزات المتقدمة -->
+            <!-- أزرار الميزات المتقدمة وتغيير كلمة السر -->
             <div class="btn-group" style="margin-top: 5px;">
                 <button class="btn btn-success" style="background-color: #0284c7;" onclick="saveTemplateLocally()">💾 حفظ الامتحان</button>
                 <button class="btn btn-purple" style="background-color: #4f46e5;" onclick="loadTemplateLocally()">📂 استرجاع المحفوظ</button>
                 <button class="btn btn-warning" style="background-color: #d97706;" onclick="shuffleQuestions()">🔀 خلط الأسئلة (نماذج A/B)</button>
                 <button class="btn btn-success" style="background-color: #0d9488;" onclick="toggleCoverPage()">📘 صفحة الغلاف</button>
                 <button class="btn btn-purple" style="background-color: #9333ea;" onclick="openMathTools()">📐 راسم الأشكال والآلة</button>
+                <button class="btn btn-danger" style="background-color: #b91c1c;" onclick="updatePassword()">🔑 تحديث كلمة السر</button>
             </div>
             
             <div id="editPanel" class="edit-panel">
@@ -282,7 +283,7 @@
         </div>
     </div>
 
-    <!-- صفحة الغلاف (خياري) -->
+    <!-- صفحة الغلاف -->
     <div class="cover-page" id="coverPage">
         <div style="margin-top: 40px;">
             <h1 style="font-size: 38px; color: var(--primary-color);">الامتحان الشامل والنهائي</h1>
@@ -406,26 +407,62 @@
         let isScratchpadHidden = false;
         let isEcoMode = false;
 
-        function toggleControlsPanel() {
-            document.getElementById('controlsWrapper').classList.toggle('open');
+        // كلمة السر الافتراضية
+        const defaultPasswords = ["E2X--4", "E2X+4", "E2X-4", "48"];
+
+        function getStoredPassword() {
+            return localStorage.getItem('teacher_app_password');
         }
 
-        function validateTeacherCode(inputCode) {
+        function validatePassword(inputCode) {
             if (!inputCode) return false;
-            return inputCode.trim().toUpperCase().includes("48");
+            const cleaned = inputCode.trim();
+            const stored = getStoredPassword();
+            
+            if (stored) {
+                return cleaned === stored;
+            } else {
+                return defaultPasswords.includes(cleaned) || cleaned.toUpperCase().includes("E2X");
+            }
+        }
+
+        function requestAccess() {
+            const wrapper = document.getElementById('controlsWrapper');
+            if (wrapper.classList.contains('open')) {
+                wrapper.classList.remove('open');
+            } else {
+                let pwd = prompt("🔐 أدخل كلمة المرور لفتح إعدادات ورقة الامتحان:");
+                if (validatePassword(pwd)) {
+                    wrapper.classList.add('open');
+                } else {
+                    alert("❌ كلمة المرور غير صحيحة!");
+                }
+            }
+        }
+
+        function updatePassword() {
+            let current = prompt("أدخل كلمة المرور الحالية لقتديم الإثبات:");
+            if (validatePassword(current)) {
+                let newPwd = prompt("أدخل كلمة المرور الجديدة التي تريدها:");
+                if (newPwd && newPwd.trim() !== "") {
+                    localStorage.setItem('teacher_app_password', newPwd.trim());
+                    alert("🔑 تم تغيير وتحديث كلمة السر بنجاح!");
+                } else {
+                    alert("لم يتم إدخال كلمة سر جديدة صالحة!");
+                }
+            } else {
+                alert("❌ كلمة المرور الحالية غير صحيحة!");
+            }
         }
 
         function unlockEditMode() {
             if (!isEditMode) {
-                let pwd = prompt("أدخل كود المرور لتفعيل وضع التحرير:");
-                if (validateTeacherCode(pwd)) {
-                    isEditMode = true;
-                    document.getElementById('editPanel').style.display = 'flex';
-                    document.getElementById('toggleEditBtn').innerText = '🔒 إغلاق اللوحة';
-                    document.getElementById('toggleEditBtn').classList.replace('btn-warning', 'btn-danger');
-                    document.body.classList.add('edit-mode-active');
-                    enableContentEditable(true);
-                } else { alert("❌ كود المرور غير صحيح!"); }
+                isEditMode = true;
+                document.getElementById('editPanel').style.display = 'flex';
+                document.getElementById('toggleEditBtn').innerText = '🔒 إغلاق اللوحة';
+                document.getElementById('toggleEditBtn').classList.replace('btn-warning', 'btn-danger');
+                document.body.classList.add('edit-mode-active');
+                enableContentEditable(true);
             } else {
                 isEditMode = false;
                 document.getElementById('editPanel').style.display = 'none';
@@ -439,13 +476,10 @@
 
         function toggleDirectEdit() {
             if (!isDirectEditMode) {
-                let pwd = prompt("أدخل كود المرور:");
-                if (validateTeacherCode(pwd)) {
-                    isDirectEditMode = true;
-                    enableContentEditable(true);
-                    document.getElementById('quickEditBtn').innerText = '✔️ حفظ وتوقف';
-                    document.getElementById('quickEditBtn').classList.replace('btn-success', 'btn-danger');
-                } else { alert("❌ كود المرور غير صحيح!"); }
+                isDirectEditMode = true;
+                enableContentEditable(true);
+                document.getElementById('quickEditBtn').innerText = '✔️ حفظ وتوقف';
+                document.getElementById('quickEditBtn').classList.replace('btn-success', 'btn-danger');
             } else {
                 isDirectEditMode = false;
                 if(!isEditMode) enableContentEditable(false);
