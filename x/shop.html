@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المبيعات الذكي V2</title>
+    <title>نظام إدارة المبيعات V3 - برو</title>
     
     <!-- Bootstrap 5 RTL & FontAwesome -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
@@ -16,17 +16,35 @@
         .nav-link:hover, .nav-link.active { background: #2c3e50; color: #fff; transform: translateX(-5px); }
         .card { border: none; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
         
-        /* Voice Button Animation */
+        /* Voice Button */
         .voice-btn.listening { animation: pulse 1.5s infinite; background-color: #dc3545 !important; color: white !important; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
         /* Image Preview */
         .img-preview { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; display: none; margin-top: 10px; border: 2px dashed #ccc; }
         
-        /* Status Badges */
-        .status-badge { padding: 5px 10px; border-radius: 20px; font-size: 0.8em; cursor: pointer; }
-        .bg-activated { background-color: #d1e7dd; color: #0f5132; }
-        .bg-not-activated { background-color: #f8d7da; color: #842029; }
+        /* Low Stock Alert */
+        .low-stock { background-color: #ffebee !important; }
+        .stock-badge { font-size: 0.9em; }
+        
+        /* PRINT STYLES - Hidden on Screen */
+        #printArea { display: none; }
+        
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                display: block;
+                direction: rtl;
+                text-align: center;
+                font-family: 'Courier New', Courier, monospace;
+            }
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -35,26 +53,25 @@
     <div class="row">
         <!-- Sidebar -->
         <div class="col-md-2 sidebar p-3 d-none d-md-block no-print">
-            <h4 class="text-center mb-4 fw-bold"><i class="fas fa-mobile-alt me-2"></i> موبايل برو V2</h4>
+            <h4 class="text-center mb-4 fw-bold"><i class="fas fa-mobile-alt me-2"></i> موبايل برو V3</h4>
             <ul class="nav flex-column">
                 <li class="nav-item"><a class="nav-link active" onclick="showSection('dashboard')"><i class="fas fa-home me-2"></i> الرئيسية</a></li>
                 <li class="nav-item"><a class="nav-link" onclick="showSection('inventory')"><i class="fas fa-box-open me-2"></i> المخزون</a></li>
                 <li class="nav-item"><a class="nav-link" onclick="showSection('sales')"><i class="fas fa-cash-register me-2"></i> نقطة البيع</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="showSection('history')"><i class="fas fa-history me-2"></i> سجل المبيعات</a></li>
-                <li class="nav-item"><a class="nav-link" onclick="showSection('settings')"><i class="fas fa-cogs me-2"></i> الإعدادات والنسخ</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('history')"><i class="fas fa-history me-2"></i> السجل</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('settings')"><i class="fas fa-cogs me-2"></i> الإعدادات</a></li>
             </ul>
         </div>
 
         <!-- Mobile Header -->
-        <div class="col-12 bg-dark text-white p-3 d-md-none d-flex justify-content-between align-items-center">
+        <div class="col-12 bg-dark text-white p-3 d-md-none d-flex justify-content-between align-items-center no-print">
             <h5 class="m-0">موبايل برو</h5>
             <button class="btn btn-sm btn-outline-light" data-bs-toggle="collapse" data-bs-target="#mobileMenu"><i class="fas fa-bars"></i></button>
         </div>
-        <div class="collapse bg-dark p-2 d-md-none" id="mobileMenu">
+        <div class="collapse bg-dark p-2 d-md-none no-print" id="mobileMenu">
              <a class="nav-link text-white" onclick="showSection('dashboard')">الرئيسية</a>
              <a class="nav-link text-white" onclick="showSection('sales')">بيع</a>
              <a class="nav-link text-white" onclick="showSection('history')">السجل</a>
-             <a class="nav-link text-white" onclick="showSection('settings')">الإعدادات</a>
         </div>
 
         <!-- Main Content -->
@@ -63,6 +80,13 @@
             <!-- Dashboard -->
             <div id="dashboard" class="section">
                 <h3 class="mb-4 fw-bold">لوحة المعلومات</h3>
+                
+                <!-- Low Stock Alert Box -->
+                <div id="lowStockAlertBox" class="alert alert-danger d-none mb-3">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>تنبيه:</strong> يوجد أصناف مخزونها منخفض جداً (أقل من 3). يرجى إعادة الطلب!
+                    <ul id="lowStockList" class="mt-2 mb-0 small"></ul>
+                </div>
+
                 <div class="row g-3">
                     <div class="col-md-3">
                         <div class="card p-3 bg-primary text-white">
@@ -93,7 +117,7 @@
 
             <!-- Inventory -->
             <div id="inventory" class="section d-none">
-                <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-3 no-print">
                     <h3>المخزون</h3>
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal"><i class="fas fa-plus"></i> إضافة صنف</button>
                 </div>
@@ -107,10 +131,10 @@
 
             <!-- Sales Point -->
             <div id="sales" class="section d-none">
-                <h3 class="mb-4">تسجيل بيع جديد</h3>
+                <h3 class="mb-4 no-print">تسجيل بيع جديد</h3>
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="card p-4">
+                        <div class="card p-4 no-print">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">1. اختر الموديل</label>
                                 <select class="form-select" id="saleModelSelect" onchange="updateSaleInfo()"></select>
@@ -119,7 +143,7 @@
                             <div class="mb-3">
                                 <label class="form-label fw-bold">2. الرقم المسلسل (IMEI)</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="saleSerial" placeholder="اكتب أو استخدم المايك...">
+                                    <input type="text" class="form-control" id="saleSerial" placeholder="امسح الباركود أو اكتب..." autofocus>
                                     <button class="btn btn-outline-secondary voice-btn" type="button" onclick="startVoiceInput()">
                                         <i class="fas fa-microphone"></i>
                                     </button>
@@ -129,7 +153,6 @@
                                     <input type="file" id="serialImageInput" accept="image/*" capture="environment" style="display:none" onchange="handleImageUpload(this)">
                                 </div>
                                 <img id="serialPreview" class="img-preview" src="">
-                                <small class="text-muted d-block mt-1">يمكنك إملاء الرقم بالصوت أو تصوير الكرتونة.</small>
                             </div>
 
                             <div class="mb-3">
@@ -144,10 +167,12 @@
 
                             <div id="warrantyAlert" class="alert alert-warning d-none">
                                 <i class="fas fa-shield-alt"></i> جهاز غير مفعل! 
-                                <a href="#" id="warrantyCheckLink" target="_blank" class="alert-link">اضغط هنا للتحقق من الضمان</a>
+                                <a href="#" id="warrantyCheckLink" target="_blank" class="alert-link">اضغط للتحقق من الضمان</a>
                             </div>
 
-                            <button class="btn btn-success w-100 btn-lg mt-3" onclick="processSale()">إتمام البيع</button>
+                            <button class="btn btn-success w-100 btn-lg mt-3" onclick="processSale()">
+                                <i class="fas fa-check-circle"></i> إتمام البيع وطباعة الفاتورة
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -155,7 +180,7 @@
 
             <!-- History -->
             <div id="history" class="section d-none">
-                <h3>سجل المبيعات والتعديل</h3>
+                <h3>سجل المبيعات</h3>
                 <div class="table-responsive bg-white rounded shadow-sm p-2 mt-3">
                     <table class="table table-striped align-middle">
                         <thead>
@@ -163,7 +188,6 @@
                                 <th>التاريخ</th>
                                 <th>الجهاز</th>
                                 <th>السيريال</th>
-                                <th>الصورة</th>
                                 <th>الحالة</th>
                                 <th>السعر</th>
                                 <th>إجراءات</th>
@@ -174,31 +198,46 @@
                 </div>
             </div>
 
-            <!-- Settings & Backup -->
+            <!-- Settings -->
             <div id="settings" class="section d-none">
-                <h3>إدارة البيانات والنسخ الاحتياطي</h3>
+                <h3>الإعدادات والنسخ الاحتياطي</h3>
                 <div class="row mt-4">
                     <div class="col-md-6">
                         <div class="card p-4 text-center">
                             <i class="fas fa-download fa-3x text-primary mb-3"></i>
-                            <h5>تصدير البيانات (Backup)</h5>
-                            <p class="text-muted">حمل ملف يحتوي على كل المبيعات والمخزون لحفظه بأمان.</p>
+                            <h5>تصدير البيانات</h5>
                             <button class="btn btn-primary" onclick="exportData()">تحميل النسخة الاحتياطية</button>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="card p-4 text-center">
                             <i class="fas fa-upload fa-3x text-success mb-3"></i>
-                            <h5>استيراد البيانات (Restore)</h5>
-                            <p class="text-muted">استرجع بياناتك من ملف سابق.</p>
+                            <h5>استيراد البيانات</h5>
                             <input type="file" id="importFile" class="form-control mb-2" accept=".json">
-                            <button class="btn btn-success" onclick="importData()">استعادة البيانات</button>
+                            <button class="btn btn-success" onclick="importData()">استعادة</button>
                         </div>
                     </div>
                 </div>
             </div>
 
         </div>
+    </div>
+</div>
+
+<!-- Print Receipt Template (Hidden) -->
+<div id="printArea">
+    <div style="border: 2px dashed #000; padding: 20px; max-width: 300px; margin: 0 auto;">
+        <h2 style="margin:0;">موبايل شوب</h2>
+        <p style="margin:5px 0;">رقم الهاتف: 01xxxxxxxxx</p>
+        <hr style="border-top: 1px dashed #000;">
+        <p><strong>فاتورة بيع</strong></p>
+        <p>التاريخ: <span id="printDate"></span></p>
+        <p>الجهاز: <span id="printDevice"></span></p>
+        <p>السيريال: <span id="printSerial"></span></p>
+        <p>الحالة: <span id="printStatus"></span></p>
+        <hr style="border-top: 1px dashed #000;">
+        <h3 style="text-align: center; margin: 10px 0;">السعر: <span id="printPrice"></span> ج.م</h3>
+        <p style="font-size: 12px; text-align: center;">شكراً لتعاملكم معنا<br>البضاعة المباعة لا ترد ولا تستبدل بعد 24 ساعة</p>
     </div>
 </div>
 
@@ -265,7 +304,16 @@
         const tbody = document.getElementById('inventoryTableBody');
         tbody.innerHTML = '';
         devices.forEach(d => {
-            tbody.innerHTML += `<tr><td>${d.name}</td><td>${d.retail}</td><td>${d.qty}</td><td><button class="btn btn-sm btn-danger" onclick="deleteDevice(${d.id})">X</button></td></tr>`;
+            const lowStockClass = d.qty < 3 ? 'low-stock' : '';
+            const badgeColor = d.qty < 3 ? 'bg-danger' : 'bg-primary';
+            
+            tbody.innerHTML += `
+                <tr class="${lowStockClass}">
+                    <td>${d.name}</td>
+                    <td>${d.retail}</td>
+                    <td><span class="badge ${badgeColor} stock-badge">${d.qty}</span></td>
+                    <td><button class="btn btn-sm btn-danger" onclick="deleteDevice(${d.id})">X</button></td>
+                </tr>`;
         });
     }
     
@@ -282,41 +330,25 @@
         });
         document.getElementById('saleSerial').value = '';
         document.getElementById('serialPreview').style.display = 'none';
+        document.getElementById('saleSerial').focus(); // Auto focus for barcode scanner
     }
 
-    // Voice Input Feature
+    // Voice Input
     function startVoiceInput() {
-        if (!('webkitSpeechRecognition' in window)) {
-            alert("متصفحك لا يدعم الإدخال الصوتي. يرجى استخدام Chrome.");
-            return;
-        }
+        if (!('webkitSpeechRecognition' in window)) return alert("متصفحك لا يدعم الصوت");
         const recognition = new webkitSpeechRecognition();
-        recognition.lang = 'en-US'; // الأرقام بالإنجليزية أدق
-        recognition.continuous = false;
-        
+        recognition.lang = 'en-US';
         const btn = document.querySelector('.voice-btn');
         btn.classList.add('listening');
-        
         recognition.start();
-
         recognition.onresult = function(event) {
-            let transcript = event.results[0][0].transcript;
-            // تنظيف النص من المسافات الزائدة
-            document.getElementById('saleSerial').value = transcript.replace(/\s/g, '');
+            document.getElementById('saleSerial').value = event.results[0][0].transcript.replace(/\s/g, '');
             btn.classList.remove('listening');
         };
-
-        recognition.onerror = function() {
-            btn.classList.remove('listening');
-            alert("حدث خطأ في التعرف على الصوت");
-        };
-        
-        recognition.onend = function() {
-            btn.classList.remove('listening');
-        };
+        recognition.onerror = recognition.onend = () => btn.classList.remove('listening');
     }
 
-    // Image Upload Feature
+    // Image Upload
     function handleImageUpload(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -344,6 +376,8 @@
         if (!modelId || !serial) return alert('أكمل البيانات');
 
         const devIndex = devices.findIndex(d => d.id == modelId);
+        if(devices[devIndex].qty <= 0) return alert('نفذت الكمية!');
+
         devices[devIndex].qty -= 1;
 
         const saleRecord = {
@@ -354,17 +388,32 @@
             isActivated: isActivated,
             price: devices[devIndex].retail,
             cost: devices[devIndex].wholesale,
-            image: imgSrc.includes('base64') ? imgSrc : null, // Save image if exists
+            image: imgSrc.includes('base64') ? imgSrc : null,
             date: new Date().toLocaleDateString('ar-EG')
         };
 
         salesHistory.unshift(saleRecord);
         saveData();
-        alert('تم البيع!');
+        
+        // Print Receipt
+        printReceipt(saleRecord);
+        
+        // Reset Form
         prepareSalesPage();
     }
 
-    // --- History & Edit Logic ---
+    // --- Print Function ---
+    function printReceipt(sale) {
+        document.getElementById('printDate').innerText = sale.date;
+        document.getElementById('printDevice').innerText = sale.deviceName;
+        document.getElementById('printSerial').innerText = sale.serial;
+        document.getElementById('printStatus').innerText = sale.isActivated ? "مفعل" : "غير مفعل";
+        document.getElementById('printPrice').innerText = sale.price;
+        
+        window.print();
+    }
+
+    // --- History ---
     function renderHistory() {
         const tbody = document.getElementById('salesHistoryBody');
         tbody.innerHTML = '';
@@ -372,14 +421,11 @@
             const statusClass = s.isActivated ? 'bg-activated' : 'bg-not-activated';
             const statusText = s.isActivated ? 'مفعل' : 'غير مفعل';
             
-            let imgHtml = s.image ? `<a href="${s.image}" target="_blank"><i class="fas fa-image text-primary"></i></a>` : '-';
-
             tbody.innerHTML += `
                 <tr>
                     <td>${s.date}</td>
                     <td>${s.deviceName}</td>
                     <td>${s.serial}</td>
-                    <td>${imgHtml}</td>
                     <td>
                         <span class="status-badge ${statusClass}" onclick="toggleSaleStatus(${index})">
                             ${statusText} <i class="fas fa-pen ms-1 small"></i>
@@ -393,7 +439,7 @@
     }
 
     function toggleSaleStatus(index) {
-        if(confirm('هل تريد عكس حالة التفعيل لهذا الجهاز؟')) {
+        if(confirm('عكس حالة التفعيل؟')) {
             salesHistory[index].isActivated = !salesHistory[index].isActivated;
             saveData();
             renderHistory();
@@ -401,8 +447,7 @@
     }
 
     function deleteSale(index) {
-        if(confirm('حذف هذا السجل نهائياً؟')) {
-            // Optional: Return qty to stock logic could be added here
+        if(confirm('حذف السجل؟')) {
             salesHistory.splice(index, 1);
             saveData();
             renderHistory();
@@ -414,7 +459,7 @@
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({companies, devices, salesHistory}));
         const downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "mobile_shop_backup_" + new Date().toISOString().slice(0,10) + ".json");
+        downloadAnchorNode.setAttribute("download", "backup_" + new Date().toISOString().slice(0,10) + ".json");
         document.body.appendChild(downloadAnchorNode);
         downloadAnchorNode.click();
         downloadAnchorNode.remove();
@@ -422,23 +467,20 @@
 
     function importData() {
         const file = document.getElementById('importFile').files[0];
-        if (!file) return alert('اختر ملف أولاً');
-        
+        if (!file) return alert('اختر ملف');
         const reader = new FileReader();
         reader.onload = function(event) {
             try {
                 const data = JSON.parse(event.target.result);
-                if(data.companies && data.devices && data.salesHistory) {
+                if(data.companies) {
                     companies = data.companies;
                     devices = data.devices;
                     salesHistory = data.salesHistory;
                     saveData();
-                    alert('تم استعادة البيانات بنجاح!');
+                    alert('تمت الاستعادة بنجاح');
                     location.reload();
-                } else {
-                    alert('ملف غير صالح');
                 }
-            } catch(e) { alert('خطأ في قراءة الملف'); }
+            } catch(e) { alert('ملف تالف'); }
         };
         reader.readAsText(file);
     }
@@ -455,6 +497,18 @@
         const todayStr = new Date().toLocaleDateString('ar-EG');
         const todayTotal = salesHistory.filter(s => s.date.includes(todayStr)).reduce((sum, s) => sum + s.price, 0);
         document.getElementById('todaySales').innerText = todayTotal.toLocaleString();
+
+        // Low Stock Alert Logic
+        const lowStockItems = devices.filter(d => d.qty < 3);
+        const alertBox = document.getElementById('lowStockAlertBox');
+        const list = document.getElementById('lowStockList');
+        
+        if(lowStockItems.length > 0) {
+            alertBox.classList.remove('d-none');
+            list.innerHTML = lowStockItems.map(d => `<li>${d.name} (متبقي: ${d.qty})</li>`).join('');
+        } else {
+            alertBox.classList.add('d-none');
+        }
     }
 
     window.onload = updateDashboard;
