@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>امتحانك بلس - EXAM PLUS </title>
+    <title>امتحانك بلس - EXAM PLUS Ultimate Edition</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
     <!-- MathJax -->
@@ -23,15 +23,15 @@
             --card-border: #06b6d4;
             --card-bg: #f0fdf4;
             --card-radius: 12px;
-            --base-font-size: 15px;
-            --base-line-height: 1.8;
+            --base-font-size: 14.5px;
+            --base-line-height: 1.7;
             --admin-bg: #ffffff;
             --admin-text: #0f172a;
         }
 
         body.dark-admin-mode { --admin-bg: #1e293b; --admin-text: #f8fafc; }
 
-        /* إنشاء 50 قالب مختلف بحسب الاختيار */
+        /* إنشاء 50 قالب مختلف */
         body.theme-1 { --primary-color: #0891b2; --accent-color: #06b6d4; --badge-bg: #155e75; --card-border: #06b6d4; --card-bg: #f0fdf4; }
         body.theme-2 { --primary-color: #1e293b; --accent-color: #334155; --badge-bg: #d97706; --card-border: #cbd5e1; --card-bg: #fffbf5; }
         body.theme-3 { --primary-color: #1e1b4b; --accent-color: #312e81; --badge-bg: #eab308; --card-border: #eab308; --card-bg: #ffffff; }
@@ -51,22 +51,9 @@
         body.eco-print { --primary-color: #000000 !important; --badge-bg: #000000 !important; --accent-color: #000000 !important; --card-border: #000000 !important; --card-bg: #ffffff !important; }
         body.homework-mode .q-score-tag, body.homework-mode .score-pill-wrap { display: none !important; }
 
-        /* دعم الوضع المزدوج للطباعة Dual-Column */
-        body.dual-column-mode #questionsContainer {
-            column-count: 2;
-            column-gap: 15px;
-        }
-        body.dual-column-mode .question-card {
-            break-inside: avoid;
-            display: inline-block;
-            width: 100%;
-        }
-
-        /* دعم اللغة الإنجليزية LTR */
-        html.ltr-mode { dir: ltr; }
-        html.ltr-mode body { direction: ltr; text-align: left; }
-        html.ltr-mode .q-number-badge { right: auto; left: 12px; }
-        html.ltr-mode .student-bar, html.ltr-mode .teacher-info-card { flex-direction: row-reverse; }
+        /* الوضع المزدوج للطباعة */
+        body.dual-column-mode #questionsContainer { column-count: 2; column-gap: 15px; }
+        body.dual-column-mode .question-card { break-inside: avoid; display: inline-block; width: 100%; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', 'Cairo', sans-serif; }
         body { background-color: #f1f5f9; display: flex; flex-direction: column; align-items: center; padding: 10px; min-height: 100vh; color: var(--text-main); }
@@ -83,7 +70,7 @@
         .admin-controls-wrapper {
             width: 100%; max-width: 210mm; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; margin-bottom: 0;
         }
-        .admin-controls-wrapper.open { max-height: 3500px; margin-bottom: 15px; }
+        .admin-controls-wrapper.open { max-height: 4000px; margin-bottom: 15px; }
         .admin-controls {
             background: var(--admin-bg); color: var(--admin-text); border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 10px;
@@ -93,6 +80,9 @@
             background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; color: #0f172a;
             display: flex; justify-content: space-around; align-items: center; font-size: 11.5px; font-weight: 700; flex-wrap: wrap; gap: 6px;
         }
+
+        .progress-bar-container { width: 100%; background: #e2e8f0; border-radius: 6px; height: 10px; overflow: hidden; margin-top: 4px; }
+        .progress-bar-fill { background: var(--primary-color); height: 100%; width: 0%; transition: width 0.3s ease; }
 
         .btn-group { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
         .btn {
@@ -106,7 +96,6 @@
         .btn-print { background-color: #334155; }
         .btn-purple { background-color: #7c3aed; }
         .btn-eco { background-color: #475569; }
-        .btn-ai { background-color: #2563eb; }
 
         .edit-panel { display: none; width: 100%; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px; gap: 8px; flex-direction: column; color: #0f172a; }
         .input-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -122,8 +111,8 @@
             position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease;
             page-break-after: always; margin-bottom: 20px;
         }
-        
-        .cover-page { display: none; flex-direction: column; justify-content: space-between; border: 4px double var(--primary-color); padding: 30px; text-align: center; }
+
+        .cover-page { display: none; flex-direction: column; justify-content: center; align-items: center; border: 4px double var(--primary-color); padding: 40px; text-align: center; gap: 20px; }
         body.show-cover .cover-page { display: flex; }
 
         .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 4rem; font-weight: 900; color: rgba(15, 23, 42, 0.03); white-space: nowrap; pointer-events: none; z-index: 1; }
@@ -143,6 +132,11 @@
         .teacher-info-card { border: 1px solid var(--card-border); border-radius: 8px; padding: 6px 12px; background: #ffffff; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
         .teacher-info-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--primary-color); }
 
+        /* شريط درجات المصحح */
+        .grading-summary-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11px; text-align: center; }
+        .grading-summary-table th, .grading-summary-table td { border: 1px solid var(--primary-color); padding: 3px; }
+        .grading-summary-table th { background: var(--primary-color); color: #fff; }
+
         .student-bar { border: 1px solid var(--primary-color); border-radius: 8px; padding: 6px 10px; display: flex; flex-wrap: wrap; gap: 6px 10px; justify-content: space-between; align-items: center; margin-bottom: 14px; background: #fff; font-size: 11.5px; font-weight: 800; color: var(--primary-color); }
         .student-bar .dots { border-bottom: 1px dotted #94a3b8; display: inline-block; min-width: 40px; height: 10px; }
         .score-pill { border: 1px solid var(--badge-bg); background: #fef3c7; border-radius: 4px; padding: 1px 6px; color: var(--badge-bg); font-weight: 900; }
@@ -152,6 +146,10 @@
         .q-bloom-tag { position: absolute; top: -10px; left: 12px; background: #3b82f6; color: #fff; padding: 1px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; }
         
         .q-body { margin-top: 6px; font-size: var(--base-font-size); font-weight: 700; color: var(--text-main); line-height: var(--base-line-height); outline: none; }
+
+        /* الأسئلة الفرعية */
+        .sub-questions-container { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; padding-right: 10px; border-right: 2px solid var(--primary-color); }
+        .sub-question-item { background: #ffffff; border: 1px dashed var(--card-border); padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
 
         /* صورة السؤال */
         .q-attached-img { max-width: 100%; max-height: 180px; object-fit: contain; margin-top: 8px; border-radius: 6px; border: 1px solid var(--card-border); display: none; }
@@ -166,33 +164,32 @@
         .match-column { display: flex; flex-direction: column; gap: 8px; }
         .match-column-title { font-weight: 800; font-size: 12px; color: var(--primary-color); text-align: center; border-bottom: 1px solid var(--card-border); padding-bottom: 4px; }
         .match-item { background: #ffffff; border: 1px solid var(--card-border); border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
-        .match-badge { background: var(--badge-bg); color: #fff; padding: 1px 6px; border-radius: 4px; font-size: 10px; }
 
         /* الصح والخطأ */
         .tf-container { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
         .tf-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid var(--card-border); padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; }
         .tf-box { width: 22px; height: 22px; border: 1px solid var(--primary-color); border-radius: 4px; display: inline-block; cursor: pointer; text-align: center; line-height: 20px; }
 
-        /* الإختيارات */
+        /* الاختيارات */
         .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 6px; margin-top: 10px; }
         .mcq-opt { border: 1px solid var(--card-border); border-radius: 6px; padding: 4px 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer; background: #ffffff; }
         .mcq-opt .opt-circle { width: 11px; height: 11px; border: 1px solid var(--primary-color); border-radius: 50%; display: inline-block; }
-        .mcq-opt.selected { background-color: #dcfce7; border-color: #16a34a; }
 
         .answer-lines { margin-top: 8px; width: 100%; }
         .line-item { border-bottom: 1px dotted #cbd5e1; height: 20px; width: 100%; }
 
-        /* نموذج الإجابة */
+        /* نموذج الإجابة والبابل شيت */
         .answer-key-box { display: none; margin-top: 8px; background: #f0fdf4; border: 1px solid #22c55e; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 800; color: #15803d; }
         body.show-answer-key .answer-key-box { display: block !important; }
 
+        .bubble-sheet-container { display: none; flex-direction: column; gap: 10px; border: 2px solid var(--primary-color); padding: 15px; border-radius: 8px; margin-top: 15px; background: #fff; }
+        body.show-bubble-sheet .bubble-sheet-container { display: flex !important; }
+
         .q-footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
         .q-score-tag { border: 1px solid var(--badge-bg); background: #fef3c7; border-radius: 4px; padding: 1px 8px; font-size: 10.5px; font-weight: 800; color: var(--primary-color); }
-        .q-score-val { display: inline-block; min-width: 16px; }
 
-        .q-controls { display: none; margin-top: 8px; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; }
-        .edit-mode-active .q-controls { display: flex; flex-wrap: wrap; }
-        .q-controls input, .q-controls select { padding: 4px 6px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 4px; flex: 1 1 100px; }
+        .q-controls { display: none; margin-top: 8px; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; flex-wrap: wrap; }
+        .edit-mode-active .q-controls { display: flex; }
 
         .exam-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; color: var(--primary-color); margin-top: 8px; border-top: 1px dashed var(--card-border); padding-top: 4px; }
 
@@ -223,6 +220,10 @@
                 <div>الزمن المتوقع: <span id="estTimeCalc">0 دقيقة</span></div>
                 <div>المستوى: <span id="difficultyCalc">متوازن</span></div>
                 <div>إجمالي الأسئلة: <span id="qCountCalc">0</span></div>
+                <div style="width: 100%;">
+                    مؤشر استهلاك مساحة الورقة:
+                    <div class="progress-bar-container"><div id="pageSpaceFill" class="progress-bar-fill"></div></div>
+                </div>
             </div>
 
             <!-- محرر الرموز والرياضيات -->
@@ -232,17 +233,23 @@
                 <button class="math-btn" onclick="insertSymbol('\\frac{a}{b}')">كسر $\frac{a}{b}$</button>
                 <button class="math-btn" onclick="insertSymbol('\\sqrt{x}')">جذر $\sqrt{x}$</button>
                 <button class="math-btn" onclick="insertSymbol('\\sum_{i=1}^{n}')">مجموع $\sum$</button>
+                <button class="math-btn" onclick="insertSymbol('\\theta')">زاوبة $\theta$</button>
+                <button class="math-btn" onclick="insertSymbol('\\pi')">باي $\pi$</button>
             </div>
 
             <div class="btn-group">
                 <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">لوحة التحرير</button>
                 <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">تعديل مباشر</button>
-                <button id="toggleAnswerBtn" class="btn btn-purple" style="background-color: #0284c7;" onclick="toggleAnswerKey()">عرض نموذج الإجابة</button>
-                <button id="toggleHomeworkBtn" class="btn btn-purple" onclick="toggleHomeworkMode()">وضع الواجب / الشيت</button>
-                <button id="toggleDualColumnBtn" class="btn btn-purple" style="background-color:#4338ca;" onclick="toggleDualColumn()">وضع العمودين</button>
-                <button id="toggleCoverBtn" class="btn btn-purple" style="background-color:#0d9488;" onclick="toggleCoverPage()">غلاف الامتحان</button>
-                <button id="toggleEcoBtn" class="btn btn-eco" onclick="toggleEcoMode()">توفير الأحبار</button>
+                <button class="btn btn-purple" style="background-color: #0284c7;" onclick="toggleAnswerKey()">نموذج الإجابة</button>
+                <button class="btn btn-purple" style="background-color: #d97706;" onclick="toggleBubbleSheet()">ورقة Bubble Sheet</button>
+                <button class="btn btn-purple" onclick="toggleHomeworkMode()">وضع الواجب</button>
+                <button class="btn btn-purple" style="background-color:#4338ca;" onclick="toggleDualColumn()">وضع العمودين</button>
+                <button class="btn btn-purple" style="background-color:#0d9488;" onclick="toggleCoverPage()">غلاف الامتحان</button>
+
+                <button class="btn btn-warning" style="background-color:#c026d3;" onclick="shuffleQuestionsAB()">توليد نموذج A/B</button>
+                <button class="btn btn-eco" onclick="toggleEcoMode()">توفير الأحبار</button>
                 <button class="btn btn-success" style="background-color: #0d9488;" onclick="exportToImages()">تصدير كصور HD</button>
+                <button class="btn btn-purple" style="background-color: #059669;" onclick="saveExamJSON()">حفظ الملف</button>
                 <button class="btn btn-print" onclick="window.print()">طباعة الورقة</button>
             </div>
             
@@ -251,7 +258,7 @@
                     <label>اسم المعلم:</label>
                     <input type="text" id="teacherNameInput" value="أ. مهدي حسن" oninput="updateHeaderInfo()">
                     
-                    <label>اختر المادة الدراسية:</label>
+                    <label>اختر المادة:</label>
                     <select id="subjectSelect" onchange="updateSubjectInfo(this.value)">
                         <option value="الرياضيات">الرياضيات</option>
                         <option value="الإحصاء">الإحصاء</option>
@@ -262,24 +269,29 @@
                     </select>
 
                     <label>اختر القالب (50 قالب):</label>
-                    <select id="themeSelector" onchange="changeLayout(this.value)">
-                        <!-- سيتم إنشاؤها عبر JavaScript (50 قالب) -->
-                    </select>
+                    <select id="themeSelector" onchange="changeLayout(this.value)"></select>
 
-                    <label>رفع logo / شعار:</label>
+                    <label>رفع logo الشعار:</label>
                     <input type="file" accept="image/*" onchange="uploadCenterLogo(this)">
                 </div>
 
                 <div class="input-group">
-                    <button class="btn btn-success" onclick="addQuestion()">+ سؤال مقالي / تحريري</button>
+                    <button class="btn btn-success" onclick="addQuestion()">+ سؤال مقالي</button>
                     <button class="btn btn-success" style="background-color: #0284c7;" onclick="addMCQQuestion()">+ سؤال اختياري</button>
-                    <button class="btn btn-purple" style="background-color: #7c3aed;" onclick="addMatchQuestion()">+ سؤال توصيل (صل)</button>
-                    <button class="btn btn-purple" style="background-color: #b45309;" onclick="addTrueFalseQuestion()">+ صواب أو خطأ (✔️/❌)</button>
-                    <button class="btn btn-success" style="background-color: #0d9488;" onclick="addFillBlanksQuestion()">+ سؤال أكمل</button>
+                    <button class="btn btn-purple" style="background-color: #7c3aed;" onclick="addMatchQuestion()">+ سؤال توصيل</button>
+                    <button class="btn btn-purple" style="background-color: #b45309;" onclick="addTrueFalseQuestion()">+ صواب/خطأ</button>
                     <button class="btn btn-warning" style="background-color: #ea580c;" onclick="addStatsQuestion()">📊 + سؤال إحصائي</button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- صفحة الغلاف -->
+    <div class="page cover-page" id="coverPage">
+        <h1 style="font-size: 3rem; color: var(--primary-color);">امتحانك بلس</h1>
+        <h2 style="font-size: 1.8rem; color: var(--badge-bg);" id="coverSubject">مادة الرياضيات</h2>
+        <h3 style="font-size: 1.4rem;">المعلم: <span id="coverTeacher">أ. مهدي حسن</span></h3>
+        <p style="font-size: 1.1rem; color: #64748b;">العام الدراسي 2026 - منصة بلس Educational Platform</p>
     </div>
 
     <!-- ورقة الامتحان الأساسية -->
@@ -316,6 +328,26 @@
                 </div>
             </div>
 
+            <!-- جدول تفريغ درجات المصحح -->
+            <table class="grading-summary-table" id="gradingSummaryTable">
+                <thead>
+                    <tr id="gradingHeaderRow">
+                        <th>السؤال</th>
+                        <th>س1</th>
+                        <th>س2</th>
+                        <th>المجموع</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="gradingBodyRow">
+                        <td>الدرجة</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
             <div class="student-bar">
                 <div>اسم الطالب: <span class="dots" style="min-width: 80px;"></span></div>
                 <div>الصف: <span class="dots" style="min-width: 40px;"></span></div>
@@ -326,11 +358,22 @@
             <!-- حاوية الأسئلة -->
             <div id="questionsContainer">
                 
-                <!-- مثال: سؤال مقالي مع صور متطورة -->
+                <!-- مثال سؤال مقالي مع نقاط فرعية -->
                 <div class="question-card" id="q-1" data-type="essay">
                     <div class="q-number-badge"><span>السؤال الأول</span></div>
                     <div class="q-bloom-tag">تطبيق</div>
-                    <div class="q-body editable-element">أجب عن السؤال المقالي الآتي مستعيناً بالشكل الموضح:</div>
+                    <div class="q-body editable-element">أجب عن المسألة التالية بالتفصيل:</div>
+                    
+                    <!-- الأسئلة الفرعية -->
+                    <div class="sub-questions-container" id="sub-container-q-1">
+                        <div class="sub-question-item">
+                            <span>( أ ) أوجد قيمة $x$ إذا كان $2x + 4 = 10$.</span>
+                        </div>
+                        <div class="sub-question-item">
+                            <span>( ب ) احسب المساحة الجانبية للشكل الموضح.</span>
+                        </div>
+                    </div>
+
                     <img class="q-attached-img" id="img-q-1" />
                     
                     <div class="answer-lines" id="lines-q-1">
@@ -338,20 +381,26 @@
                         <div class="line-item"></div>
                     </div>
 
-                    <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">خطوات الحل النموذجية هنا...</span></div>
+                    <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">( أ ) x = 3 | ( ب ) المساحة = 50 سم²</span></div>
 
                     <div class="q-footer-row">
                         <div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">5</span></div>
                     </div>
                     <div class="q-controls">
-                        <label style="font-size: 10px; font-weight: bold;">صورة من الجهاز:</label>
+                        <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('q-1')">➕ إضافة سؤال فرعي (أ، ب..)</button>
                         <input type="file" accept="image/*" onchange="uploadQuestionImage(this, 'q-1')">
-                        <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('q-1')">🌐 صورة من رابط URL</button>
+                        <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('q-1')">🌐 صورة من رابط</button>
                         <button class="btn btn-purple" style="font-size:10px;" onclick="addLines('q-1')">+ أسطر إجابة</button>
                         <button class="btn btn-danger" onclick="removeQuestion('q-1')">🗑️ حذف السؤال</button>
                     </div>
                 </div>
 
+            </div>
+
+            <!-- ورقة البابل شيت عند التفعيل -->
+            <div class="bubble-sheet-container" id="bubbleSheetBox">
+                <h3 style="text-align: center; color: var(--primary-color);">ورقة الإجابة السريعة (Bubble Sheet)</h3>
+                <div id="bubbleSheetContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;"></div>
             </div>
 
             <div class="exam-footer">
@@ -362,7 +411,7 @@
     </div>
 
     <script>
-        // قائمة 100 كلمة مرور صالحة
+        // 100 كلمة مرور صالحة
         const validPasswords = Array.from({length: 100}, (_, i) => {
             const list = [
                 'exam101', 'exam102', 'exam103', 'exam104', 'exam105', 'exam106', 'exam107', 'exam108', 'exam109', 'exam110',
@@ -385,9 +434,10 @@
         let isHomeworkMode = false;
         let isEcoMode = false;
         let isAnswerKeyVisible = false;
+        let isBubbleSheetVisible = false;
         let isDualColumn = false;
+        let isCoverVisible = false;
 
-        // التحقق من كلمة السر عند الضغط على الترس
         function requestAccessWithPassword() {
             if(!isAuthenticated) {
                 const pass = prompt('أدخل كلمة المرور لدخول لوحة التحكم الإدارية:');
@@ -404,11 +454,9 @@
         }
 
         function toggleControls() {
-            const wrapper = document.getElementById('controlsWrapper');
-            wrapper.classList.toggle('open');
+            document.getElementById('controlsWrapper').classList.toggle('open');
         }
 
-        /* توليد 50 قالب تصميمي */
         function initThemes() {
             const select = document.getElementById('themeSelector');
             for(let i = 1; i <= 50; i++) {
@@ -429,79 +477,33 @@
         function updateSubjectInfo(subject) {
             document.getElementById('displaySubjectBadge').innerText = subject;
             document.getElementById('displaySubjectText').innerText = subject;
+            document.getElementById('coverSubject').innerText = `مادة ${subject}`;
         }
 
-        /* رفع وتعيين الصور (من الجهاز أو رابط URL) */
-        function uploadQuestionImage(input, qId) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.getElementById(`img-${qId}`);
-                    if(img) {
-                        img.src = e.target.result;
-                        img.style.display = 'block';
-                    }
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
+        /* إضافة سؤال فرعي */
+        function addSubQuestion(qId) {
+            const container = document.getElementById(`sub-container-${qId}`) || createSubContainer(qId);
+            const count = container.children.length;
+            const letters = ['أ', 'ب', 'جـ', 'د', 'هـ', 'و', 'ز'];
+            const letter = letters[count] || `${count + 1}`;
+
+            const subItem = document.createElement('div');
+            subItem.className = 'sub-question-item';
+            subItem.innerHTML = `<span contenteditable="true">( ${letter} ) اكتب السؤال الفرعي هنا...</span> <button style="background:none; border:none; color:red; cursor:pointer;" onclick="this.parentElement.remove()">✕</button>`;
+            container.appendChild(subItem);
+            calculateAnalytics();
         }
 
-        function addImageFromUrl(qId) {
-            const url = prompt('أدخل رابط الصورة (Image URL):');
-            if(url) {
-                const img = document.getElementById(`img-${qId}`);
-                if(img) {
-                    img.src = url;
-                    img.style.display = 'block';
-                }
-            }
+        function createSubContainer(qId) {
+            const card = document.getElementById(qId);
+            const container = document.createElement('div');
+            container.className = 'sub-questions-container';
+            container.id = `sub-container-${qId}`;
+            card.querySelector('.q-body').after(container);
+            return container;
         }
 
-        /* إضافة سؤال إحصائي */
-        function addStatsQuestion() {
-            const qId = `q-${Date.now()}`;
-            const card = document.createElement('div');
-            card.className = 'question-card'; card.id = qId; card.setAttribute('data-type', 'stats');
-            card.innerHTML = `
-                <div class="q-number-badge"><span class="q-num"></span></div>
-                <div class="q-bloom-tag">تحليل إحصائي</div>
-                <div class="q-body editable-element" contenteditable="${isDirectEditMode || isEditMode}">الجدول التالي يوضح التوزيع التكراري لدرجات الطلاب، احسب الوسط الحسابي والانحراف المعياري:</div>
-                <table class="stats-table">
-                    <thead>
-                        <tr>
-                            <th>الفئات</th>
-                            <th contenteditable="true">10-</th>
-                            <th contenteditable="true">20-</th>
-                            <th contenteditable="true">30-</th>
-                            <th contenteditable="true">40-</th>
-                            <th contenteditable="true">المجموع</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>التكرار (ك)</td>
-                            <td contenteditable="true">3</td>
-                            <td contenteditable="true">5</td>
-                            <td contenteditable="true">8</td>
-                            <td contenteditable="true">4</td>
-                            <td contenteditable="true">20</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="answer-lines" id="lines-${qId}"><div class="line-item"></div><div class="line-item"></div></div>
-                <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">الوسط الحسابي = 28.5 | الانحراف = 4.2</span></div>
-                <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">6</span></div></div>
-                <div class="q-controls">
-                    <label style="font-size: 10px; font-weight: bold;">صورة من الجهاز:</label>
-                    <input type="file" accept="image/*" onchange="uploadQuestionImage(this, '${qId}')">
-                    <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('${qId}')">🌐 صورة من رابط URL</button>
-                    <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
-                </div>`;
-            document.getElementById('questionsContainer').appendChild(card);
-            reindexQuestions(); calculateAnalytics();
-        }
-
-        /* وظائف الأسئلة الأخرى وحذف الأسئلة */
+        /* إضافة أنواع الأسئلة الشاملة */
         function addQuestion() {
             const qId = `q-${Date.now()}`;
             const card = document.createElement('div');
@@ -515,13 +517,104 @@
                 <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">إجابة المعلم النموذجية...</span></div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">5</span></div></div>
                 <div class="q-controls">
+                    <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('${qId}')">➕ إضافة سؤال فرعي</button>
                     <input type="file" accept="image/*" onchange="uploadQuestionImage(this, '${qId}')">
-                    <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('${qId}')">🌐 صورة من رابط URL</button>
+                    <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('${qId}')">🌐 صورة من رابط</button>
                     <button class="btn btn-purple" style="font-size:10px;" onclick="addLines('${qId}')">+ أسطر إجابة</button>
                     <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
                 </div>`;
             document.getElementById('questionsContainer').appendChild(card);
             reindexQuestions(); calculateAnalytics();
+        }
+
+        function addMCQQuestion() {
+            const qId = `q-${Date.now()}`;
+            const card = document.createElement('div');
+            card.className = 'question-card'; card.id = qId; card.setAttribute('data-type', 'mcq');
+            card.innerHTML = `
+                <div class="q-number-badge"><span class="q-num"></span></div>
+                <div class="q-bloom-tag">تذكر</div>
+                <div class="q-body editable-element" contenteditable="${isDirectEditMode || isEditMode}">اختر الإجابة الصحيحة من بين الخيارات التالية:</div>
+                <div class="mcq-options">
+                    <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الأول</span></div>
+                    <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الثاني</span></div>
+                    <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الثالث</span></div>
+                    <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الرابع</span></div>
+                </div>
+                <div class="answer-key-box"><strong>الإجابة الصحيحة:</strong> <span class="editable-element">الخيار الأول</span></div>
+                <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
+                <div class="q-controls">
+                    <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('${qId}')">➕ إضافة سؤال فرعي</button>
+                    <input type="file" accept="image/*" onchange="uploadQuestionImage(this, '${qId}')">
+                    <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('${qId}')">🌐 صورة من رابط</button>
+                    <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
+                </div>`;
+            document.getElementById('questionsContainer').appendChild(card);
+            reindexQuestions(); calculateAnalytics();
+        }
+
+        function addMatchQuestion() {
+            const qId = `q-${Date.now()}`;
+            const card = document.createElement('div');
+            card.className = 'question-card'; card.id = qId; card.setAttribute('data-type', 'match');
+            card.innerHTML = `
+                <div class="q-number-badge"><span class="q-num"></span></div>
+                <div class="q-bloom-tag">ربط</div>
+                <div class="q-body editable-element">صل من العمود (أ) ما يناسبه من العمود (ب):</div>
+                <div class="match-container">
+                    <div class="match-column"><div class="match-column-title">العمود (أ)</div><div class="match-item" contenteditable="true">1. الفقرة الأولى</div><div class="match-item" contenteditable="true">2. الفقرة الثانية</div></div>
+                    <div class="match-column"><div class="match-column-title">العمود (ب)</div><div class="match-item" contenteditable="true">أ. التناظر الأول</div><div class="match-item" contenteditable="true">ب. التناظر الثاني</div></div>
+                </div>
+                <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">4</span></div></div>
+                <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
+            document.getElementById('questionsContainer').appendChild(card);
+            reindexQuestions(); calculateAnalytics();
+        }
+
+        function addTrueFalseQuestion() {
+            const qId = `q-${Date.now()}`;
+            const card = document.createElement('div');
+            card.className = 'question-card'; card.id = qId; card.setAttribute('data-type', 'tf');
+            card.innerHTML = `
+                <div class="q-number-badge"><span class="q-num"></span></div>
+                <div class="q-bloom-tag">تقويم</div>
+                <div class="q-body editable-element">ضع علامة (✔) أمام العبارة الصحيحة وعلامة (❌) أمام العبارة الخطأ:</div>
+                <div class="tf-container">
+                    <div class="tf-row"><span contenteditable="true">العبارة الأولى هنا...</span><span class="tf-box">(  )</span></div>
+                    <div class="tf-row"><span contenteditable="true">العبارة الثانية هنا...</span><span class="tf-box">(  )</span></div>
+                </div>
+                <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
+                <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
+            document.getElementById('questionsContainer').appendChild(card);
+            reindexQuestions(); calculateAnalytics();
+        }
+
+        function addStatsQuestion() {
+            const qId = `q-${Date.now()}`;
+            const card = document.createElement('div');
+            card.className = 'question-card'; card.id = qId; card.setAttribute('data-type', 'stats');
+            card.innerHTML = `
+                <div class="q-number-badge"><span class="q-num"></span></div>
+                <div class="q-bloom-tag">إحصاء</div>
+                <div class="q-body editable-element">احسب الجدول الإحصائي الآتي:</div>
+                <table class="stats-table">
+                    <thead><tr><th>الفئات</th><th contenteditable="true">10-</th><th contenteditable="true">20-</th><th contenteditable="true">30-</th></tr></thead>
+                    <tbody><tr><td>التكرار</td><td contenteditable="true">4</td><td contenteditable="true">6</td><td contenteditable="true">10</td></tr></tbody>
+                </table>
+                <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">6</span></div></div>
+                <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
+            document.getElementById('questionsContainer').appendChild(card);
+            reindexQuestions(); calculateAnalytics();
+        }
+
+        /* توليد نموذج A/B عشوائي */
+        function shuffleQuestionsAB() {
+            const container = document.getElementById('questionsContainer');
+            for (let i = container.children.length; i > 0; i--) {
+                container.appendChild(container.children[Math.floor(Math.random() * i)]);
+            }
+            reindexQuestions();
+            alert('تم توليد نموذج جديد بإعادة ترتيب الأسئلة بنجاح!');
         }
 
         function removeQuestion(id) {
@@ -532,19 +625,53 @@
         function reindexQuestions() {
             const cards = document.querySelectorAll('.question-card');
             const arabicNumbers = ["السؤال الأول", "السؤال الثاني", "السؤال الثالث", "السؤال الرابع", "السؤال الخامس", "السؤال السادس", "السؤال السابع"];
+            
+            const headerRow = document.getElementById('gradingHeaderRow');
+            const bodyRow = document.getElementById('gradingBodyRow');
+            headerRow.innerHTML = '<th>السؤال</th>';
+            bodyRow.innerHTML = '<td>الدرجة</td>';
+
             cards.forEach((card, idx) => {
                 const numSpan = card.querySelector('.q-number-badge span');
                 if (numSpan) numSpan.innerText = arabicNumbers[idx] || `السؤال ${idx + 1}`;
+                
+                headerRow.innerHTML += `<th>س${idx + 1}</th>`;
+                bodyRow.innerHTML += `<td></td>`;
             });
+
+            headerRow.innerHTML += '<th>المجموع</th>';
+            bodyRow.innerHTML += '<td></td>';
+            generateBubbleSheet(cards.length);
         }
 
-        function insertSymbol(symbol) {
-            const activeEl = document.activeElement;
-            if (activeEl && activeEl.isContentEditable) {
-                activeEl.innerText += ` $${symbol}$ `;
-                if(window.MathJax) MathJax.typesetPromise();
-            } else {
-                alert('انقر داخل السؤال المطلوب إدراج الرمز فيه أولاً.');
+        function generateBubbleSheet(count) {
+            const container = document.getElementById('bubbleSheetContent');
+            container.innerHTML = '';
+            for(let i = 1; i <= count; i++) {
+                container.innerHTML += `
+                    <div style="font-size:11px; font-weight:bold;">
+                        س${i}: ⚪ أ ⚪ ب ⚪ ج ⚪ د
+                    </div>
+                `;
+            }
+        }
+
+        function uploadQuestionImage(input, qId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById(`img-${qId}`);
+                    if(img) { img.src = e.target.result; img.style.display = 'block'; calculateAnalytics(); }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addImageFromUrl(qId) {
+            const url = prompt('أدخل رابط الصورة (Image URL):');
+            if(url) {
+                const img = document.getElementById(`img-${qId}`);
+                if(img) { img.src = url; img.style.display = 'block'; calculateAnalytics(); }
             }
         }
 
@@ -554,23 +681,38 @@
                 const line = document.createElement('div');
                 line.className = 'line-item';
                 container.appendChild(line);
+                calculateAnalytics();
             }
         }
 
         function calculateAnalytics() {
             let totalScore = 0;
-            let totalTime = 0;
             const cards = document.querySelectorAll('.question-card');
-            
             cards.forEach(card => {
                 const scoreInput = card.querySelector('.q-score-val');
                 if (scoreInput) totalScore += parseFloat(scoreInput.innerText.trim()) || 0;
-                totalTime += 3;
             });
 
             document.getElementById('totalScoreCalc').innerText = totalScore;
             document.getElementById('qCountCalc').innerText = cards.length;
-            document.getElementById('estTimeCalc').innerText = `${Math.ceil(totalTime)} دقيقة`;
+            document.getElementById('estTimeCalc').innerText = `${cards.length * 3} دقيقة`;
+
+            // حساب استهلاك مساحة الورقة
+            const pageHeight = document.getElementById('examPage').offsetHeight;
+            const percentage = Math.min(Math.round((pageHeight / 1120) * 100), 100);
+            const fill = document.getElementById('pageSpaceFill');
+            fill.style.width = `${percentage}%`;
+            fill.style.backgroundColor = percentage > 90 ? '#dc2626' : 'var(--primary-color)';
+        }
+
+        function insertSymbol(symbol) {
+            const activeEl = document.activeElement;
+            if (activeEl && activeEl.isContentEditable) {
+                activeEl.innerText += ` $${symbol}$ `;
+                if(window.MathJax) MathJax.typesetPromise();
+            } else {
+                alert('انقر داخل النص المراد إدراج الرمز فيه أولاً.');
+            }
         }
 
         function unlockEditMode() {
@@ -594,6 +736,11 @@
             document.body.classList.toggle('show-answer-key', isAnswerKeyVisible);
         }
 
+        function toggleBubbleSheet() {
+            isBubbleSheetVisible = !isBubbleSheetVisible;
+            document.body.classList.toggle('show-bubble-sheet', isBubbleSheetVisible);
+        }
+
         function toggleHomeworkMode() {
             isHomeworkMode = !isHomeworkMode;
             document.body.classList.toggle('homework-mode', isHomeworkMode);
@@ -604,6 +751,11 @@
             document.body.classList.toggle('dual-column-mode', isDualColumn);
         }
 
+        function toggleCoverPage() {
+            isCoverVisible = !isCoverVisible;
+            document.body.classList.toggle('show-cover', isCoverVisible);
+        }
+
         function toggleEcoMode() {
             isEcoMode = !isEcoMode;
             document.body.classList.toggle('eco-print', isEcoMode);
@@ -612,7 +764,17 @@
         function updateHeaderInfo() {
             const teacher = document.getElementById('teacherNameInput').value;
             document.getElementById('displayTeacherName').innerText = teacher;
+            document.getElementById('coverTeacher').innerText = teacher;
             document.getElementById('watermarkText').innerText = teacher;
+        }
+
+        function saveExamJSON() {
+            const htmlContent = document.getElementById('questionsContainer').innerHTML;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'امتحانك_بلس_محفوظ.html';
+            a.click();
         }
 
         function exportToImages() {
@@ -626,6 +788,7 @@
 
         window.onload = function() {
             initThemes();
+            reindexQuestions();
             calculateAnalytics();
         };
     </script>
