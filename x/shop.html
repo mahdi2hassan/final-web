@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة المبيعات V4</title>
+    <title>نظام إدارة المبيعات</title>
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -31,10 +31,7 @@
             text-align: center;
         }
         
-        .header h3 {
-            margin: 0;
-            font-weight: bold;
-        }
+        .header h3 { margin: 0; font-weight: bold; }
         
         .nav-tabs {
             border-bottom: none;
@@ -133,6 +130,7 @@
             margin-bottom: 15px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             transition: 0.3s;
+            border-right: 4px solid #667eea;
         }
         
         .sale-record:hover {
@@ -157,15 +155,8 @@
             display: inline-block;
         }
         
-        .bg-activated {
-            background-color: #d1e7dd;
-            color: #0f5132;
-        }
-        
-        .bg-not-activated {
-            background-color: #f8d7da;
-            color: #842029;
-        }
+        .bg-activated { background-color: #d1e7dd; color: #0f5132; }
+        .bg-not-activated { background-color: #f8d7da; color: #842029; }
         
         .filter-section {
             background: #f8f9fa;
@@ -174,50 +165,48 @@
             margin-bottom: 20px;
         }
         
+        /* Warranty Alert Modal Style */
+        .warranty-alert-box {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffe69c 100%);
+            border-right: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+            display: none;
+            animation: slideDown 0.4s ease;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.2);
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .warranty-alert-box h6 {
+            color: #856404;
+            font-weight: bold;
+        }
+        
+        .company-badge {
+            display: inline-block;
+            background: #e7f3ff;
+            color: #667eea;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
         /* Mobile Optimizations */
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-            
-            .main-container {
-                margin-top: 0;
-                border-radius: 15px;
-            }
-            
-            .header {
-                padding: 15px;
-            }
-            
-            .header h3 {
-                font-size: 1.3em;
-            }
-            
-            .nav-tabs .nav-link {
-                padding: 12px 15px;
-                font-size: 0.9em;
-            }
-            
-            .card {
-                margin-bottom: 15px;
-            }
-            
-            .btn-group {
-                flex-direction: column;
-            }
-            
-            .btn-group .btn {
-                border-radius: 10px !important;
-                margin-bottom: 5px;
-            }
-            
-            .sale-record {
-                padding: 15px;
-            }
-            
-            .sale-record h5 {
-                font-size: 1.1em;
-            }
+            body { padding: 10px; }
+            .main-container { margin-top: 0; border-radius: 15px; }
+            .header { padding: 15px; }
+            .header h3 { font-size: 1.3em; }
+            .nav-tabs .nav-link { padding: 12px 15px; font-size: 0.9em; }
+            .btn-group { flex-direction: column; }
+            .btn-group .btn { border-radius: 10px !important; margin-bottom: 5px; }
+            .sale-record { padding: 15px; }
         }
         
         /* Print Styles */
@@ -277,23 +266,17 @@
                         <form id="saleForm">
                             <div class="mb-3">
                                 <label class="form-label">اسم الجهاز</label>
-                                <input type="text" class="form-control" id="saleDeviceName" placeholder="مثال: Samsung A54" required>
+                                <input type="text" class="form-control" id="saleDeviceName" placeholder="مثال: Galaxy A54" required>
                             </div>
                             
                             <div class="mb-3">
-                                <label class="form-label">الشركة</label>
-                                <input type="text" class="form-control" id="saleCompany" placeholder="مثال: Samsung" required>
-                            </div>
-                            
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">سعر الشراء</label>
-                                    <input type="number" class="form-control" id="saleCost" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">سعر البيع</label>
-                                    <input type="number" class="form-control" id="salePrice" required>
-                                </div>
+                                <label class="form-label">الشركة المصنعة</label>
+                                <select class="form-select" id="saleCompany" required onchange="onCompanyChange()">
+                                    <option value="">-- اختر الشركة --</option>
+                                </select>
+                                <button type="button" class="btn btn-sm btn-link mt-1" onclick="openAddCompanyModal()">
+                                    <i class="fas fa-plus"></i> إضافة شركة جديدة
+                                </button>
                             </div>
                             
                             <div class="mb-3">
@@ -314,19 +297,29 @@
                             <div class="mb-3">
                                 <label class="form-label">حالة الجهاز</label>
                                 <div class="btn-group w-100" role="group">
-                                    <input type="radio" class="btn-check" name="activationStatus" id="statusNotActive" checked>
+                                    <input type="radio" class="btn-check" name="activationStatus" id="statusNotActive" checked onchange="toggleWarrantyAlert()">
                                     <label class="btn btn-outline-danger" for="statusNotActive">
                                         <i class="fas fa-times-circle"></i> غير مفعل
                                     </label>
                                     
-                                    <input type="radio" class="btn-check" name="activationStatus" id="statusActive">
+                                    <input type="radio" class="btn-check" name="activationStatus" id="statusActive" onchange="toggleWarrantyAlert()">
                                     <label class="btn btn-outline-success" for="statusActive">
                                         <i class="fas fa-check-circle"></i> مفعل
                                     </label>
                                 </div>
                             </div>
                             
-                            <button type="button" class="btn btn-success w-100" onclick="processSale()">
+                            <!-- Warranty Alert Box -->
+                            <div id="warrantyAlertBox" class="warranty-alert-box">
+                                <h6><i class="fas fa-exclamation-triangle"></i> تنبيه: الجهاز غير مفعل</h6>
+                                <p class="mb-2 small">يجب التحقق من تاريخ الضمان قبل البيع. اضغط الزر أدناه للانتقال لصفحة التحقق الخاصة بالشركة:</p>
+                                <a href="#" id="warrantyCheckLink" target="_blank" class="btn btn-warning btn-sm w-100 mb-2">
+                                    <i class="fas fa-shield-alt"></i> <span id="warrantyLinkText">التحقق من الضمان</span>
+                                </a>
+                                <small class="text-muted d-block">💡 سيتم نسخ رقم السيريال تلقائياً لتسهيل اللصق في الموقع.</small>
+                            </div>
+                            
+                            <button type="button" class="btn btn-success w-100 mt-3" onclick="processSale()">
                                 <i class="fas fa-check-circle"></i> إتمام البيع
                             </button>
                         </form>
@@ -384,6 +377,33 @@
     </div>
 </div>
 
+<!-- Add Company Modal -->
+<div class="modal fade" id="addCompanyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content" style="border-radius: 15px; border: none;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px 15px 0 0;">
+                <h5 class="modal-title"><i class="fas fa-building"></i> إضافة شركة جديدة</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label">اسم الشركة</label>
+                    <input type="text" class="form-control" id="newCompanyName" placeholder="مثال: Nothing">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">رابط التحقق من الضمان</label>
+                    <input type="url" class="form-control" id="newCompanyUrl" placeholder="https://...">
+                    <small class="text-muted">اتركه فارغاً إذا لم تعرف الرابط</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-primary" onclick="addNewCompany()">إضافة</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Print Receipt -->
 <div id="printArea">
     <div style="border: 2px dashed #000; padding: 20px; max-width: 300px; margin: 0 auto; font-family: 'Courier New', monospace;">
@@ -395,7 +415,6 @@
         <p>السيريال: <span id="printSerial"></span></p>
         <p>الحالة: <span id="printStatus"></span></p>
         <hr style="border-top: 1px dashed #000;">
-        <h3 style="text-align:center; margin:10px 0;">السعر: <span id="printPrice"></span> ج.م</h3>
         <p style="font-size:12px; text-align:center;">شكراً لتعاملكم معنا</p>
     </div>
 </div>
@@ -403,16 +422,110 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    // --- Data ---
     let salesHistory = JSON.parse(localStorage.getItem('ms_sales')) || [];
+    
+    // Default Companies with Warranty URLs
+    let companies = JSON.parse(localStorage.getItem('ms_companies')) || [
+        { name: 'Samsung', url: 'https://www.samsung.com/eg/support/warranty-check/' },
+        { name: 'Xiaomi', url: 'https://www.mi.com/global/service/warranty/' },
+        { name: 'Redmi', url: 'https://www.mi.com/global/service/warranty/' },
+        { name: 'POCO', url: 'https://www.mi.com/global/service/warranty/' },
+        { name: 'Oppo', url: 'https://support.oppo.com/en/warranty-check/' },
+        { name: 'Realme', url: 'https://www.realme.com/global/support/warranty-query' },
+        { name: 'Honor', url: 'https://www.hihonor.com/global/support/warranty/' },
+        { name: 'Huawei', url: 'https://consumer.huawei.com/en/support/warranty-query/' },
+        { name: 'Vivo', url: 'https://www.vivo.com/global/support/warranty' },
+        { name: 'Apple (iPhone)', url: 'https://checkcoverage.apple.com/' },
+        { name: 'Infinix', url: 'https://www.infinixmobility.com/support' },
+        { name: 'Tecno', url: 'https://www.tecno-mobile.com/support' },
+        { name: 'Nokia', url: 'https://www.nokia.com/phones/support' },
+        { name: 'Motorola', url: 'https://motorola-global-portal.custhelp.com/app/warranty' },
+        { name: 'Nothing', url: 'https://nothing.tech/pages/warranty' },
+        { name: 'OnePlus', url: 'https://www.oneplus.com/support/warranty' }
+    ];
 
     function saveData() {
         localStorage.setItem('ms_sales', JSON.stringify(salesHistory));
+        localStorage.setItem('ms_companies', JSON.stringify(companies));
     }
 
-    // Voice Input
+    // --- Populate Companies Select ---
+    function populateCompaniesSelect() {
+        const select = document.getElementById('saleCompany');
+        select.innerHTML = '<option value="">-- اختر الشركة --</option>';
+        companies.forEach(c => {
+            select.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+        });
+    }
+
+    function onCompanyChange() {
+        toggleWarrantyAlert();
+    }
+
+    // --- Warranty Alert ---
+    function toggleWarrantyAlert() {
+        const isNotActive = document.getElementById('statusNotActive').checked;
+        const company = document.getElementById('saleCompany').value;
+        const box = document.getElementById('warrantyAlertBox');
+        
+        if (isNotActive && company) {
+            const companyData = companies.find(c => c.name === company);
+            const link = document.getElementById('warrantyCheckLink');
+            const linkText = document.getElementById('warrantyLinkText');
+            
+            if (companyData && companyData.url) {
+                link.href = companyData.url;
+                linkText.innerText = `التحقق من ضمان ${company}`;
+                link.style.display = 'block';
+            } else {
+                link.style.display = 'none';
+            }
+            
+            box.style.display = 'block';
+            
+            // Auto copy serial when clicked
+            link.onclick = function() {
+                const serial = document.getElementById('saleSerial').value;
+                if (serial) {
+                    navigator.clipboard.writeText(serial).catch(() => {});
+                }
+            };
+        } else {
+            box.style.display = 'none';
+        }
+    }
+
+    // --- Add New Company ---
+    function openAddCompanyModal() {
+        document.getElementById('newCompanyName').value = '';
+        document.getElementById('newCompanyUrl').value = '';
+        new bootstrap.Modal(document.getElementById('addCompanyModal')).show();
+    }
+
+    function addNewCompany() {
+        const name = document.getElementById('newCompanyName').value.trim();
+        const url = document.getElementById('newCompanyUrl').value.trim();
+        
+        if (!name) return alert('يرجى إدخال اسم الشركة');
+        
+        if (companies.find(c => c.name.toLowerCase() === name.toLowerCase())) {
+            return alert('هذه الشركة موجودة بالفعل');
+        }
+        
+        companies.push({ name, url });
+        saveData();
+        populateCompaniesSelect();
+        document.getElementById('saleCompany').value = name;
+        
+        bootstrap.Modal.getInstance(document.getElementById('addCompanyModal')).hide();
+        toggleWarrantyAlert();
+    }
+
+    // --- Voice Input ---
     function startVoiceInput() {
         if (!('webkitSpeechRecognition' in window)) {
-            alert("متصفحك لا يدعم الإدخال الصوتي");
+            alert("متصفحك لا يدعم الإدخال الصوتي. استخدم Chrome.");
             return;
         }
         
@@ -425,12 +538,13 @@
         recognition.onresult = function(event) {
             document.getElementById('saleSerial').value = event.results[0][0].transcript.replace(/\s/g, '');
             btn.classList.remove('listening');
+            toggleWarrantyAlert();
         };
         
         recognition.onerror = recognition.onend = () => btn.classList.remove('listening');
     }
 
-    // Image Upload
+    // --- Image Upload ---
     function handleImageUpload(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -443,17 +557,15 @@
         }
     }
 
-    // Process Sale
+    // --- Process Sale ---
     function processSale() {
         const deviceName = document.getElementById('saleDeviceName').value;
         const company = document.getElementById('saleCompany').value;
-        const cost = parseFloat(document.getElementById('saleCost').value);
-        const price = parseFloat(document.getElementById('salePrice').value);
         const serial = document.getElementById('saleSerial').value;
         const isActivated = document.getElementById('statusActive').checked;
         const imgSrc = document.getElementById('serialPreview').src;
 
-        if (!deviceName || !company || !serial || !cost || !price) {
+        if (!deviceName || !company || !serial) {
             return alert('يرجى ملء جميع الحقول');
         }
 
@@ -463,8 +575,6 @@
             company: company,
             serial: serial,
             isActivated: isActivated,
-            price: price,
-            cost: cost,
             image: imgSrc.includes('base64') ? imgSrc : null,
             date: new Date().toLocaleDateString('ar-EG') + ' ' + new Date().toLocaleTimeString('ar-EG')
         };
@@ -478,23 +588,23 @@
         document.getElementById('saleForm').reset();
         document.getElementById('serialPreview').style.display = 'none';
         document.getElementById('statusNotActive').checked = true;
+        document.getElementById('warrantyAlertBox').style.display = 'none';
         
-        alert('تم تسجيل البيع بنجاح!');
+        alert('✅ تم تسجيل البيع بنجاح!');
     }
 
-    // Print Receipt
+    // --- Print Receipt ---
     function printReceipt(sale) {
         document.getElementById('printDate').innerText = sale.date;
         document.getElementById('printDevice').innerText = sale.deviceName;
         document.getElementById('printCompany').innerText = sale.company;
         document.getElementById('printSerial').innerText = sale.serial;
         document.getElementById('printStatus').innerText = sale.isActivated ? "مفعل" : "غير مفعل";
-        document.getElementById('printPrice').innerText = sale.price;
         
         window.print();
     }
 
-    // Render History with Filters
+    // --- Render History ---
     function renderHistory() {
         const container = document.getElementById('historyList');
         const filterCompany = document.getElementById('filterCompany').value.toLowerCase();
@@ -515,7 +625,6 @@
         filtered.forEach((s, index) => {
             const statusClass = s.isActivated ? 'bg-activated' : 'bg-not-activated';
             const statusText = s.isActivated ? 'مفعل' : 'غير مفعل';
-            const profit = s.price - s.cost;
             
             let imageHtml = '';
             if (s.image) {
@@ -525,33 +634,23 @@
             container.innerHTML += `
                 <div class="sale-record">
                     ${imageHtml}
-                    <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap">
                         <div>
                             <h5 class="mb-1">${s.deviceName}</h5>
-                            <small class="text-muted">${s.company}</small>
+                            <span class="company-badge"><i class="fas fa-building"></i> ${s.company}</span>
                         </div>
-                        <span class="status-badge ${statusClass}" onclick="toggleSaleStatus(${index})">
-                            ${statusText}
+                        <span class="status-badge ${statusClass} mt-2" onclick="toggleSaleStatus(${index})">
+                            ${statusText} <i class="fas fa-pen ms-1 small"></i>
                         </span>
                     </div>
-                    <div class="row text-center mt-3">
-                        <div class="col-4">
-                            <small class="text-muted d-block">السيريال</small>
-                            <strong class="font-monospace">${s.serial}</strong>
-                        </div>
-                        <div class="col-4">
-                            <small class="text-muted d-block">السعر</small>
-                            <strong class="text-success">${s.price} ج.م</strong>
-                        </div>
-                        <div class="col-4">
-                            <small class="text-muted d-block">الربح</small>
-                            <strong class="text-primary">+${profit} ج.م</strong>
-                        </div>
+                    <div class="mt-3 p-2" style="background: #f8f9fa; border-radius: 10px;">
+                        <small class="text-muted d-block mb-1">الرقم المسلسل:</small>
+                        <strong class="font-monospace" style="word-break: break-all;">${s.serial}</strong>
                     </div>
                     <div class="text-center mt-3">
-                        <small class="text-muted">${s.date}</small>
-                        <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteSale(${index})">
-                            <i class="fas fa-trash"></i>
+                        <small class="text-muted d-block mb-2"><i class="far fa-clock"></i> ${s.date}</small>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteSale(${index})">
+                            <i class="fas fa-trash"></i> حذف
                         </button>
                     </div>
                 </div>
@@ -575,9 +674,10 @@
         }
     }
 
-    // Backup & Restore
+    // --- Backup & Restore ---
     function exportData() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(salesHistory));
+        const data = { salesHistory, companies };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data));
         const downloadAnchorNode = document.createElement('a');
         downloadAnchorNode.setAttribute("href", dataStr);
         downloadAnchorNode.setAttribute("download", "sales_backup_" + new Date().toISOString().slice(0,10) + ".json");
@@ -594,11 +694,13 @@
         reader.onload = function(event) {
             try {
                 const data = JSON.parse(event.target.result);
-                if (Array.isArray(data)) {
-                    salesHistory = data;
+                if (data.salesHistory && Array.isArray(data.salesHistory)) {
+                    salesHistory = data.salesHistory;
+                    if (data.companies) companies = data.companies;
                     saveData();
-                    alert('تم استعادة البيانات بنجاح!');
+                    populateCompaniesSelect();
                     renderHistory();
+                    alert('✅ تم استعادة البيانات بنجاح!');
                 } else {
                     alert('ملف غير صالح');
                 }
@@ -609,8 +711,9 @@
         reader.readAsText(file);
     }
 
-    // Init
+    // --- Init ---
     window.onload = function() {
+        populateCompaniesSelect();
         renderHistory();
     };
 </script>
