@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0b0f19">
+  
+  <title>سبورة الصباح | Sapah Board</title>
+
+  <!-- Preload Fonts & Resources -->
+  <link rel="preload" href="./assets/amiri-quran.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=1782914860824">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+
+  <!-- PDF.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    (function() {
+      // 1. Block known scrapers/downloaders
+      if (/HTTrack|copier|extractor|crawler|spider|wget|curl/i.test(navigator.userAgent)) {
+        window.location.replace('about:blank');
+        document.documentElement.innerHTML = '';
+      }
+
+      // 2. Prevent shortcut keys for devtools on production
+      document.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false);
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); return false; }
+        if (e.ctrlKey && e.shiftKey && (['I','i','J','j','C','c'].includes(e.key) || [73, 74, 67].includes(e.keyCode))) {
+          e.preventDefault();
+          return false;
+        }
+        if (e.ctrlKey && (['U','u','S','s'].includes(e.key) || [85, 83].includes(e.keyCode))) { 
+          e.preventDefault(); 
+          return false; 
+        }
+      }, false);
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Background Layer for whiteboard grids/colors -->
+  <div id="canvas-container">
+    <div id="board-bg" class="board-background"></div>
+    <canvas id="whiteboard-canvas"></canvas>
+  </div>
+
+  <!-- Top Info Badge -->
+  <div class="glass-panel info-overlay" style="display: flex; align-items: center; gap: 8px;">
+    <button id="btn-reset-view" class="info-action-btn" title="الرجوع للمركز (إعادة الكاميرا والمقياس)" style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+      </svg>
+    </button>
+
+    <button id="tool-clear-drawings" class="info-action-btn warning-hover" title="مسح الرسومات والخطوط فقط (الحفاظ على خلفية PDF)" style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 20h9"/>
+        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+      </svg>
+    </button>
+
+    <button id="tool-clear" class="info-action-btn danger-hover" title="إعادة تهيئة الكانفس بالكامل ومسح كل شيء" style="width: 36px; height: 36px; padding: 0; display: flex; align-items: center; justify-content: center;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <path d="M3 3v5h5"/>
+      </svg>
+    </button>
+
+    <div style="width: 1px; height: 16px; background: rgba(255, 255, 255, 0.15); margin: 0 4px;"></div>
+
+    <!-- Audio & Interactive Buttons -->
+    <button id="btn-clap" class="info-action-btn" title="تصفيق الجمهور" style="font-size: 16px; padding: 4px 10px; background: rgba(251,191,36,0.15); border: 1px solid rgba(251,191,36,0.4);">👏</button>
+    <button id="btn-celebrate" class="info-action-btn" title="احتفال" style="font-size: 16px; padding: 4px 10px; background: rgba(168,85,247,0.15); border: 1px solid rgba(168,85,247,0.4);">🎉</button>
+    <button id="btn-balloon" class="info-action-btn" title="احتفال البالونات التفاعلي" style="font-size: 16px; padding: 4px 10px; background: rgba(244,63,94,0.15); border: 1px solid rgba(244,63,94,0.4);">🎈</button>
+    
+    <!-- Teacher Stick Button -->
+    <button id="btn-stick" class="info-action-btn" title="عصا المعلم للتنبيه" style="padding: 4px 10px; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); display: inline-flex; align-items: center; justify-content: center;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444; transform: rotate(-20deg);">
+        <line x1="12" y1="3" x2="12" y2="21"></line>
+        <line x1="10" y1="21" x2="14" y2="21"></line>
+        <circle cx="12" cy="3" r="1.5" fill="currentColor"></circle>
+      </svg>
+    </button>
+
+    <!-- Judge Gavel Button -->
+    <button id="btn-gavel" class="info-action-btn" title="شاكوش القاضي للتنبيه" style="padding: 4px 10px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); display: inline-flex; align-items: center; justify-content: center; margin-right: 4px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
+        <path d="m14 13-5 5m6-12-3-3a1 1 0 0 0-1.4 0L2.3 12a1 1 0 0 0 0 1.4l3 3a1 1 0 0 0 1.4 0l8.3-8.3M16 5l3 3M19 8l2.5-2.5a1 1 0 0 0 0-1.4l-1.6-1.6a1 1 0 0 0-1.4 0L16 5"/>
+        <path d="m6 16-4 4"/>
+      </svg>
+    </button>
+
+    <!-- Celebration GIF Button -->
+    <button id="btn-show-gif" class="info-action-btn" title="عرض تأثير احتفالي بحجم الشاشة" style="font-size: 16px; padding: 4px 10px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4);">🎊</button>
+    
+    <!-- Zen Mode Button -->
+    <button id="btn-zen-mode" class="info-action-btn" title="وضع العرض / إخفاء القوائم والشارات (Z)" style="font-size: 16px; padding: 4px 10px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.4); display: inline-flex; align-items: center; justify-content: center; margin-right: 4px;">👁️</button>
+
+    <!-- Request Offline Button -->
+    <button id="btn-request-offline" style="background: linear-gradient(135deg, #10b981, #059669); border: 1.5px solid #34d399; color: white; border-radius: 12px; padding: 6px 12px; font-weight: bold; font-size: 13px; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 10px rgba(16, 185, 129, 0.4); white-space: nowrap; height: 36px; display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0 4px;" title="احصل على الميزات الكاملة">
+      <span>✨ احصل على الميزات الكاملة</span>
+    </button>
+
+    <!-- About Button -->
+    <button id="btn-heart-about" title="من أنا" style="background: none; border: none; cursor: pointer; font-size: 22px; line-height: 1; padding: 0 4px; display: flex; align-items: center; animation: heartbeat 1.3s ease-in-out infinite;">❤️</button>
+  </div>
+
+  <!-- Dark / Light Mode Toggle -->
+  <button id="theme-toggle" title="تبديل الوضع ليلي / نهاري">
+    <span class="theme-icon" id="theme-icon">🌙</span>
+    <span class="theme-label" id="theme-label">ليلي</span>
+    <span class="theme-slider"></span>
+  </button>
+
+  <!-- Left Sidebar Panel: Settings -->
+  <div class="glass-panel side-panel-left">
+    <button class="panel-close-btn" id="close-left-panel" title="إغلاق الإعدادات">✕</button>
+    <div style="text-align: center; margin-bottom: 5px;">
+      <h2 style="font-size: 20px; font-weight: 700; color: var(--accent-primary);">سبورة الصباح</h2>
+      <span style="font-size: 11px; color: var(--text-secondary);">لوحة عمل لا نهائية ذكية</span>
+    </div>
+
+    <!-- Backgrounds Section -->
+    <div>
+      <h3>لون السبورة</h3>
+      <div class="bg-color-palette" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+        <button class="board-bg-btn color-swatch active" style="background-color: #ffffff; border: 1px solid #ccc; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="white" title="أبيض"></button>
+        <button class="board-bg-btn color-swatch" style="background-color: #000000; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="black" title="أسود"></button>
+        <button class="board-bg-btn color-swatch" style="background-color: #ef4444; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="#ef4444" title="أحمر"></button>
+        <button class="board-bg-btn color-swatch" style="background-color: #3b82f6; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="#3b82f6" title="أزرق"></button>
+        <button class="board-bg-btn color-swatch" style="background-color: #10b981; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="#10b981" title="أخضر"></button>
+        <button class="board-bg-btn color-swatch" style="background-color: #f59e0b; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="#f59e0b" title="برتقالي"></button>
+        <button class="board-bg-btn color-swatch" style="background-color: #8b5cf6; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="#8b5cf6" title="بنفسجي"></button>
+        <button class="board-bg-btn color-swatch" style="background-color: #ec4899; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="#ec4899" title="وردي"></button>
+        <button class="board-bg-btn color-swatch" style="background-color: #14532d; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="green-board" title="سبورة خضراء"></button>
+        <button class="board-bg-btn color-swatch" style="background-color: #0f172a; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="navy-board" title="سبورة زرقاء"></button>
+        <button class="board-bg-btn color-swatch" style="background-color: #fdf6e3; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="cream" title="كريمي"></button>
+        <button class="board-bg-btn color-swatch" style="background-color: transparent; border: 1px dashed #ccc; width: 24px; height: 24px; border-radius: 50%; padding:0;" data-bg="transparent" title="شفاف"></button>
+        <label title="لون مخصص" style="cursor: pointer; width: 24px; height: 24px; border-radius: 50%; background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); display: inline-block;" class="color-swatch" id="custom-bg-label">
+          <input type="color" id="custom-bg-color" value="#ffffff" style="opacity: 0; width: 0; height: 0; padding: 0; margin: 0;">
+        </label>
+      </div>
+    </div>
+
+    <!-- Layout Lines Section -->
+    <div>
+      <h3>تخطيط الأسطر والشبكة</h3>
+      <div class="bg-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+        <button class="line-btn active" data-line="none">سادة</button>
+        <button class="line-btn" data-line="grid">شبكة</button>
+        <button class="line-btn" data-line="ruled">مسطر</button>
+        <button class="line-btn" data-line="ruled-wide" style="font-size: 10px;">9 أسطر</button>
+        <button class="line-btn" data-line="ruled-double" style="font-size: 10px;">سطرين معاً</button>
+        <button class="line-btn" data-line="ruled-narrow" style="font-size: 10px;">مسطر ضيق</button>
+        <button class="line-btn" data-line="dotted" style="font-size: 10px;">منقط (نقاط)</button>
+        <button class="line-btn" data-line="isometric" style="font-size: 10px;">أيزومتري (مثلثات)</button>
+        <button class="line-btn" data-line="math-squares" style="font-size: 10px;">بياني 📈</button>
+        <button class="line-btn" data-line="math-pink" style="font-size: 10px;">بياني وردي 📈</button>
+      </div>
+    </div>
+
+    <!-- Project Save/Load Section -->
+    <div>
+      <h3>المشروع والتصدير</h3>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+        <button class="action-btn" id="export-json-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          حفظ السبورة
+        </button>
+
+        <button class="action-btn" id="import-json-trigger-btn" onclick="document.getElementById('import-json-file').click()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M14 9l-2-2-2 2M12 7v8"/></svg>
+          استيراد سبورة
+        </button>
+        <input type="file" id="import-json-file" accept=".json" style="opacity: 0; width: 1px; height: 1px; position: absolute; z-index: -1;">
+
+        <button class="action-btn" id="export-png-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          تصدير كصورة PNG
+        </button>
+
+        <button class="action-btn" id="export-jpg-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          تصدير كصورة JPG
+        </button>
+        
+        <button class="action-btn" id="shortcut-help-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          مساعد لوحة المفاتيح
+        </button>
+      </div>
+    </div>
+    <div style="margin-top: 20px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+      جميع حقوق الملكية محفوظة ومسجلة للمطور
+    </div>
+  </div>
+
+  <!-- Right Sidebar Panel: Tools & Properties -->
+  <div class="glass-panel side-panel-right">
+    <button class="panel-close-btn" id="close-right-panel" title="إغلاق الأدوات">✕</button>
+    <div>
+      <h3>خصائص الأداة</h3>
+      <div class="properties-grid" id="properties-panel">
+        <div>
+          <label>اللون النشط</label>
+          <div class="color-palette" id="color-palette">
+            <div class="color-swatch active" style="background-color: #00a2ff;" data-color="#00a2ff" title="أزرق"></div>
+            <div class="color-swatch" style="background-color: #ff4d4d;" data-color="#ff4d4d" title="أحمر"></div>
+            <div class="color-swatch" style="background-color: #10b981;" data-color="#10b981" title="أخضر"></div>
+            <div class="color-swatch" style="background-color: #f59e0b;" data-color="#f59e0b" title="أصفر"></div>
+            <div class="color-swatch" style="background-color: #a855f7;" data-color="#a855f7" title="بنفسجي"></div>
+            <div class="color-swatch" style="background-color: #ffffff;" data-color="#ffffff" title="أبيض"></div>
+            <div class="color-swatch" style="background-color: #121212;" data-color="#121212" title="أسود"></div>
+            <label title="لون مخصص" style="cursor: pointer; width: 24px; height: 24px; border-radius: 50%; background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); display: inline-block;" class="color-swatch" id="custom-draw-color-label">
+              <input type="color" id="custom-draw-color" value="#00a2ff" style="opacity: 0; width: 0; height: 0; padding: 0; margin: 0;">
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label>حجم الفرشاة / الخط: <span id="stroke-width-val" style="color: var(--accent-primary); font-weight: bold;">4px</span></label>
+          <input type="range" id="stroke-width-slider" min="1" max="40" value="4" style="width: 100%;">
+        </div>
+
+        <div>
+          <label>درجة الشفافية: <span id="opacity-val" style="color: var(--accent-primary); font-weight: bold;">100%</span></label>
+          <input type="range" id="opacity-slider" min="10" max="100" value="100" style="width: 100%;">
+        </div>
+      </div>
+    </div>
+
+    <!-- Media Import -->
+    <div>
+      <h3>استيراد وسائط وتطبيقات</h3>
+      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+        <button class="action-btn" style="width: 100%;" onclick="document.getElementById('image-upload-input').click()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          إدراج صورة من الجهاز
+        </button>
+        <input type="file" id="image-upload-input" accept="image/*" style="opacity: 0; width: 1px; height: 1px; position: absolute; z-index: -1;">
+
+        <button class="action-btn" style="width: 100%;" onclick="document.getElementById('pdf-upload-input').click()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          شرح ملف عرض PDF
+        </button>
+        <input type="file" id="pdf-upload-input" accept=".pdf" style="opacity: 0; width: 1px; height: 1px; position: absolute; z-index: -1;">
+
+        <button class="action-btn" style="width: 100%;" id="btn-insert-youtube">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+          إدراج فيديو يوتيوب 🎥
+        </button>
+
+        <button class="action-btn" style="width: 100%; background: linear-gradient(135deg, #0f766e, #0d9488); border: 1px solid #14b8a6; color: white;" id="btn-insert-quran">
+          <span style="font-size: 14px; margin-left: 6px;">📖</span>
+          استخراج آيات المصحف الشريف
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Toggle Buttons -->
+  <button class="panel-toggle-btn" id="toggle-left-panel" title="الإعدادات">⚙️</button>
+  <button class="panel-toggle-btn" id="toggle-right-panel" title="الأدوات">🎨</button>
+
+  <!-- Bottom Floating Toolbar -->
+  <div class="glass-panel floating-toolbar">
+    <!-- SELECT -->
+    <button class="tool-btn active" id="tool-select" data-tooltip="التحديد والتنقل (V)" data-mode="select">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M5 3l14 9-7 2-3 7L5 3z" fill="#60a5fa" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    </button>
+
+    <!-- HAND -->
+    <button class="tool-btn" id="tool-hand" data-tooltip="اليد للتحريك (H)" data-mode="hand">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V5a2 2 0 0 0-4 0v5M10 10.5V6a2 2 0 0 0-4 0v8.5M6 14v-1.5a2 2 0 0 0-4 0V18a6 6 0 0 0 6 6h4a10 10 0 0 0 10-10v-3a2 2 0 0 0-4 0v2"/></svg>
+    </button>
+
+    <!-- PEN -->
+    <div class="pen-dropdown-wrapper" style="position: relative; display: flex; align-items: center; justify-content: center;">
+      <button class="tool-btn" id="tool-pen-btn" data-tooltip="قلم الرسم الحر (P)" data-mode="pen">
+        <span id="active-pen-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" fill="#3b82f6"/><path d="M20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="#1d4ed8"/></svg>
+        </span>
+        <span style="font-size: 7px; color:#3b82f6; margin-top: -4px;">▼</span>
+      </button>
+      <div class="pen-dropdown-menu" id="pen-dropdown-menu" style="min-width: 140px;">
+        <button class="dropdown-item active" data-nib="round"><span>✏️ سن عادي</span></button>
+        <button class="dropdown-item" data-nib="calligraphy"><span>✒️ خط عربي</span></button>
+        <button class="dropdown-item" data-nib="brush"><span>🖌️ فرشاة</span></button>
+        <button class="dropdown-item" data-nib="chalk"><span>📝 طباشير</span></button>
+        <button class="dropdown-item" data-nib="highlighter"><span>🖍️ ماركر</span></button>
+        <button class="dropdown-item" data-nib="spray"><span>💨 بخاخ</span></button>
+      </div>
+    </div>
+
+    <!-- HIGHLIGHTER -->
+    <button class="tool-btn" id="tool-highlighter" data-tooltip="قلم التمييز (I)" data-mode="highlighter">
+      <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2l4 4L7 17H3v-4L14 2z" fill="#fde68a" stroke="#f59e0b" stroke-width="1.5"/><path d="M3 21h18" stroke="#f59e0b" stroke-width="2"/></svg>
+    </button>
+
+    <!-- ERASER -->
+    <div class="eraser-dropdown-wrapper" style="position: relative; display: flex; align-items: center; justify-content: center;">
+      <button class="tool-btn" id="tool-eraser-btn" data-tooltip="المنقاة / ممحاة (E)" data-mode="eraser">
+        <span id="active-eraser-icon">
+          <svg viewBox="0 0 24 24"><path d="M20.71 7.04L16.66 3a1 1 0 0 0-1.41 0L3.51 14.74c-.78.78-.78 2.05 0 2.83l2.83 2.83c.78.78 2.05.78 2.83 0L20.71 8.45a1 1 0 0 0 0-1.41z" fill="#fca5a5" stroke="#ef4444" stroke-width="1.2"/><path d="M3 21h8" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span style="font-size: 7px; color:#ef4444; margin-top: -4px;">▼</span>
+      </button>
+      <div class="eraser-dropdown-menu" id="eraser-dropdown-menu" style="min-width: 140px;">
+        <button class="dropdown-item" data-eraser-type="object"><span>🧹 ممحاة الكائنات</span></button>
+        <button class="dropdown-item active" data-eraser-type="pixel"><span>🧽 الاستيكة</span></button>
+      </div>
+    </div>
+
+    <div class="tool-separator"></div>
+
+    <!-- LINE -->
+    <div class="line-dropdown-wrapper" style="position: relative; display: flex; align-items: center; justify-content: center;">
+      <button class="tool-btn" id="tool-line-btn" data-tooltip="خط مستقيم (L)" data-mode="line">
+        <span id="active-line-icon">
+          <svg viewBox="0 0 24 24"><line x1="4" y1="20" x2="20" y2="4" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/><circle cx="4" cy="20" r="2" fill="#7c3aed"/><circle cx="20" cy="4" r="2" fill="#7c3aed"/></svg>
+        </span>
+        <span style="font-size: 7px; color:#a78bfa; margin-top: -4px;">▼</span>
+      </button>
+      <div class="line-dropdown-menu" id="line-dropdown-menu" style="min-width: 140px;">
+        <button class="dropdown-item active" data-line-style="solid"><span>خط مستمر</span></button>
+        <button class="dropdown-item" data-line-style="dotted"><span>خط منقط</span></button>
+        <button class="dropdown-item" data-line-style="double"><span>خطين متوازيين</span></button>
+      </div>
+    </div>
+
+    <!-- ARROW -->
+    <div class="arrow-dropdown-wrapper" style="position: relative; display: flex; align-items: center; justify-content: center;">
+      <button class="tool-btn" id="tool-arrow-btn" data-tooltip="الأسهم (A)" data-mode="arrow">
+        <span id="active-arrow-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </span>
+        <span style="font-size: 7px; color:#34d399; margin-top: -4px;">▼</span>
+      </button>
+      <div class="arrow-dropdown-menu" id="arrow-dropdown-menu" style="min-width: 140px;">
+        <button class="dropdown-item active" data-arrow-style="solid"><span>سهم مستمر</span></button>
+        <button class="dropdown-item" data-arrow-style="dotted"><span>سهم منقط</span></button>
+        <button class="dropdown-item" data-arrow-style="double"><span>سهم مزدوج</span></button>
+      </div>
+    </div>
+
+    <!-- SHAPES -->
+    <div class="shapes-dropdown-wrapper">
+      <button class="tool-btn" id="tool-shapes-btn" data-tooltip="أشكال هندسية (S)" data-mode="rect">
+        <span id="active-shape-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+        </span>
+        <span style="font-size: 7px; color:#60a5fa; margin-top: -4px;">▼</span>
+      </button>
+      <div class="shapes-dropdown-menu" id="shapes-dropdown-menu" style="width: 200px;">
+        <button class="shapes-grid-item" data-shape="rect" title="مستطيل"><svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="1.5" ry="1.5"/></svg></button>
+        <button class="shapes-grid-item active" data-shape="square" title="مربع"><svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/></svg></button>
+        <button class="shapes-grid-item" data-shape="circle" title="دائرة / بيضاوي"><svg viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></button>
+        <button class="shapes-grid-item" data-shape="triangle" title="مثلث"><svg viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><polygon points="12,3 1,21 23,21"/></svg></button>
+        <!-- بقية الأشكال الهندسية هنا -->
+        <div class="dropdown-fill-toggle" style="grid-column: span 4; display: flex; gap: 4px; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 6px; width: 100%;">
+          <button class="bg-btn active" id="quick-fill-hollow" style="flex: 1; font-size: 10px; padding: 4px; cursor: pointer;">مفرغ ◯</button>
+          <button class="bg-btn" id="quick-fill-solid" style="flex: 1; font-size: 10px; padding: 4px; cursor: pointer;">مصمت ⬛</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEXT -->
+    <button class="tool-btn" id="tool-text" data-tooltip="إضافة نص (T)" data-mode="text">
+      <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3" fill="#fed7aa" opacity="0.4"/><path d="M5 4v3h5.5v12h3V7H19V4z" fill="#f97316"/></svg>
+    </button>
+
+    <div class="tool-separator"></div>
+
+    <!-- LASER -->
+    <button class="tool-btn" id="tool-laser" data-tooltip="مؤشر ليزر (K)" data-mode="laser">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4" fill="#ff4d4d"/><circle cx="12" cy="12" r="8" stroke="#ff4d4d" stroke-width="1.5" fill="none" opacity="0.5"/><circle cx="12" cy="12" r="11" stroke="#ff4d4d" stroke-width="1" fill="none" opacity="0.25" stroke-dasharray="3,3"/></svg>
+    </button>
+
+    <!-- CALCULATOR -->
+    <button class="tool-btn" id="tool-calculator" data-tooltip="الآلة الحاسبة الذكية" data-mode="calculator">
+      <svg viewBox="0 0 24 24" fill="none">
+        <rect x="4" y="2" width="16" height="20" rx="3" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="1.8"/>
+        <rect x="7" y="5" width="10" height="4" rx="1" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="1.2"/>
+        <circle cx="8.5" cy="13" r="1.2" fill="#0ea5e9"/>
+        <circle cx="12" cy="13" r="1.2" fill="#0ea5e9"/>
+        <circle cx="15.5" cy="13" r="1.2" fill="#0ea5e9"/>
+        <circle cx="8.5" cy="17" r="1.2" fill="#0ea5e9"/>
+        <circle cx="12" cy="17" r="1.2" fill="#0ea5e9"/>
+        <circle cx="15.5" cy="17" r="1.2" fill="#0284c7"/>
+        <line x1="7" y1="10" x2="17" y2="10" stroke="#0ea5e9" stroke-width="1.2"/>
+      </svg>
+    </button>
+
+    <!-- HIDE TOOLBAR TOGGLE -->
+    <div class="tool-separator"></div>
+    <button class="tool-btn" id="toolbar-toggle-btn" onclick="document.querySelector('.floating-toolbar').classList.add('toolbar-hidden'); document.getElementById('toolbar-show-btn').style.display = 'flex';" data-tooltip="إخفاء/إظهار الشريط" style="background: rgba(255,255,255,0.04); border: 1px dashed rgba(255,255,255,0.2);">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+        <line x1="9" y1="3" x2="9" y2="21"/>
+        <path d="M17 16l-4-4 4-4"/>
+      </svg>
+    </button>
+  </div>
+
+  <div id="canvas-copyright" style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); font-size: 14px; color: #000000; text-shadow: 1px 1px 2px #ffffff; pointer-events: none; z-index: 10; font-weight: bold; white-space: nowrap;">
+    جميع حقوق الملكية محفوظة ومسجلة
+  </div>
+
+  <!-- Draggable Nice Calculator Overlay -->
+  <div id="math-calculator-overlay" class="glass-panel draggable-tool-overlay" style="display: none; width: 280px; height: 420px; padding: 12px; border-radius: 16px; flex-direction: column; justify-content: space-between; align-items: center; z-index: 20; direction: ltr;">
+    <div class="math-close" onclick="document.getElementById('math-calculator-overlay').style.display='none'">✕</div>
+    <div style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: space-between; position: relative; cursor: move;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; width:100%; direction:rtl;">
+        <div style="font-size: 11px; font-weight: bold; color: var(--text-secondary); cursor: move; user-select: none;">الحاسبة الذكية</div>
+        <button id="calc-export-btn" title="نقل المسألة إلى السبورة" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; font-size: 18px; padding: 0 8px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s;">↩</button>
+      </div>
+      
+      <div id="calc-screen" style="width: 100%; height: 76px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; color: var(--text-primary); text-align: right; padding: 6px 10px; font-family: monospace; font-size: 16px; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; overflow-y: auto;">
+        <span id="calc-history" style="font-size: 10px; color: var(--text-secondary); display: block; min-height: 12px;"></span>
+        <span id="calc-result" style="font-weight: bold; font-size: 18px; line-height: 1.2;">0</span>
+      </div>
+      
+      <div class="calc-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 10px; flex-grow: 1; width: 100%;">
+        <button class="calc-btn sci-btn" data-val="sin(" style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); color: #c084fc; font-size: 10px;">sin</button>
+        <button class="calc-btn sci-btn" data-val="cos(" style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); color: #c084fc; font-size: 10px;">cos</button>
+        <button class="calc-btn sci-btn" data-val="tan(" style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); color: #c084fc; font-size: 10px;">tan</button>
+        <button class="calc-btn sci-btn" data-val="sqrt(" style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); color: #c084fc; font-size: 10px;">√</button>
+        <button class="calc-btn sci-btn" data-val="cbrt(" style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); color: #c084fc; font-size: 10px;">³√</button>
+        
+        <button class="calc-btn sci-btn" data-val="^" style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); color: #c084fc; font-size: 10px;">^</button>
+        <button class="calc-btn sci-btn" data-val="π" style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); color: #c084fc; font-size: 10px;">π</button>
+        <button class="calc-btn sci-btn" data-val="(" style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); color: #c084fc; font-size: 10px;">(</button>
+        <button class="calc-btn sci-btn" data-val=")" style="background: rgba(124, 58, 237, 0.15); border: 1px solid rgba(124, 58, 237, 0.3); color: #c084fc; font-size: 10px;">)</button>
+        <button class="calc-btn op-btn" data-val="DEL" style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; font-size: 11px;">⌫</button>
+
+        <button class="calc-btn num-btn" data-val="7">7</button>
+        <button class="calc-btn num-btn" data-val="8">8</button>
+        <button class="calc-btn num-btn" data-val="9">9</button>
+        <!-- Corrected divide button data-val -->
+        <button class="calc-btn op-btn" data-val="/" style="background: rgba(0, 162, 255, 0.15); border: 1px solid rgba(0, 162, 255, 0.35); color: var(--accent-primary);">÷</button>
+        <button class="calc-btn op-btn" data-val="C" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.35); color: #f87171;">C</button>
+
+        <button class="calc-btn num-btn" data-val="4">4</button>
+        <button class="calc-btn num-btn" data-val="5">5</button>
+        <button class="calc-btn num-btn" data-val="6">6</button>
+        <button class="calc-btn op-btn" data-val="*" style="background: rgba(0, 162, 255, 0.15); border: 1px solid rgba(0, 162, 255, 0.35); color: var(--accent-primary);">×</button>
+        <button class="calc-btn num-btn" data-val="0">0</button>
+
+        <button class="calc-btn num-btn" data-val="1">1</button>
+        <button class="calc-btn num-btn" data-val="2">2</button>
+        <button class="calc-btn num-btn" data-val="3">3</button>
+        <button class="calc-btn op-btn" data-val="-" style="background: rgba(0, 162, 255, 0.15); border: 1px solid rgba(0, 162, 255, 0.35); color: var(--accent-primary);">-</button>
+        <button class="calc-btn num-btn" data-val=".">.</button>
+
+        <button class="calc-btn op-btn" data-val="+" style="grid-column: span 2; background: rgba(0, 162, 255, 0.15); border: 1px solid rgba(0, 162, 255, 0.35); color: var(--accent-primary);">+</button>
+        <button class="calc-btn op-btn" data-val="=" style="grid-column: span 3; background: var(--accent-primary); border: 1px solid var(--accent-hover); color: white; font-weight: bold;">=</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Elements -->
+  <audio id="audio-clap" src="assets/tasfik.MP3" preload="auto"></audio>
+  <audio id="audio-celebrate" src="assets/ahtifal.MP3" preload="auto"></audio>
+  <audio id="audio-gif" src="assets/heh.MP3" preload="auto"></audio>
+  <audio id="audio-whip" src="assets/whip-.mp3" preload="auto"></audio>
+  <audio id="audio-gavel" src="assets/gavel.MP3" preload="auto"></audio>
+
+  <!-- About Modal -->
+  <div id="about-modal" class="modal-overlay" style="display:none; z-index:99990;">
+    <div class="glass-panel about-modal-content" style="border-radius:20px; padding:16px 20px; max-width:420px; width:90%; position:relative; font-family:'Outfit',sans-serif; direction:rtl; text-align:center;">
+      <button id="about-modal-close" class="about-close-btn" style="position:absolute; top:12px; left:12px; border:none; width:26px; height:26px; border-radius:50%; cursor:pointer;">&times;</button>
+
+      <div style="background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04)); border:1px solid rgba(16,185,129,0.2); border-radius:12px; padding:10px 12px; margin-bottom:10px;">
+        <div style="font-size:20px;">🤍📖</div>
+        <p style="margin:0; font-size:12.5px; font-weight:700; color:#10b981;">هذا الموقع هو صدقة جارية عن روح أمي الغالية</p>
+        <p style="margin:4px 0 0; font-size:15px; font-weight:800; color:var(--text-primary);">صباح عبد العزيز علي سليمان</p>
+        <p style="margin:4px 0 0; font-size:11px; font-style:italic; color:var(--text-secondary);">نسألكم الدعاء لها بالرحمة والمغفرة</p>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11px;">المطور</div>
+        <div style="font-size:16px; font-weight:700;">هشام السيد محمد</div>
+        <div style="font-size:11px;">🇪🇬 مصري</div>
+      </div>
+
+      <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:10px; padding:6px 12px; margin-bottom:10px;">
+        <div style="font-size:10px;">للدعم للتطوير في البرنامج — فودافون كاش 💚</div>
+        <div style="font-size:15px; font-weight:700; color:#10b981;">01021315979</div>
+      </div>
+
+      <div style="margin-bottom:12px; border-top:1px solid rgba(255,255,255,0.08); padding-top:10px;">
+        <div style="font-size:11px; margin-bottom:8px; font-weight:600;">من أعمالي</div>
+        <div style="display:flex; flex-direction:column; gap:6px; align-items:center;">
+          <a href="https://ninjascribe.ninjascribe.workers.dev/" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:white; text-decoration:none; padding:8px 16px; border-radius:10px; font-size:11px; font-weight:600; width:100%; box-sizing:border-box; justify-content:center;">
+            برنامج نينجا سكرايب لوصف الرسومات المتحركة
+          </a>
+          <a href="https://spahboard.ninjascribe.workers.dev/" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,#0ea5e9,#0284c7); color:white; text-decoration:none; padding:8px 16px; border-radius:10px; font-size:11px; font-weight:600; width:100%; box-sizing:border-box; justify-content:center;">
+            سبورة الصباح أون لاين (الموقع الرسمي)
+          </a>
+          <a href="https://spahflag.ninjascribe.workers.dev/" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,#f59e0b,#d97706); color:white; text-decoration:none; padding:8px 16px; border-radius:10px; font-size:11px; font-weight:600; width:100%; box-sizing:border-box; justify-content:center;">
+            مشروع سبورة الفلاج
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
