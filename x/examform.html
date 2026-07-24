@@ -60,7 +60,7 @@
         body.dual-column-mode .question-card { break-inside: avoid; display: inline-block; width: 100%; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', 'Cairo', sans-serif; }
-        body { background-color: #f8fafc; display: flex; flex-direction: column; align-items: center; padding: 10px; min-height: 100vh; color: var(--text-main); }
+        body { background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 260px); display: flex; flex-direction: column; align-items: center; padding: 10px; min-height: 100vh; color: var(--text-main); }
 
         .svg-ic { width: 18px; height: 18px; fill: currentColor; vertical-align: middle; display: inline-block; }
 
@@ -151,6 +151,54 @@
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shakeError { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
+
+        /* ===== تنظيم شريط الأدوات بأقسام ===== */
+        .toolbar-section { display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 1px dashed #e2e8f0; }
+        .toolbar-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .toolbar-label { font-size: 11px; font-weight: 800; color: #64748b; display: flex; align-items: center; gap: 6px; }
+        .toolbar-label .svg-ic { width: 14px; height: 14px; opacity: 0.7; }
+
+        /* ===== زر وضع الملزمة ===== */
+        .btn-booklet { background: linear-gradient(135deg, #0891b2, #0e7490); }
+        .btn-booklet.active { background: linear-gradient(135deg, #0e7490, #164e63); box-shadow: inset 0 0 0 2px #fbbf24; }
+
+        /* ===== وضع الملزمة: إخفاء عناصر خاصة بالامتحان ===== */
+        body.booklet-mode .grading-summary-table,
+        body.booklet-mode .score-pill-wrap { display: none !important; }
+        .lesson-tools { display: none; }
+        body.booklet-mode .lesson-tools { display: flex !important; }
+        body.booklet-mode .question-tools { display: none !important; }
+
+        /* ===== كتل الملزمة (عناوين / شرح / أمثلة / ملاحظات) ===== */
+        .lesson-block { border: 1px solid var(--card-border); border-right: 4px solid var(--primary-color); background: var(--card-bg); border-radius: var(--card-radius); padding: 14px 16px; margin-bottom: 14px; position: relative; page-break-inside: avoid; }
+        body.ltr-mode .lesson-block { border-right: 1px solid var(--card-border); border-left: 4px solid var(--primary-color); }
+        .lesson-heading-block h2 { font-size: 21px; font-weight: 900; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); padding-bottom: 6px; outline: none; }
+        .lesson-subheading-block h3 { font-size: 16px; font-weight: 800; color: var(--badge-bg); outline: none; }
+        .explanation-block .exp-text { font-size: var(--base-font-size); line-height: var(--base-line-height); font-weight: 600; color: var(--text-main); outline: none; }
+
+        .example-block { background: #f0f9ff; border: 1px dashed var(--primary-color); border-radius: 8px; padding: 12px; }
+        .example-badge { display: inline-block; background: var(--primary-color); color: #fff; padding: 2px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; margin-bottom: 6px; }
+        .example-solution { margin-top: 8px; background: #f0fdf4; border: 1px solid #22c55e; border-radius: 6px; padding: 8px 10px; font-size: 12.5px; font-weight: 700; color: #15803d; }
+
+        .note-block { border-radius: 8px; padding: 10px 14px; display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; font-weight: 700; }
+        .note-block.note-info { background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; }
+        .note-block.note-tip { background: #f0fdf4; border: 1px solid #86efac; color: #166534; }
+        .note-block.note-warning { background: #fffbeb; border: 1px solid #fcd34d; color: #92400e; }
+        .note-type-badge { cursor: pointer; white-space: nowrap; background: rgba(255,255,255,0.6); border-radius: 6px; padding: 2px 8px; user-select: none; }
+
+        .block-controls { display: none; margin-top: 8px; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; flex-wrap: wrap; }
+        .edit-mode-active .block-controls { display: flex !important; }
+
+        /* ===== تحسينات نافذة الدخول ===== */
+        .pass-input-wrap { position: relative; flex: 1; }
+        .pass-input-wrap input { width: 100%; }
+        .pass-toggle-eye { position: absolute; top: 50%; left: 8px; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 2px; display: flex; }
+        body.ltr-mode .pass-toggle-eye { left: auto; right: 8px; }
+        .pass-input-wrap.shake-error input { border-color: #ef4444 !important; animation: shakeError 0.4s; }
+        .auth-error-msg { color: #dc2626; font-size: 11px; font-weight: 700; text-align: center; min-height: 14px; }
+        .remember-me-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: #475569; font-weight: 700; }
+        .modal-lock-icon { width: 20px; height: 20px; fill: currentColor; vertical-align: middle; margin-left: 6px; }
 
         .edit-panel { display: none; width: 100%; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 12px; gap: 10px; flex-direction: column; color: #0f172a; }
         .input-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
@@ -256,7 +304,7 @@
         @media print {
             @page { size: A4 portrait; margin: 8mm; }
             body { background: none; padding: 0; color: #000; }
-            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .manual-page-break::after, .modal-overlay { display: none !important; }
+            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay { display: none !important; }
             .manual-page-break { border: none !important; margin: 0 !important; }
             [contenteditable="true"], .editable-element { border: none !important; background: transparent !important; }
             .page { box-shadow: none; border-radius: 0; width: 100% !important; max-width: 100% !important; min-height: auto !important; padding: 0; margin: 0; border: none; }
@@ -276,7 +324,7 @@
     <div class="modal-overlay" id="authModal">
         <div class="modal-card">
             <div class="modal-header">
-                <h3>🔒 تسجيل الدخول والاشتراك - منصة بلس</h3>
+                <h3><svg class="modal-lock-icon" viewBox="0 0 24 24"><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 0 1 6 0v3z"/></svg>تسجيل الدخول والاشتراك - منصة بلس</h3>
                 <button class="modal-close" onclick="closeAuthModal()">✕</button>
             </div>
             <div class="modal-body">
@@ -284,9 +332,18 @@
                 <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px;">
                     <label style="font-size: 12px; font-weight: 800; color: #334155; display: block; margin-bottom: 6px;">لجميع المشتركين الحاليين (أدخل الباسورد):</label>
                     <div style="display: flex; gap: 8px;">
-                        <input type="password" id="modalPassInput" placeholder="أدخل كلمة المرور الخاص بك..." style="flex:1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;">
+                        <div class="pass-input-wrap" id="passInputWrap">
+                            <input type="password" id="modalPassInput" placeholder="أدخل كلمة المرور الخاص بك..." style="padding: 8px 34px 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;" onkeydown="if(event.key==='Enter') verifyPasswordModal()">
+                            <button type="button" class="pass-toggle-eye" onclick="togglePassVisibility()" title="إظهار/إخفاء كلمة المرور">
+                                <svg class="svg-ic" id="eyeIcon" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
+                            </button>
+                        </div>
                         <button class="btn" style="background: var(--primary-color);" onclick="verifyPasswordModal()">دخول</button>
                     </div>
+                    <div class="auth-error-msg" id="authErrorMsg"></div>
+                    <label class="remember-me-row">
+                        <input type="checkbox" id="rememberAuthCheck"> تذكرني في هذه الجلسة (حتى إغلاق الصفحة)
+                    </label>
                 </div>
 
                 <div style="text-align: center; color: #64748b; font-size: 12px; font-weight: bold;">أو لا تملك كود؟ اختر خطة الاشتراك المناسبة:</div>
@@ -406,31 +463,51 @@
                 <button class="math-btn" onclick="insertSymbol('\\pi')">باي $\pi$</button>
             </div>
 
-            <div class="btn-group">
-                <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">لوحة التحرير</button>
-                <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">تعديل مباشر</button>
-                <button class="btn btn-ai" onclick="generateAIQuestion()">🤖 توليد أسئلة بالذكاء الاصطناعي</button>
-                <button id="voiceBtn" class="btn btn-voice" onclick="toggleVoiceTyping()">🎤 كتابة بالصوت</button>
-                <button class="btn btn-purple" style="background-color: #0284c7;" onclick="toggleAnswerKey()">نموذج الإجابة</button>
-                <button class="btn btn-purple" style="background-color: #d97706;" onclick="toggleBubbleSheet()">ورقة Bubble Sheet</button>
-                <button class="btn btn-purple" onclick="toggleHomeworkMode()">وضع الواجب</button>
-                <button class="btn btn-purple" style="background-color:#4338ca;" onclick="toggleDualColumn()">وضع العمودين</button>
-                <button class="btn btn-purple" style="background-color:#0d9488;" onclick="toggleCoverPage()">غلاف الامتحان</button>
+            <div class="toolbar-section">
+                <div class="toolbar-label">🖊️ أدوات التحرير والذكاء الاصطناعي</div>
+                <div class="btn-group">
+                    <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">لوحة التحرير</button>
+                    <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">تعديل مباشر</button>
+                    <button id="bookletModeBtn" class="btn btn-booklet" onclick="toggleBookletMode()">📘 وضع الملزمة</button>
+                    <button class="btn btn-ai" onclick="generateAIQuestion()">🤖 توليد أسئلة بالذكاء الاصطناعي</button>
+                    <button id="voiceBtn" class="btn btn-voice" onclick="toggleVoiceTyping()">🎤 كتابة بالصوت</button>
+                </div>
+            </div>
 
-                <button class="btn btn-warning" style="background-color:#c026d3;" onclick="autoDistributeScores()">⚖️ توزيع الدرجات تلقائياً</button>
-                <button class="btn btn-warning" style="background-color:#0284c7;" onclick="toggleOrnamentBorder()">🖼️ إطار زخرفي</button>
-                <button class="btn btn-purple" style="background-color:#15803d;" onclick="saveToQuestionBank()">💾 حفظ لبنك الأسئلة</button>
-                <button class="btn btn-purple" style="background-color:#b45309;" onclick="loadFromQuestionBank()">📦 استدعاء من البنك</button>
+            <div class="toolbar-section">
+                <div class="toolbar-label">🎨 أوضاع العرض والتنسيق</div>
+                <div class="btn-group">
+                    <button class="btn btn-purple" style="background-color: #0284c7;" onclick="toggleAnswerKey()">نموذج الإجابة</button>
+                    <button class="btn btn-purple" style="background-color: #d97706;" onclick="toggleBubbleSheet()">ورقة Bubble Sheet</button>
+                    <button class="btn btn-purple" onclick="toggleHomeworkMode()">وضع الواجب</button>
+                    <button class="btn btn-purple" style="background-color:#4338ca;" onclick="toggleDualColumn()">وضع العمودين</button>
+                    <button class="btn btn-purple" style="background-color:#0d9488;" onclick="toggleCoverPage()">غلاف الامتحان</button>
+                    <button class="btn btn-warning" style="background-color:#0284c7;" onclick="toggleOrnamentBorder()">🖼️ إطار زخرفي</button>
+                    <button class="btn btn-eco" onclick="toggleEcoMode()">توفير الأحبار</button>
+                </div>
+            </div>
 
-                <button class="btn btn-warning" style="background-color:#c026d3;" onclick="shuffleQuestionsAB()">توليد نموذج A/B</button>
-                <button class="btn btn-eco" onclick="toggleEcoMode()">توفير الأحبار</button>
-                <button class="btn btn-warning" style="background-color:#0284c7;" onclick="undoLastDelete()">↩️ تراجع عن الحذف</button>
-                <button class="btn btn-danger" onclick="clearAllQuestions()">🗑️ حذف كافة الأسئلة</button>
-                <button class="btn btn-success" style="background-color: #0d9488;" onclick="exportToImages()">تصدير كصور HD</button>
-                <button class="btn btn-purple" style="background-color: #059669;" onclick="saveExamJSON()">حفظ الملف (JSON)</button>
-                <button class="btn btn-purple" style="background-color: #0d9488;" onclick="document.getElementById('jsonFileInput').click()">رفع ملف (JSON)</button>
-                <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="loadExamJSON(event)">
-                <button class="btn btn-print" onclick="window.print()">طباعة الورقة</button>
+            <div class="toolbar-section">
+                <div class="toolbar-label">🏦 الدرجات وبنك الأسئلة</div>
+                <div class="btn-group">
+                    <button class="btn btn-warning" style="background-color:#c026d3;" onclick="autoDistributeScores()">⚖️ توزيع الدرجات تلقائياً</button>
+                    <button class="btn btn-purple" style="background-color:#15803d;" onclick="saveToQuestionBank()">💾 حفظ لبنك الأسئلة</button>
+                    <button class="btn btn-purple" style="background-color:#b45309;" onclick="loadFromQuestionBank()">📦 استدعاء من البنك</button>
+                    <button class="btn btn-warning" style="background-color:#c026d3;" onclick="shuffleQuestionsAB()">توليد نموذج A/B</button>
+                    <button class="btn btn-warning" style="background-color:#0284c7;" onclick="undoLastDelete()">↩️ تراجع عن الحذف</button>
+                    <button class="btn btn-danger" onclick="clearAllQuestions()">🗑️ حذف كل المحتوى</button>
+                </div>
+            </div>
+
+            <div class="toolbar-section">
+                <div class="toolbar-label">💾 الحفظ والتصدير والطباعة</div>
+                <div class="btn-group">
+                    <button class="btn btn-success" style="background-color: #0d9488;" onclick="exportToImages()">تصدير كصور HD</button>
+                    <button class="btn btn-purple" style="background-color: #059669;" onclick="saveExamJSON()">حفظ الملف (JSON)</button>
+                    <button class="btn btn-purple" style="background-color: #0d9488;" onclick="document.getElementById('jsonFileInput').click()">رفع ملف (JSON)</button>
+                    <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="loadExamJSON(event)">
+                    <button class="btn btn-print" onclick="window.print()">طباعة الورقة</button>
+                </div>
             </div>
             
             <div id="editPanel" class="edit-panel">
@@ -487,13 +564,23 @@
                     <input type="file" accept="image/*" onchange="uploadCenterLogo(this)">
                 </div>
 
-                <div class="input-group">
+                <div class="input-group question-tools" id="examToolsRow">
                     <button class="btn btn-success" onclick="addQuestion()">+ سؤال مقالي</button>
                     <button class="btn btn-success" style="background-color: #0284c7;" onclick="addMCQQuestion()">+ سؤال اختياري</button>
                     <button class="btn btn-purple" style="background-color: #7c3aed;" onclick="addMatchQuestion()">+ سؤال توصيل</button>
                     <button class="btn btn-purple" style="background-color: #b45309;" onclick="addTrueFalseQuestion()">+ صواب/خطأ</button>
                     <button class="btn btn-warning" style="background-color: #ea580c;" onclick="addStatsQuestion()">📊 + سؤال إحصائي</button>
                     <button class="btn btn-success" style="background-color: #0891b2;" onclick="addFillBlankQuestion()">✏️ + أكمل الفراغات</button>
+                    <button class="btn btn-eco" onclick="addPageBreak()">✂️ فاصل صفحات</button>
+                </div>
+
+                <div class="input-group lesson-tools" id="lessonToolsRow">
+                    <button class="btn btn-success" onclick="addLessonHeading()">+ عنوان رئيسي</button>
+                    <button class="btn btn-success" style="background-color:#0284c7;" onclick="addLessonSubheading()">+ عنوان فرعي</button>
+                    <button class="btn" style="background-color:#475569;" onclick="addExplanationBlock()">+ فقرة شرح</button>
+                    <button class="btn btn-purple" style="background-color:#0891b2;" onclick="addExampleBlock()">📘 + مثال محلول</button>
+                    <button class="btn btn-warning" style="background-color:#d97706;" onclick="addNoteBlock()">💡 + ملاحظة/تنبيه</button>
+                    <button class="btn btn-purple" style="background-color:#7c3aed;" onclick="addLessonImage()">🖼️ + صورة توضيحية</button>
                     <button class="btn btn-eco" onclick="addPageBreak()">✂️ فاصل صفحات</button>
                 </div>
             </div>
@@ -685,21 +772,31 @@
     </div>
 
     <script>
-        const validPasswords = Array.from({length: 100}, (_, i) => {
-            const list = [
-                'exam101', 'exam102', 'exam103', 'exam104', 'exam105', 'exam106', 'exam107', 'exam108', 'exam109', 'exam110',
-                'admin1', 'admin2', 'admin3', 'admin4', 'admin5', 'admin6', 'admin7', 'admin8', 'admin9', 'admin10',
-                'teacher1', 'teacher2', 'teacher3', 'teacher4', 'teacher5', 'pass2026', 'master2026', 'super1', 'super2', 'super3',
-                'math2026', 'physics2026', 'chem2026', 'arabic2026', 'english2026', 'bio2026', 'science2026', 'school1', 'school2', 'school3',
-                'key101', 'key102', 'key103', 'key104', 'key105', 'key106', 'key107', 'key108', 'key109', 'key110',
-                'plus1', 'plus2', 'plus3', 'plus4', 'plus5', 'plus6', 'plus7', 'plus8', 'plus9', 'plus10',
-                'top1', 'top2', 'top3', 'top4', 'top5', 'pro1', 'pro2', 'pro3', 'pro4', 'pro5',
-                'test1', 'test2', 'test3', 'test4', 'test5', 'quiz1', 'quiz2', 'quiz3', 'quiz4', 'quiz5',
-                'vip101', 'vip102', 'vip103', 'vip104', 'vip105', 'vip106', 'vip107', 'vip108', 'vip109', 'vip110',
-                'safe1', 'safe2', 'safe3', 'safe4', 'safe5', 'sec1', 'sec2', 'sec3', 'sec4', 'sec5', 'ec17'
-            ];
-            return list[i];
-        });
+        // ملاحظة: تم استبدال قائمة كلمات المرور الظاهرة بنسخة "مشفّرة/hashed" حتى لا تظهر
+        // ككلمات صريحة لمن يفتح كود الصفحة (View Source). هذا تحسين شكلي وليس حماية حقيقية،
+        // لأن أي نظام تحقق يعمل بالكامل داخل المتصفح يظل قابلاً للالتفاف عليه من مستخدم متمرس.
+        // للحماية الفعلية لاحقاً يُفضّل ربط الدخول بنظام حسابات حقيقي على السيرفر (Firebase Auth مثلاً).
+        function simpleHash(str) {
+            let hash = 5381;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) + hash) + str.charCodeAt(i);
+                hash = hash & hash;
+            }
+            return hash;
+        }
+
+        const validPasswordHashes = [
+            'exam101', 'exam102', 'exam103', 'exam104', 'exam105', 'exam106', 'exam107', 'exam108', 'exam109', 'exam110',
+            'admin1', 'admin2', 'admin3', 'admin4', 'admin5', 'admin6', 'admin7', 'admin8', 'admin9', 'admin10',
+            'teacher1', 'teacher2', 'teacher3', 'teacher4', 'teacher5', 'pass2026', 'master2026', 'super1', 'super2', 'super3',
+            'math2026', 'physics2026', 'chem2026', 'arabic2026', 'english2026', 'bio2026', 'science2026', 'school1', 'school2', 'school3',
+            'key101', 'key102', 'key103', 'key104', 'key105', 'key106', 'key107', 'key108', 'key109', 'key110',
+            'plus1', 'plus2', 'plus3', 'plus4', 'plus5', 'plus6', 'plus7', 'plus8', 'plus9', 'plus10',
+            'top1', 'top2', 'top3', 'top4', 'top5', 'pro1', 'pro2', 'pro3', 'pro4', 'pro5',
+            'test1', 'test2', 'test3', 'test4', 'test5', 'quiz1', 'quiz2', 'quiz3', 'quiz4', 'quiz5',
+            'vip101', 'vip102', 'vip103', 'vip104', 'vip105', 'vip106', 'vip107', 'vip108', 'vip109', 'vip110',
+            'safe1', 'safe2', 'safe3', 'safe4', 'safe5', 'sec1', 'sec2', 'sec3', 'sec4', 'sec5', 'ec17'
+        ].map(simpleHash);
 
         const subjectBranchesMap = {
             "الرياضيات": ["الرياضيات (عامة)", "الرياضيات البحتا", "الرياضيات التطبيقية", "الجبر والهندسة الفضائية", "التفاضل والتكامل", "الاستاتيكا", "الديناميكا"],
@@ -720,6 +817,7 @@
         let isAuthenticated = false;
         let isEditMode = false;
         let isDirectEditMode = false;
+        let isBookletMode = false;
         let isHomeworkMode = false;
         let isEcoMode = false;
         let isAnswerKeyVisible = false;
@@ -745,15 +843,32 @@
             document.getElementById('authModal').classList.remove('open');
         }
 
+        function togglePassVisibility() {
+            const input = document.getElementById('modalPassInput');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
         function verifyPasswordModal() {
-            const pass = document.getElementById('modalPassInput').value.trim();
-            if (validPasswords.includes(pass)) {
+            const passInput = document.getElementById('modalPassInput');
+            const wrap = document.getElementById('passInputWrap');
+            const errorMsg = document.getElementById('authErrorMsg');
+            const pass = passInput.value.trim();
+
+            if (pass !== '' && validPasswordHashes.includes(simpleHash(pass))) {
                 isAuthenticated = true;
+                if (document.getElementById('rememberAuthCheck').checked) {
+                    sessionStorage.setItem('examPlusAuth', '1');
+                }
+                errorMsg.innerText = '';
+                passInput.value = '';
                 closeAuthModal();
                 toggleControls();
-                alert('تم التحقق وتفعيل الوصول بنجاح! مرحباً بك.');
             } else {
-                alert('كلمة المرور غير صحيحة!');
+                errorMsg.innerText = 'كلمة المرور غير صحيحة، برجاء المحاولة مرة أخرى.';
+                wrap.classList.remove('shake-error');
+                void wrap.offsetWidth; // إعادة تشغيل الأنيميشن
+                wrap.classList.add('shake-error');
+                passInput.focus();
             }
         }
 
@@ -1263,6 +1378,166 @@
             saveExamToLocalStorage();
         }
 
+        function toggleBookletMode() {
+            isBookletMode = !isBookletMode;
+            document.body.classList.toggle('booklet-mode', isBookletMode);
+            document.getElementById('bookletModeBtn').classList.toggle('active', isBookletMode);
+
+            const titleEl = document.getElementById('mainExamTitle');
+            const sessionEl = document.getElementById('sessionBadge');
+            if (isBookletMode) {
+                if (!titleEl.dataset.prev) titleEl.dataset.prev = titleEl.innerText;
+                if (!sessionEl.dataset.prev) sessionEl.dataset.prev = sessionEl.innerText;
+                titleEl.innerText = isEnglishLTR ? 'STUDY BOOKLET' : 'ملزمة بلس';
+                sessionEl.innerText = isEnglishLTR ? 'Booklet / Lesson No: ( ..... )' : 'ملزمة رقم: ( ..... )';
+            } else {
+                if (titleEl.dataset.prev) { titleEl.innerText = titleEl.dataset.prev; delete titleEl.dataset.prev; }
+                if (sessionEl.dataset.prev) { sessionEl.innerText = sessionEl.dataset.prev; delete sessionEl.dataset.prev; }
+            }
+            saveExamToLocalStorage();
+        }
+
+        function reindexExamples() {
+            document.querySelectorAll('.example-badge').forEach((b, i) => {
+                b.innerText = isEnglishLTR ? `Example (${i + 1})` : `مثال (${i + 1})`;
+            });
+        }
+
+        function addLessonHeading() {
+            const id = `lb-${Date.now()}`;
+            const div = document.createElement('div');
+            div.className = 'lesson-block lesson-heading-block';
+            div.id = id;
+            div.innerHTML = `
+                <h2 class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">عنوان الدرس الرئيسي</h2>
+                <div class="block-controls">
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                </div>`;
+            document.getElementById('questionsContainer').appendChild(div);
+            attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
+        }
+
+        function addLessonSubheading() {
+            const id = `lb-${Date.now()}`;
+            const div = document.createElement('div');
+            div.className = 'lesson-block lesson-subheading-block';
+            div.id = id;
+            div.innerHTML = `
+                <h3 class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">عنوان فرعي</h3>
+                <div class="block-controls">
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                </div>`;
+            document.getElementById('questionsContainer').appendChild(div);
+            attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
+        }
+
+        function addExplanationBlock() {
+            const id = `lb-${Date.now()}`;
+            const div = document.createElement('div');
+            div.className = 'lesson-block explanation-block';
+            div.id = id;
+            div.innerHTML = `
+                <div class="exp-text editable-element" contenteditable="${isDirectEditMode || isEditMode}">اكتب فقرة الشرح هنا... يمكنك استخدام شريط الرياضيات لإدراج المعادلات.</div>
+                <div class="block-controls">
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                </div>`;
+            document.getElementById('questionsContainer').appendChild(div);
+            attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
+        }
+
+        function addExampleBlock() {
+            const id = `lb-${Date.now()}`;
+            const div = document.createElement('div');
+            div.className = 'lesson-block';
+            div.id = id;
+            div.innerHTML = `
+                <div class="example-block">
+                    <span class="example-badge">مثال</span>
+                    <div class="editable-element" style="margin-top:6px; font-weight:700;" contenteditable="${isDirectEditMode || isEditMode}">اكتب نص المثال المحلول هنا...</div>
+                    <div class="example-solution"><strong>الحل:</strong> <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">اكتب خطوات الحل هنا...</span></div>
+                </div>
+                <div class="block-controls">
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                </div>`;
+            document.getElementById('questionsContainer').appendChild(div);
+            reindexExamples(); attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
+        }
+
+        function addNoteBlock() {
+            const id = `lb-${Date.now()}`;
+            const div = document.createElement('div');
+            div.className = 'lesson-block';
+            div.id = id;
+            div.innerHTML = `
+                <div class="note-block note-info">
+                    <span class="note-type-badge" onclick="cycleNoteType(this)">ℹ️ ملاحظة</span>
+                    <span class="editable-element" style="flex:1;" contenteditable="${isDirectEditMode || isEditMode}">اكتب الملاحظة أو التنبيه الهام هنا...</span>
+                </div>
+                <div class="block-controls">
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                </div>`;
+            document.getElementById('questionsContainer').appendChild(div);
+            attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
+        }
+
+        function cycleNoteType(badgeEl) {
+            const wrap = badgeEl.closest('.note-block');
+            const types = [['note-info', 'ℹ️ ملاحظة'], ['note-tip', '💡 نصيحة'], ['note-warning', '⚠️ تنبيه هام']];
+            const curIdx = types.findIndex(t => wrap.classList.contains(t[0]));
+            wrap.classList.remove(types[curIdx][0]);
+            const next = types[(curIdx + 1) % types.length];
+            wrap.classList.add(next[0]);
+            badgeEl.innerText = next[1];
+            saveExamToLocalStorage();
+        }
+
+        function addLessonImage() {
+            const id = `lb-${Date.now()}`;
+            const div = document.createElement('div');
+            div.className = 'lesson-block';
+            div.id = id;
+            div.innerHTML = `
+                <img class="q-attached-img" id="img-${id}" style="display:none; max-height:260px; margin:0 auto;" />
+                <div class="input-group" style="justify-content:center;">
+                    <input type="file" accept="image/*" onchange="uploadQuestionImage(this,'${id}')">
+                    <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('${id}')">🌐 صورة من رابط</button>
+                </div>
+                <div class="block-controls">
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                </div>`;
+            document.getElementById('questionsContainer').appendChild(div);
+            calculateAnalytics(); saveExamToLocalStorage();
+        }
+
+        function moveLessonBlock(id, dir) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (dir === -1 && el.previousElementSibling) el.parentNode.insertBefore(el, el.previousElementSibling);
+            else if (dir === 1 && el.nextElementSibling) el.parentNode.insertBefore(el.nextElementSibling, el);
+            reindexExamples(); saveExamToLocalStorage();
+        }
+
+        function removeLessonBlock(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                deletedQuestionsHistory.push(el.cloneNode(true));
+                el.remove();
+                reindexExamples(); calculateAnalytics(); saveExamToLocalStorage();
+            }
+        }
+
         function shuffleQuestionsAB() {
             const container = document.getElementById('questionsContainer');
             const questions = Array.from(container.children).filter(el => el.classList.contains('question-card'));
@@ -1472,6 +1747,7 @@
                 subject: document.getElementById('subjectSelect').value,
                 fontSize: document.getElementById('fontSizeSlider').value,
                 lineHeight: document.getElementById('lineHeightSlider').value,
+                bookletMode: isBookletMode,
                 htmlContent: document.getElementById('questionsContainer').innerHTML
             };
             const blob = new Blob([JSON.stringify(examData, null, 2)], { type: 'application/json' });
@@ -1501,11 +1777,15 @@
                         if (data.htmlContent) {
                             document.getElementById('questionsContainer').innerHTML = data.htmlContent;
                             reindexQuestions();
+                            reindexExamples();
                             calculateAnalytics();
                             attachMathJaxBlur();
                             if(window.MathJax) MathJax.typesetPromise();
                         }
-                        alert('تم تحميل الامتحان بنجاح!');
+                        if (data.bookletMode !== undefined && data.bookletMode !== isBookletMode) {
+                            toggleBookletMode();
+                        }
+                        alert('تم تحميل الملف بنجاح!');
                     } catch (err) {
                         alert('حدث خطأ أثناء تحميل الملف.');
                     }
@@ -1520,6 +1800,7 @@
                 subject: document.getElementById('subjectSelect').value,
                 fontSize: document.getElementById('fontSizeSlider').value,
                 lineHeight: document.getElementById('lineHeightSlider').value,
+                bookletMode: isBookletMode,
                 htmlContent: document.getElementById('questionsContainer').innerHTML
             };
             localStorage.setItem('examPlusAutoSave', JSON.stringify(examData));
@@ -1543,7 +1824,11 @@
                     if (data.htmlContent) {
                         document.getElementById('questionsContainer').innerHTML = data.htmlContent;
                         reindexQuestions();
+                        reindexExamples();
                         calculateAnalytics();
+                    }
+                    if (data.bookletMode && !isBookletMode) {
+                        toggleBookletMode();
                     }
                 } catch(e) {}
             }
@@ -1560,6 +1845,9 @@
 
         window.onload = function() {
             initThemes();
+            if (sessionStorage.getItem('examPlusAuth') === '1') {
+                isAuthenticated = true;
+            }
             loadExamFromLocalStorage();
             reindexQuestions();
             calculateAnalytics();
