@@ -155,24 +155,20 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes shakeError { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
 
-        /* ===== تنظيم شريط الأدوات بأقسام ===== */
         .toolbar-section { display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 1px dashed #e2e8f0; }
         .toolbar-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .toolbar-label { font-size: 11px; font-weight: 800; color: #64748b; display: flex; align-items: center; gap: 6px; }
         .toolbar-label .svg-ic { width: 14px; height: 14px; opacity: 0.7; }
 
-        /* ===== زر وضع الملزمة ===== */
         .btn-booklet { background: linear-gradient(135deg, #0891b2, #0e7490); }
         .btn-booklet.active { background: linear-gradient(135deg, #0e7490, #164e63); box-shadow: inset 0 0 0 2px #fbbf24; }
 
-        /* ===== وضع الملزمة: إخفاء عناصر خاصة بالامتحان ===== */
         body.booklet-mode .grading-summary-table,
         body.booklet-mode .score-pill-wrap { display: none !important; }
         .lesson-tools { display: none; }
         body.booklet-mode .lesson-tools { display: flex !important; }
         body.booklet-mode .question-tools { display: none !important; }
 
-        /* ===== كتل الملزمة (عناوين / شرح / أمثلة / ملاحظات) ===== */
         .lesson-block { border: 1px solid var(--card-border); border-right: 4px solid var(--primary-color); background: var(--card-bg); border-radius: var(--card-radius); padding: 14px 16px; margin-bottom: 14px; position: relative; page-break-inside: avoid; }
         body.ltr-mode .lesson-block { border-right: 1px solid var(--card-border); border-left: 4px solid var(--primary-color); }
         .lesson-heading-block h2 { font-size: 21px; font-weight: 900; color: var(--primary-color); border-bottom: 2px solid var(--primary-color); padding-bottom: 6px; outline: none; }
@@ -192,7 +188,6 @@
         .block-controls { display: none; margin-top: 8px; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; flex-wrap: wrap; }
         .edit-mode-active .block-controls { display: flex !important; }
 
-        /* ===== تحسينات نافذة الدخول ===== */
         .pass-input-wrap { position: relative; flex: 1; }
         .pass-input-wrap input { width: 100%; }
         .pass-toggle-eye { position: absolute; top: 50%; left: 8px; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 2px; display: flex; }
@@ -202,12 +197,10 @@
         .remember-me-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: #475569; font-weight: 700; }
         .modal-lock-icon { width: 20px; height: 20px; fill: currentColor; vertical-align: middle; margin-left: 6px; }
 
-        /* ===== سلة المحذوفات ===== */
         .trash-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; font-size: 12px; }
         .trash-item-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; color: #334155; }
         .trash-item-type { font-size: 10px; background: var(--primary-color); color: #fff; padding: 1px 8px; border-radius: 8px; font-weight: 800; white-space: nowrap; }
 
-        /* ===== مؤشر الحفظ التلقائي ===== */
         .save-indicator { position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; box-shadow: 0 6px 16px rgba(0,0,0,0.2); z-index: 9998; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; pointer-events: none; }
         body.ltr-mode .save-indicator { right: auto; left: 24px; }
         .save-indicator.show { opacity: 1; transform: translateY(0); }
@@ -225,17 +218,29 @@
         .font-controls { display: flex; gap: 10px; align-items: center; background: #f0f9ff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; color: #0369a1; flex-wrap: wrap; }
 
         .page {
-            width: 100%; max-width: 210mm; min-height: 297mm; background-color: var(--bg-page) !important;
-            border-radius: 12px; padding: 25px 30px; box-shadow: var(--shadow-md);
-            position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease;
-            page-break-after: always; margin-bottom: 20px; border: 1px solid #e2e8f0;
+            width: 210mm;
+            min-height: 297mm;
+            box-sizing: border-box;
+            background-color: var(--bg-page) !important;
+            border-radius: 12px;
+            padding: 25px 30px;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            page-break-after: always;
+            break-after: page;
         }
 
         .page.has-ornament-border { border: 8px double var(--primary-color); padding: 18px 22px; }
         .cover-page { display: none; flex-direction: column; justify-content: center; align-items: center; border: 4px double var(--primary-color); padding: 40px; text-align: center; gap: 20px; }
         body.show-cover .cover-page { display: flex; }
 
-        /* تعديلات العلامة المائية: إمكانية جعلها فوق النص والتحكم الشفافية */
         .watermark { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); 
             font-size: 4rem; font-weight: 900; color: #0f172a; white-space: nowrap; pointer-events: none; 
@@ -248,7 +253,7 @@
         }
 
         .header-banner { width: 100%; height: 5px; background: linear-gradient(90deg, var(--primary-color), var(--accent-color)); border-radius: 3px; margin-bottom: 14px; }
-        .content-wrap { position: relative; z-index: 2; }
+        .content-wrap { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; }
 
         .header-top { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
         .title-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
@@ -269,7 +274,7 @@
         .student-bar .dots { border-bottom: 1px dotted #94a3b8; display: inline-block; min-width: 40px; height: 10px; }
         .score-pill { border: 1px solid var(--badge-bg); background: #fef3c7; border-radius: 4px; padding: 1px 6px; color: var(--badge-bg); font-weight: 900; }
 
-        .question-card { border: 1px solid var(--card-border); border-radius: var(--card-radius); background: var(--card-bg); padding: 16px 14px 12px 14px; margin-bottom: 14px; position: relative; display: flex; flex-direction: column; justify-content: space-between; page-break-inside: avoid; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .question-card { border: 1px solid var(--card-border); border-radius: var(--card-radius); background: var(--card-bg); padding: 16px 14px 12px 14px; margin-bottom: 14px; position: relative; display: flex; flex-direction: column; justify-content: space-between; page-break-inside: avoid; break-inside: avoid; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
         .q-number-badge { position: absolute; top: -10px; right: 12px; background: var(--primary-color); color: #ffffff; padding: 2px 12px; border-radius: 12px; font-weight: 800; font-size: 11px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
         .q-bloom-tag { position: absolute; top: -10px; left: 12px; background: #3b82f6; color: #fff; padding: 1px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; cursor: pointer; }
         
@@ -304,7 +309,7 @@
         .answer-lines { margin-top: 8px; width: 100%; }
         .line-item { border-bottom: 1px dotted #cbd5e1; height: 22px; width: 100%; }
 
-        .manual-page-break { page-break-before: always; height: 1px; margin: 15px 0; border-top: 2px dashed #94a3b8; text-align: center; position: relative; }
+        .manual-page-break { page-break-before: always; break-before: page; height: 1px; margin: 15px 0; border-top: 2px dashed #94a3b8; text-align: center; position: relative; }
         .manual-page-break::after { content: '--- فاصل صفحات للطباعة ---'; background: #f8fafc; padding: 0 10px; position: relative; top: -10px; font-size: 11px; color: #64748b; font-weight: bold; }
 
         .answer-key-box { display: none; margin-top: 8px; background: #f0fdf4; border: 1px solid #22c55e; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 800; color: #15803d; }
@@ -319,24 +324,48 @@
         .q-controls { display: none; margin-top: 8px; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; flex-wrap: wrap; }
         .edit-mode-active .q-controls { display: flex !important; }
 
-        .exam-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; color: var(--primary-color); margin-top: 10px; border-top: 1px dashed var(--card-border); padding-top: 6px; }
+        .exam-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; color: var(--primary-color); margin-top: auto; border-top: 1px dashed var(--card-border); padding-top: 6px; }
 
         [contenteditable="true"] { border: 1px dashed var(--accent-color) !important; border-radius: 4px; background: #fffdfa; padding: 1px 4px; }
 
-        /* إعدادات تكرار الهيدر والطباعة */
+        /* إعدادات طباعة A4 دقيقة ودعم تعدد الصفحات */
         @media print {
-            @page { size: A4 portrait; margin: 8mm; }
-            body { background: none; padding: 0; color: #000; }
-            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay { display: none !important; }
-            .manual-page-break { border: none !important; margin: 0 !important; }
+            @page { 
+                size: A4 portrait; 
+                margin: 0; 
+            }
+            html, body {
+                width: 210mm;
+                height: auto;
+                background: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                color: #000 !important;
+            }
+            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator { display: none !important; }
+            .manual-page-break { border: none !important; margin: 0 !important; page-break-before: always !important; break-before: page !important; }
             [contenteditable="true"], .editable-element { border: none !important; background: transparent !important; }
-            .page { box-shadow: none; border-radius: 0; width: 100% !important; max-width: 100% !important; min-height: auto !important; padding: 0; margin: 0; border: none; }
-            .question-card { page-break-inside: avoid !important; }
             
-            /* تكرار الهيدر في كل ورقة مطبوعة */
-            .header-top { position: running(header); display: flex !important; }
-            thead { display: table-header-group; }
-            tfoot { display: table-footer-group; }
+            .page { 
+                box-shadow: none !important; 
+                border-radius: 0 !important; 
+                width: 210mm !important; 
+                min-height: 297mm !important; 
+                height: 297mm !important; 
+                padding: 15mm 15mm 12mm 15mm !important; 
+                margin: 0 !important; 
+                border: none !important; 
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                box-sizing: border-box !important;
+            }
+            
+            .question-card, .lesson-block { 
+                page-break-inside: avoid !important; 
+                break-inside: avoid !important; 
+            }
             
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
@@ -344,7 +373,7 @@
 </head>
 <body>
 
-    <!-- زر الترس العائم لحماية الباسورد والاشتراك -->
+    <!-- زر الترس العائم -->
     <div class="settings-gear-btn" onclick="openAuthModal()" title="إعدادات المنصة - امتحانك بلس">
         <svg class="svg-ic" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
     </div>
@@ -363,7 +392,6 @@
                 <button class="modal-close" onclick="closeAuthModal()">✕</button>
             </div>
             <div class="modal-body">
-                <!-- قسم ادخال كلمة المرور للمشتركين -->
                 <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px;">
                     <label style="font-size: 12px; font-weight: 800; color: #334155; display: block; margin-bottom: 6px;">لجميع المشتركين الحاليين (أدخل الباسورد):</label>
                     <div style="display: flex; gap: 8px;">
@@ -383,19 +411,16 @@
 
                 <div style="text-align: center; color: #64748b; font-size: 12px; font-weight: bold;">أو لا تملك كود؟ اختر خطة الاشتراك المناسبة:</div>
 
-                <!-- خطط الاشتراكات -->
                 <div class="subs-grid">
                     <div class="sub-plan-card">
                         <div class="badge" style="background: #2563eb;">خصم 50%</div>
                         <div class="sub-title">الاشتراك الشهري (3 أشهر)</div>
                         <div class="sub-price">70 <span>ج.م / 3 أشهر</span></div>
                         <div style="font-size: 10px; color: #94a3b8; text-decoration: line-through; margin-bottom: 6px;">بدلاً من 140 ج.م</div>
-                        
                         <ul style="font-size: 10px; text-align: right; padding-right: 15px; margin-bottom: 12px; color: #64748b;">
                             <li>وصول لجميع الاختبارات الأساسية</li>
                             <li>توليد نماذج امتحانات سهلة</li>
                         </ul>
-
                         <a href="https://wa.me/201007586279?text=السلام%20عليكم%20اريد%20الاشتراك%20الشهري%20في%20امتحانك%20بلس" target="_blank" class="btn btn-success" style="font-size: 10px; width: 100%; justify-content: center; text-decoration: none;">اشترك الآن</a>
                     </div>
 
@@ -404,13 +429,11 @@
                         <div class="sub-title">خطة سنتين - الأساسية</div>
                         <div class="sub-price">320 <span>ج.م / سنتين</span></div>
                         <div style="font-size: 10px; color: #94a3b8; text-decoration: line-through; margin-bottom: 6px;">بدلاً من 750 ج.م</div>
-                        
                         <ul style="font-size: 10px; text-align: right; padding-right: 15px; margin-bottom: 12px; color: #64748b;">
                             <li>صلاحية كاملة لمدة سنتين دراسيتين</li>
                             <li>بنك أسئلة متجدد وشامل</li>
                             <li>تصدير الاختبارات بصيغ جاهزة للطباعة</li>
                         </ul>
-
                         <a href="https://wa.me/201007586279?text=السلام%20عليكم%20اريد%20الاشتراك%20الاساسي%20لمدة%20سنتين%20في%20امتحانك%20بلس" target="_blank" class="btn" style="background: var(--primary-color); font-size: 10px; width: 100%; justify-content: center; text-decoration: none;">اشترك الآن</a>
                     </div>
 
@@ -419,19 +442,16 @@
                         <div class="sub-title">خطة سنتين - الشاملة</div>
                         <div class="sub-price">550 <span>ج.م / سنتين</span></div>
                         <div style="font-size: 10px; color: #94a3b8; text-decoration: line-through; margin-bottom: 6px;">بدلاً من 1200 ج.م</div>
-                        
                         <ul style="font-size: 10px; text-align: right; padding-right: 15px; margin-bottom: 12px; color: #64748b;">
                             <li>جميع مميزات الخطة الأساسية</li>
                             <li>تخصيص بنك الأسئلة والشعار الخاص بك</li>
                             <li>تحديثات مجانية مستمرة طوال السنتين</li>
                             <li>دعم فني وتخصيص أولوية</li>
                         </ul>
-
                         <a href="https://wa.me/201007586279?text=السلام%20عليكم%20اريد%20الاشتراك%20الشامل%20لمدة%20سنتين%20في%20امتحانك%20بلس" target="_blank" class="btn btn-purple" style="font-size: 10px; width: 100%; justify-content: center; text-decoration: none;">اشترك الآن</a>
                     </div>
                 </div>
 
-                <!-- طرق الدفع فودافون كاش -->
                 <div class="vodafone-box">
                     <h4>📱 طرق الدفع المتاحة عبر فودافون كاش (Vodafone Cash)</h4>
                     <p style="font-size: 11px; color: #475569;">يرجى تحويل المبلغ المطلوبة لأحد الارقام التالية ثم التواصل معنا لتفعيل حسابك فوراً:</p>
@@ -472,14 +492,12 @@
                 </div>
             </div>
 
-            <!-- إحصائيات تحليلات مستويات بلوم -->
             <div class="bloom-stats-bar" id="bloomStatsBar">
                 <div>🧠 تذكر: <span id="bloomRememberCount">0</span></div>
                 <div>💡 فهم/تطبيق: <span id="bloomApplyCount">0</span></div>
                 <div>📊 تحليل/تقويم: <span id="bloomAnalyzeCount">0</span></div>
             </div>
 
-            <!-- التحكم بالخطوط والألوان المخصصة -->
             <div class="font-controls">
                 <span>🔤 الخطوط:</span>
                 <label>الحجم:</label>
@@ -494,7 +512,6 @@
                 <input type="color" id="customColorPicker" value="#0284c7" onchange="applyCustomColor(this.value)">
             </div>
 
-            <!-- إعدادات العلامة المائية الجديدة (فوق النص والشفافية) -->
             <div class="font-controls" style="background: #fff7ed; color: #c2410c;">
                 <span>💧 إعدادات العلامة المائية:</span>
                 <label>الشفافية:</label>
@@ -506,7 +523,6 @@
                 </label>
             </div>
 
-            <!-- محرر الرموز والرياضيات -->
             <div class="math-toolbar">
                 <span style="font-size:11px; font-weight:bold; align-self:center;">شريط الرياضيات والرموز:</span>
                 <button class="math-btn" onclick="insertSymbol('x^2')">أس $x^2$</button>
@@ -560,7 +576,7 @@
                     <button class="btn btn-purple" style="background-color: #059669;" onclick="saveExamJSON()">حفظ الملف (JSON)</button>
                     <button class="btn btn-purple" style="background-color: #0d9488;" onclick="document.getElementById('jsonFileInput').click()">رفع ملف (JSON)</button>
                     <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="loadExamJSON(event)">
-                    <button class="btn btn-print" onclick="window.print()">طباعة الورقة</button>
+                    <button class="btn btn-print" onclick="window.print()">طباعة الورقة A4</button>
                 </div>
             </div>
             
@@ -631,7 +647,7 @@
                     <button class="btn btn-purple" style="background-color: #b45309;" onclick="addTrueFalseQuestion()">+ صواب/خطأ</button>
                     <button class="btn btn-warning" style="background-color: #ea580c;" onclick="addStatsQuestion()">📊 + سؤال إحصائي</button>
                     <button class="btn btn-success" style="background-color: #0891b2;" onclick="addFillBlankQuestion()">✏️ + أكمل الفراغات</button>
-                    <button class="btn btn-eco" onclick="addPageBreak()">✂️ فاصل صفحات</button>
+                    <button class="btn btn-eco" onclick="addPageBreak()">✂️ إنهاء الصفحة (صفحة جديدة)</button>
                 </div>
 
                 <div class="input-group lesson-tools" id="lessonToolsRow">
@@ -641,7 +657,7 @@
                     <button class="btn btn-purple" style="background-color:#0891b2;" onclick="addExampleBlock()">📘 + مثال محلول</button>
                     <button class="btn btn-warning" style="background-color:#d97706;" onclick="addNoteBlock()">💡 + ملاحظة/تنبيه</button>
                     <button class="btn btn-purple" style="background-color:#7c3aed;" onclick="addLessonImage()">🖼️ + صورة توضيحية</button>
-                    <button class="btn btn-eco" onclick="addPageBreak()">✂️ فاصل صفحات</button>
+                    <button class="btn btn-eco" onclick="addPageBreak()">✂️ إنهاء الصفحة (صفحة جديدة)</button>
                 </div>
             </div>
         </div>
@@ -655,179 +671,183 @@
         <p style="font-size: 1.1rem; color: #64748b;" id="coverYearText">العام الدراسي 2026 - منصة بلس Educational Platform</p>
     </div>
 
-    <!-- ورقة الامتحان الأساسية -->
-    <div class="page" id="examPage">
-        <div class="watermark" id="watermarkText">أ. مهدي حسن</div>
-        <img id="centerLogoWatermark" class="center-logo-watermark" />
+    <!-- حاوية صفحات الامتحان (دعم تعدد الصفحات الديناميكي A4) -->
+    <div id="pagesContainer" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        
+        <!-- الصفحة الأولية -->
+        <div class="page" id="page-1">
+            <div class="watermark" id="watermarkText">أ. مهدي حسن</div>
+            <img id="centerLogoWatermark" class="center-logo-watermark" />
 
-        <div class="header-banner"></div>
+            <div class="header-banner"></div>
 
-        <div class="content-wrap">
-            <div class="header-top">
-                <div class="title-row">
-                    <div class="title-brand">
-                        <div class="brand-icon-box">
-                            <svg class="svg-ic" style="width: 22px; height: 22px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            <div class="content-wrap">
+                <div class="header-top">
+                    <div class="title-row">
+                        <div class="title-brand">
+                            <div class="brand-icon-box">
+                                <svg class="svg-ic" style="width: 22px; height: 22px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                            </div>
+                            <div>
+                                <h1 class="editable-element" id="mainExamTitle">امتحانك بلس</h1>
+                                <div style="display: flex; gap: 4px; align-items: center; margin-top: 2px;">
+                                    <span class="session-badge editable-element" id="sessionBadge">حصة / اختبار رقم: ( ..... )</span>
+                                    <span class="subject-badge" id="displaySubjectBadge">الرياضيات</span>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <h1 class="editable-element" id="mainExamTitle">امتحانك بلس</h1>
-                            <div style="display: flex; gap: 4px; align-items: center; margin-top: 2px;">
-                                <span class="session-badge editable-element" id="sessionBadge">حصة / اختبار رقم: ( ..... )</span>
-                                <span class="subject-badge" id="displaySubjectBadge">الرياضيات</span>
+
+                        <div class="teacher-info-card">
+                            <div class="teacher-info-item">
+                                <span id="lblTeacher">المعلم: <strong id="displayTeacherName" class="editable-element">أ. مهدي حسن</strong></span>
+                            </div>
+                            <div class="teacher-info-item">
+                                <span id="lblSubject">المادة: <strong id="displaySubjectText" class="editable-element">الرياضيات</strong></span>
                             </div>
                         </div>
                     </div>
-
-                    <div class="teacher-info-card">
-                        <div class="teacher-info-item">
-                            <span id="lblTeacher">المعلم: <strong id="displayTeacherName" class="editable-element">أ. مهدي حسن</strong></span>
-                        </div>
-                        <div class="teacher-info-item">
-                            <span id="lblSubject">المادة: <strong id="displaySubjectText" class="editable-element">الرياضيات</strong></span>
-                        </div>
-                    </div>
                 </div>
-            </div>
 
-            <!-- جدول تفريغ درجات المصحح -->
-            <table class="grading-summary-table" id="gradingSummaryTable">
-                <thead>
-                    <tr id="gradingHeaderRow">
-                        <th id="lblQTable">السؤال</th>
-                        <th>س1</th>
-                        <th>س2</th>
-                        <th>س3</th>
-                        <th id="lblTotalTable">المجموع</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr id="gradingBodyRow">
-                        <td id="lblScoreTable">الدرجة</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                </tbody>
-            </table>
+                <!-- جدول تفريغ درجات المصحح -->
+                <table class="grading-summary-table" id="gradingSummaryTable">
+                    <thead>
+                        <tr id="gradingHeaderRow">
+                            <th id="lblQTable">السؤال</th>
+                            <th>س1</th>
+                            <th>س2</th>
+                            <th>س3</th>
+                            <th id="lblTotalTable">المجموع</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="gradingBodyRow">
+                            <td id="lblScoreTable">الدرجة</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
 
-            <div class="student-bar">
-                <div id="lblStudentName">اسم الطالب: <span class="dots" style="min-width: 80px;"></span></div>
-                <div id="lblClass">الصف: <span class="dots" id="displayGradeClass" style="min-width: 40px;">الصف الأول الثانوي</span></div>
-                <div id="lblDate">التاريخ: <span class="editable-element">2026 / ... / ...</span></div>
-                <div class="score-pill-wrap"><span id="lblTotalScore">الدرجة الكلية:</span> <span class="score-pill" id="totalScoreCalc">13</span></div>
-            </div>
+                <div class="student-bar">
+                    <div id="lblStudentName">اسم الطالب: <span class="dots" style="min-width: 80px;"></span></div>
+                    <div id="lblClass">الصف: <span class="dots" id="displayGradeClass" style="min-width: 40px;">الصف الأول الثانوي</span></div>
+                    <div id="lblDate">التاريخ: <span class="editable-element">2026 / ... / ...</span></div>
+                    <div class="score-pill-wrap"><span id="lblTotalScore">الدرجة الكلية:</span> <span class="score-pill" id="totalScoreCalc">13</span></div>
+                </div>
 
-            <!-- حاوية الأسئلة الأساسية -->
-            <div id="questionsContainer">
-                
-                <!-- السؤال الأول: مقالي -->
-                <div class="question-card" id="q-1" data-type="essay">
-                    <div class="q-number-badge"><span class="q-num">السؤال الأول</span></div>
-                    <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تطبيق</div>
-                    <div class="q-body editable-element">أجب عن المسائل التالية بالتفصيل:</div>
+                <!-- حاوية الأسئلة الأساسية -->
+                <div id="questionsContainer" class="questions-container">
                     
-                    <div class="sub-questions-container" id="sub-container-q-1">
-                        <div class="sub-question-item">
-                            <span contenteditable="true">( أ ) أوجد قيمة $x$ إذا كان $2x + 4 = 10$.</span>
+                    <!-- السؤال الأول: مقالي -->
+                    <div class="question-card" id="q-1" data-type="essay">
+                        <div class="q-number-badge"><span class="q-num">السؤال الأول</span></div>
+                        <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تطبيق</div>
+                        <div class="q-body editable-element">أجب عن المسائل التالية بالتفصيل:</div>
+                        
+                        <div class="sub-questions-container" id="sub-container-q-1">
+                            <div class="sub-question-item">
+                                <span contenteditable="true">( أ ) أوجد قيمة $x$ إذا كان $2x + 4 = 10$.</span>
+                            </div>
+                            <div class="sub-question-item">
+                                <span contenteditable="true">( ب ) احسب المساحة الجانبية للشكل الموضح.</span>
+                            </div>
                         </div>
-                        <div class="sub-question-item">
-                            <span contenteditable="true">( ب ) احسب المساحة الجانبية للشكل الموضح.</span>
+
+                        <img class="q-attached-img" id="img-q-1" />
+                        
+                        <div class="answer-lines" id="lines-q-1">
+                            <div class="line-item"></div>
+                            <div class="line-item"></div>
+                        </div>
+
+                        <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">( أ ) x = 3 | ( ب ) المساحة = 50 سم²</span></div>
+
+                        <div class="q-footer-row">
+                            <div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">5</span></div>
+                        </div>
+                        <div class="q-controls">
+                            <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('q-1')">➕ إضافة سؤال فرعي</button>
+                            <input type="file" accept="image/*" onchange="uploadQuestionImage(this, 'q-1')">
+                            <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('q-1')">🌐 صورة من رابط</button>
+                            <button class="btn btn-purple" style="font-size:10px;" onclick="addLines('q-1')">+ أسطر إجابة</button>
+                            <button class="btn btn-warning" style="font-size:10px;" onclick="addGraphCanvas('q-1')">📈 رسم بياني هندسي</button>
+                            <button class="btn btn-danger" onclick="removeQuestion('q-1')">🗑️ حذف السؤال</button>
                         </div>
                     </div>
 
-                    <img class="q-attached-img" id="img-q-1" />
-                    
-                    <div class="answer-lines" id="lines-q-1">
-                        <div class="line-item"></div>
-                        <div class="line-item"></div>
+                    <!-- السؤال الثاني: اختيار من متعدد -->
+                    <div class="question-card" id="q-2" data-type="mcq">
+                        <div class="q-number-badge"><span class="q-num">السؤال الثاني</span></div>
+                        <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تذكر</div>
+                        <div class="q-body editable-element">اختر الإجابة الصحيحة من بين الخيارات التالية:</div>
+                        <div class="mcq-options">
+                            <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الأول</span></div>
+                            <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الثاني</span></div>
+                            <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الثالث</span></div>
+                            <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الرابع</span></div>
+                        </div>
+                        <div class="answer-key-box"><strong>الإجابة الصحيحة:</strong> <span class="editable-element">الخيار الأول</span></div>
+                        <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
+                        <div class="q-controls">
+                            <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('q-2')">➕ إضافة سؤال فرعي</button>
+                            <input type="file" accept="image/*" onchange="uploadQuestionImage(this, 'q-2')">
+                            <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('q-2')">🌐 صورة من رابط</button>
+                            <button class="btn btn-warning" style="font-size:10px;" onclick="addGraphCanvas('q-2')">📈 رسم بياني هندسي</button>
+                            <button class="btn btn-danger" onclick="removeQuestion('q-2')">🗑️ حذف السؤال</button>
+                        </div>
                     </div>
 
-                    <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">( أ ) x = 3 | ( ب ) المساحة = 50 سم²</span></div>
+                    <!-- السؤال الثالث: جدول إحصائي -->
+                    <div class="question-card" id="q-3" data-type="stats">
+                        <div class="q-number-badge"><span class="q-num">السؤال الثالث</span></div>
+                        <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تحليل</div>
+                        <div class="q-body editable-element">من الجدول الإحصائي التالي، احسب الوسط الحسابي والتكرار النسبي:</div>
+                        <div class="stats-table-wrapper">
+                            <table class="stats-table" id="stats-table-q-3">
+                                <thead>
+                                    <tr id="stats-head-q-3">
+                                        <th contenteditable="true">الفئات</th>
+                                        <th contenteditable="true">10-</th>
+                                        <th contenteditable="true">20-</th>
+                                        <th contenteditable="true">30-</th>
+                                        <th contenteditable="true">40-</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stats-body-q-3">
+                                    <tr>
+                                        <td contenteditable="true">التكرار (ك)</td>
+                                        <td contenteditable="true">4</td>
+                                        <td contenteditable="true">6</td>
+                                        <td contenteditable="true">10</td>
+                                        <td contenteditable="true">5</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="answer-lines" id="lines-q-3"><div class="line-item"></div><div class="line-item"></div></div>
+                        <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">6</span></div></div>
+                        <div class="q-controls">
+                            <button class="btn btn-success" style="font-size:10px;" onclick="addStatsColumn('q-3')">➕ إضافة عمود</button>
+                            <button class="btn btn-warning" style="font-size:10px;" onclick="removeStatsColumn('q-3')">➖ حذف عمود</button>
+                            <button class="btn btn-purple" style="font-size:10px;" onclick="addStatsRow('q-3')">➕ إضافة صف بيانات</button>
+                            <button class="btn btn-danger" onclick="removeQuestion('q-3')">🗑️ حذف السؤال</button>
+                        </div>
+                    </div>
 
-                    <div class="q-footer-row">
-                        <div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">5</span></div>
-                    </div>
-                    <div class="q-controls">
-                        <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('q-1')">➕ إضافة سؤال فرعي</button>
-                        <input type="file" accept="image/*" onchange="uploadQuestionImage(this, 'q-1')">
-                        <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('q-1')">🌐 صورة من رابط</button>
-                        <button class="btn btn-purple" style="font-size:10px;" onclick="addLines('q-1')">+ أسطر إجابة</button>
-                        <button class="btn btn-warning" style="font-size:10px;" onclick="addGraphCanvas('q-1')">📈 رسم بياني هندسي</button>
-                        <button class="btn btn-danger" onclick="removeQuestion('q-1')">🗑️ حذف السؤال</button>
-                    </div>
                 </div>
 
-                <!-- السؤال الثاني: اختيار من متعدد -->
-                <div class="question-card" id="q-2" data-type="mcq">
-                    <div class="q-number-badge"><span class="q-num">السؤال الثاني</span></div>
-                    <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تذكر</div>
-                    <div class="q-body editable-element">اختر الإجابة الصحيحة من بين الخيارات التالية:</div>
-                    <div class="mcq-options">
-                        <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الأول</span></div>
-                        <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الثاني</span></div>
-                        <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الثالث</span></div>
-                        <div class="mcq-opt"><span class="opt-circle"></span> <span contenteditable="true">الخيار الرابع</span></div>
-                    </div>
-                    <div class="answer-key-box"><strong>الإجابة الصحيحة:</strong> <span class="editable-element">الخيار الأول</span></div>
-                    <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
-                    <div class="q-controls">
-                        <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('q-2')">➕ إضافة سؤال فرعي</button>
-                        <input type="file" accept="image/*" onchange="uploadQuestionImage(this, 'q-2')">
-                        <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('q-2')">🌐 صورة من رابط</button>
-                        <button class="btn btn-warning" style="font-size:10px;" onclick="addGraphCanvas('q-2')">📈 رسم بياني هندسي</button>
-                        <button class="btn btn-danger" onclick="removeQuestion('q-2')">🗑️ حذف السؤال</button>
-                    </div>
+                <!-- ورقة البابل شيت -->
+                <div class="bubble-sheet-container" id="bubbleSheetBox">
+                    <h3 style="text-align: center; color: var(--primary-color);" id="lblBubbleTitle">ورقة الإجابة السريعة (Bubble Sheet)</h3>
+                    <div id="bubbleSheetContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;"></div>
                 </div>
 
-                <!-- السؤال الثالث: جدول إحصائي -->
-                <div class="question-card" id="q-3" data-type="stats">
-                    <div class="q-number-badge"><span class="q-num">السؤال الثالث</span></div>
-                    <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تحليل</div>
-                    <div class="q-body editable-element">من الجدول الإحصائي التالي، احسب الوسط الحسابي والتكرار النسبي:</div>
-                    <div class="stats-table-wrapper">
-                        <table class="stats-table" id="stats-table-q-3">
-                            <thead>
-                                <tr id="stats-head-q-3">
-                                    <th contenteditable="true">الفئات</th>
-                                    <th contenteditable="true">10-</th>
-                                    <th contenteditable="true">20-</th>
-                                    <th contenteditable="true">30-</th>
-                                    <th contenteditable="true">40-</th>
-                                </tr>
-                            </thead>
-                            <tbody id="stats-body-q-3">
-                                <tr>
-                                    <td contenteditable="true">التكرار (ك)</td>
-                                    <td contenteditable="true">4</td>
-                                    <td contenteditable="true">6</td>
-                                    <td contenteditable="true">10</td>
-                                    <td contenteditable="true">5</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="answer-lines" id="lines-q-3"><div class="line-item"></div><div class="line-item"></div></div>
-                    <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">6</span></div></div>
-                    <div class="q-controls">
-                        <button class="btn btn-success" style="font-size:10px;" onclick="addStatsColumn('q-3')">➕ إضافة عمود</button>
-                        <button class="btn btn-warning" style="font-size:10px;" onclick="removeStatsColumn('q-3')">➖ حذف عمود</button>
-                        <button class="btn btn-purple" style="font-size:10px;" onclick="addStatsRow('q-3')">➕ إضافة صف بيانات</button>
-                        <button class="btn btn-danger" onclick="removeQuestion('q-3')">🗑️ حذف السؤال</button>
-                    </div>
+                <div class="exam-footer">
+                    <span>المعلم: <strong id="footerTeacherName">أ. مهدي حسن</strong> | <span id="footerPhone">01007586279</span></span>
+                    <span class="editable-element" id="lblFooterMsg">منصة امتحانك بلس - بالتوفيق والنجاح للجميع</span>
                 </div>
-
-            </div>
-
-            <!-- ورقة البابل شيت -->
-            <div class="bubble-sheet-container" id="bubbleSheetBox">
-                <h3 style="text-align: center; color: var(--primary-color);" id="lblBubbleTitle">ورقة الإجابة السريعة (Bubble Sheet)</h3>
-                <div id="bubbleSheetContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;"></div>
-            </div>
-
-            <div class="exam-footer">
-                <span>المعلم: <strong id="footerTeacherName">أ. مهدي حسن</strong> | <span id="footerPhone">01007586279</span></span>
-                <span class="editable-element" id="lblFooterMsg">منصة امتحانك بلس - بالتوفيق والنجاح للجميع</span>
             </div>
         </div>
     </div>
@@ -968,7 +988,6 @@
             saveExamToLocalStorage();
         }
 
-        /* ووظائف العلامة المائية الجديدة */
         function changeWatermarkOpacity(val) {
             document.documentElement.style.setProperty('--watermark-opacity', val);
             document.getElementById('watermarkOpacityVal').innerText = `${Math.round(val * 100)}%`;
@@ -985,8 +1004,11 @@
             const phone = document.getElementById('teacherPhoneInput').value;
             const grade = document.getElementById('gradeClassInput').value;
 
+            document.querySelectorAll('.page').forEach(page => {
+                const wm = page.querySelector('.watermark');
+                if(wm) wm.innerText = name;
+            });
             document.getElementById('displayTeacherName').innerText = name;
-            document.getElementById('watermarkText').innerText = name;
             document.getElementById('coverTeacher').innerText = name;
             document.getElementById('footerTeacherName').innerText = name;
             document.getElementById('footerPhone').innerText = phone;
@@ -1039,9 +1061,10 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const img = document.getElementById('centerLogoWatermark');
-                    img.src = e.target.result;
-                    img.style.display = 'block';
+                    document.querySelectorAll('.center-logo-watermark').forEach(img => {
+                        img.src = e.target.result;
+                        img.style.display = 'block';
+                    });
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -1077,6 +1100,47 @@
             document.documentElement.style.setProperty('--base-line-height', val);
             document.getElementById('lineHeightVal').innerText = val;
             saveExamToLocalStorage();
+        }
+
+        function createNewPage() {
+            const pagesContainer = document.getElementById('pagesContainer');
+            const pageCount = pagesContainer.querySelectorAll('.page').length + 1;
+            
+            const firstPage = document.getElementById('page-1');
+            const newPage = firstPage.cloneNode(true);
+            newPage.id = `page-${pageCount}`;
+            
+            const headerTop = newPage.querySelector('.header-top');
+            const gradingTable = newPage.querySelector('.grading-summary-table');
+            const studentBar = newPage.querySelector('.student-bar');
+            
+            if (headerTop) headerTop.remove();
+            if (gradingTable) gradingTable.remove();
+            if (studentBar) studentBar.remove();
+
+            const questionsContainer = newPage.querySelector('#questionsContainer');
+            if (questionsContainer) {
+                questionsContainer.innerHTML = '';
+            }
+
+            pagesContainer.appendChild(newPage);
+            return newPage;
+        }
+
+        function addPageBreak() {
+            const lastPage = createNewPage();
+            const questionsContainer = lastPage.querySelector('.questions-container');
+            const breakMarker = document.createElement('div');
+            breakMarker.className = 'manual-page-break';
+            questionsContainer.appendChild(breakMarker);
+            calculateAnalytics();
+            saveExamToLocalStorage();
+        }
+
+        function getActiveQuestionsContainer() {
+            const pages = document.querySelectorAll('.page');
+            const lastPage = pages[pages.length - 1];
+            return lastPage.querySelector('.questions-container');
         }
 
         function addGraphCanvas(qId) {
@@ -1156,7 +1220,9 @@
 
         function toggleOrnamentBorder() {
             isOrnamentBorder = !isOrnamentBorder;
-            document.getElementById('examPage').classList.toggle('has-ornament-border', isOrnamentBorder);
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.toggle('has-ornament-border', isOrnamentBorder);
+            });
         }
 
         function cycleBloomTag(tagEl) {
@@ -1180,12 +1246,13 @@
             if(saved) {
                 const list = JSON.parse(saved);
                 if(list.length > 0) {
+                    const container = getActiveQuestionsContainer();
                     list.forEach(html => {
                         const div = document.createElement('div');
                         div.innerHTML = html;
                         const card = div.firstElementChild;
                         card.id = `q-${Date.now()}-${Math.floor(Math.random()*1000)}`;
-                        document.getElementById('questionsContainer').appendChild(card);
+                        container.appendChild(card);
                     });
                     reindexQuestions();
                     calculateAnalytics();
@@ -1232,7 +1299,7 @@
                     </div>`;
             }
 
-            document.getElementById('questionsContainer').appendChild(card);
+            getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
             if (window.MathJax) MathJax.typesetPromise();
         }
@@ -1321,7 +1388,7 @@
                     <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('${qId}')">➕ إضافة سؤال فرعي</button>
                     <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
                 </div>`;
-            document.getElementById('questionsContainer').appendChild(card);
+            getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
 
@@ -1344,7 +1411,7 @@
                 <div class="q-controls">
                     <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
                 </div>`;
-            document.getElementById('questionsContainer').appendChild(card);
+            getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
 
@@ -1362,7 +1429,7 @@
                 </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">4</span></div></div>
                 <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
-            document.getElementById('questionsContainer').appendChild(card);
+            getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
 
@@ -1379,7 +1446,7 @@
                 </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
                 <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
-            document.getElementById('questionsContainer').appendChild(card);
+            getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
 
@@ -1396,7 +1463,7 @@
                 </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
                 <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
-            document.getElementById('questionsContainer').appendChild(card);
+            getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
 
@@ -1420,7 +1487,7 @@
                 </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">6</span></div></div>
                 <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
-            document.getElementById('questionsContainer').appendChild(card);
+            getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
 
@@ -1469,14 +1536,6 @@
             saveExamToLocalStorage();
         }
 
-        function addPageBreak() {
-            const pageBreak = document.createElement('div');
-            pageBreak.className = 'manual-page-break';
-            document.getElementById('questionsContainer').appendChild(pageBreak);
-            calculateAnalytics();
-            saveExamToLocalStorage();
-        }
-
         function toggleBookletMode() {
             isBookletMode = !isBookletMode;
             document.body.classList.toggle('booklet-mode', isBookletMode);
@@ -1515,7 +1574,7 @@
                     <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
                     <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
                 </div>`;
-            document.getElementById('questionsContainer').appendChild(div);
+            getActiveQuestionsContainer().appendChild(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
         }
 
@@ -1531,7 +1590,7 @@
                     <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
                     <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
                 </div>`;
-            document.getElementById('questionsContainer').appendChild(div);
+            getActiveQuestionsContainer().appendChild(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
         }
 
@@ -1547,7 +1606,7 @@
                     <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
                     <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
                 </div>`;
-            document.getElementById('questionsContainer').appendChild(div);
+            getActiveQuestionsContainer().appendChild(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
         }
 
@@ -1567,7 +1626,7 @@
                     <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
                     <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
                 </div>`;
-            document.getElementById('questionsContainer').appendChild(div);
+            getActiveQuestionsContainer().appendChild(div);
             reindexExamples(); attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
         }
 
@@ -1586,275 +1645,140 @@
                     <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
                     <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
                 </div>`;
-            document.getElementById('questionsContainer').appendChild(div);
+            getActiveQuestionsContainer().appendChild(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
         }
 
         function cycleNoteType(badgeEl) {
-            const wrap = badgeEl.closest('.note-block');
-            const types = [['note-info', 'ℹ️ ملاحظة'], ['note-tip', '💡 نصيحة'], ['note-warning', '⚠️ تنبيه هام']];
-            const curIdx = types.findIndex(t => wrap.classList.contains(t[0]));
-            wrap.classList.remove(types[curIdx][0]);
-            const next = types[(curIdx + 1) % types.length];
-            wrap.classList.add(next[0]);
-            badgeEl.innerText = next[1];
+            const parent = badgeEl.closest('.note-block');
+            if(parent.classList.contains('note-info')) {
+                parent.classList.remove('note-info'); parent.classList.add('note-tip'); badgeEl.innerText = '💡 إرشاد';
+            } else if(parent.classList.contains('note-tip')) {
+                parent.classList.remove('note-tip'); parent.classList.add('note-warning'); badgeEl.innerText = '⚠️ تنبيه';
+            } else {
+                parent.classList.remove('note-warning'); parent.classList.add('note-info'); badgeEl.innerText = 'ℹ️ ملاحظة';
+            }
             saveExamToLocalStorage();
         }
 
         function addLessonImage() {
+            const url = prompt('أدخل رابط الصورة التوضيحية:');
+            if(!url) return;
             const id = `lb-${Date.now()}`;
             const div = document.createElement('div');
-            div.className = 'lesson-block';
-            div.id = id;
+            div.className = 'lesson-block'; div.id = id;
             div.innerHTML = `
-                <img class="q-attached-img" id="img-${id}" style="display:none; max-height:260px; margin:0 auto;" />
-                <div class="input-group" style="justify-content:center;">
-                    <input type="file" accept="image/*" onchange="uploadQuestionImage(this,'${id}')">
-                    <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('${id}')">🌐 صورة من رابط</button>
-                </div>
+                <div style="text-align:center;"><img src="${url}" style="max-width:100%; max-height:260px; border-radius:8px; border:1px solid #cbd5e1;" /></div>
                 <div class="block-controls">
                     <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
                     <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
                     <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
                 </div>`;
-            document.getElementById('questionsContainer').appendChild(div);
+            getActiveQuestionsContainer().appendChild(div);
             calculateAnalytics(); saveExamToLocalStorage();
-        }
-
-        function moveLessonBlock(id, dir) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            if (dir === -1 && el.previousElementSibling) el.parentNode.insertBefore(el, el.previousElementSibling);
-            else if (dir === 1 && el.nextElementSibling) el.parentNode.insertBefore(el.nextElementSibling, el);
-            reindexExamples(); saveExamToLocalStorage();
         }
 
         function removeLessonBlock(id) {
             const el = document.getElementById(id);
-            if (el) {
-                pushToTrash(el.cloneNode(true));
+            if(el) {
+                deletedQuestionsHistory.push({ type: 'درس', html: el.outerHTML });
+                if(deletedQuestionsHistory.length > 10) deletedQuestionsHistory.shift();
                 el.remove();
-                reindexExamples(); calculateAnalytics(); saveExamToLocalStorage();
-            }
-        }
-
-        function shuffleQuestionsAB() {
-            const container = document.getElementById('questionsContainer');
-            const questions = Array.from(container.children).filter(el => el.classList.contains('question-card'));
-            for (let i = questions.length; i > 0; i--) {
-                container.appendChild(questions[Math.floor(Math.random() * i)]);
-            }
-            reindexQuestions();
-            alert('تم توليد نموذج جديد بنجاح!');
-        }
-
-        function removeQuestion(id) {
-            const card = document.getElementById(id);
-            if (card) {
-                pushToTrash(card.cloneNode(true));
-                card.remove(); 
-                reindexQuestions(); 
+                reindexExamples();
                 calculateAnalytics();
                 saveExamToLocalStorage();
             }
         }
 
-        function clearAllQuestions() {
-            if (confirm('هل أنت تأكد من رغبتك في حذف كافة المحتوى؟ (يمكنك استعادته لاحقًا من سلة المحذوفات)')) {
-                const container = document.getElementById('questionsContainer');
-                Array.from(container.children).forEach(el => pushToTrash(el.cloneNode(true)));
-                container.innerHTML = '';
+        function moveLessonBlock(id, dir) {
+            const el = document.getElementById(id);
+            if(!el) return;
+            if(dir === -1 && el.previousElementSibling) {
+                el.parentElement.insertBefore(el, el.previousElementSibling);
+            } else if(dir === 1 && el.nextElementSibling) {
+                el.parentElement.insertBefore(el.nextElementSibling, el);
+            }
+            reindexExamples();
+            saveExamToLocalStorage();
+        }
+
+        function removeQuestion(qId) {
+            const card = document.getElementById(qId);
+            if(card) {
+                deletedQuestionsHistory.push({ type: 'سؤال', html: card.outerHTML });
+                if(deletedQuestionsHistory.length > 10) deletedQuestionsHistory.shift();
+                card.remove();
                 reindexQuestions();
                 calculateAnalytics();
                 saveExamToLocalStorage();
             }
         }
 
-        function pushToTrash(node) {
-            deletedQuestionsHistory.push(node);
-            if (deletedQuestionsHistory.length > 10) deletedQuestionsHistory.shift();
-        }
-
-        function openTrashModal() {
-            renderTrashList();
-            document.getElementById('trashModal').classList.add('open');
-        }
-
-        function closeTrashModal() {
-            document.getElementById('trashModal').classList.remove('remove');
-            document.getElementById('trashModal').classList.remove('open');
-        }
-
-        function getTrashItemLabel(node) {
-            if (node.classList.contains('question-card')) return isEnglishLTR ? 'Question' : 'سؤال';
-            if (node.classList.contains('manual-page-break')) return isEnglishLTR ? 'Page break' : 'فاصل صفحة';
-            if (node.classList.contains('lesson-heading-block')) return isEnglishLTR ? 'Title' : 'عنوان';
-            if (node.classList.contains('explanation-block')) return isEnglishLTR ? 'Explanation' : 'فقرة شرح';
-            return isEnglishLTR ? 'Booklet item' : 'عنصر ملزمة';
-        }
-
-        function renderTrashList() {
-            const container = document.getElementById('trashListContainer');
-            container.innerHTML = '';
-            if (deletedQuestionsHistory.length === 0) {
-                container.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:12px;padding:20px 0;">السلة فارغة حالياً</div>';
-                return;
-            }
-            deletedQuestionsHistory.slice().reverse().forEach((node, revIdx) => {
-                const realIdx = deletedQuestionsHistory.length - 1 - revIdx;
-                const row = document.createElement('div');
-                row.className = 'trash-item';
-                const type = getTrashItemLabel(node);
-                const rawText = (node.innerText || '').trim().replace(/\s+/g, ' ');
-                const text = rawText ? rawText.slice(0, 45) + (rawText.length > 45 ? '…' : '') : '(بدون نص)';
-                row.innerHTML = `<span class="trash-item-type">${type}</span><span class="trash-item-text">${text}</span><button class="btn btn-success" style="font-size:10px;" onclick="restoreFromTrash(${realIdx})">↩️ استعادة</button>`;
-                container.appendChild(row);
-            });
-        }
-
-        function restoreFromTrash(idx) {
-            const node = deletedQuestionsHistory[idx];
-            if (!node) return;
-            deletedQuestionsHistory.splice(idx, 1);
-            document.getElementById('questionsContainer').appendChild(node.cloneNode(true));
-            reindexQuestions();
-            reindexExamples();
-            calculateAnalytics();
-            attachMathJaxBlur();
-            if (window.MathJax) MathJax.typesetPromise();
-            renderTrashList();
-            saveExamToLocalStorage();
-        }
-
-        function emptyTrash() {
-            if (deletedQuestionsHistory.length === 0) return;
-            if (confirm('هل أنت متأكد من إفراغ السلة نهائيًا؟ لن تتمكن من استعادة هذه العناصر بعد ذلك.')) {
-                deletedQuestionsHistory = [];
-                renderTrashList();
-            }
-        }
-
         function reindexQuestions() {
+            const numbers = isEnglishLTR 
+                ? ['Question 1', 'Question 2', 'Question 3', 'Question 4', 'Question 5', 'Question 6', 'Question 7', 'Question 8', 'Question 9', 'Question 10']
+                : ['السؤال الأول', 'السؤال الثاني', 'السؤال الثالث', 'السؤال الرابع', 'السؤال الخامس', 'السؤال السادس', 'السؤال السابع', 'السؤال الثامن', 'السؤال التاسع', 'السؤال العاشر'];
+
             const cards = document.querySelectorAll('.question-card');
-            const arabicNumbers = ["السؤال الأول", "السؤال الثاني", "السؤال الثالث", "السؤال الرابع", "السؤال الخامس", "السؤال السادس", "السؤال السابع", "السؤال الثامن", "السؤال التاسع", "السؤال العاشر"];
-            const englishNumbers = ["Question 1", "Question 2", "Question 3", "Question 4", "Question 5", "Question 6", "Question 7", "Question 8", "Question 9", "Question 10"];
-            
+            cards.forEach((card, index) => {
+                const badge = card.querySelector('.q-num');
+                if(badge) badge.innerText = numbers[index] || (isEnglishLTR ? `Question ${index+1}` : `السؤال ${index+1}`);
+            });
+
             const headerRow = document.getElementById('gradingHeaderRow');
             const bodyRow = document.getElementById('gradingBodyRow');
-            headerRow.innerHTML = `<th>${isEnglishLTR ? 'Question' : 'السؤال'}</th>`;
-            bodyRow.innerHTML = `<td>${isEnglishLTR ? 'Score' : 'الدرجة'}</td>`;
-
-            cards.forEach((card, idx) => {
-                const numSpan = card.querySelector('.q-number-badge span');
-                if (numSpan) {
-                    numSpan.innerText = isEnglishLTR ? (englishNumbers[idx] || `Question ${idx + 1}`) : (arabicNumbers[idx] || `السؤال ${idx + 1}`);
-                }
-                
-                headerRow.innerHTML += `<th>${isEnglishLTR ? 'Q' : 'س'}${idx + 1}</th>`;
-                bodyRow.innerHTML += `<td></td>`;
-            });
-
-            headerRow.innerHTML += `<th>${isEnglishLTR ? 'Total' : 'المجموع'}</th>`;
-            bodyRow.innerHTML += '<td></td>';
-            generateBubbleSheet(cards.length);
-            updateBloomAnalytics();
-            saveExamToLocalStorage();
-        }
-
-        function generateBubbleSheet(count) {
-            const container = document.getElementById('bubbleSheetContent');
-            container.innerHTML = '';
-            for(let i = 1; i <= count; i++) {
-                container.innerHTML += `
-                    <div style="font-size:11px; font-weight:bold;">
-                        ${isEnglishLTR ? 'Q' : 'س'}${i}: ⚪ ${isEnglishLTR ? 'A ⚪ B ⚪ C ⚪ D' : 'أ ⚪ ب ⚪ ج ⚪ د'}
-                    </div>`;
+            if (headerRow && bodyRow) {
+                let hHtml = `<th id="lblQTable">${isEnglishLTR ? 'Q' : 'السؤال'}</th>`;
+                let bHtml = `<td id="lblScoreTable">${isEnglishLTR ? 'Score' : 'الدرجة'}</td>`;
+                cards.forEach((_, i) => {
+                    hHtml += `<th>${isEnglishLTR ? 'Q' + (i + 1) : 'س' + (i + 1)}</th>`;
+                    bHtml += `<td></td>`;
+                });
+                hHtml += `<th id="lblTotalTable">${isEnglishLTR ? 'Total' : 'المجموع'}</th>`;
+                bHtml += `<td></td>`;
+                headerRow.innerHTML = hHtml;
+                bodyRow.innerHTML = bHtml;
             }
         }
 
         function calculateAnalytics() {
-            let totalScore = 0;
             const cards = document.querySelectorAll('.question-card');
+            let totalScore = 0;
             cards.forEach(card => {
                 const scoreVal = parseFloat(card.querySelector('.q-score-val')?.innerText || 0);
                 totalScore += isNaN(scoreVal) ? 0 : scoreVal;
             });
-            document.getElementById('totalScoreCalc').innerText = totalScore;
-            document.getElementById('qCountCalc').innerText = cards.length;
-            document.getElementById('estTimeCalc').innerText = `${cards.length * 4} دقيقة`;
+            const scoreCalc = document.getElementById('totalScoreCalc');
+            if (scoreCalc) scoreCalc.innerText = totalScore;
+            
+            const qCalc = document.getElementById('qCountCalc');
+            if (qCalc) qCalc.innerText = cards.length;
+            
+            const timeCalc = document.getElementById('estTimeCalc');
+            if (timeCalc) timeCalc.innerText = `${cards.length * 5} دقيقة`;
 
-            const pageHeight = 1122; // PX لصفحة A4
-            const containerHeight = document.getElementById('questionsContainer').offsetHeight;
-            const percentage = Math.min(Math.round((containerHeight / pageHeight) * 100), 100);
-            document.getElementById('pageSpaceFill').style.width = `${percentage}%`;
+            const fill = document.getElementById('pageSpaceFill');
+            if (fill) {
+                const pct = Math.min((cards.length / 8) * 100, 100);
+                fill.style.width = `${pct}%`;
+                fill.style.backgroundColor = pct > 85 ? '#ef4444' : 'var(--primary-color)';
+            }
+            updateBloomAnalytics();
         }
 
         function unlockEditMode() {
             isEditMode = !isEditMode;
             document.body.classList.toggle('edit-mode-active', isEditMode);
             document.getElementById('editPanel').style.display = isEditMode ? 'flex' : 'none';
+            document.getElementById('toggleEditBtn').innerText = isEditMode ? 'إغلاق لوحة التحرير' : 'لوحة التحرير';
         }
 
         function toggleDirectEdit() {
             isDirectEditMode = !isDirectEditMode;
-            document.querySelectorAll('.editable-element').forEach(el => {
+            document.querySelectorAll('.editable-element, .q-body').forEach(el => {
                 el.contentEditable = isDirectEditMode;
             });
-            alert(isDirectEditMode ? "تم تفعيل التعديل المباشر بالنقر!" : "تم إيقاف التعديل المباشر!");
-        }
-
-        function saveExamToLocalStorage() {
-            if(!pageFinishedLoading) return;
-            const showInd = document.getElementById('saveIndicator');
-            showInd.classList.add('show');
-            clearTimeout(saveIndicatorTimeout);
-            saveIndicatorTimeout = setTimeout(() => showInd.classList.remove('show'), 1500);
-        }
-
-        function attachMathJaxBlur() {
-            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
-                el.onblur = function() {
-                    if (window.MathJax) MathJax.typesetPromise([el]);
-                    saveExamToLocalStorage();
-                };
-            });
-        }
-
-        function insertSymbol(symbol) {
-            const sel = window.getSelection();
-            if (sel.rangeCount) {
-                const range = sel.getRangeAt(0);
-                range.deleteContents();
-                range.insertNode(document.createTextNode(` $${symbol}$ `));
-            }
-        }
-
-        function uploadQuestionImage(input, qId) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.getElementById(`img-${qId}`);
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        function addImageFromUrl(qId) {
-            const url = prompt("أدخل رابط الصورة (URL):");
-            if (url) {
-                const img = document.getElementById(`img-${qId}`);
-                img.src = url;
-                img.style.display = 'block';
-            }
-        }
-
-        function addLines(qId) {
-            const container = document.getElementById(`lines-${qId}`);
-            if (container) {
-                container.innerHTML += `<div class="line-item"></div>`;
-            }
+            document.getElementById('quickEditBtn').innerText = isDirectEditMode ? 'إيقاف التعديل المباشر' : 'تعديل مباشر';
         }
 
         function toggleAnswerKey() {
@@ -1865,6 +1789,25 @@
         function toggleBubbleSheet() {
             isBubbleSheetVisible = !isBubbleSheetVisible;
             document.body.classList.toggle('show-bubble-sheet', isBubbleSheetVisible);
+            if(isBubbleSheetVisible) generateBubbleSheet();
+        }
+
+        function generateBubbleSheet() {
+            const content = document.getElementById('bubbleSheetContent');
+            const cards = document.querySelectorAll('.question-card');
+            content.innerHTML = '';
+            cards.forEach((_, i) => {
+                const div = document.createElement('div');
+                div.style.cssText = "border: 1px solid #cbd5e1; padding: 6px; border-radius: 6px; text-align: center; font-size: 11px; font-weight: bold;";
+                div.innerHTML = `<div>س${i+1}</div>
+                    <div style="display:flex; justify-content:center; gap:4px; margin-top:4px;">
+                        <span style="border:1px solid #000; border-radius:50%; width:16px; height:16px; display:inline-block;">أ</span>
+                        <span style="border:1px solid #000; border-radius:50%; width:16px; height:16px; display:inline-block;">ب</span>
+                        <span style="border:1px solid #000; border-radius:50%; width:16px; height:16px; display:inline-block;">ج</span>
+                        <span style="border:1px solid #000; border-radius:50%; width:16px; height:16px; display:inline-block;">د</span>
+                    </div>`;
+                content.appendChild(div);
+            });
         }
 
         function toggleHomeworkMode() {
@@ -1887,53 +1830,215 @@
             document.body.classList.toggle('eco-print', isEcoMode);
         }
 
-        function exportToImages() {
-            html2canvas(document.getElementById('examPage')).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'exam-page.png';
-                link.href = canvas.toDataURL();
-                link.click();
+        function uploadQuestionImage(input, qId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById(`img-${qId}`);
+                    if(img) { img.src = e.target.result; img.style.display = 'block'; }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function addImageFromUrl(qId) {
+            const url = prompt('أدخل رابط الصورة:');
+            if(url) {
+                const img = document.getElementById(`img-${qId}`);
+                if(img) { img.src = url; img.style.display = 'block'; }
+            }
+        }
+
+        function addLines(qId) {
+            const container = document.getElementById(`lines-${qId}`);
+            if(container) {
+                const line = document.createElement('div');
+                line.className = 'line-item';
+                container.appendChild(line);
+            }
+        }
+
+        function insertSymbol(sym) {
+            const activeEl = document.activeElement;
+            if (activeEl && activeEl.isContentEditable) {
+                activeEl.innerText += ` $${sym}$ `;
+            } else {
+                alert('اضغط داخل خانة نصية مفعلة لإدراج الرمز.');
+            }
+        }
+
+        function attachMathJaxBlur() {
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                el.onblur = function() {
+                    if (window.MathJax && this.innerText.includes('$')) {
+                        MathJax.typesetPromise([this]);
+                    }
+                    saveExamToLocalStorage();
+                };
             });
+        }
+
+        function openTrashModal() {
+            const container = document.getElementById('trashListContainer');
+            container.innerHTML = '';
+            if(deletedQuestionsHistory.length === 0) {
+                container.innerHTML = '<div style="text-align:center; font-size:12px; color:#64748b;">سلة المحذوفات فارغة حاليًا</div>';
+            } else {
+                deletedQuestionsHistory.forEach((item, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'trash-item';
+                    div.innerHTML = `
+                        <span class="trash-item-type">${item.type}</span>
+                        <span class="trash-item-text">${item.html.replace(/<[^>]*>/g, '').substring(0, 35)}...</span>
+                        <button class="btn btn-success" style="font-size:10px; padding:2px 6px;" onclick="restoreTrashItem(${idx})">استرجاع</button>`;
+                    container.appendChild(div);
+                });
+            }
+            document.getElementById('trashModal').classList.add('open');
+        }
+
+        function closeTrashModal() {
+            document.getElementById('trashModal').classList.remove('open');
+        }
+
+        function restoreTrashItem(idx) {
+            const item = deletedQuestionsHistory.splice(idx, 1)[0];
+            const div = document.createElement('div');
+            div.innerHTML = item.html;
+            getActiveQuestionsContainer().appendChild(div.firstElementChild);
+            reindexQuestions();
+            calculateAnalytics();
+            attachMathJaxBlur();
+            openTrashModal();
+            saveExamToLocalStorage();
+        }
+
+        function emptyTrash() {
+            deletedQuestionsHistory = [];
+            openTrashModal();
+        }
+
+        function shuffleQuestionsAB() {
+            const container = getActiveQuestionsContainer();
+            const cards = Array.from(container.querySelectorAll('.question-card'));
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            cards.forEach(card => container.appendChild(card));
+            reindexQuestions();
+            alert('تم إعادة ترتيب الأسئلة لتوليد نموذج جديد (A/B)!');
+        }
+
+        function clearAllQuestions() {
+            if(confirm('هل أنت تأكد من حذف كافة الأسئلة والفرع الحالية؟')) {
+                document.querySelectorAll('.questions-container').forEach(c => c.innerHTML = '');
+                calculateAnalytics();
+                saveExamToLocalStorage();
+            }
         }
 
         function saveExamJSON() {
             const data = {
-                html: document.getElementById('questionsContainer').innerHTML,
+                html: document.getElementById('pagesContainer').innerHTML,
                 teacher: document.getElementById('teacherNameInput').value,
                 phone: document.getElementById('teacherPhoneInput').value,
+                grade: document.getElementById('gradeClassInput').value,
                 subject: currentMainSubject
             };
-            const blob = new Blob([JSON.stringify(data)], {type: "application/json"});
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = "exam-backup.json";
-            link.click();
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `exam-plus-${Date.now()}.json`;
+            a.click();
         }
 
         function loadExamJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                const data = JSON.parse(e.target.result);
-                document.getElementById('questionsContainer').innerHTML = data.html;
-                if(data.teacher) document.getElementById('teacherNameInput').value = data.teacher;
-                if(data.phone) document.getElementById('teacherPhoneInput').value = data.phone;
-                updateHeaderInfo();
-                reindexQuestions();
-                calculateAnalytics();
-                attachMathJaxBlur();
-                if(window.MathJax) MathJax.typesetPromise();
+                try {
+                    const data = JSON.parse(e.target.result);
+                    document.getElementById('pagesContainer').innerHTML = data.html;
+                    if(data.teacher) document.getElementById('teacherNameInput').value = data.teacher;
+                    if(data.phone) document.getElementById('teacherPhoneInput').value = data.phone;
+                    if(data.grade) document.getElementById('gradeClassInput').value = data.grade;
+                    updateHeaderInfo();
+                    reindexQuestions();
+                    calculateAnalytics();
+                    attachMathJaxBlur();
+                    alert('تم تحميل الامتحان بنجاح!');
+                } catch(err) {
+                    alert('ملف غير صالحة!');
+                }
             };
-            reader.readAsText(event.target.files[0]);
+            reader.readAsText(file);
+        }
+
+        function exportToImages() {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach((page, idx) => {
+                html2canvas(page, { scale: 2 }).then(canvas => {
+                    const a = document.createElement('a');
+                    a.href = canvas.toDataURL('image/png');
+                    a.download = `exam-page-${idx+1}.png`;
+                    a.click();
+                });
+            });
+        }
+
+        function showSaveIndicator() {
+            const ind = document.getElementById('saveIndicator');
+            ind.classList.add('show');
+            clearTimeout(saveIndicatorTimeout);
+            saveIndicatorTimeout = setTimeout(() => ind.classList.remove('show'), 2000);
+        }
+
+        function saveExamToLocalStorage() {
+            if(!pageFinishedLoading) return;
+            const state = {
+                pagesHtml: document.getElementById('pagesContainer').innerHTML,
+                teacher: document.getElementById('teacherNameInput').value,
+                phone: document.getElementById('teacherPhoneInput').value,
+                grade: document.getElementById('gradeClassInput').value,
+                subject: currentMainSubject,
+                isBooklet: isBookletMode,
+                isDual: isDualColumn,
+                fontSize: document.getElementById('fontSizeSlider').value,
+                lineHeight: document.getElementById('lineHeightSlider').value
+            };
+            localStorage.setItem('examPlusAutoSave', JSON.stringify(state));
+            showSaveIndicator();
+        }
+
+        function loadAutoSavedState() {
+            const saved = localStorage.getItem('examPlusAutoSave');
+            if (saved) {
+                try {
+                    const state = JSON.parse(saved);
+                    if (state.pagesHtml) document.getElementById('pagesContainer').innerHTML = state.pagesHtml;
+                    if (state.teacher) document.getElementById('teacherNameInput').value = state.teacher;
+                    if (state.phone) document.getElementById('teacherPhoneInput').value = state.phone;
+                    if (state.grade) document.getElementById('gradeClassInput').value = state.grade;
+                    if (state.fontSize) changeFontSize(state.fontSize);
+                    if (state.lineHeight) changeLineHeight(state.lineHeight);
+                    updateHeaderInfo();
+                } catch(e) {}
+            }
         }
 
         window.onload = function() {
             initThemes();
+            loadAutoSavedState();
             reindexQuestions();
             calculateAnalytics();
             attachMathJaxBlur();
+
             if (sessionStorage.getItem('examPlusAuth') === '1') {
                 isAuthenticated = true;
             }
+
             pageFinishedLoading = true;
         };
     </script>
