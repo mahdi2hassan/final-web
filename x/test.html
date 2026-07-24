@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سبورة بلس الاحترافية - Smart Board Plus Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Cairo:wght@600&display=swap" rel="stylesheet">
+    <title>سبورة بلس الاحترافية الشاملة - Smart Board Plus</title>
+    <!-- استدعاء الخطوط العربية -->
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Cairo:wght@600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
             font-family: 'Cairo', sans-serif;
             background-color: #121212;
@@ -21,6 +17,7 @@
             height: 100vh;
             overflow: hidden;
         }
+        /* الهيدر العلوي */
         .header {
             background: #1f1f1f;
             display: flex;
@@ -29,14 +26,9 @@
             padding: 6px 16px;
             border-bottom: 2px solid #333;
         }
-        .brand {
-            font-size: 20px;
-            font-weight: bold;
-            color: #ffca28;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .brand { font-size: 20px; font-weight: bold; color: #ffca28; display: flex; align-items: center; gap: 8px; }
+        
+        /* شريط الأدوات الرئيسي */
         .toolbar {
             background-color: #1a1a1a;
             padding: 8px;
@@ -56,11 +48,7 @@
             border-radius: 8px;
             border: 1px solid #3d3d3d;
         }
-        label {
-            font-size: 12px;
-            white-space: nowrap;
-            color: #ccc;
-        }
+        label { font-size: 12px; color: #ccc; white-space: nowrap; }
         button, select {
             padding: 5px 10px;
             border-radius: 6px;
@@ -73,47 +61,62 @@
             transition: all 0.2s;
         }
         button:hover { background: #4a4a4a; }
-        button.active {
-            background: #ffca28;
-            color: #000;
-            font-weight: bold;
-        }
+        button.active { background: #ffca28; color: #000; font-weight: bold; }
         .neon-btn {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            cursor: pointer;
-            display: inline-block;
+            width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; display: inline-block;
         }
-        input[type="color"] {
-            padding: 0;
-            width: 28px;
-            height: 25px;
-            border: none;
-            cursor: pointer;
-            background: transparent;
-        }
+        input[type="color"] { width: 28px; height: 25px; border: none; cursor: pointer; background: transparent; }
+        
+        /* حاوية اللوحة والستارة */
         .canvas-container {
             flex: 1;
             position: relative;
             background-color: #000000;
             cursor: crosshair;
+            overflow: hidden;
         }
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
+        canvas { display: block; width: 100%; height: 100%; }
+
+        /* الستارة التفاعلية */
+        .curtain {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 15, 15, 0.98);
+            border-bottom: 5px solid #ffca28;
+            display: none;
+            z-index: 5;
+            cursor: ns-resize;
+            text-align: center;
+            padding-top: 10px;
+            color: #888;
+            font-size: 14px;
         }
+
+        /* المؤقت التفاعلي */
+        .timer-box {
+            position: absolute;
+            top: 15px; left: 15px;
+            background: rgba(30, 30, 30, 0.85);
+            border: 1px solid #444;
+            padding: 8px 12px;
+            border-radius: 8px;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            z-index: 6;
+        }
+        .timer-display { font-size: 18px; font-weight: bold; color: #00ffcc; font-family: monospace; }
     </style>
 </head>
 <body>
 
+    <!-- الهيدر -->
     <div class="header">
-        <div class="brand">✨ سبورة بلس الاحترافية <span>(+)</span></div>
-        <div style="font-size: 12px; color: #aaa;">منصة الشرح والتعليم التفاعلية</div>
+        <div class="brand">✨ سبورة بلس الاحترافية الشاملة <span>(+)</span></div>
+        <div style="font-size: 12px; color: #aaa;">منصة التدريس والتقنيات التفاعلية المتكاملة</div>
     </div>
 
+    <!-- شريط الأدوات الشامل -->
     <div class="toolbar">
         <!-- الأقلام والوضعيات -->
         <div class="tool-group">
@@ -128,7 +131,7 @@
         <div class="tool-group">
             <label>الأشكال:</label>
             <select id="shapeSelect">
-                <option value="none">بدون (حر)</option>
+                <option value="none">حر</option>
                 <option value="line">📏 خط مستقيم</option>
                 <option value="arrow">➡️ سهم</option>
                 <option value="rect">🔲 مستطيل</option>
@@ -136,7 +139,7 @@
             </select>
         </div>
 
-        <!-- الألوان وسرعة النيون -->
+        <!-- الألوان والسُمْك -->
         <div class="tool-group">
             <label>الألوان:</label>
             <span class="neon-btn" style="background: #ffff00;" onclick="setColor('#ffff00')"></span>
@@ -148,22 +151,49 @@
             <input type="range" id="lineWidth" min="1" max="50" value="4">
         </div>
 
-        <!-- الشبكة والصور -->
+        <!-- نظام الصفحات والخلفيات -->
         <div class="tool-group">
-            <button id="btnGrid">📐 شبكة رسم</button>
-            <label for="imageLoader">📷 صورة:</label>
-            <input type="file" id="imageLoader" accept="image/*" style="width: 140px; font-size:10px;">
+            <label>الخلفية:</label>
+            <select id="bgSelect">
+                <option value="black">⚫ سوداء (داكن)</option>
+                <option value="white">⚪ بيضاء (فاتح)</option>
+                <option value="grid">📐 شبكة رسم</option>
+            </select>
+            <button id="btnPrevPage">◀️</button>
+            <span id="pageIndicator" style="font-size:12px;">صفحة 1 / 1</span>
+            <button id="btnNextPage">▶️</button>
+            <button id="btnAddPage" style="background: #27ae60;">➕ صفحة</button>
         </div>
 
-        <!-- الإجراءات والتراجع -->
+        <!-- الأدوات المتقدمة -->
+        <div class="tool-group">
+            <button id="btnCurtain">🎞️ الستارة</button>
+            <button id="btnTimer">⏱️ المؤقت</button>
+            <label for="imageLoader">📷 صورة:</label>
+            <input type="file" id="imageLoader" accept="image/*" style="width: 120px; font-size:10px;">
+        </div>
+
+        <!-- التراجع والإجراءات -->
         <div class="tool-group">
             <button id="btnUndo" style="background: #d35400;">↩️ تراجع</button>
-            <button id="btnClear" style="background: #c0392b;">🗑️ مسح الكل</button>
-            <button id="btnSave" style="background: #27ae60;">💾 حفظ</button>
+            <button id="btnClear" style="background: #c0392b;">🗑️ مسح الصفحة</button>
+            <button id="btnSave" style="background: #2980b9;">💾 حفظ</button>
         </div>
     </div>
 
+    <!-- منطقة الرسم والتفاعل -->
     <div class="canvas-container" id="container">
+        <!-- الستارة -->
+        <div class="curtain" id="curtain">▼ اسحب الستارة لأعلى أو لأسفل لحجب/إظهار الشرح ▼</div>
+        
+        <!-- صندوق المؤقت -->
+        <div class="timer-box" id="timerBox">
+            <span>⏱️ المتبقي:</span>
+            <span class="timer-display" id="timerDisplay">05:00</span>
+            <button id="btnStartTimer" style="background:#27ae60; padding:2px 6px;">تشغيل</button>
+            <button id="btnResetTimer" style="background:#c0392b; padding:2px 6px;">إعادة</button>
+        </div>
+
         <canvas id="board"></canvas>
     </div>
 
@@ -172,39 +202,64 @@
         const ctx = canvas.getContext('2d');
         const container = document.getElementById('container');
 
+        // المتغيرات العامة
         let isDrawing = false;
         let currentMode = 'draw'; 
         let startX, startY;
-        let showGrid = false;
+        let currentBg = 'black';
         
-        // مصفوفة التراجع
-        let history = [];
+        // نظام متعدد الصفحات والـ Undo
+        let pages = [[]]; // مصفوفة تحفظ الـ History لكل صفحة
+        let currentPageIndex = 0;
         const maxHistory = 15;
 
-        function saveState() {
-            if (history.length >= maxHistory) history.shift();
-            history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        function getBgColor() {
+            return currentBg === 'white' ? '#ffffff' : '#000000';
         }
 
-        function resizeCanvas() {
+        function saveState() {
+            if (!pages[currentPageIndex]) pages[currentPageIndex] = [];
+            if (pages[currentPageIndex].length >= maxHistory) pages[currentPageIndex].shift();
+            pages[currentPageIndex].push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+        }
+
+        function initCanvas() {
             canvas.width = container.clientWidth;
             canvas.height = container.clientHeight;
-            ctx.fillStyle = "#000000";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            if (history.length > 0) {
-                ctx.putImageData(history[history.length - 1], 0, 0);
-            }
-            drawGridLines();
+            redrawCanvas();
         }
 
-        window.addEventListener('resize', resizeCanvas);
+        function redrawCanvas() {
+            ctx.fillStyle = getBgColor();
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (currentBg === 'grid') drawGrid();
+
+            const history = pages[currentPageIndex];
+            if (history && history.length > 0) {
+                ctx.putImageData(history[history.length - 1], 0, 0);
+            }
+        }
+
+        function drawGrid() {
+            ctx.strokeStyle = '#222222';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+        }
+
+        window.addEventListener('resize', initCanvas);
         canvas.width = container.clientWidth;
         canvas.height = container.clientHeight;
-        ctx.fillStyle = "#000000";
+        ctx.fillStyle = getBgColor();
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         saveState();
 
-        // التبديل بين الأزرار
+        // وضعيات الأزرار
         const buttons = {
             draw: document.getElementById('btnDraw'),
             text: document.getElementById('btnText'),
@@ -215,9 +270,7 @@
 
         function setMode(mode) {
             currentMode = mode;
-            Object.keys(buttons).forEach(key => {
-                buttons[key].classList.toggle('active', key === mode);
-            });
+            Object.keys(buttons).forEach(key => buttons[key].classList.toggle('active', key === mode));
             if(mode !== 'draw') document.getElementById('shapeSelect').value = 'none';
         }
 
@@ -227,9 +280,7 @@
         buttons.highlight.onclick = () => setMode('highlight');
         buttons.erase.onclick = () => setMode('erase');
 
-        function setColor(hex) {
-            document.getElementById('colorPicker').value = hex;
-        }
+        function setColor(hex) { document.getElementById('colorPicker').value = hex; }
 
         function getPos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -242,8 +293,7 @@
 
         function startDrawing(e) {
             const pos = getPos(e);
-            startX = pos.x;
-            startY = pos.y;
+            startX = pos.x; startY = pos.y;
 
             if (currentMode === 'text') {
                 addArabicText(startX, startY);
@@ -266,7 +316,6 @@
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
 
-            // وضعية الليزر
             if (currentMode === 'laser') {
                 ctx.putImageData(snapshot, 0, 0);
                 ctx.beginPath();
@@ -275,7 +324,7 @@
                 ctx.shadowColor = '#ff0055';
                 ctx.shadowBlur = 15;
                 ctx.fill();
-                ctx.shadowBlur = 0; // إعادة التعيين
+                ctx.shadowBlur = 0;
                 return;
             }
 
@@ -284,35 +333,22 @@
                 ctx.strokeStyle = color;
                 ctx.lineWidth = size;
                 ctx.beginPath();
-                
-                if (shape === 'line') {
-                    ctx.moveTo(startX, startY);
-                    ctx.lineTo(pos.x, pos.y);
-                } else if (shape === 'rect') {
-                    ctx.strokeRect(startX, startY, pos.x - startX, pos.y - startY);
-                } else if (shape === 'circle') {
-                    let radius = Math.sqrt(Math.pow(pos.x - startX, 2) + Math.pow(pos.y - startY, 2));
-                    ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
-                } else if (shape === 'arrow') {
-                    drawArrow(startX, startY, pos.x, pos.y, ctx, size);
-                }
+                if (shape === 'line') { ctx.moveTo(startX, startY); ctx.lineTo(pos.x, pos.y); }
+                else if (shape === 'rect') { ctx.strokeRect(startX, startY, pos.x - startX, pos.y - startY); }
+                else if (shape === 'circle') {
+                    let r = Math.sqrt(Math.pow(pos.x - startX, 2) + Math.pow(pos.y - startY, 2));
+                    ctx.arc(startX, startY, r, 0, 2 * Math.PI);
+                } else if (shape === 'arrow') { drawArrow(startX, startY, pos.x, pos.y, ctx, size); }
                 ctx.stroke();
                 return;
             }
 
-            // الرسم الحر العادي
             if (currentMode === 'draw') {
-                ctx.globalAlpha = 1.0;
-                ctx.strokeStyle = color;
-                ctx.lineWidth = size;
+                ctx.globalAlpha = 1.0; ctx.strokeStyle = color; ctx.lineWidth = size;
             } else if (currentMode === 'highlight') {
-                ctx.globalAlpha = 0.3;
-                ctx.strokeStyle = color;
-                ctx.lineWidth = size * 3;
+                ctx.globalAlpha = 0.35; ctx.strokeStyle = color; ctx.lineWidth = size * 3;
             } else if (currentMode === 'erase') {
-                ctx.globalAlpha = 1.0;
-                ctx.strokeStyle = '#000000';
-                ctx.lineWidth = size * 4;
+                ctx.globalAlpha = 1.0; ctx.strokeStyle = getBgColor(); ctx.lineWidth = size * 4;
             }
 
             ctx.lineTo(pos.x, pos.y);
@@ -329,20 +365,15 @@
             }
         }
 
-        // رسم السهم
         function drawArrow(fromx, fromy, tox, toy, context, width) {
             var headlen = width * 3 + 5;
-            var dx = tox - fromx;
-            var dy = toy - fromy;
-            var angle = Math.atan2(dy, dx);
-            context.moveTo(fromx, fromy);
-            context.lineTo(tox, toy);
+            var angle = Math.atan2(toy - fromy, tox - fromx);
+            context.moveTo(fromx, fromy); context.lineTo(tox, toy);
             context.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
             context.moveTo(tox, toy);
             context.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
         }
 
-        // أحداث الرسم
         canvas.addEventListener('mousedown', startDrawing);
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup', stopDrawing);
@@ -351,7 +382,7 @@
         canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); });
         canvas.addEventListener('touchend', stopDrawing);
 
-        // النص العربي
+        // إضافة نص بالخط العربي
         function addArabicText(x, y) {
             const text = prompt("اكتب النص المراد تحويله لخط عربي جميل:");
             if (text) {
@@ -365,15 +396,7 @@
             }
         }
 
-        // التراجع Undo
-        document.getElementById('btnUndo').onclick = () => {
-            if (history.length > 1) {
-                history.pop();
-                ctx.putImageData(history[history.length - 1], 0, 0);
-            }
-        };
-
-        // إدراج صور
+        // إدراج الصور
         document.getElementById('imageLoader').addEventListener('change', function(e) {
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -393,32 +416,78 @@
             if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
         });
 
-        // شبكة التسطير
-        document.getElementById('btnGrid').onclick = () => {
-            showGrid = !showGrid;
-            document.getElementById('btnGrid').classList.toggle('active', showGrid);
-            drawGridLines();
+        // تغيير الخلفيات
+        document.getElementById('bgSelect').onchange = (e) => {
+            currentBg = e.target.value;
+            redrawCanvas();
         };
 
-        function drawGridLines() {
-            if (!showGrid) {
-                if (history.length > 0) ctx.putImageData(history[history.length - 1], 0, 0);
-                return;
-            }
-            ctx.strokeStyle = '#222222';
-            ctx.lineWidth = 1;
-            for (let x = 0; x < canvas.width; x += 40) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
-            }
-            for (let y = 0; y < canvas.height; y += 40) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
-            }
+        // إدارة الصفحات (Pages System)
+        const pageIndicator = document.getElementById('pageIndicator');
+        function updatePageUI() {
+            pageIndicator.innerText = `صفحة ${currentPageIndex + 1} / ${pages.length}`;
+            redrawCanvas();
         }
+
+        document.getElementById('btnAddPage').onclick = () => {
+            pages.push([]);
+            currentPageIndex = pages.length - 1;
+            updatePageUI();
+            saveState();
+        };
+
+        document.getElementById('btnPrevPage').onclick = () => {
+            if (currentPageIndex > 0) { currentPageIndex--; updatePageUI(); }
+        };
+
+        document.getElementById('btnNextPage').onclick = () => {
+            if (currentPageIndex < pages.length - 1) { currentPageIndex++; updatePageUI(); }
+        };
+
+        // الستارة
+        const curtain = document.getElementById('curtain');
+        document.getElementById('btnCurtain').onclick = () => {
+            curtain.style.display = curtain.style.display === 'block' ? 'none' : 'block';
+            curtain.style.height = '50%';
+        };
+
+        // المؤقت التفاعلي
+        const timerBox = document.getElementById('timerBox');
+        let timerInterval, timeLeft = 300;
+        document.getElementById('btnTimer').onclick = () => {
+            timerBox.style.display = timerBox.style.display === 'flex' ? 'none' : 'flex';
+        };
+
+        document.getElementById('btnStartTimer').onclick = () => {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) { clearInterval(timerInterval); alert("⏰ انتهى الوقت المحدد!"); return; }
+                timeLeft--;
+                let m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+                document.getElementById('timerDisplay').innerText = `${m < 10 ? '0':''}${m}:${s < 10 ? '0':''}${s}`;
+            }, 1000);
+        };
+
+        document.getElementById('btnResetTimer').onclick = () => {
+            clearInterval(timerInterval);
+            timeLeft = 300;
+            document.getElementById('timerDisplay').innerText = "05:00";
+        };
+
+        // التراجع Undo
+        document.getElementById('btnUndo').onclick = () => {
+            let history = pages[currentPageIndex];
+            if (history && history.length > 1) {
+                history.pop();
+                redrawCanvas();
+            }
+        };
 
         // مسح اللوحة
         document.getElementById('btnClear').onclick = () => {
-            if (confirm("هل تريد مسح محتويات اللوحة بالكامل؟")) {
-                ctx.fillStyle = "#000000";
+            if (confirm("هل تريد مسح الصفحة الحالية؟")) {
+                pages[currentPageIndex] = [];
+                ctx.fillStyle = getBgColor();
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 saveState();
             }
@@ -427,7 +496,7 @@
         // حفظ الصورة
         document.getElementById('btnSave').onclick = () => {
             const link = document.createElement('a');
-            link.download = 'smart-board-plus.png';
+            link.download = `smart-board-plus-page-${currentPageIndex + 1}.png`;
             link.href = canvas.toDataURL();
             link.click();
         };
