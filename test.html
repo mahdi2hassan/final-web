@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>السبورة الذكية التفاعلية</title>
+    <!-- استدعاء خط عربي جميل (Aref Ruqaa) -->
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1e1e1e;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        /* شريط الأدوات العلوي */
+        .toolbar {
+            background-color: #2d2d2d;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #3a3a3a;
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+        label {
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        button, input, select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            background: #4a4a4a;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #5a5a5a;
+        }
+        button.active {
+            background: #007acc;
+            font-weight: bold;
+        }
+        input[type="color"] {
+            padding: 0;
+            width: 35px;
+            height: 30px;
+            border: none;
+            cursor: pointer;
+            background: transparent;
+        }
+        /* حاوية السبورة */
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background-color: #0d2b1d; /* لون السبورة الخضراء التقليدية */
+            cursor: crosshair;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شريط التحكم والأدوات -->
+    <div class="toolbar">
+        <!-- الأقلام والأدوات -->
+        <div class="tool-group">
+            <button id="btnDraw" class="active">✍️ رسم حر</button>
+            <button id="btnHighlight">🖍️ تمييز (شفاف)</button>
+            <button id="btnText">🔤 نص عربي جميل</button>
+            <button id="btnErase">🧹 ممحاة</button>
+        </div>
+
+        <!-- الألوان والسُمْك -->
+        <div class="tool-group">
+            <label>اللون:</label>
+            <input type="color" id="colorPicker" value="#ffffff">
+            <label>الحجم:</label>
+            <input type="range" id="lineWidth" min="1" max="50" value="5">
+        </div>
+
+        <!-- إدراج الصور -->
+        <div class="tool-group">
+            <label for="imageLoader">📷 إدراج صورة:</label>
+            <input type="file" id="imageLoader" accept="image/*" style="width: 180px;">
+        </div>
+
+        <!-- الإجراءات -->
+        <div class="tool-group">
+            <button id="btnClear" style="background: #a93226;">🗑️ مسح الكل</button>
+            <button id="btnSave" style="background: #27ae60;">💾 حفظ صورة</button>
+        </div>
+    </div>
+
+    <!-- منطقة الرسم -->
+    <div class="canvas-container" id="container">
+        <canvas id="board"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('board');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('container');
+
+        let isDrawing = false;
+        let currentMode = 'draw'; // draw, highlight, text, erase
+        let startX, startY;
+
+        // ضبط أبعاد السبورة لتناسب جميع الشاشات
+        function resizeCanvas() {
+            // حفظ المحتوى الحالي قبل إعادة الضبط
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            tempCtx.drawImage(canvas, 0, 0);
+
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+
+            // إعادة رسم المحتوى
+            ctx.drawImage(tempCanvas, 0, 0);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // التبديل بين الأدوات
+        const buttons = {
+            draw: document.getElementById('btnDraw'),
+            highlight: document.getElementById('btnHighlight'),
+            text: document.getElementById('btnText'),
+            erase: document.getElementById('btnErase')
+        };
+
+        function setMode(mode) {
+            currentMode = mode;
+            Object.keys(buttons).forEach(key => {
+                buttons[key].classList.toggle('active', key === mode);
+            });
+        }
+
+        buttons.draw.onclick = () => setMode('draw');
+        buttons.highlight.onclick = () => setMode('highlight');
+        buttons.text.onclick = () => setMode('text');
+        buttons.erase.onclick = () => setMode('erase');
+
+        // أحداث الرسم واللمس
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            const pos = getPos(e);
+            startX = pos.x;
+            startY = pos.y;
+
+            if (currentMode === 'text') {
+                addArabicText(startX, startY);
+                return;
+            }
+
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            const color = document.getElementById('colorPicker').value;
+            const size = document.getElementById('lineWidth').value;
+
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            if (currentMode === 'draw') {
+                ctx.globalAlpha = 1.0;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = size;
+            } else if (currentMode === 'highlight') {
+                ctx.globalAlpha = 0.3; // إتاحة الشفافية للتظليل
+                ctx.strokeStyle = color;
+                ctx.lineWidth = size * 3;
+            } else if (currentMode === 'erase') {
+                ctx.globalAlpha = 1.0;
+                ctx.strokeStyle = '#0d2b1d'; // نفس لون خلفية السبورة
+                ctx.lineWidth = size * 4;
+            }
+
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                ctx.closePath();
+                isDrawing = false;
+            }
+        }
+
+        // دعم الماوس
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+
+        // دعم الشاشات اللمسية (الهواتف والتابلت)
+        canvas.addEventListener('touchstart', (e) => { startDrawing(e); e.preventDefault(); });
+        canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); });
+        canvas.addEventListener('touchend', stopDrawing);
+
+        // إضافة نص عربي بخط جميل (خط الرقعة)
+        function addArabicText(x, y) {
+            const text = prompt("أدخل النص العربي الذي تريد كتابته على السبورة:");
+            if (text) {
+                const color = document.getElementById('colorPicker').value;
+                const size = document.getElementById('lineWidth').value;
+                
+                ctx.globalAlpha = 1.0;
+                ctx.font = `${parseInt(size) * 5 + 20}px 'Aref Ruqaa', cursive`;
+                ctx.fillStyle = color;
+                ctx.fillText(text, x, y);
+            }
+        }
+
+        // إدراج صور على السبورة
+        document.getElementById('imageLoader').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    ctx.globalAlpha = 1.0;
+                    // تقليل حجم الصورة إذا كانت أكبر من حجم الشاشة
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDim = 300;
+                    if (width > maxDim || height > maxDim) {
+                        if (width > height) {
+                            height = (maxDim / width) * height;
+                            width = maxDim;
+                        } else {
+                            width = (maxDim / height) * width;
+                            height = maxDim;
+                        }
+                    }
+                    // رسم الصورة في منتصف اللوحة
+                    ctx.drawImage(img, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+                }
+                img.src = event.target.result;
+            }
+            if(e.target.files[0]) {
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        // مسح السبورة
+        document.getElementById('btnClear').onclick = () => {
+            if (confirm("هل تريد مسح كل ما على السبورة؟")) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        };
+
+        // حفظ السبورة كصورة
+        document.getElementById('btnSave').onclick = () => {
+            const link = document.createElement('a');
+            link.download = 'smart-board-export.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        };
+    </script>
+</body>
+</html>
