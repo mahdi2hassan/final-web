@@ -3,122 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سبورة بلس الاحترافية الشاملة - Smart Board Plus</title>
-    <!-- استدعاء الخطوط العربية -->
-    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Cairo:wght@600;700&display=swap" rel="stylesheet">
+    <title>سبورة بلس الذكية | الأستاذ مهدي حسن</title>
+    <!-- استدعاء خطوط عربية فاخرة -->
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #121212;
+            background: #090a0f;
             color: #fff;
             display: flex;
             flex-direction: column;
             height: 100vh;
             overflow: hidden;
         }
-        /* الهيدر العلوي */
+
+        /* الهيدر المطور بأسلوب هولوغرامي زجاجي */
         .header {
-            background: #1f1f1f;
+            background: rgba(18, 20, 29, 0.85);
+            backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 6px 16px;
-            border-bottom: 2px solid #333;
+            padding: 8px 24px;
+            border-bottom: 1px solid rgba(255, 202, 40, 0.2);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            z-index: 20;
         }
-        .brand { font-size: 20px; font-weight: bold; color: #ffca28; display: flex; align-items: center; gap: 8px; }
-        
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .brand-logo {
+            background: linear-gradient(135deg, #ffca28, #ff8f00);
+            color: #000;
+            font-weight: 800;
+            font-size: 16px;
+            padding: 4px 10px;
+            border-radius: 8px;
+            box-shadow: 0 0 12px rgba(255, 202, 40, 0.4);
+        }
+        .brand-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+        .copyright-tag {
+            font-size: 12px;
+            color: #ffca28;
+            background: rgba(255, 202, 40, 0.1);
+            border: 1px solid rgba(255, 202, 40, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
         /* شريط الأدوات الرئيسي */
         .toolbar {
-            background-color: #1a1a1a;
-            padding: 8px;
+            background: rgba(22, 25, 37, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 8px 12px;
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
             align-items: center;
             justify-content: center;
             z-index: 10;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         .tool-group {
             display: flex;
             align-items: center;
             gap: 6px;
-            background: #2a2a2a;
-            padding: 4px 8px;
-            border-radius: 8px;
-            border: 1px solid #3d3d3d;
-        }
-        label { font-size: 12px; color: #ccc; white-space: nowrap; }
-        button, select {
+            background: rgba(255, 255, 255, 0.03);
             padding: 5px 10px;
-            border-radius: 6px;
-            border: none;
-            background: #3a3a3a;
-            color: white;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        label { font-size: 11px; color: #aaa; white-space: nowrap; font-weight: 600; }
+        button, select {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: #1c202e;
+            color: #e0e0e0;
             cursor: pointer;
             font-size: 12px;
             font-family: 'Cairo', sans-serif;
-            transition: all 0.2s;
+            font-weight: 600;
+            transition: all 0.25s ease;
         }
-        button:hover { background: #4a4a4a; }
-        button.active { background: #ffca28; color: #000; font-weight: bold; }
+        button:hover {
+            background: #2a3045;
+            color: #fff;
+            border-color: rgba(255, 202, 40, 0.4);
+        }
+        button.active {
+            background: linear-gradient(135deg, #ffca28, #ffa000);
+            color: #000;
+            font-weight: 800;
+            border: none;
+            box-shadow: 0 0 10px rgba(255, 202, 40, 0.5);
+        }
         .neon-btn {
-            width: 20px; height: 20px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; display: inline-block;
+            width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); cursor: pointer; display: inline-block;
+            transition: transform 0.2s;
         }
-        input[type="color"] { width: 28px; height: 25px; border: none; cursor: pointer; background: transparent; }
-        
-        /* حاوية اللوحة والستارة */
+        .neon-btn:hover { transform: scale(1.2); }
+        input[type="color"] { width: 30px; height: 26px; border: none; cursor: pointer; background: transparent; }
+
+        /* منطقة السبورة */
         .canvas-container {
             flex: 1;
             position: relative;
-            background-color: #000000;
+            background-color: #050608;
             cursor: crosshair;
             overflow: hidden;
         }
         canvas { display: block; width: 100%; height: 100%; }
 
-        /* الستارة التفاعلية */
+        /* العلامة المائية الثابتة على اللوحة */
+        .watermark {
+            position: absolute;
+            bottom: 15px;
+            left: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.15);
+            pointer-events: none;
+            z-index: 2;
+            letter-spacing: 1px;
+        }
+
+        /* الستارة والمؤقت */
         .curtain {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 15, 15, 0.98);
-            border-bottom: 5px solid #ffca28;
+            background: rgba(10, 12, 18, 0.98);
+            border-bottom: 4px solid #ffca28;
             display: none;
             z-index: 5;
             cursor: ns-resize;
             text-align: center;
-            padding-top: 10px;
-            color: #888;
+            padding-top: 15px;
+            color: #ffca28;
             font-size: 14px;
+            font-weight: 600;
         }
-
-        /* المؤقت التفاعلي */
         .timer-box {
             position: absolute;
             top: 15px; left: 15px;
-            background: rgba(30, 30, 30, 0.85);
-            border: 1px solid #444;
-            padding: 8px 12px;
-            border-radius: 8px;
+            background: rgba(15, 18, 28, 0.9);
+            border: 1px solid rgba(255, 202, 40, 0.3);
+            padding: 8px 14px;
+            border-radius: 10px;
             display: none;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             z-index: 6;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
         }
-        .timer-display { font-size: 18px; font-weight: bold; color: #00ffcc; font-family: monospace; }
+        .timer-display { font-size: 20px; font-weight: 800; color: #00ffcc; font-family: monospace; }
     </style>
 </head>
 <body>
 
-    <!-- الهيدر -->
+    <!-- الهيدر الخاص بحقوق الملكية -->
     <div class="header">
-        <div class="brand">✨ سبورة بلس الاحترافية الشاملة <span>(+)</span></div>
-        <div style="font-size: 12px; color: #aaa;">منصة التدريس والتقنيات التفاعلية المتكاملة</div>
+        <div class="brand-container">
+            <span class="brand-logo">PLUS +</span>
+            <span class="brand-title">سبورة بلس الذكية</span>
+        </div>
+        <div class="copyright-tag">
+            🛡️ جميع الحقوق محفوظة: <strong>الأستاذ مهدي حسن</strong> | منصة Plus
+        </div>
     </div>
 
-    <!-- شريط الأدوات الشامل -->
+    <!-- شريط الأدوات المطور -->
     <div class="toolbar">
-        <!-- الأقلام والوضعيات -->
         <div class="tool-group">
             <button id="btnDraw" class="active">✍️ رسم حر</button>
             <button id="btnText">✒️ خط عربي</button>
@@ -127,7 +193,6 @@
             <button id="btnErase">🧹 ممحاة</button>
         </div>
 
-        <!-- الأشكال الهندسية -->
         <div class="tool-group">
             <label>الأشكال:</label>
             <select id="shapeSelect">
@@ -139,7 +204,6 @@
             </select>
         </div>
 
-        <!-- الألوان والسُمْك -->
         <div class="tool-group">
             <label>الألوان:</label>
             <span class="neon-btn" style="background: #ffff00;" onclick="setColor('#ffff00')"></span>
@@ -151,21 +215,19 @@
             <input type="range" id="lineWidth" min="1" max="50" value="4">
         </div>
 
-        <!-- نظام الصفحات والخلفيات -->
         <div class="tool-group">
             <label>الخلفية:</label>
             <select id="bgSelect">
-                <option value="black">⚫ سوداء (داكن)</option>
-                <option value="white">⚪ بيضاء (فاتح)</option>
-                <option value="grid">📐 شبكة رسم</option>
+                <option value="black">⚫ سوداء فاخرة</option>
+                <option value="white">⚪ بيضاء ناصعة</option>
+                <option value="grid">📐 شبكة رسم بياني</option>
             </select>
             <button id="btnPrevPage">◀️</button>
-            <span id="pageIndicator" style="font-size:12px;">صفحة 1 / 1</span>
+            <span id="pageIndicator" style="font-size:12px; color:#ffca28; font-weight:bold;">صفحة 1 / 1</span>
             <button id="btnNextPage">▶️</button>
-            <button id="btnAddPage" style="background: #27ae60;">➕ صفحة</button>
+            <button id="btnAddPage" style="background: #27ae60; border:none; color:#fff;">➕ صفحة</button>
         </div>
 
-        <!-- الأدوات المتقدمة -->
         <div class="tool-group">
             <button id="btnCurtain">🎞️ الستارة</button>
             <button id="btnTimer">⏱️ المؤقت</button>
@@ -173,25 +235,27 @@
             <input type="file" id="imageLoader" accept="image/*" style="width: 120px; font-size:10px;">
         </div>
 
-        <!-- التراجع والإجراءات -->
         <div class="tool-group">
-            <button id="btnUndo" style="background: #d35400;">↩️ تراجع</button>
-            <button id="btnClear" style="background: #c0392b;">🗑️ مسح الصفحة</button>
-            <button id="btnSave" style="background: #2980b9;">💾 حفظ</button>
+            <button id="btnUndo" style="background: #d35400; border:none; color:#fff;">↩️ تراجع</button>
+            <button id="btnClear" style="background: #c0392b; border:none; color:#fff;">🗑️ مسح</button>
+            <button id="btnSave" style="background: linear-gradient(135deg, #27ae60, #2dc997); border:none; color:#fff; font-weight:bold;">💾 حفظ الشرح</button>
         </div>
     </div>
 
-    <!-- منطقة الرسم والتفاعل -->
+    <!-- منطقة الشرح والسبورة -->
     <div class="canvas-container" id="container">
+        <!-- العلامة المائية الشفافة -->
+        <div class="watermark">منصة Plus التعليمية - أ / مهدي حسن</div>
+
         <!-- الستارة -->
-        <div class="curtain" id="curtain">▼ اسحب الستارة لأعلى أو لأسفل لحجب/إظهار الشرح ▼</div>
+        <div class="curtain" id="curtain">▼ اسحب الستارة لأعلى أو لأسفل لحجب/إظهار الجزء المطلوب ▼</div>
         
-        <!-- صندوق المؤقت -->
+        <!-- المؤقت -->
         <div class="timer-box" id="timerBox">
             <span>⏱️ المتبقي:</span>
             <span class="timer-display" id="timerDisplay">05:00</span>
-            <button id="btnStartTimer" style="background:#27ae60; padding:2px 6px;">تشغيل</button>
-            <button id="btnResetTimer" style="background:#c0392b; padding:2px 6px;">إعادة</button>
+            <button id="btnStartTimer" style="background:#27ae60; padding:3px 8px;">تشغيل</button>
+            <button id="btnResetTimer" style="background:#c0392b; padding:3px 8px;">إعادة</button>
         </div>
 
         <canvas id="board"></canvas>
@@ -202,19 +266,17 @@
         const ctx = canvas.getContext('2d');
         const container = document.getElementById('container');
 
-        // المتغيرات العامة
         let isDrawing = false;
         let currentMode = 'draw'; 
         let startX, startY;
         let currentBg = 'black';
         
-        // نظام متعدد الصفحات والـ Undo
-        let pages = [[]]; // مصفوفة تحفظ الـ History لكل صفحة
+        let pages = [[]]; 
         let currentPageIndex = 0;
         const maxHistory = 15;
 
         function getBgColor() {
-            return currentBg === 'white' ? '#ffffff' : '#000000';
+            return currentBg === 'white' ? '#ffffff' : '#050608';
         }
 
         function saveState() {
@@ -242,7 +304,7 @@
         }
 
         function drawGrid() {
-            ctx.strokeStyle = '#222222';
+            ctx.strokeStyle = '#1a1d29';
             ctx.lineWidth = 1;
             for (let x = 0; x < canvas.width; x += 40) {
                 ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
@@ -259,7 +321,6 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         saveState();
 
-        // وضعيات الأزرار
         const buttons = {
             draw: document.getElementById('btnDraw'),
             text: document.getElementById('btnText'),
@@ -382,7 +443,6 @@
         canvas.addEventListener('touchmove', (e) => { draw(e); e.preventDefault(); });
         canvas.addEventListener('touchend', stopDrawing);
 
-        // إضافة نص بالخط العربي
         function addArabicText(x, y) {
             const text = prompt("اكتب النص المراد تحويله لخط عربي جميل:");
             if (text) {
@@ -396,7 +456,6 @@
             }
         }
 
-        // إدراج الصور
         document.getElementById('imageLoader').addEventListener('change', function(e) {
             const reader = new FileReader();
             reader.onload = function(event) {
@@ -416,13 +475,11 @@
             if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
         });
 
-        // تغيير الخلفيات
         document.getElementById('bgSelect').onchange = (e) => {
             currentBg = e.target.value;
             redrawCanvas();
         };
 
-        // إدارة الصفحات (Pages System)
         const pageIndicator = document.getElementById('pageIndicator');
         function updatePageUI() {
             pageIndicator.innerText = `صفحة ${currentPageIndex + 1} / ${pages.length}`;
@@ -444,14 +501,12 @@
             if (currentPageIndex < pages.length - 1) { currentPageIndex++; updatePageUI(); }
         };
 
-        // الستارة
         const curtain = document.getElementById('curtain');
         document.getElementById('btnCurtain').onclick = () => {
             curtain.style.display = curtain.style.display === 'block' ? 'none' : 'block';
             curtain.style.height = '50%';
         };
 
-        // المؤقت التفاعلي
         const timerBox = document.getElementById('timerBox');
         let timerInterval, timeLeft = 300;
         document.getElementById('btnTimer').onclick = () => {
@@ -474,7 +529,6 @@
             document.getElementById('timerDisplay').innerText = "05:00";
         };
 
-        // التراجع Undo
         document.getElementById('btnUndo').onclick = () => {
             let history = pages[currentPageIndex];
             if (history && history.length > 1) {
@@ -483,7 +537,6 @@
             }
         };
 
-        // مسح اللوحة
         document.getElementById('btnClear').onclick = () => {
             if (confirm("هل تريد مسح الصفحة الحالية؟")) {
                 pages[currentPageIndex] = [];
@@ -493,12 +546,20 @@
             }
         };
 
-        // حفظ الصورة
+        // طباعة حقوق الملكية تلقائياً على الصورة المصدّرة
         document.getElementById('btnSave').onclick = () => {
+            // إضافة التوثيق للوحة قبل الحفظ
+            ctx.font = "bold 16px 'Cairo', sans-serif";
+            ctx.fillStyle = "#ffca28";
+            ctx.fillText("حقوق الملكية محفوظة: أ / مهدي حسن - منصة Plus", 20, canvas.height - 20);
+
             const link = document.createElement('a');
-            link.download = `smart-board-plus-page-${currentPageIndex + 1}.png`;
+            link.download = `Plus-Board-Mahdi-Hassan-P${currentPageIndex + 1}.png`;
             link.href = canvas.toDataURL();
             link.click();
+            
+            // إعادة رسم الشاشة لإخفاء النص الثابت بعد الحفظ
+            redrawCanvas();
         };
     </script>
 </body>
