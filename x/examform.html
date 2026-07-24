@@ -16,47 +16,39 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <!-- html2canvas & QR Code -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
         :root {
-            --primary-color: #0891b2;
+            --primary-color: #0284c7;
+            --primary-hover: #0369a1;
             --accent-color: #06b6d4;
-            --badge-bg: #155e75;
+            --badge-bg: #0f172a;
             --bg-page: #ffffff;
             --text-main: #0f172a;
-            --card-border: #06b6d4;
-            --card-bg: #f0fdf4;
+            --card-border: #e2e8f0;
+            --card-bg: #ffffff;
             --card-radius: 12px;
             --base-font-size: 14.5px;
             --base-line-height: 1.7;
             --admin-bg: #ffffff;
             --admin-text: #0f172a;
+            --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.08), 0 2px 6px -1px rgba(0,0,0,0.04);
         }
 
         body.dark-admin-mode { --admin-bg: #1e293b; --admin-text: #f8fafc; }
 
-        /* إنشاء 50 قالب مختلف */
-        body.theme-1 { --primary-color: #0891b2; --accent-color: #06b6d4; --badge-bg: #155e75; --card-border: #06b6d4; --card-bg: #f0fdf4; }
+        /* قوالب التصميم */
+        body.theme-1 { --primary-color: #0891b2; --accent-color: #06b6d4; --badge-bg: #155e75; --card-border: #a5f3fc; --card-bg: #f0fdf4; }
         body.theme-2 { --primary-color: #1e293b; --accent-color: #334155; --badge-bg: #d97706; --card-border: #cbd5e1; --card-bg: #fffbf5; }
-        body.theme-3 { --primary-color: #1e1b4b; --accent-color: #312e81; --badge-bg: #eab308; --card-border: #eab308; --card-bg: #ffffff; }
+        body.theme-3 { --primary-color: #1e1b4b; --accent-color: #312e81; --badge-bg: #eab308; --card-border: #fef08a; --card-bg: #ffffff; }
         body.theme-4 { --primary-color: #065f46; --accent-color: #10b981; --badge-bg: #047857; --card-border: #a7f3d0; --card-bg: #f0fdf4; }
         body.theme-5 { --primary-color: #9f1239; --accent-color: #f43f5e; --badge-bg: #be123c; --card-border: #fecdd3; --card-bg: #fff1f2; }
         body.theme-6 { --primary-color: #5b21b6; --accent-color: #8b5cf6; --badge-bg: #7c3aed; --card-border: #ddd6fe; --card-bg: #f5f3ff; }
-        body.theme-7 { --primary-color: #c2410c; --accent-color: #f97316; --badge-bg: #9a3412; --card-border: #ffedd5; --card-bg: #fff7ed; }
-        body.theme-8 { --primary-color: #0369a1; --accent-color: #0ea5e9; --badge-bg: #075985; --card-border: #bae6fd; --card-bg: #f0f9ff; }
-        body.theme-9 { --primary-color: #4d7c0f; --accent-color: #84cc16; --badge-bg: #3f6212; --card-border: #d9f99d; --card-bg: #f7fee7; }
-        body.theme-10 { --primary-color: #a21caf; --accent-color: #e879f9; --badge-bg: #86198f; --card-border: #f5d0fe; --card-bg: #fdf4ff; }
-        body.theme-11 { --primary-color: #374151; --accent-color: #6b7280; --badge-bg: #1f2937; --card-border: #e5e7eb; --card-bg: #f9fafb; }
-        body.theme-12 { --primary-color: #b91c1c; --accent-color: #ef4444; --badge-bg: #991b1b; --card-border: #fca5a5; --card-bg: #fef2f2; }
-        body.theme-13 { --primary-color: #15803d; --accent-color: #22c55e; --badge-bg: #166534; --card-border: #86efac; --card-bg: #f0fdf4; }
-        body.theme-14 { --primary-color: #6b21a8; --accent-color: #a855f7; --badge-bg: #581c87; --card-border: #d8b4fe; --card-bg: #faf5ff; }
-        body.theme-15 { --primary-color: #0f766e; --accent-color: #14b8a6; --badge-bg: #115e59; --card-border: #99f6e4; --card-bg: #f0fdfa; }
 
         body.eco-print { --primary-color: #000000 !important; --badge-bg: #000000 !important; --accent-color: #000000 !important; --card-border: #000000 !important; --card-bg: #ffffff !important; }
         body.homework-mode .q-score-tag, body.homework-mode .score-pill-wrap { display: none !important; }
 
-        /* دعم اللغة الإنجليزية LTR */
+        /* LTR */
         body.ltr-mode { dir: ltr !important; }
         body.ltr-mode .page { direction: ltr !important; text-align: left !important; }
         body.ltr-mode .q-number-badge { right: auto !important; left: 12px !important; }
@@ -68,114 +60,147 @@
         body.dual-column-mode .question-card { break-inside: avoid; display: inline-block; width: 100%; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', 'Cairo', sans-serif; }
-        body { background-color: #f1f5f9; display: flex; flex-direction: column; align-items: center; padding: 10px; min-height: 100vh; color: var(--text-main); }
+        body { background-color: #f8fafc; display: flex; flex-direction: column; align-items: center; padding: 10px; min-height: 100vh; color: var(--text-main); }
 
-        .svg-ic { width: 16px; height: 16px; fill: currentColor; vertical-align: middle; display: inline-block; }
+        .svg-ic { width: 18px; height: 18px; fill: currentColor; vertical-align: middle; display: inline-block; }
 
         .settings-gear-btn {
-            position: fixed; bottom: 20px; left: 20px; width: 50px; height: 50px; background-color: var(--primary-color);
+            position: fixed; bottom: 24px; left: 24px; width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             color: #ffffff; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.2); cursor: pointer; z-index: 9999; transition: transform 0.3s ease; border: 2px solid #ffffff;
+            box-shadow: 0 8px 20px rgba(8, 145, 178, 0.4); cursor: pointer; z-index: 9999; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 2px solid #ffffff;
         }
-        .settings-gear-btn:hover { transform: rotate(90deg) scale(1.05); }
+        .settings-gear-btn:hover { transform: rotate(90deg) scale(1.1); box-shadow: 0 12px 24px rgba(8, 145, 178, 0.5); }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 15px;
+        }
+        .modal-overlay.open { display: flex; animation: fadeIn 0.3s ease; }
+
+        .modal-card {
+            background: #ffffff; border-radius: 16px; width: 100%; max-width: 550px; overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); color: #ffffff;
+            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-header h3 { font-size: 18px; font-weight: 800; margin: 0; }
+        .modal-close { background: none; border: none; color: #ffffff; font-size: 20px; cursor: pointer; opacity: 0.8; }
+        .modal-close:hover { opacity: 1; }
+
+        .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+        .subs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+        .sub-plan-card {
+            border: 2px solid #e2e8f0; border-radius: 12px; padding: 14px 10px; text-align: center;
+            transition: all 0.2s; position: relative; background: #fafafa;
+        }
+        .sub-plan-card.featured { border-color: var(--primary-color); background: #f0fdfa; }
+        .sub-plan-card .badge { position: absolute; top: -10px; right: 50%; transform: translateX(50%); background: #ea580c; color: #fff; font-size: 9px; padding: 2px 8px; border-radius: 10px; font-weight: 800; }
+        .sub-title { font-size: 13px; font-weight: 700; color: #475569; }
+        .sub-price { font-size: 20px; font-weight: 900; color: var(--primary-color); margin: 6px 0; }
+        .sub-price span { font-size: 11px; font-weight: 600; color: #64748b; }
+
+        .vodafone-box {
+            background: #fff5f5; border: 1px dashed #ef4444; border-radius: 10px; padding: 12px; text-align: center;
+        }
+        .vodafone-box h4 { color: #dc2626; font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .phone-nums { display: flex; justify-content: center; gap: 12px; font-weight: 800; font-size: 14px; color: #0f172a; margin-top: 4px; }
+        .copy-btn { background: #fee2e2; border: none; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-right: 4px; }
 
         .admin-controls-wrapper {
             width: 100%; max-width: 210mm; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; margin-bottom: 0;
         }
         .admin-controls-wrapper.open { max-height: 4000px; margin-bottom: 15px; }
         .admin-controls {
-            background: var(--admin-bg); color: var(--admin-text); border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 10px;
+            background: var(--admin-bg); color: var(--admin-text); border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;
+            box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 12px;
         }
 
         .analytics-bar {
-            background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; color: #0f172a;
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; color: #0f172a;
             display: flex; justify-content: space-around; align-items: center; font-size: 11.5px; font-weight: 700; flex-wrap: wrap; gap: 6px;
         }
 
         .bloom-stats-bar {
-            background: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 6px 10px; font-size: 11px; font-weight: bold;
-            display: flex; gap: 10px; justify-content: space-around; flex-wrap: wrap; color: #1e40af;
+            background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 6px 10px; font-size: 11px; font-weight: bold;
+            display: flex; gap: 10px; justify-content: space-around; flex-wrap: wrap; color: #0369a1;
         }
 
-        .progress-bar-container { width: 100%; background: #e2e8f0; border-radius: 6px; height: 10px; overflow: hidden; margin-top: 4px; }
+        .progress-bar-container { width: 100%; background: #e2e8f0; border-radius: 6px; height: 8px; overflow: hidden; margin-top: 4px; }
         .progress-bar-fill { background: var(--primary-color); height: 100%; width: 0%; transition: width 0.3s ease; }
 
         .btn-group { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
         .btn {
-            background-color: var(--primary-color); color: #fff; border: none; padding: 7px 10px; border-radius: 6px;
-            font-weight: 700; font-size: 11.5px; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 5px;
+            background-color: var(--primary-color); color: #fff; border: none; padding: 8px 12px; border-radius: 8px;
+            font-weight: 700; font-size: 11.5px; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
-        .btn:hover { transform: translateY(-1px); opacity: 0.9; }
-        .btn-success { background-color: #059669; }
-        .btn-warning { background-color: #d97706; }
-        .btn-danger { background-color: #dc2626; }
+        .btn:hover { transform: translateY(-1px); opacity: 0.95; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+        .btn-success { background-color: #10b981; }
+        .btn-warning { background-color: #f59e0b; }
+        .btn-danger { background-color: #ef4444; }
         .btn-print { background-color: #334155; }
-        .btn-purple { background-color: #7c3aed; }
-        .btn-eco { background-color: #475569; }
+        .btn-purple { background-color: #8b5cf6; }
+        .btn-eco { background-color: #64748b; }
         .btn-ai { background-color: #2563eb; color: white; }
         .btn-voice { background-color: #e11d48; color: white; }
         .btn-voice.recording { animation: pulse 1s infinite; background-color: #991b1b; }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .edit-panel { display: none; width: 100%; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px; gap: 8px; flex-direction: column; color: #0f172a; }
+        .edit-panel { display: none; width: 100%; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 12px; gap: 10px; flex-direction: column; color: #0f172a; }
         .input-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .input-group label { font-weight: 700; color: var(--primary-color); font-size: 12px; }
-        .input-group input, .input-group select, .input-group textarea { padding: 5px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; outline: none; flex: 1 1 120px; font-size: 12px; }
+        .input-group input, .input-group select, .input-group textarea { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; outline: none; flex: 1 1 120px; font-size: 12px; background: #fff; }
 
-        .math-toolbar { display: flex; gap: 4px; flex-wrap: wrap; background: #e2e8f0; padding: 6px; border-radius: 6px; }
-        .math-btn { background: #fff; border: 1px solid #cbd5e1; padding: 2px 6px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold; }
+        .math-toolbar { display: flex; gap: 4px; flex-wrap: wrap; background: #f1f5f9; padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .math-btn { background: #fff; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: bold; color: #334155; }
+        .math-btn:hover { background: #e2e8f0; }
 
-        .font-controls { display: flex; gap: 10px; align-items: center; background: #e0f2fe; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; color: #0369a1; flex-wrap: wrap; }
+        .font-controls { display: flex; gap: 10px; align-items: center; background: #f0f9ff; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; color: #0369a1; flex-wrap: wrap; }
 
         .page {
             width: 100%; max-width: 210mm; min-height: 297mm; background-color: var(--bg-page) !important;
-            border-radius: 12px; padding: 20px 25px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-radius: 12px; padding: 25px 30px; box-shadow: var(--shadow-md);
             position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; transition: all 0.3s ease;
-            page-break-after: always; margin-bottom: 20px;
+            page-break-after: always; margin-bottom: 20px; border: 1px solid #e2e8f0;
         }
 
-        /* إطار زخرفي */
-        .page.has-ornament-border {
-            border: 8px double var(--primary-color);
-            padding: 15px 20px;
-        }
-
+        .page.has-ornament-border { border: 8px double var(--primary-color); padding: 18px 22px; }
         .cover-page { display: none; flex-direction: column; justify-content: center; align-items: center; border: 4px double var(--primary-color); padding: 40px; text-align: center; gap: 20px; }
         body.show-cover .cover-page { display: flex; }
 
         .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 4rem; font-weight: 900; color: rgba(15, 23, 42, 0.03); white-space: nowrap; pointer-events: none; z-index: 1; }
         .center-logo-watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.06; max-width: 300px; max-height: 300px; pointer-events: none; z-index: 1; display: none; }
 
-        .header-banner { width: 100%; height: 6px; background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--badge-bg)); border-radius: 3px; margin-bottom: 12px; }
+        .header-banner { width: 100%; height: 5px; background: linear-gradient(90deg, var(--primary-color), var(--accent-color)); border-radius: 3px; margin-bottom: 14px; }
         .content-wrap { position: relative; z-index: 2; }
 
         .header-top { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
         .title-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-        .title-brand { display: flex; align-items: center; gap: 8px; }
-        .title-brand .brand-icon-box { background: #f1f5f9; color: var(--primary-color); width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .title-brand { display: flex; align-items: center; gap: 10px; }
+        .title-brand .brand-icon-box { background: #f1f5f9; color: var(--primary-color); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
         .title-brand h1 { font-size: 22px; font-weight: 900; color: var(--primary-color); line-height: 1.1; }
-        .session-badge { background: #f1f5f9; border: 1px dashed var(--primary-color); border-radius: 6px; padding: 2px 8px; font-size: 13px; font-weight: 800; color: var(--primary-color); display: inline-block; }
-        .subject-badge { background: var(--primary-color); color: #fff; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 800; display: inline-block; }
+        .session-badge { background: #f1f5f9; border: 1px dashed var(--primary-color); border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 800; color: var(--primary-color); display: inline-block; }
+        .subject-badge { background: var(--primary-color); color: #fff; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 800; display: inline-block; }
         
         .teacher-info-card { border: 1px solid var(--card-border); border-radius: 8px; padding: 6px 12px; background: #ffffff; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
         .teacher-info-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--primary-color); }
 
-        .grading-summary-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11px; text-align: center; }
-        .grading-summary-table th, .grading-summary-table td { border: 1px solid var(--primary-color); padding: 3px; }
+        .grading-summary-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; text-align: center; }
+        .grading-summary-table th, .grading-summary-table td { border: 1px solid var(--primary-color); padding: 4px; }
         .grading-summary-table th { background: var(--primary-color); color: #fff; }
 
-        .student-bar { border: 1px solid var(--primary-color); border-radius: 8px; padding: 6px 10px; display: flex; flex-wrap: wrap; gap: 6px 10px; justify-content: space-between; align-items: center; margin-bottom: 14px; background: #fff; font-size: 11.5px; font-weight: 800; color: var(--primary-color); }
+        .student-bar { border: 1px solid var(--primary-color); border-radius: 8px; padding: 6px 12px; display: flex; flex-wrap: wrap; gap: 6px 10px; justify-content: space-between; align-items: center; margin-bottom: 16px; background: #fff; font-size: 11.5px; font-weight: 800; color: var(--primary-color); }
         .student-bar .dots { border-bottom: 1px dotted #94a3b8; display: inline-block; min-width: 40px; height: 10px; }
         .score-pill { border: 1px solid var(--badge-bg); background: #fef3c7; border-radius: 4px; padding: 1px 6px; color: var(--badge-bg); font-weight: 900; }
 
-        .question-card { border: 1px solid var(--card-border); border-radius: var(--card-radius); background: var(--card-bg); padding: 14px 12px 10px 12px; margin-bottom: 12px; position: relative; display: flex; flex-direction: column; justify-content: space-between; page-break-inside: avoid; transition: all 0.2s; }
-        .q-number-badge { position: absolute; top: -10px; right: 12px; background: var(--primary-color); color: #ffffff; padding: 1px 12px; border-radius: 12px; font-weight: 800; font-size: 12px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+        .question-card { border: 1px solid var(--card-border); border-radius: var(--card-radius); background: var(--card-bg); padding: 16px 14px 12px 14px; margin-bottom: 14px; position: relative; display: flex; flex-direction: column; justify-content: space-between; page-break-inside: avoid; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        .q-number-badge { position: absolute; top: -10px; right: 12px; background: var(--primary-color); color: #ffffff; padding: 2px 12px; border-radius: 12px; font-weight: 800; font-size: 11px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
         .q-bloom-tag { position: absolute; top: -10px; left: 12px; background: #3b82f6; color: #fff; padding: 1px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; cursor: pointer; }
         
         .q-body { margin-top: 6px; font-size: var(--base-font-size); font-weight: 700; color: var(--text-main); line-height: var(--base-line-height); outline: none; }
@@ -202,15 +227,15 @@
         .tf-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid var(--card-border); padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; }
         .tf-box { width: 22px; height: 22px; border: 1px solid var(--primary-color); border-radius: 4px; display: inline-block; cursor: pointer; text-align: center; line-height: 20px; }
 
-        .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; margin-top: 10px; }
-        .mcq-opt { border: 1px solid var(--card-border); border-radius: 6px; padding: 4px 8px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer; background: #ffffff; }
-        .mcq-opt .opt-circle { width: 11px; height: 11px; border: 1px solid var(--primary-color); border-radius: 50%; display: inline-block; }
+        .mcq-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-top: 10px; }
+        .mcq-opt { border: 1px solid var(--card-border); border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer; background: #ffffff; }
+        .mcq-opt .opt-circle { width: 12px; height: 12px; border: 1px solid var(--primary-color); border-radius: 50%; display: inline-block; }
 
         .answer-lines { margin-top: 8px; width: 100%; }
-        .line-item { border-bottom: 1px dotted #cbd5e1; height: 20px; width: 100%; }
+        .line-item { border-bottom: 1px dotted #cbd5e1; height: 22px; width: 100%; }
 
         .manual-page-break { page-break-before: always; height: 1px; margin: 15px 0; border-top: 2px dashed #94a3b8; text-align: center; position: relative; }
-        .manual-page-break::after { content: '--- فاصل صفحات للطباعة ---'; background: #f1f5f9; padding: 0 10px; position: relative; top: -10px; font-size: 11px; color: #64748b; font-weight: bold; }
+        .manual-page-break::after { content: '--- فاصل صفحات للطباعة ---'; background: #f8fafc; padding: 0 10px; position: relative; top: -10px; font-size: 11px; color: #64748b; font-weight: bold; }
 
         .answer-key-box { display: none; margin-top: 8px; background: #f0fdf4; border: 1px solid #22c55e; border-radius: 6px; padding: 6px 10px; font-size: 12px; font-weight: 800; color: #15803d; }
         body.show-answer-key .answer-key-box { display: block !important; }
@@ -224,17 +249,17 @@
         .q-controls { display: none; margin-top: 8px; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; flex-wrap: wrap; }
         .edit-mode-active .q-controls { display: flex !important; }
 
-        .exam-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; color: var(--primary-color); margin-top: 8px; border-top: 1px dashed var(--card-border); padding-top: 4px; }
+        .exam-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; color: var(--primary-color); margin-top: 10px; border-top: 1px dashed var(--card-border); padding-top: 6px; }
 
-        [contenteditable="true"] { border: 1px dashed var(--badge-bg) !important; border-radius: 4px; background: #fffdfa; padding: 1px 4px; }
+        [contenteditable="true"] { border: 1px dashed var(--accent-color) !important; border-radius: 4px; background: #fffdfa; padding: 1px 4px; }
 
         @media print {
             @page { size: A4 portrait; margin: 8mm; }
             body { background: none; padding: 0; color: #000; }
-            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .manual-page-break::after { display: none !important; }
+            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .manual-page-break::after, .modal-overlay { display: none !important; }
             .manual-page-break { border: none !important; margin: 0 !important; }
             [contenteditable="true"], .editable-element { border: none !important; background: transparent !important; }
-            .page { box-shadow: none; border-radius: 0; width: 100% !important; max-width: 100% !important; min-height: auto !important; padding: 0; margin: 0; }
+            .page { box-shadow: none; border-radius: 0; width: 100% !important; max-width: 100% !important; min-height: auto !important; padding: 0; margin: 0; border: none; }
             .question-card { page-break-inside: avoid !important; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
@@ -242,9 +267,97 @@
 </head>
 <body>
 
-    <!-- زر الترس العائم لحماية الباسورد -->
-    <div class="settings-gear-btn" onclick="requestAccessWithPassword()" title="إعدادات المنصة - امتحانك بلس">
+    <!-- زر الترس العائم لحماية الباسورد والاشتراك -->
+    <div class="settings-gear-btn" onclick="openAuthModal()" title="إعدادات المنصة - امتحانك بلس">
         <svg class="svg-ic" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+    </div>
+
+    <!-- نافذة الاشتراك وتكوييد الدخول (Modal) -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>🔒 تسجيل الدخول والاشتراك - منصة بلس</h3>
+                <button class="modal-close" onclick="closeAuthModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <!-- قسم ادخال كلمة المرور للمشتركين -->
+                <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px;">
+                    <label style="font-size: 12px; font-weight: 800; color: #334155; display: block; margin-bottom: 6px;">لجميع المشتركين الحاليين (أدخل الباسورد):</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="password" id="modalPassInput" placeholder="أدخل كلمة المرور الخاص بك..." style="flex:1; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;">
+                        <button class="btn" style="background: var(--primary-color);" onclick="verifyPasswordModal()">دخول</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; color: #64748b; font-size: 12px; font-weight: bold;">أو لا تملك كود؟ اختر خطة الاشتراك المناسبة:</div>
+
+                <!-- خطط الاشتراكات -->
+<!-- خطط الاشتراكات المعدلة مع التحسينات التسويقية -->
+<div class="subs-grid">
+    <!-- الخطة الأولى: 3 أشهر -->
+    <div class="sub-plan-card">
+        <div class="badge" style="background: #2563eb;">خصم 50%</div>
+        <div class="sub-title">الاشتراك الشهري (3 أشهر)</div>
+        <div class="sub-price">70 <span>ج.م / 3 أشهر</span></div>
+        <div style="font-size: 10px; color: #94a3b8; text-decoration: line-through; margin-bottom: 6px;">بدلاً من 140 ج.م</div>
+        
+        <!-- ميزات الخطة -->
+        <ul style="font-size: 10px; text-align: right; padding-right: 15px; margin-bottom: 12px; color: #64748b;">
+            <li>وصول لجميع الاختبارات الأساسية</li>
+            <li>توليد نماذج امتحانات سهلة</li>
+        </ul>
+
+        <a href="https://wa.me/201007586279?text=السلام%20عليكم%20اريد%20الاشتراك%20الشهري%20في%20امتحانك%20بلس" target="_blank" class="btn btn-success" style="font-size: 10px; width: 100%; justify-content: center; text-decoration: none;">اشترك الآن</a>
+    </div>
+
+    <!-- الخطة الثانية: سنتين - الخطة الأساسية (الأكثر طلباً) -->
+    <div class="sub-plan-card featured">
+        <div class="badge">الأكثر طلباً (خصم 57%)</div>
+        <div class="sub-title">خطة سنتين - الأساسية</div>
+        <div class="sub-price">320 <span>ج.م / سنتين</span></div>
+        <div style="font-size: 10px; color: #94a3b8; text-decoration: line-through; margin-bottom: 6px;">بدلاً من 750 ج.م</div>
+        
+        <!-- ميزات الخطة -->
+        <ul style="font-size: 10px; text-align: right; padding-right: 15px; margin-bottom: 12px; color: #64748b;">
+            <li>صلاحية كاملة لمدة سنتين دراسيتين</li>
+            <li>بنك أسئلة متجدد وشامل</li>
+            <li>تصدير الاختبارات بصيغ جاهزة للطباعة</li>
+        </ul>
+
+        <a href="https://wa.me/201007586279?text=السلام%20عليكم%20اريد%20الاشتراك%20الاساسي%20لمدة%20سنتين%20في%20امتحانك%20بلس" target="_blank" class="btn" style="background: var(--primary-color); font-size: 10px; width: 100%; justify-content: center; text-decoration: none;">اشترك الآن</a>
+    </div>
+
+    <!-- الخطة الثالثة: سنتين - الخطة الشاملة الاحترافية -->
+    <div class="sub-plan-card">
+        <div class="badge" style="background:#16a34a;">أعلى قيمة (خصم 54%)</div>
+        <div class="sub-title">خطة سنتين - الشاملة</div>
+        <div class="sub-price">550 <span>ج.م / سنتين</span></div>
+        <div style="font-size: 10px; color: #94a3b8; text-decoration: line-through; margin-bottom: 6px;">بدلاً من 1200 ج.م</div>
+        
+        <!-- ميزات الخطة -->
+        <ul style="font-size: 10px; text-align: right; padding-right: 15px; margin-bottom: 12px; color: #64748b;">
+            <li>جميع مميزات الخطة الأساسية</li>
+            <li>تخصيص بنك الأسئلة والشعار الخاص بك</li>
+            <li>تحديثات مجانية مستمرة طوال السنتين</li>
+            <li>دعم فني وتخصيص أولوية</li>
+        </ul>
+
+        <a href="https://wa.me/201007586279?text=السلام%20عليكم%20اريد%20الاشتراك%20الشامل%20لمدة%20سنتين%20في%20امتحانك%20بلس" target="_blank" class="btn btn-purple" style="font-size: 10px; width: 100%; justify-content: center; text-decoration: none;">اشترك الآن</a>
+    </div>
+</div>
+
+                <!-- طرق الدفع فودافون كاش -->
+                <div class="vodafone-box">
+                    <h4>📱 طرق الدفع المتاحة عبر فودافون كاش (Vodafone Cash)</h4>
+                    <p style="font-size: 11px; color: #475569;">يرجى تحويل المبلغ المطلوبة لأحد الارقام التالية ثم التواصل معنا لتفعيل حسابك فوراً:</p>
+                    <div class="phone-nums">
+                        <span>01007586279 <button class="copy-btn" onclick="copyText('01007586279')">نسخ</button></span>
+                        <span>|</span>
+                        <span>01153652279 <button class="copy-btn" onclick="copyText('01153652279')">نسخ</button></span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- لوحة التحكم الإدارية -->
@@ -279,7 +392,7 @@
                 <span id="lineHeightVal">1.7</span>
 
                 <label style="margin-right:10px;">🎨 لون حُر:</label>
-                <input type="color" id="customColorPicker" value="#0891b2" onchange="applyCustomColor(this.value)">
+                <input type="color" id="customColorPicker" value="#0284c7" onchange="applyCustomColor(this.value)">
             </div>
 
             <!-- محرر الرموز والرياضيات -->
@@ -361,12 +474,10 @@
                         </optgroup>
                     </select>
 
-                    <!-- اختيار الفروع المخصصة للمادة -->
                     <select id="branchSelect" style="display:none;" onchange="handleBranchChange(this.value)">
                         <option value="">-- اختر الفرع --</option>
                     </select>
 
-                    <!-- حقل إضافة مادة مخصصة يدويًا -->
                     <input type="text" id="customSubjectInput" placeholder="اكتب اسم المادة هنا..." style="display:none;" oninput="handleCustomSubjectInput(this.value)">
 
                     <label>اختر القالب (50 قالب):</label>
@@ -409,7 +520,7 @@
                 <div class="title-row">
                     <div class="title-brand">
                         <div class="brand-icon-box">
-                            <svg class="svg-ic" style="width: 20px; height: 20px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                            <svg class="svg-ic" style="width: 22px; height: 22px;" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
                         </div>
                         <div>
                             <h1 class="editable-element" id="mainExamTitle">امتحانك بلس</h1>
@@ -460,10 +571,10 @@
                 <div class="score-pill-wrap"><span id="lblTotalScore">الدرجة الكلية:</span> <span class="score-pill" id="totalScoreCalc">13</span></div>
             </div>
 
-            <!-- حاوية الأسئلة الأساسية (افتراضياً 3 أسئلة) -->
+            <!-- حاوية الأسئلة الأساسية -->
             <div id="questionsContainer">
                 
-                <!-- السؤال الأول: مقالي فرعي -->
+                <!-- السؤال الأول: مقالي -->
                 <div class="question-card" id="q-1" data-type="essay">
                     <div class="q-number-badge"><span class="q-num">السؤال الأول</span></div>
                     <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تطبيق</div>
@@ -561,7 +672,7 @@
 
             </div>
 
-            <!-- ورقة البابل شيت عند التفعيل -->
+            <!-- ورقة البابل شيت -->
             <div class="bubble-sheet-container" id="bubbleSheetBox">
                 <h3 style="text-align: center; color: var(--primary-color);" id="lblBubbleTitle">ورقة الإجابة السريعة (Bubble Sheet)</h3>
                 <div id="bubbleSheetContent" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;"></div>
@@ -569,7 +680,6 @@
 
             <div class="exam-footer">
                 <span class="editable-element" id="lblFooterMsg">منصة امتحانك بلس - بالتوفيق والنجاح للجميع</span>
-                <div id="qrcode" style="width:40px; height:40px;"></div>
             </div>
         </div>
     </div>
@@ -591,7 +701,6 @@
             return list[i];
         });
 
-        // خريطة الفروع المخصصة للمواد
         const subjectBranchesMap = {
             "الرياضيات": ["الرياضيات (عامة)", "الرياضيات البحتا", "الرياضيات التطبيقية", "الجبر والهندسة الفضائية", "التفاضل والتكامل", "الاستاتيكا", "الديناميكا"],
             "اللغة العربية": ["اللغة العربية (عامة)", "النحو والصرف", "البلاغة والأدب", "القراءة والنصوص", "التعبير والإملاء"],
@@ -600,24 +709,10 @@
             "English": ["English (General)", "English Literature", "Grammar & Structure", "Writing & Essays"]
         };
 
-        // قاعدة بيانات توليد الأسئلة الذكية (AI Generator Database)
         const aiQuestionBank = {
             "الرياضيات": [
                 { type: "mcq", q: "إذا كانت $f(x) = x^2 + 3x$ فإن $f'(2)$ تساوي:", options: ["7", "8", "10", "12"], key: "7", score: 2 },
-                { type: "essay", q: "أوجد قيمة المحصلة للقوتين $F_1 = 30N$ و $F_2 = 40N$ إذا كانت الزاوية بينهما $90^\\circ$:", key: "المحصلة R = 50 نيوتن", score: 5 },
-                { type: "tf", q: "مجموع زوايا المثلث الداخلي يساوي $180^\\circ$.", score: 2 }
-            ],
-            "اللغة العربية": [
-                { type: "mcq", q: "الكلمة المرفوعة بالضمة المقدرة هي:", options: ["القاضي", "الرجل", "العلماء", "المعلمون"], key: "القاضي", score: 2 },
-                { type: "essay", q: "اعرب ما تحته خط: العلمُ **نورٌ** للجميع.", key: "نورٌ: خبر مرفوع وعلامة رفعه الضمة الظاهرة.", score: 4 }
-            ],
-            "الفيزياء": [
-                { type: "mcq", q: "وحدة قياس شدة التيار الكهربائي في النظام الدولي هي:", options: ["فولت", "أمبير", "أوم", "جول"], key: "أمبير", score: 2 },
-                { type: "essay", q: "اذكر نص قانون أوم للدائرة المغلقة مع كتابة صيغته الرياضية.", key: "V = I * R", score: 4 }
-            ],
-            "English": [
-                { type: "mcq", q: "She _______ to the market yesterday.", options: ["go", "went", "gone", "going"], key: "went", score: 2 },
-                { type: "essay", q: "Write a short paragraph about your future aspirations.", key: "Sample response...", score: 5 }
+                { type: "essay", q: "أوجد قيمة المحصلة للقوتين $F_1 = 30N$ و $F_2 = 40N$ إذا كانت الزاوية بينهما $90^\\circ$:", key: "المحصلة R = 50 نيوتن", score: 5 }
             ]
         };
 
@@ -638,19 +733,33 @@
         let recognition = null;
         let isRecording = false;
 
-        function requestAccessWithPassword() {
+        function openAuthModal() {
             if(!isAuthenticated) {
-                const pass = prompt('أدخل كلمة المرور لدخول لوحة التحكم الإدارية:');
-                if (validPasswords.includes(pass)) {
-                    isAuthenticated = true;
-                    alert('تم التحقق بنجاح! مرحباً بك.');
-                    toggleControls();
-                } else {
-                    alert('كلمة المرور غير صحيحة!');
-                }
+                document.getElementById('authModal').classList.add('open');
             } else {
                 toggleControls();
             }
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('open');
+        }
+
+        function verifyPasswordModal() {
+            const pass = document.getElementById('modalPassInput').value.trim();
+            if (validPasswords.includes(pass)) {
+                isAuthenticated = true;
+                closeAuthModal();
+                toggleControls();
+                alert('تم التحقق وتفعيل الوصول بنجاح! مرحباً بك.');
+            } else {
+                alert('كلمة المرور غير صحيحة!');
+            }
+        }
+
+        function copyText(txt) {
+            navigator.clipboard.writeText(txt);
+            alert('تم نسخ الرقم: ' + txt);
         }
 
         function toggleControls() {
@@ -661,7 +770,7 @@
             const select = document.getElementById('themeSelector');
             for(let i = 1; i <= 50; i++) {
                 const opt = document.createElement('option');
-                opt.value = `theme-${(i % 15) + 1}`;
+                opt.value = `theme-${(i % 6) + 1}`;
                 opt.innerText = `القالب رقم (${i})`;
                 select.appendChild(opt);
             }
@@ -680,7 +789,6 @@
         function applyCustomColor(color) {
             document.documentElement.style.setProperty('--primary-color', color);
             document.documentElement.style.setProperty('--accent-color', color);
-            document.documentElement.style.setProperty('--badge-bg', color);
             document.documentElement.style.setProperty('--card-border', color);
             saveExamToLocalStorage();
         }
@@ -718,16 +826,11 @@
         }
 
         function handleBranchChange(branchVal) {
-            if(branchVal && branchVal.trim() !== '') {
-                updateSubjectInfo(branchVal);
-            } else {
-                updateSubjectInfo(currentMainSubject);
-            }
+            updateSubjectInfo(branchVal || currentMainSubject);
         }
 
         function handleCustomSubjectInput(val) {
-            const finalVal = val.trim() || "مادة مخصصة";
-            updateSubjectInfo(finalVal);
+            updateSubjectInfo(val.trim() || "مادة مخصصة");
         }
 
         function uploadCenterLogo(input) {
@@ -752,41 +855,11 @@
                 document.body.classList.add('ltr-mode');
                 document.getElementById('htmlRoot').dir = 'ltr';
                 document.getElementById('mainExamTitle').innerText = 'EXAM PLUS';
-                document.getElementById('lblTeacher').innerHTML = 'Teacher: <strong id="displayTeacherName" class="editable-element">' + document.getElementById('teacherNameInput').value + '</strong>';
-                document.getElementById('lblSubject').innerHTML = 'Subject: <strong id="displaySubjectText" class="editable-element">' + subject + '</strong>';
-                document.getElementById('lblStudentName').innerHTML = 'Student Name: <span class="dots" style="min-width: 80px;"></span>';
-                document.getElementById('lblClass').innerHTML = 'Class: <span class="dots" style="min-width: 40px;"></span>';
-                document.getElementById('lblDate').innerHTML = 'Date: <span class="editable-element">2026 / ... / ...</span>';
-                document.getElementById('lblTotalScore').innerText = 'Total Score:';
-                document.getElementById('sessionBadge').innerText = 'Quiz / Exam No: ( ..... )';
-                document.getElementById('coverMainTitle').innerText = 'EXAM PLUS';
-                document.getElementById('coverTeacherLabel').innerText = 'Teacher:';
-                document.getElementById('coverYearText').innerText = 'Academic Year 2026 - Plus Platform';
-                document.getElementById('lblFooterMsg').innerText = 'EXAM PLUS Platform - Best of Luck!';
-                document.getElementById('lblQTable').innerText = 'Question';
-                document.getElementById('lblScoreTable').innerText = 'Score';
-                document.getElementById('lblTotalTable').innerText = 'Total';
-                document.getElementById('lblBubbleTitle').innerText = 'Bubble Sheet Answer Page';
             } else {
                 isEnglishLTR = false;
                 document.body.classList.remove('ltr-mode');
                 document.getElementById('htmlRoot').dir = 'rtl';
                 document.getElementById('mainExamTitle').innerText = 'امتحانك بلس';
-                document.getElementById('lblTeacher').innerHTML = 'المعلم: <strong id="displayTeacherName" class="editable-element">' + document.getElementById('teacherNameInput').value + '</strong>';
-                document.getElementById('lblSubject').innerHTML = 'المادة: <strong id="displaySubjectText" class="editable-element">' + subject + '</strong>';
-                document.getElementById('lblStudentName').innerHTML = 'اسم الطالب: <span class="dots" style="min-width: 80px;"></span>';
-                document.getElementById('lblClass').innerHTML = 'الصف: <span class="dots" style="min-width: 40px;"></span>';
-                document.getElementById('lblDate').innerHTML = 'التاريخ: <span class="editable-element">2026 / ... / ...</span>';
-                document.getElementById('lblTotalScore').innerText = 'الدرجة الكلية:';
-                document.getElementById('sessionBadge').innerText = 'حصة / اختبار رقم: ( ..... )';
-                document.getElementById('coverMainTitle').innerText = 'امتحانك بلس';
-                document.getElementById('coverTeacherLabel').innerText = 'المعلم:';
-                document.getElementById('coverYearText').innerText = 'العام الدراسي 2026 - منصة بلس Educational Platform';
-                document.getElementById('lblFooterMsg').innerText = 'منصة امتحانك بلس - بالتوفيق والنجاح للجميع';
-                document.getElementById('lblQTable').innerText = 'السؤال';
-                document.getElementById('lblScoreTable').innerText = 'الدرجة';
-                document.getElementById('lblTotalTable').innerText = 'المجموع';
-                document.getElementById('lblBubbleTitle').innerText = 'ورقة الإجابة السريعة (Bubble Sheet)';
             }
             reindexQuestions();
             saveExamToLocalStorage();
@@ -818,14 +891,14 @@
             ctx.clearRect(0, 0, cvs.width, cvs.height);
 
             ctx.beginPath();
-            ctx.strokeStyle = "#94a3b8";
+            ctx.strokeStyle = "#cbd5e1";
             ctx.lineWidth = 1.5;
             ctx.moveTo(120, 10); ctx.lineTo(120, 170);
             ctx.moveTo(10, 90); ctx.lineTo(230, 90);
             ctx.stroke();
 
             ctx.beginPath();
-            ctx.strokeStyle = "#0891b2";
+            ctx.strokeStyle = "#0284c7";
             ctx.lineWidth = 2.5;
             for(let x = -8; x <= 8; x += 0.1) {
                 let y = 0.08 * (x * x);
@@ -873,7 +946,7 @@
         }
 
         function cycleBloomTag(tagEl) {
-            const levels = ['تذكر', 'فهم', 'تطبيق', 'تحليل', 'تقويم', 'إبداع', 'سهل', 'متوسط', 'صعب'];
+            const levels = ['تذكر', 'فهم', 'تطبيق', 'تحليل', 'تقويم', 'إبداع'];
             let current = tagEl.innerText.trim();
             let idx = levels.indexOf(current);
             let next = levels[(idx + 1) % levels.length];
@@ -910,7 +983,6 @@
             }
         }
 
-        /* توليد أسئلة بالذكاء الاصطناعي (AI Generator) */
         function generateAIQuestion() {
             const key = aiQuestionBank[currentMainSubject] ? currentMainSubject : "الرياضيات";
             const pool = aiQuestionBank[key];
@@ -918,9 +990,7 @@
 
             const qId = `q-${Date.now()}`;
             const card = document.createElement('div');
-            card.className = 'question-card'; 
-            card.id = qId; 
-            card.setAttribute('data-type', item.type);
+            card.className = 'question-card'; card.id = qId; card.setAttribute('data-type', item.type);
 
             if (item.type === 'mcq') {
                 card.innerHTML = `
@@ -933,10 +1003,9 @@
                     <div class="answer-key-box"><strong>الإجابة الصحيحة:</strong> <span class="editable-element">${item.key}</span></div>
                     <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">${item.score}</span></div></div>
                     <div class="q-controls">
-                        <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('${qId}')">➕ إضافة سؤال فرعي</button>
                         <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
                     </div>`;
-            } else if (item.type === 'essay') {
+            } else {
                 card.innerHTML = `
                     <div class="q-number-badge"><span class="q-num"></span></div>
                     <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تطبيق</div>
@@ -945,29 +1014,15 @@
                     <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">${item.key}</span></div>
                     <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">${item.score}</span></div></div>
                     <div class="q-controls">
-                        <button class="btn btn-purple" style="font-size:10px;" onclick="addLines('${qId}')">+ أسطر إجابة</button>
                         <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
                     </div>`;
-            } else {
-                card.innerHTML = `
-                    <div class="q-number-badge"><span class="q-num"></span></div>
-                    <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تذكر</div>
-                    <div class="q-body editable-element">${item.q}</div>
-                    <div class="tf-container">
-                        <div class="tf-row"><span contenteditable="true">صحة العبارة الموضحة أعلاه.</span><span class="tf-box">(  )</span></div>
-                    </div>
-                    <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">${item.score}</span></div></div>
-                    <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
             }
 
             document.getElementById('questionsContainer').appendChild(card);
-            reindexQuestions(); 
-            calculateAnalytics(); 
-            attachMathJaxBlur();
+            reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
             if (window.MathJax) MathJax.typesetPromise();
         }
 
-        /* خاصية الكتابة بالصوت (Voice Typing) */
         function toggleVoiceTyping() {
             const btn = document.getElementById('voiceBtn');
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -987,7 +1042,6 @@
             recognition = new SpeechRecognition();
             recognition.lang = isEnglishLTR ? 'en-US' : 'ar-SA';
             recognition.continuous = true;
-            recognition.interimResults = false;
 
             recognition.onstart = function() {
                 isRecording = true;
@@ -1001,14 +1055,8 @@
                 if (activeEl && activeEl.isContentEditable) {
                     activeEl.innerText += ' ' + transcript;
                 } else {
-                    alert('المحتوى الصوتي: ' + transcript + '\n\nقم بالضغط داخل أي خانة نصية للكتابة المباشرة.');
+                    alert('الصوت المُدخل: ' + transcript + '\n\nاضغط داخل خانة النص أولاً ليعمل الإدخال المباشر.');
                 }
-            };
-
-            recognition.onerror = function() {
-                isRecording = false;
-                btn.classList.remove('recording');
-                btn.innerHTML = '🎤 كتابة بالصوت';
             };
 
             recognition.onend = function() {
@@ -1023,12 +1071,12 @@
         function addSubQuestion(qId) {
             const container = document.getElementById(`sub-container-${qId}`) || createSubContainer(qId);
             const count = container.children.length;
-            const letters = isEnglishLTR ? ['A', 'B', 'C', 'D', 'E'] : ['أ', 'ب', 'جـ', 'د', 'هـ'];
+            const letters = isEnglishLTR ? ['A', 'B', 'C', 'D'] : ['أ', 'ب', 'جـ', 'د'];
             const letter = letters[count] || `${count + 1}`;
 
             const subItem = document.createElement('div');
             subItem.className = 'sub-question-item';
-            subItem.innerHTML = `<span contenteditable="true">( ${letter} ) write / اكتب السؤال الفرعي...</span> <button style="background:none; border:none; color:red; cursor:pointer;" onclick="this.parentElement.remove(); calculateAnalytics();">✕</button>`;
+            subItem.innerHTML = `<span contenteditable="true">( ${letter} ) اكتب السؤال الفرعي...</span> <button style="background:none; border:none; color:red; cursor:pointer;" onclick="this.parentElement.remove(); calculateAnalytics();">✕</button>`;
             container.appendChild(subItem);
             calculateAnalytics();
             attachMathJaxBlur();
@@ -1057,10 +1105,6 @@
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">5</span></div></div>
                 <div class="q-controls">
                     <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('${qId}')">➕ إضافة سؤال فرعي</button>
-                    <input type="file" accept="image/*" onchange="uploadQuestionImage(this, '${qId}')">
-                    <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('${qId}')">🌐 صورة من رابط</button>
-                    <button class="btn btn-purple" style="font-size:10px;" onclick="addLines('${qId}')">+ أسطر إجابة</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="addGraphCanvas('${qId}')">📈 رسم بياني هندسي</button>
                     <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
                 </div>`;
             document.getElementById('questionsContainer').appendChild(card);
@@ -1084,10 +1128,6 @@
                 <div class="answer-key-box"><strong>الإجابة الصحيحة:</strong> <span class="editable-element">الخيار الأول</span></div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
                 <div class="q-controls">
-                    <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('${qId}')">➕ إضافة سؤال فرعي</button>
-                    <input type="file" accept="image/*" onchange="uploadQuestionImage(this, '${qId}')">
-                    <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('${qId}')">🌐 صورة من رابط</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="addGraphCanvas('${qId}')">📈 رسم بياني هندسي</button>
                     <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
                 </div>`;
             document.getElementById('questionsContainer').appendChild(card);
@@ -1103,8 +1143,8 @@
                 <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تطبيق</div>
                 <div class="q-body editable-element">صل من العمود (أ) ما يناسبه من العمود (ب):</div>
                 <div class="match-container">
-                    <div class="match-column"><div class="match-column-title">العمود (أ)</div><div class="match-item" contenteditable="true">1. الفقرة الأولى</div><div class="match-item" contenteditable="true">2. الفقرة الثانية</div></div>
-                    <div class="match-column"><div class="match-column-title">العمود (ب)</div><div class="match-item" contenteditable="true">أ. التناظر الأول</div><div class="match-item" contenteditable="true">ب. التناظر الثاني</div></div>
+                    <div class="match-column"><div class="match-column-title">العمود (أ)</div><div class="match-item" contenteditable="true">1. الفقرة الأولى</div></div>
+                    <div class="match-column"><div class="match-column-title">العمود (ب)</div><div class="match-item" contenteditable="true">أ. التناظر الأول</div></div>
                 </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">4</span></div></div>
                 <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
@@ -1119,10 +1159,9 @@
             card.innerHTML = `
                 <div class="q-number-badge"><span class="q-num"></span></div>
                 <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تقويم</div>
-                <div class="q-body editable-element">ضع علامة (✔) أمام العبارة الصحيحة وعلامة (❌) أمام العبارة الخطأ:</div>
+                <div class="q-body editable-element">ضع علامة (✔) أو علامة (❌):</div>
                 <div class="tf-container">
                     <div class="tf-row"><span contenteditable="true">العبارة الأولى هنا...</span><span class="tf-box">(  )</span></div>
-                    <div class="tf-row"><span contenteditable="true">العبارة الثانية هنا...</span><span class="tf-box">(  )</span></div>
                 </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
                 <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
@@ -1141,12 +1180,8 @@
                 <div class="sub-questions-container" id="sub-container-${qId}">
                     <div class="sub-question-item"><span contenteditable="true">1. ناتج جمع 2 + 3 يساوي .....................</span></div>
                 </div>
-                <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">5</span></div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
-                <div class="q-controls">
-                    <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('${qId}')">➕ إضافة نقطة أكمل</button>
-                    <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
-                </div>`;
+                <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
             document.getElementById('questionsContainer').appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
@@ -1162,30 +1197,15 @@
                 <div class="stats-table-wrapper">
                     <table class="stats-table" id="stats-table-${qId}">
                         <thead>
-                            <tr id="stats-head-${qId}">
-                                <th contenteditable="true">الفئات</th>
-                                <th contenteditable="true">10-</th>
-                                <th contenteditable="true">20-</th>
-                                <th contenteditable="true">30-</th>
-                            </tr>
+                            <tr id="stats-head-${qId}"><th contenteditable="true">الفئات</th><th contenteditable="true">10-</th></tr>
                         </thead>
                         <tbody id="stats-body-${qId}">
-                            <tr>
-                                <td contenteditable="true">التكرار</td>
-                                <td contenteditable="true">4</td>
-                                <td contenteditable="true">6</td>
-                                <td contenteditable="true">10</td>
-                            </tr>
+                            <tr><td contenteditable="true">التكرار</td><td contenteditable="true">4</td></tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">6</span></div></div>
-                <div class="q-controls">
-                    <button class="btn btn-success" style="font-size:10px;" onclick="addStatsColumn('${qId}')">➕ إضافة عمود</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="removeStatsColumn('${qId}')">➖ حذف عمود</button>
-                    <button class="btn btn-purple" style="font-size:10px;" onclick="addStatsRow('${qId}')">➕ إضافة صف بيانات</button>
-                    <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
-                </div>`;
+                <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
             document.getElementById('questionsContainer').appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
@@ -1215,8 +1235,6 @@
             if (headTr.children.length > 2) {
                 headTr.removeChild(headTr.lastElementChild);
                 bodyTrs.forEach(tr => tr.removeChild(tr.lastElementChild));
-            } else {
-                alert('لا يمكن حذف المزيد من الأعمدة!');
             }
             saveExamToLocalStorage();
         }
@@ -1252,10 +1270,9 @@
                 container.appendChild(questions[Math.floor(Math.random() * i)]);
             }
             reindexQuestions();
-            alert('تم توليد نموذج جديد بإعادة ترتيب الأسئلة بنجاح!');
+            alert('تم توليد نموذج جديد بنجاح!');
         }
 
-        /* تصحيح دالة الحذف للعمل المطلق في وضع التعديل والعادي */
         function removeQuestion(id) {
             const card = document.getElementById(id);
             if (card) {
@@ -1268,8 +1285,7 @@
 
         function clearAllQuestions() {
             if (confirm('هل أنت تأكد من رغبتك في حذف كافة الأسئلة؟')) {
-                const container = document.getElementById('questionsContainer');
-                container.innerHTML = '';
+                document.getElementById('questionsContainer').innerHTML = '';
                 reindexQuestions();
                 calculateAnalytics();
             }
@@ -1282,7 +1298,6 @@
                 reindexQuestions();
                 calculateAnalytics();
                 attachMathJaxBlur();
-                alert('تم إرجاع السؤال المحذوف بنجاح!');
             } else {
                 alert('لا يوجد أسئلة محذوفة للتراجع عنها.');
             }
@@ -1373,7 +1388,7 @@
             const percentage = Math.min(Math.round((pageHeight / 1120) * 100), 100);
             const fill = document.getElementById('pageSpaceFill');
             fill.style.width = `${percentage}%`;
-            fill.style.backgroundColor = percentage > 90 ? '#dc2626' : 'var(--primary-color)';
+            fill.style.backgroundColor = percentage > 90 ? '#ef4444' : 'var(--primary-color)';
             updateBloomAnalytics();
         }
 
@@ -1492,7 +1507,7 @@
                         }
                         alert('تم تحميل الامتحان بنجاح!');
                     } catch (err) {
-                        alert('حدث خطأ أثناء تحميل الملف، يرجى التأكد من جودة الملف.');
+                        alert('حدث خطأ أثناء تحميل الملف.');
                     }
                 };
                 reader.readAsText(file);
