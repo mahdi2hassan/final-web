@@ -17,6 +17,32 @@
     <!-- html2canvas & QR Code -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <!-- ═══ ربط تسجيل الدخول بأكواد منصة بلس (Firebase) — إضافة جديدة، لا تؤثر على أي وظيفة سابقة ═══ -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script>
+      (function initExamPlusFirebase(){
+        try{
+          if(!window.firebase){ return; }
+          if(!firebase.apps || !firebase.apps.length){
+            firebase.initializeApp({
+              apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
+              authDomain:"plusinmath-web.firebaseapp.com",
+              projectId:"plusinmath-web",
+              storageBucket:"plusinmath-web.firebasestorage.app",
+              messagingSenderId:"444492731461",
+              appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
+            });
+          }
+          window._examPlusDb = firebase.firestore();
+          // تسجيل دخول مجهول (زي باقي صفحات المنصة) — مطلوب عشان قاعدة الأمان المحدثة
+          // اللي بتسمح بتسجيل آخر دخول للطالب في امتحانك بلس تشتغل صح.
+          firebase.auth().signInAnonymously().catch(function(e){ console.warn('exam-plus anon auth:', e.message); });
+        }catch(e){ console.warn('exam-plus firebase init failed:', e.message); }
+      })();
+    </script>
+
     <style>
         :root {
             --primary-color: #0284c7;
@@ -347,15 +373,15 @@
             <div class="modal-body">
                 <!-- قسم ادخال كلمة المرور للمشتركين -->
                 <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px;">
-                    <label style="font-size: 12px; font-weight: 800; color: #334155; display: block; margin-bottom: 6px;">لجميع المشتركين الحاليين (أدخل الباسورد):</label>
+                    <label style="font-size: 12px; font-weight: 800; color: #334155; display: block; margin-bottom: 6px;">لجميع المشتركين الحاليين (أدخل الباسورد أو كود اشتراكك في منصة بلس):</label>
                     <div style="display: flex; gap: 8px;">
                         <div class="pass-input-wrap" id="passInputWrap">
-                            <input type="password" id="modalPassInput" placeholder="أدخل كلمة المرور الخاص بك..." style="padding: 8px 34px 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;" onkeydown="if(event.key==='Enter') verifyPasswordModal()">
+                            <input type="password" id="modalPassInput" placeholder="كلمة المرور أو كود منصة بلس..." style="padding: 8px 34px 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;" onkeydown="if(event.key==='Enter') verifyPasswordModal()">
                             <button type="button" class="pass-toggle-eye" onclick="togglePassVisibility()" title="إظهار/إخفاء كلمة المرور">
                                 <svg class="svg-ic" id="eyeIcon" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
                             </button>
                         </div>
-                        <button class="btn" style="background: var(--primary-color);" onclick="verifyPasswordModal()">دخول</button>
+                        <button class="btn" id="authVerifyBtn" style="background: var(--primary-color);" onclick="verifyPasswordModal()">دخول</button>
                     </div>
                     <div class="auth-error-msg" id="authErrorMsg"></div>
                     <label class="remember-me-row">
@@ -500,7 +526,7 @@
                     <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">لوحة التحرير</button>
                     <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">تعديل مباشر</button>
                     <button id="bookletModeBtn" class="btn btn-booklet" onclick="toggleBookletMode()">📘 وضع الملزمة</button>
-                    <button class="btn btn-ai" onclick="generateAIQuestion()">🤖 توليد أسئلة بالذكاء الاصطناعي</button>
+                    <button class="btn btn-ai" id="epBtnAiGenerate" onclick="generateAIQuestion()">🤖 توليد أسئلة بالذكاء الاصطناعي</button>
                     <button id="voiceBtn" class="btn btn-voice" onclick="toggleVoiceTyping()">🎤 كتابة بالصوت</button>
                 </div>
             </div>
@@ -522,8 +548,8 @@
                 <div class="toolbar-label">🏦 الدرجات وبنك الأسئلة</div>
                 <div class="btn-group">
                     <button class="btn btn-warning" style="background-color:#c026d3;" onclick="autoDistributeScores()">⚖️ توزيع الدرجات تلقائياً</button>
-                    <button class="btn btn-purple" style="background-color:#15803d;" onclick="saveToQuestionBank()">💾 حفظ لبنك الأسئلة</button>
-                    <button class="btn btn-purple" style="background-color:#b45309;" onclick="loadFromQuestionBank()">📦 استدعاء من البنك</button>
+                    <button class="btn btn-purple" id="epBtnSaveBank" style="background-color:#15803d;" onclick="saveToQuestionBank()">💾 حفظ لبنك الأسئلة</button>
+                    <button class="btn btn-purple" id="epBtnLoadBank" style="background-color:#b45309;" onclick="loadFromQuestionBank()">📦 استدعاء من البنك</button>
                     <button class="btn btn-warning" style="background-color:#c026d3;" onclick="shuffleQuestionsAB()">توليد نموذج A/B</button>
                     <button class="btn btn-warning" style="background-color:#0284c7;" onclick="openTrashModal()">🗑️ سلة المحذوفات</button>
                     <button class="btn btn-danger" onclick="clearAllQuestions()">🗑️ حذف كل المحتوى</button>
@@ -533,11 +559,11 @@
             <div class="toolbar-section">
                 <div class="toolbar-label">💾 الحفظ والتصدير والطباعة</div>
                 <div class="btn-group">
-                    <button class="btn btn-success" style="background-color: #0d9488;" onclick="exportToImages()">تصدير كصور HD</button>
+                    <button class="btn btn-success" id="epBtnExportImages" style="background-color: #0d9488;" onclick="exportToImages()">تصدير كصور HD</button>
                     <button class="btn btn-purple" style="background-color: #059669;" onclick="saveExamJSON()">حفظ الملف (JSON)</button>
                     <button class="btn btn-purple" style="background-color: #0d9488;" onclick="document.getElementById('jsonFileInput').click()">رفع ملف (JSON)</button>
                     <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="loadExamJSON(event)">
-                    <button class="btn btn-print" onclick="window.print()">طباعة الورقة</button>
+                    <button class="btn btn-print" id="epBtnPrint" onclick="window.print()">طباعة الورقة</button>
                 </div>
             </div>
             
@@ -882,12 +908,14 @@
             input.type = input.type === 'password' ? 'text' : 'password';
         }
 
-        function verifyPasswordModal() {
+        async function verifyPasswordModal() {
             const passInput = document.getElementById('modalPassInput');
             const wrap = document.getElementById('passInputWrap');
             const errorMsg = document.getElementById('authErrorMsg');
+            const btn = document.getElementById('authVerifyBtn');
             const pass = passInput.value.trim();
 
+            // (1) نظام كلمات المرور الثابتة الأصلي — بدون أي تعديل في منطقه
             if (pass !== '' && validPasswordHashes.includes(simpleHash(pass))) {
                 isAuthenticated = true;
                 if (document.getElementById('rememberAuthCheck').checked) {
@@ -897,13 +925,113 @@
                 passInput.value = '';
                 closeAuthModal();
                 toggleControls();
-            } else {
-                errorMsg.innerText = 'كلمة المرور غير صحيحة، برجاء المحاولة مرة أخرى.';
-                wrap.classList.remove('shake-error');
-                void wrap.offsetWidth; // إعادة تشغيل الأنيميشن
-                wrap.classList.add('shake-error');
-                passInput.focus();
+                return;
             }
+
+            // (2) إضافة جديدة: الدخول بكود الاشتراك الخاص بالطالب في منصة بلس
+            if (pass !== '' && window._examPlusDb) {
+                errorMsg.style.color = '#64748b';
+                errorMsg.innerText = 'جاري التحقق من الكود...';
+                if(btn){ btn.disabled = true; }
+                try {
+                    const granted = await verifyStudentPlatformCode(pass);
+                    if (granted) {
+                        isAuthenticated = true;
+                        if (document.getElementById('rememberAuthCheck').checked) {
+                            sessionStorage.setItem('examPlusAuth', '1');
+                            sessionStorage.setItem('examPlusStudent', JSON.stringify(window._examPlusStudent||{}));
+                        }
+                        errorMsg.style.color = '';
+                        errorMsg.innerText = '';
+                        passInput.value = '';
+                        if(btn){ btn.disabled = false; }
+                        closeAuthModal();
+                        toggleControls();
+                        applyExamPlusPermissions(window._examPlusStudent && window._examPlusStudent.permissions);
+                        return;
+                    }
+                } catch (e) {
+                    console.warn('exam-plus code check failed:', e.message);
+                } finally {
+                    if(btn){ btn.disabled = false; }
+                }
+            }
+
+            if (!errorMsg.innerText || errorMsg.innerText === 'جاري التحقق من الكود...') {
+                errorMsg.style.color = '';
+                errorMsg.innerText = 'كلمة المرور أو كود الاشتراك غير صحيح، برجاء المحاولة مرة أخرى.';
+            }
+            wrap.classList.remove('shake-error');
+            void wrap.offsetWidth; // إعادة تشغيل الأنيميشن
+            wrap.classList.add('shake-error');
+            passInput.focus();
+        }
+
+        // ═══ التحقق من كود اشتراك الطالب في منصة بلس (Firestore) — يربط دخول امتحانك بلس بحساب الطالب الحقيقي ═══
+        async function verifyStudentPlatformCode(code) {
+            const db = window._examPlusDb;
+            if (!db) return false;
+            const snap = await db.collection('users').where('subscriptionCode', '==', code).limit(1).get();
+            if (snap.empty) return false;
+            const doc = snap.docs[0];
+            const data = doc.data();
+
+            if (data.blocked) {
+                showExamAuthError('حسابك محظور في منصة بلس، برجاء التواصل مع الأستاذ.');
+                return false;
+            }
+            if (data.examPlusBlocked) {
+                showExamAuthError('تم إيقاف صلاحية دخولك لأداة امتحانك بلس، برجاء التواصل مع الأستاذ.');
+                return false;
+            }
+
+            const upd = {
+                examPlusLastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                examPlusLoginCount: firebase.firestore.FieldValue.increment(1)
+            };
+            if (!data.examPlusFirstLogin) upd.examPlusFirstLogin = firebase.firestore.FieldValue.serverTimestamp();
+            // نستنى تسجيل الدخول المجهول (Anonymous Auth) لو لسه ما جهزش، عشان قاعدة الأمان
+            // اللي بتتطلب isSignedIn() لكتابة حقول تتبّع الدخول متترفضش لو الصفحة كانت لسه بتحمّل.
+            if (!firebase.auth().currentUser) {
+                await new Promise(function(resolve){
+                    const iv = setInterval(function(){
+                        if (firebase.auth().currentUser) { clearInterval(iv); resolve(); }
+                    }, 100);
+                    setTimeout(function(){ clearInterval(iv); resolve(); }, 3000);
+                });
+            }
+            db.collection('users').doc(doc.id).update(upd).catch(function(e){ console.warn('exam-plus login log failed:', e.message); });
+
+            window._examPlusStudent = {
+                id: doc.id,
+                name: data.name || '',
+                code: data.subscriptionCode || code,
+                permissions: data.examPlusPermissions || {}
+            };
+            return true;
+        }
+
+        function showExamAuthError(msg) {
+            const errorMsg = document.getElementById('authErrorMsg');
+            if (errorMsg) { errorMsg.style.color = ''; errorMsg.innerText = msg; }
+        }
+
+        // ═══ تطبيق صلاحيات الطالب (لو دخل بكود المنصة) على أدوات امتحانك بلس ═══
+        function applyExamPlusPermissions(perms) {
+            if (!perms) return;
+            const map = {
+                aiGenerate: 'epBtnAiGenerate',
+                questionBank: 'epBtnSaveBank',
+                questionBankLoad: 'epBtnLoadBank',
+                exportImages: 'epBtnExportImages',
+                print: 'epBtnPrint'
+            };
+            Object.keys(map).forEach(function(key){
+                const el = document.getElementById(map[key]);
+                if (!el) return;
+                const allowed = perms[key] !== false;
+                el.style.display = allowed ? '' : 'none';
+            });
         }
 
         function copyText(txt) {
@@ -1987,6 +2115,13 @@
             initThemes();
             if (sessionStorage.getItem('examPlusAuth') === '1') {
                 isAuthenticated = true;
+                try {
+                    const savedStudent = sessionStorage.getItem('examPlusStudent');
+                    if (savedStudent) {
+                        window._examPlusStudent = JSON.parse(savedStudent);
+                        applyExamPlusPermissions(window._examPlusStudent.permissions);
+                    }
+                } catch (e) { /* تجاهل أي خطأ في استعادة الجلسة */ }
             }
             loadExamFromLocalStorage();
             reindexQuestions();
