@@ -200,6 +200,17 @@
         .remember-me-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: #475569; font-weight: 700; }
         .modal-lock-icon { width: 20px; height: 20px; fill: currentColor; vertical-align: middle; margin-left: 6px; }
 
+        /* ===== سلة المحذوفات ===== */
+        .trash-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; font-size: 12px; }
+        .trash-item-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; color: #334155; }
+        .trash-item-type { font-size: 10px; background: var(--primary-color); color: #fff; padding: 1px 8px; border-radius: 8px; font-weight: 800; white-space: nowrap; }
+
+        /* ===== مؤشر الحفظ التلقائي ===== */
+        .save-indicator { position: fixed; bottom: 24px; right: 24px; background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; box-shadow: 0 6px 16px rgba(0,0,0,0.2); z-index: 9998; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; pointer-events: none; }
+        body.ltr-mode .save-indicator { right: auto; left: 24px; }
+        .save-indicator.show { opacity: 1; transform: translateY(0); }
+        .save-indicator svg { width: 14px; height: 14px; fill: #4ade80; }
+
         .edit-panel { display: none; width: 100%; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 12px; gap: 10px; flex-direction: column; color: #0f172a; }
         .input-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
         .input-group label { font-weight: 700; color: var(--primary-color); font-size: 12px; }
@@ -320,6 +331,12 @@
         <svg class="svg-ic" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
     </div>
 
+    <!-- مؤشر الحفظ التلقائي -->
+    <div class="save-indicator" id="saveIndicator">
+        <svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+        <span>تم الحفظ تلقائيًا</span>
+    </div>
+
     <!-- نافذة الاشتراك وتكوييد الدخول (Modal) -->
     <div class="modal-overlay" id="authModal">
         <div class="modal-card">
@@ -417,6 +434,20 @@
         </div>
     </div>
 
+    <!-- نافذة سلة المحذوفات -->
+    <div class="modal-overlay" id="trashModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3>🗑️ سلة المحذوفات (آخر 10 عناصر)</h3>
+                <button class="modal-close" onclick="closeTrashModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="trashListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto;"></div>
+                <button class="btn btn-danger" style="width:100%; justify-content:center;" onclick="emptyTrash()">إفراغ السلة نهائيًا</button>
+            </div>
+        </div>
+    </div>
+
     <!-- لوحة التحكم الإدارية -->
     <div class="admin-controls-wrapper" id="controlsWrapper">
         <div class="admin-controls">
@@ -494,7 +525,7 @@
                     <button class="btn btn-purple" style="background-color:#15803d;" onclick="saveToQuestionBank()">💾 حفظ لبنك الأسئلة</button>
                     <button class="btn btn-purple" style="background-color:#b45309;" onclick="loadFromQuestionBank()">📦 استدعاء من البنك</button>
                     <button class="btn btn-warning" style="background-color:#c026d3;" onclick="shuffleQuestionsAB()">توليد نموذج A/B</button>
-                    <button class="btn btn-warning" style="background-color:#0284c7;" onclick="undoLastDelete()">↩️ تراجع عن الحذف</button>
+                    <button class="btn btn-warning" style="background-color:#0284c7;" onclick="openTrashModal()">🗑️ سلة المحذوفات</button>
                     <button class="btn btn-danger" onclick="clearAllQuestions()">🗑️ حذف كل المحتوى</button>
                 </div>
             </div>
@@ -827,6 +858,9 @@
         let isOrnamentBorder = false;
         let isEnglishLTR = false;
         let deletedQuestionsHistory = [];
+        let contentModifiedSinceLastExport = false;
+        let saveIndicatorTimeout = null;
+        let pageFinishedLoading = false;
         let questionBankStorage = [];
         let recognition = null;
         let isRecording = false;
@@ -1038,6 +1072,18 @@
             document.getElementById('bloomRememberCount').innerText = rem;
             document.getElementById('bloomApplyCount').innerText = app;
             document.getElementById('bloomAnalyzeCount').innerText = ana;
+
+            const difficultyEl = document.getElementById('difficultyCalc');
+            const total = rem + app + ana;
+            if (isBookletMode || total === 0) {
+                difficultyEl.innerText = '—';
+            } else if (ana / total >= 0.5) {
+                difficultyEl.innerText = 'صعب';
+            } else if (rem / total >= 0.5) {
+                difficultyEl.innerText = 'سهل';
+            } else {
+                difficultyEl.innerText = 'متوازن';
+            }
         }
 
         function autoDistributeScores() {
@@ -1394,6 +1440,7 @@
                 if (titleEl.dataset.prev) { titleEl.innerText = titleEl.dataset.prev; delete titleEl.dataset.prev; }
                 if (sessionEl.dataset.prev) { sessionEl.innerText = sessionEl.dataset.prev; delete sessionEl.dataset.prev; }
             }
+            calculateAnalytics();
             saveExamToLocalStorage();
         }
 
@@ -1532,7 +1579,7 @@
         function removeLessonBlock(id) {
             const el = document.getElementById(id);
             if (el) {
-                deletedQuestionsHistory.push(el.cloneNode(true));
+                pushToTrash(el.cloneNode(true));
                 el.remove();
                 reindexExamples(); calculateAnalytics(); saveExamToLocalStorage();
             }
@@ -1551,30 +1598,86 @@
         function removeQuestion(id) {
             const card = document.getElementById(id);
             if (card) {
-                deletedQuestionsHistory.push(card.cloneNode(true));
+                pushToTrash(card.cloneNode(true));
                 card.remove(); 
                 reindexQuestions(); 
                 calculateAnalytics();
+                saveExamToLocalStorage();
             }
         }
 
         function clearAllQuestions() {
-            if (confirm('هل أنت تأكد من رغبتك في حذف كافة الأسئلة؟')) {
-                document.getElementById('questionsContainer').innerHTML = '';
+            if (confirm('هل أنت تأكد من رغبتك في حذف كافة المحتوى؟ (يمكنك استعادته لاحقًا من سلة المحذوفات)')) {
+                const container = document.getElementById('questionsContainer');
+                Array.from(container.children).forEach(el => pushToTrash(el.cloneNode(true)));
+                container.innerHTML = '';
                 reindexQuestions();
                 calculateAnalytics();
+                saveExamToLocalStorage();
             }
         }
 
-        function undoLastDelete() {
-            if (deletedQuestionsHistory.length > 0) {
-                const restoredCard = deletedQuestionsHistory.pop();
-                document.getElementById('questionsContainer').appendChild(restoredCard);
-                reindexQuestions();
-                calculateAnalytics();
-                attachMathJaxBlur();
-            } else {
-                alert('لا يوجد أسئلة محذوفة للتراجع عنها.');
+        // ===== سلة المحذوفات: تحتفظ بآخر 10 عناصر محذوفة (أسئلة أو كتل ملزمة) قابلة للاستعادة =====
+        function pushToTrash(node) {
+            deletedQuestionsHistory.push(node);
+            if (deletedQuestionsHistory.length > 10) deletedQuestionsHistory.shift();
+        }
+
+        function openTrashModal() {
+            renderTrashList();
+            document.getElementById('trashModal').classList.add('open');
+        }
+
+        function closeTrashModal() {
+            document.getElementById('trashModal').classList.remove('open');
+        }
+
+        function getTrashItemLabel(node) {
+            if (node.classList.contains('question-card')) return isEnglishLTR ? 'Question' : 'سؤال';
+            if (node.classList.contains('manual-page-break')) return isEnglishLTR ? 'Page break' : 'فاصل صفحة';
+            if (node.classList.contains('lesson-heading-block')) return isEnglishLTR ? 'Title' : 'عنوان';
+            if (node.classList.contains('explanation-block')) return isEnglishLTR ? 'Explanation' : 'فقرة شرح';
+            return isEnglishLTR ? 'Booklet item' : 'عنصر ملزمة';
+        }
+
+        function renderTrashList() {
+            const container = document.getElementById('trashListContainer');
+            container.innerHTML = '';
+            if (deletedQuestionsHistory.length === 0) {
+                container.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:12px;padding:20px 0;">السلة فارغة حالياً</div>';
+                return;
+            }
+            deletedQuestionsHistory.slice().reverse().forEach((node, revIdx) => {
+                const realIdx = deletedQuestionsHistory.length - 1 - revIdx;
+                const row = document.createElement('div');
+                row.className = 'trash-item';
+                const type = getTrashItemLabel(node);
+                const rawText = (node.innerText || '').trim().replace(/\s+/g, ' ');
+                const text = rawText ? rawText.slice(0, 45) + (rawText.length > 45 ? '…' : '') : '(بدون نص)';
+                row.innerHTML = `<span class="trash-item-type">${type}</span><span class="trash-item-text">${text}</span><button class="btn btn-success" style="font-size:10px;" onclick="restoreFromTrash(${realIdx})">↩️ استعادة</button>`;
+                container.appendChild(row);
+            });
+        }
+
+        function restoreFromTrash(idx) {
+            const node = deletedQuestionsHistory[idx];
+            if (!node) return;
+            deletedQuestionsHistory.splice(idx, 1);
+            document.getElementById('questionsContainer').appendChild(node.cloneNode(true));
+            reindexQuestions();
+            reindexExamples();
+            calculateAnalytics();
+            attachMathJaxBlur();
+            if (window.MathJax) MathJax.typesetPromise();
+            renderTrashList();
+            saveExamToLocalStorage();
+        }
+
+        function emptyTrash() {
+            if (deletedQuestionsHistory.length === 0) return;
+            if (confirm('هل أنت متأكد من إفراغ السلة نهائيًا؟ لن تتمكن من استعادة هذه العناصر بعد ذلك.')) {
+                deletedQuestionsHistory = [];
+                renderTrashList();
             }
         }
 
@@ -1647,17 +1750,43 @@
             }
         }
 
+        function estimateQuestionMinutes(card) {
+            const type = card.getAttribute('data-type');
+            const subCount = card.querySelectorAll('.sub-question-item').length;
+            switch (type) {
+                case 'essay': return 3 + subCount * 1.5;
+                case 'mcq': return 1;
+                case 'match': return 2;
+                case 'tf': return Math.max(1, card.querySelectorAll('.tf-row').length * 0.5);
+                case 'fill': return Math.max(1, subCount * 0.75);
+                case 'stats': return 4;
+                default: return 3;
+            }
+        }
+
         function calculateAnalytics() {
             let totalScore = 0;
             const cards = document.querySelectorAll('.question-card');
-            cards.forEach(card => {
-                const scoreInput = card.querySelector('.q-score-val');
-                if (scoreInput) totalScore += parseFloat(scoreInput.innerText.trim()) || 0;
-            });
 
-            document.getElementById('totalScoreCalc').innerText = totalScore;
-            document.getElementById('qCountCalc').innerText = cards.length;
-            document.getElementById('estTimeCalc').innerText = `${cards.length * 3} دقيقة`;
+            if (isBookletMode) {
+                // في وضع الملزمة: نقدّر زمن القراءة بدل زمن الإجابة، بناءً على عدد الكلمات
+                const lessonBlocks = document.querySelectorAll('#questionsContainer .lesson-block');
+                let wordCount = 0;
+                lessonBlocks.forEach(b => { wordCount += (b.innerText || '').trim().split(/\s+/).filter(Boolean).length; });
+                const readMinutes = lessonBlocks.length ? Math.max(1, Math.ceil(wordCount / 130)) : 0;
+                document.getElementById('estTimeCalc').innerText = `${readMinutes} دقيقة قراءة تقريبًا`;
+                document.getElementById('qCountCalc').innerText = lessonBlocks.length;
+            } else {
+                let totalTime = 0;
+                cards.forEach(card => {
+                    const scoreInput = card.querySelector('.q-score-val');
+                    if (scoreInput) totalScore += parseFloat(scoreInput.innerText.trim()) || 0;
+                    totalTime += estimateQuestionMinutes(card);
+                });
+                document.getElementById('totalScoreCalc').innerText = totalScore;
+                document.getElementById('qCountCalc').innerText = cards.length;
+                document.getElementById('estTimeCalc').innerText = `${Math.ceil(totalTime)} دقيقة`;
+            }
 
             const pageHeight = document.getElementById('examPage').offsetHeight;
             const percentage = Math.min(Math.round((pageHeight / 1120) * 100), 100);
@@ -1755,6 +1884,7 @@
             a.href = URL.createObjectURL(blob);
             a.download = 'امتحانك_بلس_بيانات.json';
             a.click();
+            contentModifiedSinceLastExport = false;
         }
 
         function loadExamJSON(event) {
@@ -1804,6 +1934,16 @@
                 htmlContent: document.getElementById('questionsContainer').innerHTML
             };
             localStorage.setItem('examPlusAutoSave', JSON.stringify(examData));
+            if (pageFinishedLoading) contentModifiedSinceLastExport = true;
+            showSaveIndicator();
+        }
+
+        function showSaveIndicator() {
+            const el = document.getElementById('saveIndicator');
+            if (!el) return;
+            el.classList.add('show');
+            clearTimeout(saveIndicatorTimeout);
+            saveIndicatorTimeout = setTimeout(() => el.classList.remove('show'), 1600);
         }
 
         function loadExamFromLocalStorage() {
@@ -1850,9 +1990,23 @@
             }
             loadExamFromLocalStorage();
             reindexQuestions();
+            reindexExamples();
             calculateAnalytics();
             attachMathJaxBlur();
+            // تُفعَّل بعد اكتمال التحميل حتى لا يظهر تنبيه "تعديلات غير محفوظة" فور فتح الصفحة
+            contentModifiedSinceLastExport = false;
+            pageFinishedLoading = true;
         };
+
+        // تنبيه بسيط قبل إغلاق الصفحة لو فيه محتوى لم يُصدَّر كملف JSON بعد
+        window.addEventListener('beforeunload', function(e) {
+            const hasContent = document.getElementById('questionsContainer').children.length > 0;
+            if (hasContent && contentModifiedSinceLastExport) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
     </script>
 </body>
 </html>
