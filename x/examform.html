@@ -13,7 +13,8 @@
 <!-- MathJax Configuration -->
 <script>
 window.MathJax = {
-  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+  loader: { load: ['[tex]/mhchem'] },
+  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], packages: {'[+]': ['mhchem']} },
   svg: { fontCache: 'global' }
 };
 </script>
@@ -715,13 +716,75 @@ window.MathJax = {
             </div>
 
             <div class="math-toolbar">
-                <span style="font-size:11px; font-weight:bold; align-self:center;">شريط الرياضيات والرموز:</span>
+                <span style="font-size:11px; font-weight:bold; align-self:center;">أساسيات:</span>
                 <button class="math-btn" onclick="insertSymbol('x^2')">أس $x^2$</button>
                 <button class="math-btn" onclick="insertSymbol('\\frac{a}{b}')">كسر $\frac{a}{b}$</button>
                 <button class="math-btn" onclick="insertSymbol('\\sqrt{x}')">جذر $\sqrt{x}$</button>
+                <button class="math-btn" onclick="insertSymbol('\\sqrt[n]{x}')">جذر من الرتبة n</button>
                 <button class="math-btn" onclick="insertSymbol('\\sum_{i=1}^{n}')">مجموع $\sum$</button>
+                <button class="math-btn" onclick="insertSymbol('\\prod_{i=1}^{n}')">جداء $\prod$</button>
                 <button class="math-btn" onclick="insertSymbol('\\theta')">زاوية $\theta$</button>
                 <button class="math-btn" onclick="insertSymbol('\\pi')">باي $\pi$</button>
+                <button class="math-btn" onclick="insertSymbol('\\alpha, \\beta, \\gamma')">أحرف يونانية</button>
+                <button class="math-btn" onclick="insertSymbol('\\infty')">لانهاية $\infty$</button>
+            </div>
+
+            <div class="math-toolbar">
+                <span style="font-size:11px; font-weight:bold; align-self:center;">نهايات واشتقاق وتكامل:</span>
+                <button class="math-btn" onclick="insertSymbol('\\lim_{x \\to a}')">نهاية $\lim$</button>
+                <button class="math-btn" onclick="insertSymbol('\\lim_{x \\to \\infty}')">نهاية عند اللانهاية</button>
+                <button class="math-btn" onclick="insertSymbol('\\frac{dy}{dx}')">مشتقة $\frac{dy}{dx}$</button>
+                <button class="math-btn" onclick="insertSymbol('f\'(x)')">مشتقة أولى $f'(x)$</button>
+                <button class="math-btn" onclick="insertSymbol('f\'\'(x)')">مشتقة ثانية $f''(x)$</button>
+                <button class="math-btn" onclick="insertSymbol('\\frac{\\partial y}{\\partial x}')">مشتقة جزئية</button>
+                <button class="math-btn" onclick="insertSymbol('\\int f(x)\\,dx')">تكامل $\int$</button>
+                <button class="math-btn" onclick="insertSymbol('\\int_{a}^{b} f(x)\\,dx')">تكامل محدد</button>
+                <button class="math-btn" onclick="insertSymbol('\\iint')">تكامل مزدوج</button>
+            </div>
+
+            <div class="math-toolbar">
+                <span style="font-size:11px; font-weight:bold; align-self:center;">متجهات وأعداد مركبة:</span>
+                <button class="math-btn" onclick="insertSymbol('\\vec{AB}')">متجه $\vec{AB}$</button>
+                <button class="math-btn" onclick="insertSymbol('\\vec{u} \\cdot \\vec{v}')">جداء قياسي</button>
+                <button class="math-btn" onclick="insertSymbol('\\vec{u} \\times \\vec{v}')">جداء اتجاهي</button>
+                <button class="math-btn" onclick="insertSymbol('|\\vec{u}|')">مقياس متجه</button>
+                <button class="math-btn" onclick="insertSymbol('a + bi')">عدد مركب $a+bi$</button>
+                <button class="math-btn" onclick="insertSymbol('\\overline{z}')">مرافق العدد المركب</button>
+                <button class="math-btn" onclick="insertSymbol('|z|')">قيمة مطلقة/معيار</button>
+                <button class="math-btn" onclick="insertSymbol('r(\\cos\\theta + i\\sin\\theta)')">الصورة القطبية</button>
+            </div>
+
+            <div class="math-toolbar">
+                <span style="font-size:11px; font-weight:bold; align-self:center;">مصفوفات ومحددات:</span>
+                <button class="math-btn" onclick="insertSymbol('\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}')">مصفوفة 2×2</button>
+                <button class="math-btn" onclick="insertSymbol('\\begin{pmatrix} a & b & c \\\\ d & e & f \\\\ g & h & i \\end{pmatrix}')">مصفوفة 3×3</button>
+                <button class="math-btn" onclick="insertSymbol('\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}')">محدد 2×2</button>
+                <button class="math-btn" onclick="insertSymbol('A^{-1}')">مصفوفة معكوسة</button>
+                <button class="math-btn" onclick="insertSymbol('A^{T}')">منقول مصفوفة</button>
+            </div>
+
+            <div class="math-toolbar">
+                <span style="font-size:11px; font-weight:bold; align-self:center;">إحصاء واحتمالات:</span>
+                <button class="math-btn" onclick="insertSymbol('P(A)')">احتمال $P(A)$</button>
+                <button class="math-btn" onclick="insertSymbol('P(A \\cap B)')">تقاطع حدثين</button>
+                <button class="math-btn" onclick="insertSymbol('P(A \\cup B)')">اتحاد حدثين</button>
+                <button class="math-btn" onclick="insertSymbol('P(A|B)')">احتمال شرطي</button>
+                <button class="math-btn" onclick="insertSymbol('\\bar{x}')">المتوسط الحسابي</button>
+                <button class="math-btn" onclick="insertSymbol('\\sigma')">الانحراف المعياري</button>
+                <button class="math-btn" onclick="insertSymbol('\\sigma^2')">التباين</button>
+                <button class="math-btn" onclick="insertSymbol('C(n,r) = \\binom{n}{r}')">توافيق</button>
+                <button class="math-btn" onclick="insertSymbol('P(n,r)')">تباديل</button>
+                <button class="math-btn" onclick="insertSymbol('n!')">مضروب</button>
+            </div>
+
+            <div class="math-toolbar">
+                <span style="font-size:11px; font-weight:bold; align-self:center;">كيمياء (mhchem):</span>
+                <button class="math-btn" onclick="insertSymbol('\\ce{H2O}')">معادلة كيميائية</button>
+                <button class="math-btn" onclick="insertSymbol('\\ce{2H2 + O2 -> 2H2O}')">تفاعل كيميائي</button>
+                <button class="math-btn" onclick="insertSymbol('\\ce{CO2 ^ + H2O}')">صعود غاز</button>
+                <button class="math-btn" onclick="insertSymbol('\\ce{NaCl v}')">ترسيب</button>
+                <button class="math-btn" onclick="insertSymbol('\\ce{A <=> B}')">تفاعل انعكاسي</button>
+                <button class="math-btn" onclick="insertSymbol('\\ce{^{235}_{92}U}')">نظير ذري</button>
             </div>
 
             <div class="toolbar-section">
@@ -772,6 +835,29 @@ window.MathJax = {
                         العناصر المحفوظة
                         <span class="adv-fab-badge" id="reusablesBadgeCount" style="display:none;">0</span>
                     </div>
+                    <div class="adv-fab" onclick="openShapeLibraryModal()" title="مكتبة أشكال ورسومات جاهزة">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M12 2L2 22h20L12 2zm6 4a2 2 0 110 4 2 2 0 010-4z"/></svg>
+                        مكتبة الأشكال
+                    </div>
+                    <div class="adv-fab" onclick="openFunctionGrapherModal()" title="رسم دالة رياضية تلقائيًا">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M3 21h18v-2H5V3H3v18zm4-6l3-4 3 3 5-7 1.5 1L14 15l-3-3-3.5 5H7v-2z"/></svg>
+                        رسم دالة
+                    </div>
+                    <div class="adv-fab" onclick="insertGeoGebra()" title="إدراج أداة هندسية تفاعلية (GeoGebra)">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm12.5 0a3.5 3.5 0 110 7 3.5 3.5 0 010-7z"/></svg>
+                        شكل هندسي تفاعلي
+                    </div>
+                </div>
+                <div class="undo-redo-bar" style="margin-top:8px;">
+                    <button class="btn" id="examUndoBtn" style="font-size:11px;background:#334155;" onclick="examUndo()" disabled>
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+                        تراجع (Ctrl+Z)
+                    </button>
+                    <button class="btn" id="examRedoBtn" style="font-size:11px;background:#334155;" onclick="examRedo()" disabled>
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.06-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+                        إعادة (Ctrl+Y)
+                    </button>
+                    <span style="font-size:10px;color:#94a3b8;align-self:center;">Ctrl+S حفظ · Ctrl+D تكرار السؤال الحالي</span>
                 </div>
             </div>
 
@@ -2858,6 +2944,65 @@ window.MathJax = {
             .thumbnails-sidebar, .thumbnails-toggle-btn, .adv-toolbar, .adv-search-box,
             .page-drag-handle, .page-type-badge { display: none !important; }
         }
+
+        /* ---------- 11) ترقيم الصفحات ---------- */
+        .page-number-badge {
+            position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); z-index: 6;
+            font-size: 10px; font-weight: 700; color: #64748b; background: rgba(255,255,255,0.85);
+            padding: 2px 10px; border-radius: 20px; border: 1px solid #e2e8f0; user-select: none;
+        }
+
+        /* ---------- 12) سحب وإفلات الأسئلة لإعادة الترتيب ---------- */
+        .question-drag-handle {
+            position: absolute; top: 8px; left: -2px; z-index: 6; width: 26px; height: 26px; border-radius: 50%;
+            border: 1px solid var(--card-border); background: rgba(255,255,255,0.92); display: none; align-items: center;
+            justify-content: center; cursor: grab; opacity: 0.5; color: #334155; transform: translateX(-50%);
+        }
+        body.edit-mode-active .question-drag-handle { display: flex; }
+        .question-drag-handle:hover { opacity: 1; border-color: var(--primary-color); color: var(--primary-color); }
+        .question-card.q-drag-over { outline: 3px dashed var(--primary-color); outline-offset: -3px; }
+
+        /* ---------- 13) أزرار التراجع/الإعادة ---------- */
+        .undo-redo-bar { display: flex; gap: 8px; }
+
+        /* ---------- 14) ورق الرسم البياني ---------- */
+        .q-graph-paper-wrap { resize: both; overflow: auto; max-width: 100%; min-width: 120px; min-height: 100px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 6px; }
+        .q-graph-paper-wrap svg { width: 100%; height: 100%; display: block; }
+
+        /* ---------- 15) الأشكال والرسومات المُدرجة ---------- */
+        .q-inserted-shape-wrap { resize: both; overflow: auto; max-width: 100%; min-width: 80px; min-height: 80px; margin: 8px auto; display: block; border: 1px dashed transparent; }
+        body.edit-mode-active .q-inserted-shape-wrap { border-color: #cbd5e1; }
+        .q-inserted-shape-wrap svg, .q-inserted-shape-wrap img { width: 100%; height: 100%; }
+        .shape-lib-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .shape-lib-item { border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; background: #fff; transition: all .15s; }
+        .shape-lib-item:hover { border-color: var(--primary-color); background: #f0f9ff; }
+        .shape-lib-item svg { width: 40px; height: 40px; }
+
+        /* ---------- 16) نسخة إنجليزية (ثنائي اللغة) ---------- */
+        .q-bilingual-wrap { display: flex; gap: 10px; margin-top: 6px; }
+        .q-bilingual-wrap > div { flex: 1; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px; }
+        .q-bilingual-en { direction: ltr; text-align: left; font-family: 'Cairo', sans-serif; color: #334155; }
+        .q-bilingual-label { font-size: 9.5px; font-weight: 800; color: #64748b; margin-bottom: 4px; display: block; }
+
+        /* ---------- 17) وسم الدرس/ناتج التعلم ---------- */
+        .q-lesson-tag { display: inline-flex; align-items: center; gap: 4px; font-size: 9.5px; font-weight: 700; color: #7c3aed; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 20px; padding: 2px 9px; margin-inline-start: 6px; }
+        .q-lesson-tag[contenteditable="true"] { cursor: text; }
+
+        /* ---------- 18) صورة السؤال — زر أدوات الصورة ---------- */
+        .q-img-tools-btn {
+            display: none; margin: 4px auto 0; font-size: 10px; padding: 5px 10px; border-radius: 7px; border: 1px solid #cbd5e1;
+            background: #f8fafc; color: #334155; cursor: pointer;
+        }
+        body.edit-mode-active .q-attached-img[src]:not([src=""]) ~ .q-img-tools-btn,
+        body.edit-mode-active .q-img-tools-btn.has-img { display: block; }
+
+        /* ---------- 19) GeoGebra ---------- */
+        .q-geogebra-wrap { width: 100%; min-height: 320px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; }
+
+        @media print {
+            .page-number-badge { color: #475569; background: transparent; border: none; }
+            .question-drag-handle, .q-img-tools-btn { display: none !important; }
+        }
     </style>
 
     <!-- صندوق البحث العائم داخل الأسئلة -->
@@ -2980,6 +3125,72 @@ window.MathJax = {
             <div class="modal-body">
                 <p style="font-size:11px;color:#64748b;margin-bottom:10px;">من زر "💾 حفظ للاستخدام لاحقًا" اللي تحت أي سؤال، تقدر تحفظ أي عنصر (سؤال، فقرة، صورة داخله...) وتلاقيه هنا جاهز تدرجه في أي صفحة تانية أو أي ملزمة تانية.</p>
                 <div id="reusablesListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:55vh; overflow-y:auto;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: مكتبة الأشكال الجاهزة -->
+    <div class="modal-overlay" id="shapeLibraryModal">
+        <div class="modal-card" style="max-width: 560px;">
+            <div class="modal-header">
+                <h3>مكتبة الأشكال والرسومات الجاهزة</h3>
+                <button class="modal-close" onclick="closeShapeLibraryModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:11px;color:#64748b;margin-bottom:10px;">اضغط على أي شكل عشان يتضاف بآخر صفحة، وبعدها تقدر تكبره/تصغّره وتحركه.</p>
+                <div class="shape-lib-grid" id="shapeLibGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: رسم دالة رياضية تلقائيًا -->
+    <div class="modal-overlay" id="functionGrapherModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3>رسم دالة ومنحنى تلقائيًا</h3>
+                <button class="modal-close" onclick="closeFunctionGrapherModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="ff">
+                    <label>الدالة f(x) — استخدم x، ورموز زي: sin, cos, tan, sqrt, ^, abs, ln</label>
+                    <input type="text" id="fnGraphExpr" class="auth-text-input" style="direction:ltr;text-align:left;" value="x^2 - 3*x + 2" oninput="drawFunctionPreview()">
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <div class="ff" style="flex:1;"><label>من x =</label><input type="number" id="fnGraphXMin" class="auth-text-input" value="-10" oninput="drawFunctionPreview()"></div>
+                    <div class="ff" style="flex:1;"><label>إلى x =</label><input type="number" id="fnGraphXMax" class="auth-text-input" value="10" oninput="drawFunctionPreview()"></div>
+                </div>
+                <canvas id="fnGraphCanvas" width="420" height="260" style="width:100%;background:#fff;border:1px solid #e2e8f0;border-radius:8px;"></canvas>
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="insertFunctionGraphIntoExam()">إدراج الرسم في آخر صفحة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: أدوات الصورة (قص / تدرج رمادي / ضغط) -->
+    <div class="modal-overlay" id="imageToolsModal">
+        <div class="modal-card" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3>أدوات الصورة</h3>
+                <button class="modal-close" onclick="closeImageToolsModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:11px;color:#64748b;">لو عايز تقص الصورة: اسحب بالماوس فوقها لتحديد المنطقة، وبعدين دوس "قص للمنطقة المحددة".</p>
+                <div style="position:relative;display:inline-block;max-width:100%;">
+                    <canvas id="imgToolsCanvas" style="max-width:100%;border:1px solid #e2e8f0;border-radius:8px;cursor:crosshair;"></canvas>
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+                    <button class="btn" style="background:#475569;" onclick="applyImageCrop()">✂️ قص للمنطقة المحددة</button>
+                    <button class="btn" style="background:#475569;" onclick="applyImageGrayscale()">⚫ تدرج رمادي (لتوفير الحبر)</button>
+                    <button class="btn" style="background:#475569;" onclick="resetImageToolsCanvas()">↺ استرجاع الأصل</button>
+                </div>
+                <div class="ff" style="margin-top:10px;">
+                    <label>جودة الضغط عند الحفظ: <span id="imgQualityLabel">80%</span></label>
+                    <input type="range" id="imgQualitySlider" min="20" max="100" value="80" oninput="document.getElementById('imgQualityLabel').innerText = this.value + '%'">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="saveImageToolsResult()">حفظ التعديلات على الصورة</button>
+                </div>
             </div>
         </div>
     </div>
@@ -3197,6 +3408,7 @@ window.MathJax = {
 
     function updateThumbnails() {
         const sidebar = document.getElementById('thumbnailsSidebar');
+        if (typeof updatePageNumbers === 'function') updatePageNumbers();
         if (!sidebar) return;
         sidebar.querySelectorAll('.thumbnail-item').forEach(el => el.remove());
         const pages = document.querySelectorAll('#pagesContainer .page, .page.cover-page');
@@ -3374,6 +3586,398 @@ window.MathJax = {
         if (badge) { badge.setAttribute('data-page-type', next); badge.innerText = next === 'lesson' ? 'صفحة شرح' : 'صفحة امتحان'; }
         updateThumbnails();
         if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    // سحب وإفلات لإعادة ترتيب الأسئلة نفسها (داخل نفس الصفحة أو نقلها لصفحة تانية)
+    let advDraggedQuestion = null;
+    function handleQuestionDragStart(e) {
+        advDraggedQuestion = e.currentTarget.closest('.question-card');
+        e.dataTransfer.effectAllowed = 'move';
+        e.stopPropagation();
+    }
+    function handleQuestionDragOverTarget(e) {
+        if (!advDraggedQuestion) return;
+        e.preventDefault();
+        e.stopPropagation();
+        e.currentTarget.classList.add('q-drag-over');
+    }
+    function handleQuestionDragLeaveTarget(e) { e.currentTarget.classList.remove('q-drag-over'); }
+    function handleQuestionDropTarget(e) {
+        if (!advDraggedQuestion) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const targetCard = e.currentTarget;
+        targetCard.classList.remove('q-drag-over');
+        if (targetCard !== advDraggedQuestion) {
+            targetCard.parentNode.insertBefore(advDraggedQuestion, targetCard);
+            reindexQuestions();
+            if (typeof calculateAnalytics === 'function') calculateAnalytics();
+            if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+            if (typeof showToast === 'function') showToast('✅ تم إعادة ترتيب السؤال');
+        }
+        advDraggedQuestion = null;
+    }
+
+    /* ---------------------------------------------------------------
+       ترقيم الصفحات التلقائي (1 / عدد الصفحات)
+    --------------------------------------------------------------- */
+    function updatePageNumbers() {
+        const pages = document.querySelectorAll('#pagesContainer .page');
+        const total = pages.length;
+        pages.forEach((page, idx) => {
+            let badge = page.querySelector('.page-number-badge');
+            if (!badge) {
+                badge = document.createElement('div');
+                badge.className = 'page-number-badge';
+                page.appendChild(badge);
+            }
+            badge.innerText = (idx + 1) + ' / ' + total;
+        });
+    }
+
+    /* ---------------------------------------------------------------
+       نسخة إنجليزية (دعم ثنائي اللغة) لأي سؤال
+    --------------------------------------------------------------- */
+    function toggleBilingualBox(qId) {
+        if (!isAuthenticated) { openAuthModal(); return; }
+        const card = document.getElementById(qId);
+        if (!card) return;
+        const qBody = card.querySelector('.q-body');
+        if (!qBody) { if (typeof showToast === 'function') showToast('السؤال ده مفيهوش نص أساسي يترجم بجانبه'); return; }
+
+        let wrap = card.querySelector('.q-bilingual-wrap');
+        if (wrap) { wrap.remove(); return; } // تبديل: لو موجود، يتشال
+
+        wrap = document.createElement('div');
+        wrap.className = 'q-bilingual-wrap';
+        wrap.innerHTML = `
+            <div class="q-bilingual-en">
+                <span class="q-bilingual-label">English Version</span>
+                <div class="editable-element" contenteditable="${isDirectEditMode || isEditMode}" style="min-height:24px;">Write the English translation here...</div>
+            </div>`;
+        qBody.insertAdjacentElement('afterend', wrap);
+        if (typeof attachMathJaxBlur === 'function') attachMathJaxBlur();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    /* ---------------------------------------------------------------
+       إدراج ورق رسم بياني / شبكة تربيعات داخل سؤال
+    --------------------------------------------------------------- */
+    function insertGraphPaper(qId) {
+        if (!isAuthenticated) { openAuthModal(); return; }
+        const card = document.getElementById(qId);
+        if (!card) return;
+        const rows = parseInt(prompt('عدد المربعات رأسيًا؟', '10')) || 10;
+        const cols = parseInt(prompt('عدد المربعات أفقيًا؟', '14')) || 14;
+        const cell = 20;
+        const w = cols * cell, h = rows * cell;
+        let lines = '';
+        for (let i = 0; i <= cols; i++) lines += `<line x1="${i*cell}" y1="0" x2="${i*cell}" y2="${h}" stroke="#94a3b8" stroke-width="${i % 5 === 0 ? 1.2 : 0.5}"/>`;
+        for (let j = 0; j <= rows; j++) lines += `<line x1="0" y1="${j*cell}" x2="${w}" y2="${j*cell}" stroke="#94a3b8" stroke-width="${j % 5 === 0 ? 1.2 : 0.5}"/>`;
+        const wrap = document.createElement('div');
+        wrap.className = 'q-graph-paper-wrap no-print-border';
+        wrap.style.width = w + 'px'; wrap.style.height = h + 'px';
+        wrap.innerHTML = `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${lines}</svg>`;
+        const qBody = card.querySelector('.q-body');
+        (qBody || card).insertAdjacentElement('afterend', wrap);
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        if (typeof showToast === 'function') showToast('✅ اتضاف ورق الرسم البياني — تقدر تكبره من طرفه');
+    }
+
+    /* ---------------------------------------------------------------
+       مكتبة أشكال ورسومات جاهزة (هندسة / دوائر كهربائية)
+    --------------------------------------------------------------- */
+    const SHAPE_LIBRARY = [
+        { name: 'مثلث', svg: '<svg viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="none" stroke="#1e293b" stroke-width="3"/></svg>' },
+        { name: 'مثلث قائم الزاوية', svg: '<svg viewBox="0 0 100 100"><polygon points="10,90 10,10 90,90" fill="none" stroke="#1e293b" stroke-width="3"/><rect x="10" y="75" width="15" height="15" fill="none" stroke="#1e293b" stroke-width="2"/></svg>' },
+        { name: 'مربع', svg: '<svg viewBox="0 0 100 100"><rect x="12" y="12" width="76" height="76" fill="none" stroke="#1e293b" stroke-width="3"/></svg>' },
+        { name: 'مستطيل', svg: '<svg viewBox="0 0 100 100"><rect x="8" y="28" width="84" height="44" fill="none" stroke="#1e293b" stroke-width="3"/></svg>' },
+        { name: 'دائرة', svg: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#1e293b" stroke-width="3"/><line x1="50" y1="50" x2="90" y2="50" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="3,2"/></svg>' },
+        { name: 'شبه منحرف', svg: '<svg viewBox="0 0 100 100"><polygon points="25,20 75,20 95,80 5,80" fill="none" stroke="#1e293b" stroke-width="3"/></svg>' },
+        { name: 'متوازي أضلاع', svg: '<svg viewBox="0 0 100 100"><polygon points="25,20 95,20 75,80 5,80" fill="none" stroke="#1e293b" stroke-width="3"/></svg>' },
+        { name: 'معين', svg: '<svg viewBox="0 0 100 100"><polygon points="50,8 92,50 50,92 8,50" fill="none" stroke="#1e293b" stroke-width="3"/></svg>' },
+        { name: 'محاور إحداثيات', svg: '<svg viewBox="0 0 100 100"><line x1="5" y1="50" x2="95" y2="50" stroke="#1e293b" stroke-width="2" marker-end="url(#ax)"/><line x1="50" y1="95" x2="50" y2="5" stroke="#1e293b" stroke-width="2" marker-end="url(#ay)"/><defs><marker id="ax" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1e293b"/></marker><marker id="ay" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1e293b"/></marker></defs><text x="90" y="46" font-size="9">x</text><text x="53" y="12" font-size="9">y</text></svg>' },
+        { name: 'دائرة أهداف', svg: '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="#1e293b" stroke-width="2"/><circle cx="50" cy="50" r="28" fill="none" stroke="#1e293b" stroke-width="2"/><circle cx="50" cy="50" r="14" fill="none" stroke="#1e293b" stroke-width="2"/></svg>' },
+        { name: 'مقاومة كهربائية', svg: '<svg viewBox="0 0 120 40"><path d="M0,20 H20 L28,6 L38,34 L48,6 L58,34 L68,6 L78,20 H120" fill="none" stroke="#1e293b" stroke-width="3"/></svg>' },
+        { name: 'بطارية', svg: '<svg viewBox="0 0 120 40"><line x1="0" y1="20" x2="45" y2="20" stroke="#1e293b" stroke-width="3"/><line x1="45" y1="4" x2="45" y2="36" stroke="#1e293b" stroke-width="5"/><line x1="60" y1="10" x2="60" y2="30" stroke="#1e293b" stroke-width="2"/><line x1="60" y1="20" x2="120" y2="20" stroke="#1e293b" stroke-width="3"/></svg>' },
+        { name: 'مصباح كهربائي', svg: '<svg viewBox="0 0 100 100"><circle cx="50" cy="45" r="30" fill="none" stroke="#1e293b" stroke-width="3"/><line x1="29" y1="24" x2="71" y2="66" stroke="#1e293b" stroke-width="3"/><line x1="71" y1="24" x2="29" y2="66" stroke="#1e293b" stroke-width="3"/></svg>' },
+        { name: 'دائرة كهربائية مغلقة', svg: '<svg viewBox="0 0 160 90"><rect x="10" y="10" width="140" height="70" fill="none" stroke="#1e293b" stroke-width="2.5"/><line x1="70" y1="10" x2="80" y2="10" stroke="#fff" stroke-width="4"/><line x1="65" y1="0" x2="65" y2="20" stroke="#1e293b" stroke-width="4"/><line x1="82" y1="6" x2="82" y2="14" stroke="#1e293b" stroke-width="2"/></svg>' },
+        { name: 'حلقة بنزين (كيمياء)', svg: '<svg viewBox="0 0 100 100"><polygon points="50,10 85,30 85,70 50,90 15,70 15,30" fill="none" stroke="#1e293b" stroke-width="3"/><circle cx="50" cy="50" r="22" fill="none" stroke="#1e293b" stroke-width="2"/></svg>' },
+        { name: 'خط عدد', svg: '<svg viewBox="0 0 200 40"><line x1="10" y1="20" x2="190" y2="20" stroke="#1e293b" stroke-width="2" marker-end="url(#nl)"/><defs><marker id="nl" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1e293b"/></marker></defs>' + [0,1,2,3,4,5].map(i=>`<line x1="${20+i*30}" y1="14" x2="${20+i*30}" y2="26" stroke="#1e293b" stroke-width="2"/><text x="${16+i*30}" y="38" font-size="9">${i}</text>`).join('') + '</svg>' }
+    ];
+
+    function openShapeLibraryModal() {
+        if (!isAuthenticated) { openAuthModal(); return; }
+        const grid = document.getElementById('shapeLibGrid');
+        grid.innerHTML = SHAPE_LIBRARY.map((s, idx) => `
+            <div class="shape-lib-item" onclick="insertShapeFromLibrary(${idx})" title="${s.name}">${s.svg}</div>
+        `).join('');
+        document.getElementById('shapeLibraryModal').classList.add('open');
+    }
+    function closeShapeLibraryModal() { document.getElementById('shapeLibraryModal').classList.remove('open'); }
+
+    function insertShapeFromLibrary(idx) {
+        const shape = SHAPE_LIBRARY[idx];
+        if (!shape) return;
+        const wrap = document.createElement('div');
+        wrap.className = 'q-inserted-shape-wrap';
+        wrap.style.width = '160px'; wrap.style.height = '160px';
+        wrap.innerHTML = shape.svg;
+        getActiveQuestionsContainer().appendChild(wrap);
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        if (typeof showToast === 'function') showToast('✅ تم إدراج "' + shape.name + '" — تقدر تكبره/تصغّره من طرفه');
+        closeShapeLibraryModal();
+    }
+
+    /* ---------------------------------------------------------------
+       رسم دوال ومنحنيات رياضية تلقائيًا من المعادلة
+    --------------------------------------------------------------- */
+    function safeEvalMathExpression(expr, xVal) {
+        const cleaned = expr
+            .replace(/\^/g, '**')
+            .replace(/π/g, 'Math.PI')
+            .replace(/\bsin\(/g, 'Math.sin(')
+            .replace(/\bcos\(/g, 'Math.cos(')
+            .replace(/\btan\(/g, 'Math.tan(')
+            .replace(/\bsqrt\(/g, 'Math.sqrt(')
+            .replace(/\babs\(/g, 'Math.abs(')
+            .replace(/\blog\(/g, 'Math.log10(')
+            .replace(/\bln\(/g, 'Math.log(')
+            .replace(/\bexp\(/g, 'Math.exp(');
+        try {
+            // eslint-disable-next-line no-new-func
+            const fn = new Function('x', 'return (' + cleaned + ');');
+            return fn(xVal);
+        } catch (e) { return NaN; }
+    }
+
+    function drawFunctionPreview() {
+        const expr = document.getElementById('fnGraphExpr').value || 'x^2';
+        const xmin = parseFloat(document.getElementById('fnGraphXMin').value) || -10;
+        const xmax = parseFloat(document.getElementById('fnGraphXMax').value) || 10;
+        const canvas = document.getElementById('fnGraphCanvas');
+        const ctx = canvas.getContext('2d');
+        const W = canvas.width, H = canvas.height;
+        ctx.clearRect(0, 0, W, H);
+
+        // تحديد المدى الرأسي تلقائيًا من عينات القيم
+        const N = 300;
+        const pts = [];
+        let ymin = Infinity, ymax = -Infinity;
+        for (let i = 0; i <= N; i++) {
+            const x = xmin + (xmax - xmin) * i / N;
+            const y = safeEvalMathExpression(expr, x);
+            if (isFinite(y)) { pts.push([x, y]); if (y < ymin) ymin = y; if (y > ymax) ymax = y; }
+            else pts.push(null);
+        }
+        if (!isFinite(ymin) || !isFinite(ymax)) { ymin = -10; ymax = 10; }
+        if (ymin === ymax) { ymin -= 1; ymax += 1; }
+        const padY = (ymax - ymin) * 0.1; ymin -= padY; ymax += padY;
+
+        const toPx = (x, y) => [
+            ((x - xmin) / (xmax - xmin)) * (W - 40) + 30,
+            H - (((y - ymin) / (ymax - ymin)) * (H - 40) + 25)
+        ];
+
+        // محاور
+        ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1;
+        if (ymin < 0 && ymax > 0) { const [x0, y0] = toPx(xmin, 0); const [x1, y1] = toPx(xmax, 0); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); }
+        if (xmin < 0 && xmax > 0) { const [x0, y0] = toPx(0, ymin); const [x1, y1] = toPx(0, ymax); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); }
+
+        // المنحنى
+        ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2.5; ctx.beginPath();
+        let started = false;
+        pts.forEach(p => {
+            if (!p) { started = false; return; }
+            const [px, py] = toPx(p[0], p[1]);
+            if (!started) { ctx.moveTo(px, py); started = true; } else { ctx.lineTo(px, py); }
+        });
+        ctx.stroke();
+    }
+
+    function openFunctionGrapherModal() {
+        if (!isAuthenticated) { openAuthModal(); return; }
+        document.getElementById('functionGrapherModal').classList.add('open');
+        setTimeout(drawFunctionPreview, 60);
+    }
+    function closeFunctionGrapherModal() { document.getElementById('functionGrapherModal').classList.remove('open'); }
+
+    function insertFunctionGraphIntoExam() {
+        const canvas = document.getElementById('fnGraphCanvas');
+        const expr = document.getElementById('fnGraphExpr').value || 'x^2';
+        const wrap = document.createElement('div');
+        wrap.className = 'q-inserted-shape-wrap';
+        wrap.style.width = '340px'; wrap.style.height = '200px';
+        const img = document.createElement('img');
+        img.src = canvas.toDataURL('image/png');
+        img.style.width = '100%'; img.style.height = '100%'; img.style.background = '#fff';
+        img.alt = 'رسم بياني للدالة: ' + expr;
+        wrap.appendChild(img);
+        getActiveQuestionsContainer().appendChild(wrap);
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        if (typeof showToast === 'function') showToast('✅ تم إدراج رسم الدالة بآخر صفحة');
+        closeFunctionGrapherModal();
+    }
+
+    /* ---------------------------------------------------------------
+       إدراج أداة GeoGebra التفاعلية (رسم أشكال هندسية تفاعلية)
+    --------------------------------------------------------------- */
+    let geoGebraScriptLoaded = false;
+    let geoGebraCounter = 0;
+    function insertGeoGebra() {
+        if (!isAuthenticated) { openAuthModal(); return; }
+        const containerId = 'ggb-' + (++geoGebraCounter) + '-' + Date.now();
+        const wrap = document.createElement('div');
+        wrap.className = 'q-geogebra-wrap';
+        wrap.innerHTML = `<div id="${containerId}" style="width:100%;height:320px;"></div>`;
+        getActiveQuestionsContainer().appendChild(wrap);
+        if (typeof showToast === 'function') showToast('⏳ جاري تحميل أداة الرسم الهندسي...');
+
+        function createApplet() {
+            if (!window.GGBApplet) { setTimeout(createApplet, 250); return; }
+            const applet = new GGBApplet({
+                appName: 'geometry', width: wrap.clientWidth || 500, height: 320,
+                showToolBar: true, showAlgebraInput: false, showMenuBar: false, language: 'ar'
+            }, true);
+            applet.inject(containerId);
+        }
+
+        if (!geoGebraScriptLoaded) {
+            geoGebraScriptLoaded = true;
+            const s = document.createElement('script');
+            s.src = 'https://www.geogebra.org/apps/deployggb.js';
+            s.onload = createApplet;
+            document.head.appendChild(s);
+        } else {
+            createApplet();
+        }
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    /* ---------------------------------------------------------------
+       أدوات الصورة: قص / تدرج رمادي (لتوفير الحبر) / ضغط الحجم
+    --------------------------------------------------------------- */
+    let imgToolsTargetId = null;
+    let imgToolsOriginalSrc = null;
+    let imgToolsSelecting = false;
+    let imgToolsSelStart = null;
+    let imgToolsSelRect = null;
+
+    function openImageToolsModal(imgId) {
+        if (!isAuthenticated) { openAuthModal(); return; }
+        const imgEl = document.getElementById(imgId);
+        if (!imgEl || !imgEl.getAttribute('src')) { if (typeof showToast === 'function') showToast('مفيش صورة مرفوعة على السؤال ده لسه'); return; }
+        imgToolsTargetId = imgId;
+        imgToolsOriginalSrc = imgEl.src;
+        imgToolsSelRect = null;
+        loadImageIntoToolsCanvas(imgEl.src);
+        document.getElementById('imageToolsModal').classList.add('open');
+    }
+    function closeImageToolsModal() { document.getElementById('imageToolsModal').classList.remove('open'); }
+
+    function loadImageIntoToolsCanvas(src) {
+        const canvas = document.getElementById('imgToolsCanvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        img.onload = function () {
+            const maxW = 460;
+            const scale = img.width > maxW ? maxW / img.width : 1;
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            initImageToolsSelection(canvas);
+        };
+        img.src = src;
+    }
+
+    function initImageToolsSelection(canvas) {
+        if (canvas.dataset.selInit === '1') return;
+        canvas.dataset.selInit = '1';
+        const ctx = canvas.getContext('2d');
+        canvas.addEventListener('mousedown', function (e) {
+            const r = canvas.getBoundingClientRect();
+            imgToolsSelecting = true;
+            imgToolsSelStart = { x: (e.clientX - r.left) * (canvas.width / r.width), y: (e.clientY - r.top) * (canvas.height / r.height) };
+        });
+        canvas.addEventListener('mousemove', function (e) {
+            if (!imgToolsSelecting) return;
+            const r = canvas.getBoundingClientRect();
+            const cur = { x: (e.clientX - r.left) * (canvas.width / r.width), y: (e.clientY - r.top) * (canvas.height / r.height) };
+            imgToolsSelRect = {
+                x: Math.min(imgToolsSelStart.x, cur.x), y: Math.min(imgToolsSelStart.y, cur.y),
+                w: Math.abs(cur.x - imgToolsSelStart.x), h: Math.abs(cur.y - imgToolsSelStart.y)
+            };
+            redrawImageToolsCanvasWithSelection();
+        });
+        window.addEventListener('mouseup', function () { imgToolsSelecting = false; });
+    }
+
+    function redrawImageToolsCanvasWithSelection() {
+        const canvas = document.getElementById('imgToolsCanvas');
+        const ctx = canvas.getContext('2d');
+        if (!canvas.dataset.baseImg) canvas.dataset.baseImg = canvas.toDataURL();
+        const base = new Image();
+        base.onload = function () {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
+            if (imgToolsSelRect) {
+                ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+                ctx.strokeRect(imgToolsSelRect.x, imgToolsSelRect.y, imgToolsSelRect.w, imgToolsSelRect.h);
+                ctx.setLineDash([]);
+            }
+        };
+        base.src = canvas.dataset.baseImg;
+    }
+
+    function applyImageCrop() {
+        const canvas = document.getElementById('imgToolsCanvas');
+        if (!imgToolsSelRect || imgToolsSelRect.w < 5 || imgToolsSelRect.h < 5) { if (typeof showToast === 'function') showToast('حدد منطقة بالسحب على الصورة الأول'); return; }
+        const base = new Image();
+        base.onload = function () {
+            const cropped = document.createElement('canvas');
+            cropped.width = imgToolsSelRect.w; cropped.height = imgToolsSelRect.h;
+            cropped.getContext('2d').drawImage(base, imgToolsSelRect.x, imgToolsSelRect.y, imgToolsSelRect.w, imgToolsSelRect.h, 0, 0, imgToolsSelRect.w, imgToolsSelRect.h);
+            canvas.width = cropped.width; canvas.height = cropped.height;
+            canvas.getContext('2d').drawImage(cropped, 0, 0);
+            canvas.dataset.baseImg = canvas.toDataURL();
+            imgToolsSelRect = null;
+            if (typeof showToast === 'function') showToast('✅ اتقصت الصورة — دوس "حفظ التعديلات" عشان تتحفظ');
+        };
+        base.src = canvas.dataset.baseImg || canvas.toDataURL();
+    }
+
+    function applyImageGrayscale() {
+        const canvas = document.getElementById('imgToolsCanvas');
+        const ctx = canvas.getContext('2d');
+        const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < data.data.length; i += 4) {
+            const avg = 0.299 * data.data[i] + 0.587 * data.data[i + 1] + 0.114 * data.data[i + 2];
+            data.data[i] = data.data[i + 1] = data.data[i + 2] = avg;
+        }
+        ctx.putImageData(data, 0, 0);
+        canvas.dataset.baseImg = canvas.toDataURL();
+        if (typeof showToast === 'function') showToast('✅ اتحولت لتدرج رمادي (هيوفر حبر الطباعة)');
+    }
+
+    function resetImageToolsCanvas() {
+        imgToolsSelRect = null;
+        if (imgToolsOriginalSrc) {
+            const canvas = document.getElementById('imgToolsCanvas');
+            canvas.removeAttribute('data-base-img'); canvas.dataset.baseImg = '';
+            loadImageIntoToolsCanvas(imgToolsOriginalSrc);
+        }
+    }
+
+    function saveImageToolsResult() {
+        const canvas = document.getElementById('imgToolsCanvas');
+        const quality = (parseInt(document.getElementById('imgQualitySlider').value) || 80) / 100;
+        const finalDataUrl = canvas.toDataURL('image/jpeg', quality);
+        const imgEl = document.getElementById(imgToolsTargetId);
+        if (imgEl) imgEl.src = finalDataUrl;
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        if (typeof showToast === 'function') showToast('✅ اتحفظت تعديلات الصورة');
+        closeImageToolsModal();
     }
 
     /* ---------------------------------------------------------------
@@ -3603,11 +4207,63 @@ window.MathJax = {
             reuseBtn.title = 'احفظ هذا العنصر (والصورة الموجودة فيه إن وُجدت) عشان تقدر تدرجه في أي صفحة تانية بعدين';
             reuseBtn.onclick = () => saveElementToReusables(qCard.id);
 
+            const bilingualBtn = document.createElement('button');
+            bilingualBtn.className = 'btn'; bilingualBtn.style.cssText = 'font-size:10px;background:#0d9488;';
+            bilingualBtn.innerText = '🌐 نسخة إنجليزية';
+            bilingualBtn.title = 'أضف صندوق ترجمة إنجليزية بجانب نص السؤال';
+            bilingualBtn.onclick = () => toggleBilingualBox(qCard.id);
+
+            const graphPaperBtn = document.createElement('button');
+            graphPaperBtn.className = 'btn'; graphPaperBtn.style.cssText = 'font-size:10px;background:#475569;';
+            graphPaperBtn.innerText = '🔲 ورق رسم بياني';
+            graphPaperBtn.title = 'أدرج شبكة تربيعات/ورق رسم بياني داخل هذا السؤال';
+            graphPaperBtn.onclick = () => insertGraphPaper(qCard.id);
+
+            btnContainer.prepend(graphPaperBtn);
+            btnContainer.prepend(bilingualBtn);
             btnContainer.prepend(reuseBtn);
             btnContainer.prepend(bankBtn);
             btnContainer.prepend(lockBtn);
             btnContainer.prepend(revBtn);
             btnContainer.prepend(altBtn);
+        }
+
+        // مقبض سحب لإعادة ترتيب الأسئلة
+        if (!qCard.querySelector('.question-drag-handle')) {
+            const qHandle = document.createElement('div');
+            qHandle.className = 'question-drag-handle no-print';
+            qHandle.title = 'اسحب لإعادة ترتيب هذا السؤال';
+            qHandle.setAttribute('draggable', 'true');
+            qHandle.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"/></svg>';
+            qHandle.addEventListener('dragstart', handleQuestionDragStart);
+            qCard.appendChild(qHandle);
+            qCard.addEventListener('dragover', handleQuestionDragOverTarget);
+            qCard.addEventListener('dragleave', handleQuestionDragLeaveTarget);
+            qCard.addEventListener('drop', handleQuestionDropTarget);
+        }
+
+        // وسم الدرس / ناتج التعلم (لخريطة أهداف المنهج)
+        const bloomTag = qCard.querySelector('.q-bloom-tag');
+        if (bloomTag && !qCard.querySelector('.q-lesson-tag')) {
+            const lessonTag = document.createElement('span');
+            lessonTag.className = 'q-lesson-tag editable-element';
+            lessonTag.contentEditable = 'true';
+            lessonTag.innerText = '📚 الدرس: —';
+            lessonTag.title = 'اكتب اسم الدرس أو ناتج التعلم اللي السؤال ده بيقيسه';
+            bloomTag.insertAdjacentElement('afterend', lessonTag);
+        }
+
+        // زر أدوات الصورة (قص/تدرج رمادي/ضغط) يظهر لو السؤال فيه صورة مرفقة
+        const imgEl = qCard.querySelector('.q-attached-img');
+        if (imgEl && !qCard.querySelector('.q-img-tools-btn')) {
+            const imgToolsBtn = document.createElement('button');
+            imgToolsBtn.className = 'q-img-tools-btn no-print';
+            imgToolsBtn.type = 'button';
+            imgToolsBtn.innerText = '🖼️ أدوات الصورة (قص / تدرج رمادي / ضغط)';
+            imgToolsBtn.onclick = () => openImageToolsModal(imgEl.id);
+            imgEl.insertAdjacentElement('afterend', imgToolsBtn);
+            if (imgEl.getAttribute('src')) imgToolsBtn.classList.add('has-img');
+            imgEl.addEventListener('load', () => imgToolsBtn.classList.toggle('has-img', !!imgEl.getAttribute('src')));
         }
 
         // إن كان السؤال معلّمًا بالفعل، أظهر الشارات المناسبة
@@ -3716,9 +4372,157 @@ window.MathJax = {
                 });
             });
             if (pagesChanged) updateThumbnails();
+            scheduleUndoCommit();
         });
         const pagesContainer = document.getElementById('pagesContainer');
         if (pagesContainer) observer.observe(pagesContainer, { childList: true, subtree: true });
+
+        initUndoRedoSystem();
+        initKeyboardShortcuts();
+        rehydrateGeoGebraWidgets();
+    }
+
+    function rehydrateGeoGebraWidgets() {
+        document.querySelectorAll('.q-geogebra-wrap > div[id^="ggb-"]').forEach(function (el) {
+            if (el.childElementCount > 0 || el.dataset.ggbLoaded === '1') return;
+            el.dataset.ggbLoaded = '1';
+            const containerId = el.id;
+            function createApplet() {
+                if (!window.GGBApplet) { setTimeout(createApplet, 250); return; }
+                const applet = new GGBApplet({
+                    appName: 'geometry', width: el.clientWidth || 500, height: 320,
+                    showToolBar: true, showAlgebraInput: false, showMenuBar: false, language: 'ar'
+                }, true);
+                applet.inject(containerId);
+            }
+            if (!geoGebraScriptLoaded) {
+                geoGebraScriptLoaded = true;
+                const s = document.createElement('script');
+                s.src = 'https://www.geogebra.org/apps/deployggb.js';
+                s.onload = createApplet;
+                document.head.appendChild(s);
+            } else {
+                createApplet();
+            }
+        });
+    }
+
+    /* ---------------------------------------------------------------
+       تراجع / إعادة غير محدود (Undo / Redo) — يعتمد على لقطات كاملة
+       لمحتوى الصفحات، ويلتقطها تلقائيًا عند أي تعديل هيكلي أو نصي
+    --------------------------------------------------------------- */
+    let examUndoStack = [];
+    let examRedoStack = [];
+    let examLastSnapshot = null;
+    let examUndoDebounceTimer = null;
+    let isRestoringUndoState = false;
+    const EXAM_UNDO_MAX = 60;
+
+    function initUndoRedoSystem() {
+        const pc = document.getElementById('pagesContainer');
+        if (!pc || examLastSnapshot !== null) return; // يتهيأ مرة واحدة بس
+        examLastSnapshot = pc.innerHTML;
+        // نلتقط تعديلات النصوص (contenteditable) عند فقد التركيز كمان، مش بس التغييرات الهيكلية
+        document.addEventListener('blur', function (e) {
+            if (e.target && e.target.isContentEditable && pc.contains(e.target)) {
+                scheduleUndoCommit();
+            }
+        }, true);
+    }
+
+    function scheduleUndoCommit() {
+        if (isRestoringUndoState) return;
+        clearTimeout(examUndoDebounceTimer);
+        examUndoDebounceTimer = setTimeout(commitUndoSnapshot, 700);
+    }
+
+    function commitUndoSnapshot() {
+        const pc = document.getElementById('pagesContainer');
+        if (!pc || isRestoringUndoState) return;
+        const current = pc.innerHTML;
+        if (current === examLastSnapshot) return;
+        examUndoStack.push(examLastSnapshot);
+        if (examUndoStack.length > EXAM_UNDO_MAX) examUndoStack.shift();
+        examLastSnapshot = current;
+        examRedoStack = [];
+        updateUndoRedoButtons();
+    }
+
+    function updateUndoRedoButtons() {
+        const undoBtn = document.getElementById('examUndoBtn');
+        const redoBtn = document.getElementById('examRedoBtn');
+        if (undoBtn) undoBtn.disabled = examUndoStack.length === 0;
+        if (redoBtn) redoBtn.disabled = examRedoStack.length === 0;
+    }
+
+    function restorePagesSnapshot(html) {
+        const pc = document.getElementById('pagesContainer');
+        if (!pc) return;
+        isRestoringUndoState = true;
+        pc.innerHTML = html;
+        examLastSnapshot = html;
+        pc.querySelectorAll('.question-card').forEach(q => { delete q.dataset.advEnhanced; });
+        pc.querySelectorAll('.page').forEach(p => { delete p.dataset.advPageEnhanced; });
+        document.querySelectorAll('.question-card').forEach(applyAdvancedControlsToCard);
+        document.querySelectorAll('#pagesContainer .page').forEach(applyAdvancedFeaturesToPage);
+        updateThumbnails();
+        if (typeof reindexQuestions === 'function') reindexQuestions();
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof attachMathJaxBlur === 'function') attachMathJaxBlur();
+        if (window.MathJax && window.MathJax.typesetPromise) MathJax.typesetPromise();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        updateUndoRedoButtons();
+        setTimeout(() => { isRestoringUndoState = false; }, 60);
+    }
+
+    function examUndo() {
+        if (!isAuthenticated) { openAuthModal(); return; }
+        clearTimeout(examUndoDebounceTimer);
+        commitUndoSnapshot(); // اضمن إن آخر تعديل لسه مكتوب قبل ما نتراجع
+        if (!examUndoStack.length) { if (typeof showToast === 'function') showToast('مفيش حاجة تتراجع عنها حاليًا'); return; }
+        const pc = document.getElementById('pagesContainer');
+        examRedoStack.push(pc.innerHTML);
+        const prev = examUndoStack.pop();
+        restorePagesSnapshot(prev);
+        if (typeof showToast === 'function') showToast('⏪ تم التراجع لآخر تعديل');
+    }
+
+    function examRedo() {
+        if (!isAuthenticated) { openAuthModal(); return; }
+        if (!examRedoStack.length) { if (typeof showToast === 'function') showToast('مفيش حاجة تتقدم لها'); return; }
+        const pc = document.getElementById('pagesContainer');
+        examUndoStack.push(pc.innerHTML);
+        const next = examRedoStack.pop();
+        restorePagesSnapshot(next);
+        if (typeof showToast === 'function') showToast('⏩ تم الإعادة');
+    }
+
+    /* ---------------------------------------------------------------
+       اختصارات لوحة المفاتيح
+    --------------------------------------------------------------- */
+    function initKeyboardShortcuts() {
+        document.addEventListener('keydown', function (e) {
+            if (!isAuthenticated) return;
+            const ctrl = e.ctrlKey || e.metaKey;
+            if (!ctrl) return;
+            const key = e.key.toLowerCase();
+
+            if (key === 'z' && !e.shiftKey) { e.preventDefault(); examUndo(); return; }
+            if ((key === 'y') || (key === 'z' && e.shiftKey)) { e.preventDefault(); examRedo(); return; }
+            if (key === 's') {
+                e.preventDefault();
+                if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+                if (typeof showToast === 'function') showToast('💾 تم الحفظ');
+                return;
+            }
+            if (key === 'd') {
+                // تكرار السؤال اللي فيه التركيز حاليًا
+                const active = document.activeElement;
+                const card = active && active.closest ? active.closest('.question-card') : null;
+                if (card) { e.preventDefault(); duplicateQuestion(card.id); }
+                return;
+            }
+        });
     }
 
     if (document.readyState === 'loading') {
