@@ -92,9 +92,10 @@ window.MathJax = {
 
         .page-settings-btn {
             position: absolute; top: 10px; left: 10px; z-index: 6; width: 30px; height: 30px; border-radius: 50%;
-            border: 1px solid var(--card-border); background: rgba(255,255,255,0.92); display: flex; align-items: center;
+            border: 1px solid var(--card-border); background: rgba(255,255,255,0.92); display: none; align-items: center;
             justify-content: center; cursor: pointer; opacity: 0.45; transition: all 0.2s ease; color: #334155;
         }
+        body.edit-mode-active .page-settings-btn { display: flex; }
         .page-settings-btn:hover { opacity: 1; transform: rotate(45deg); border-color: var(--primary-color); color: var(--primary-color); }
         .page-settings-btn .svg-ic { width: 15px; height: 15px; }
         .page-settings-note { font-size: 11px; color: #64748b; line-height: 1.6; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px 10px; }
@@ -520,21 +521,16 @@ window.MathJax = {
                         <div class="auth-hint">🔑 الكود ده كود خاص بامتحانك بلس، هتاخده من الأستاذ مباشرة بعد الاشتراك.</div>
                     </div>
 
-                    <!-- لوحة إنشاء حساب المعلم (أول مرة فقط) -->
+                    <!-- لوحة دخول VIP (الحساب بيتعمل من لوحة الأدمن، مش من هنا) -->
                     <div id="teacherSetupPanel" style="display:none;">
-                        <div class="auth-hint">🆕 أول مرة تدخل بصفة معلم؟ اختار اسمك وكلمة مرور هتستخدمها بعد كده — مرة واحدة بس، ومش هتتطلب منك تاني على نفس الجهاز.</div>
-                        <label class="auth-field-label">اسمك</label>
-                        <input type="text" id="teacherSetupName" class="auth-text-input" placeholder="مثال: أ. مهدي حسن">
-                        <label class="auth-field-label">كلمة مرور جديدة</label>
-                        <input type="password" id="teacherSetupPass" class="auth-text-input" placeholder="4 حروف/أرقام على الأقل...">
-                        <label class="auth-field-label">تأكيد كلمة المرور</label>
-                        <input type="password" id="teacherSetupPass2" class="auth-text-input" placeholder="اكتب كلمة المرور تاني..." onkeydown="if(event.key==='Enter') createTeacherAccount()">
-                        <button class="btn" style="background: var(--primary-color); width:100%; justify-content:center; margin-top:4px;" onclick="createTeacherAccount()">إنشاء الحساب والدخول</button>
+                        <div class="auth-hint">👑 حسابات VIP بتتعمل بمعرفة الإدارة فقط. لو معاك بيانات دخول VIP، اختار "VIP" وادخل بيها. لو مش معاك، تواصل مع الإدارة.</div>
                     </div>
 
-                    <!-- لوحة دخول المعلم (بعد إنشاء الحساب) -->
+                    <!-- لوحة دخول VIP -->
                     <div id="teacherLoginPanel" style="display:none;">
-                        <div class="auth-hint" id="teacherLoginHint">أهلاً بيك تاني! اكتب كلمة المرور بتاعتك.</div>
+                        <div class="auth-hint" id="teacherLoginHint">🔑 دخول حساب VIP</div>
+                        <label class="auth-field-label">اسم الدخول</label>
+                        <input type="text" id="teacherUserInput" class="auth-text-input" style="direction:ltr;text-align:left" placeholder="username" autocomplete="off" onkeydown="if(event.key==='Enter') document.getElementById('teacherPassInput').focus()">
                         <label class="auth-field-label">كلمة المرور</label>
                         <div class="auth-actions-row">
                             <div class="pass-input-wrap"><input type="password" id="teacherPassInput" class="auth-text-input" onkeydown="if(event.key==='Enter') verifyTeacherLogin()"></div>
@@ -736,6 +732,46 @@ window.MathJax = {
                     <button id="bookletModeBtn" class="btn btn-booklet" onclick="toggleBookletMode()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 5.5C4 4.67 4.67 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5v-13zM13 4h5.5c.83 0 1.5.67 1.5 1.5v13c0 .83-.67 1.5-1.5 1.5H13V4z"/></svg> وضع الملزمة</button>
                     <button class="btn btn-ai" onclick="generateAIQuestion()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1v1a2 2 0 01-2 2H6a2 2 0 01-2-2v-1H3a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2zM6 14a1 1 0 100 2 1 1 0 000-2zm12 0a1 1 0 100 2 1 1 0 000-2zM8 16v2h8v-2H8z"/></svg> توليد أسئلة بالذكاء الاصطناعي</button>
                     <button id="voiceBtn" class="btn btn-voice" onclick="toggleVoiceTyping()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg> كتابة بالصوت</button>
+                </div>
+            </div>
+
+            <div class="toolbar-section">
+                <div class="toolbar-label"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg> أدوات إضافية</div>
+                <div class="adv-toolbar no-print">
+                    <div class="adv-fab" onclick="toggleThumbnailsSidebar()" title="عرض / إخفاء الصور المصغرة للصفحات">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z"/></svg>
+                        صور مصغرة للصفحات
+                    </div>
+                    <div class="adv-fab" onclick="openReviewModal()" title="الأسئلة المطلوب مراجعتها">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        أسئلة تحتاج مراجعة
+                        <span class="adv-fab-badge" id="advReviewBadgeCount" style="display:none;">0</span>
+                    </div>
+                    <div class="adv-fab" onclick="generateTOC()" title="توليد جدول المحتويات تلقائيًا">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
+                        جدول المحتويات
+                    </div>
+                    <div class="adv-fab" onclick="openQuestionBankModal()" title="بنك الأسئلة">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>
+                        بنك الأسئلة
+                    </div>
+                    <div class="adv-fab" onclick="exportDirectPDF()" title="تصدير مباشر إلى PDF">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        تصدير PDF مباشر
+                    </div>
+                    <div class="adv-fab" onclick="toggleCustomHeaderFooter()" title="تفعيل/إيقاف رأس وتذييل الطباعة المخصص">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M3 5h18v2H3V5zm0 12h18v2H3v-2zm4-4h10v2H7v-2z"/></svg>
+                        رأس وتذييل الطباعة
+                    </div>
+                    <div class="adv-fab" onclick="openCoverCustomizeModal()" title="تخصيص غلاف الملزمة بالكامل">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M4 4h16v4H4V4zm0 6h16v10H4V10zm4 2v6h8v-6H8z"/></svg>
+                        تخصيص الغلاف
+                    </div>
+                    <div class="adv-fab" onclick="openReusablesModal()" title="عناصر وصور محفوظة لإعادة الاستخدام">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        العناصر المحفوظة
+                        <span class="adv-fab-badge" id="reusablesBadgeCount" style="display:none;">0</span>
+                    </div>
                 </div>
             </div>
 
@@ -1130,7 +1166,7 @@ window.MathJax = {
             if (errorMsg) { errorMsg.style.color = ''; errorMsg.innerText = msg; }
         }
 
-        // ═══ التبديل بين لوحة الطالب ولوحتي المعلم (إنشاء حساب / دخول) ═══
+        // ═══ التبديل بين لوحة الطالب ولوحة دخول VIP ═══
         async function selectAuthRole(role) {
             _authSelectedRole = role;
             document.querySelectorAll('#roleToggle .role-btn').forEach(function(b){
@@ -1150,106 +1186,77 @@ window.MathJax = {
             }
 
             studentPanel.style.display = 'none';
-            const teacherData = await ensureTeacherDocChecked();
-            if (teacherData) {
-                setupPanel.style.display = 'none';
-                loginPanel.style.display = '';
-                const hint = document.getElementById('teacherLoginHint');
-                if (hint) hint.textContent = 'أهلاً بيك تاني يا ' + (teacherData.name || 'أستاذ') + '! اكتب كلمة المرور بتاعتك.';
-            } else {
-                setupPanel.style.display = '';
-                loginPanel.style.display = 'none';
-            }
+            setupPanel.style.display = 'none';
+            loginPanel.style.display = '';
         }
 
-        async function ensureTeacherDocChecked() {
-            if (_examPlusTeacherDocCache !== null) return _examPlusTeacherDocCache;
-            if (!window._examPlusDb) return false;
-            try {
-                const snap = await window._examPlusDb.collection(EXAM_PLUS_TEACHER_COL).doc('main').get();
-                _examPlusTeacherDocCache = snap.exists ? snap.data() : false;
-            } catch (e) {
-                console.warn('exam-plus teacher check failed:', e.message);
-                _examPlusTeacherDocCache = false;
-            }
-            return _examPlusTeacherDocCache;
-        }
-
-        // ═══ إنشاء حساب المعلم — مرة واحدة بس لكل جهاز/متصفح لأول مرة يستخدم فيها التطبيق ═══
-        async function createTeacherAccount() {
-            const nameInput = document.getElementById('teacherSetupName');
-            const passInput = document.getElementById('teacherSetupPass');
-            const pass2Input = document.getElementById('teacherSetupPass2');
-            const name = nameInput.value.trim();
+        // ═══ دخول حساب VIP — الحسابات نفسها تُنشأ وتُدار بالكامل من لوحة الأدمن ═══
+        async function verifyTeacherLogin() {
+            const userInput = document.getElementById('teacherUserInput');
+            const passInput = document.getElementById('teacherPassInput');
+            const username = (userInput.value || '').trim().toLowerCase();
             const pass = passInput.value;
-            const pass2 = pass2Input.value;
 
-            if (!name) { showExamAuthError('اكتب اسمك الأول.'); nameInput.focus(); return; }
-            if (!pass || pass.length < 4) { showExamAuthError('كلمة المرور لازم تكون 4 حروف/أرقام على الأقل.'); passInput.focus(); return; }
-            if (pass !== pass2) { showExamAuthError('كلمة المرور والتأكيد مش متطابقين.'); pass2Input.focus(); return; }
+            if (!username) { showExamAuthError('اكتب اسم الدخول (username).'); userInput.focus(); return; }
+            if (!pass) { showExamAuthError('اكتب كلمة المرور.'); passInput.focus(); return; }
             if (!window._examPlusDb) { showExamAuthError('تعذر الاتصال بالخادم دلوقتي، جرّب تاني بعد لحظات.'); return; }
 
+            let snap;
             try {
-                const docRef = window._examPlusDb.collection(EXAM_PLUS_TEACHER_COL).doc('main');
-                const existing = await docRef.get();
-                if (existing.exists) {
-                    // حماية من إنشاء حساب فوق حساب موجود (لو تم الإنشاء من جهاز تاني بالتوازي)
-                    _examPlusTeacherDocCache = existing.data();
-                    showExamAuthError('في حساب معلم متسجل بالفعل، من فضلك ادخل بكلمة المرور بتاعته.');
-                    selectAuthRole('teacher');
-                    return;
-                }
-                if (!firebase.auth().currentUser) {
-                    await new Promise(function(resolve){
-                        const iv = setInterval(function(){ if (firebase.auth().currentUser) { clearInterval(iv); resolve(); } }, 100);
-                        setTimeout(function(){ clearInterval(iv); resolve(); }, 3000);
-                    });
-                }
-                await docRef.set({
-                    name: name,
-                    passHash: simpleHash(pass),
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                _examPlusTeacherDocCache = { name: name, passHash: simpleHash(pass) };
-                completeTeacherLogin(name);
+                snap = await window._examPlusDb.collection(EXAM_PLUS_TEACHER_COL).doc(username).get();
             } catch (e) {
-                showExamAuthError('حصل خطأ أثناء إنشاء الحساب: ' + e.message);
-            }
-        }
-
-        async function verifyTeacherLogin() {
-            const passInput = document.getElementById('teacherPassInput');
-            const pass = passInput.value;
-            if (!pass) { showExamAuthError('اكتب كلمة المرور.'); passInput.focus(); return; }
-
-            const teacherData = await ensureTeacherDocChecked();
-            if (!teacherData || simpleHash(pass) !== teacherData.passHash) {
-                showExamAuthError('كلمة المرور غلط، حاول تاني.');
-                passInput.value = '';
-                passInput.focus();
+                showExamAuthError('حصل خطأ أثناء التحقق، حاول تاني.');
                 return;
             }
+            if (!snap.exists) { showExamAuthError('اسم الدخول أو كلمة المرور غلط.'); passInput.value = ''; passInput.focus(); return; }
+
+            const data = snap.data();
+            if (simpleHash(pass) !== data.passHash) {
+                showExamAuthError('اسم الدخول أو كلمة المرور غلط.');
+                passInput.value = ''; passInput.focus();
+                return;
+            }
+            if (data.active === false) {
+                showExamAuthError('تم إيقاف هذا الحساب من الإدارة، تواصل مع الإدارة لو الأمر ده غلط.');
+                return;
+            }
+            const expDate = data.expiresAt ? (data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt)) : null;
+            if (expDate && expDate.getTime() < Date.now()) {
+                showExamAuthError('انتهت صلاحية هذا الحساب، تواصل مع الإدارة لتجديده.');
+                return;
+            }
+
             passInput.value = '';
-            completeTeacherLogin(teacherData.name);
+            try {
+                await window._examPlusDb.collection(EXAM_PLUS_TEACHER_COL).doc(username).update({
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                    loginCount: firebase.firestore.FieldValue.increment(1)
+                });
+            } catch (e) { /* غير حرِج — تجاهل فشل تحديث آخر دخول */ }
+
+            completeTeacherLogin(data.name || username, username);
         }
 
-        function completeTeacherLogin(name) {
+        function completeTeacherLogin(name, username) {
             isAuthenticated = true;
             window._examPlusStudent = {
-                id: 'teacher-main',
+                id: 'vip-' + username,
                 name: name,
                 displayName: name,
                 role: 'teacher',
+                username: username,
                 code: null,
                 deviceId: getExamPlusDeviceId(),
                 permissions: {}
             };
-            // المعلم بيعمل حساب مرة واحدة بس — بعد كده الجهاز ده يفتكره تلقائي من غير ما يدخل كلمة مرور تاني
+            // الجهاز ده هيفتكر حساب الـ VIP ده تلقائيًا، لكن هيتم التأكد من إنه لسه فعّال من الأدمن في كل مرة يفتح فيها الصفحة
             localStorage.setItem('examPlusTeacherAuth', '1');
             localStorage.setItem('examPlusTeacherName', name);
+            localStorage.setItem('examPlusTeacherUsername', username);
             closeAuthModal();
             toggleControls();
             updateExamUserBadge();
+            unlockContentForAuthenticatedUser();
             epShowAdminSection(true);
             showExamWelcomeToast(name, 'teacher');
         }
@@ -1287,6 +1294,7 @@ window.MathJax = {
                     closeAuthModal();
                     toggleControls();
                     updateExamUserBadge();
+                    syncContentEditableState();
                     showExamWelcomeToast(window._examPlusStudent && window._examPlusStudent.displayName || name, 'student');
                     return;
                 }
@@ -1427,14 +1435,21 @@ window.MathJax = {
             stopExamPlusHeartbeat();
             releaseExamPlusSession();
             isAuthenticated = false;
+            isEditMode = false;
+            isDirectEditMode = false;
             window._examPlusStudent = null;
             sessionStorage.removeItem('examPlusAuth');
             sessionStorage.removeItem('examPlusStudent');
             localStorage.removeItem('examPlusTeacherAuth');
             localStorage.removeItem('examPlusTeacherName');
+            localStorage.removeItem('examPlusTeacherUsername');
             epShowAdminSection(false);
+            document.body.classList.remove('edit-mode-active');
+            const editPanelEl = document.getElementById('editPanel');
+            if (editPanelEl) editPanelEl.style.display = 'none';
             const wrap = document.getElementById('controlsWrapper');
             if (wrap) wrap.classList.remove('open');
+            syncContentEditableState();
             updateExamUserBadge();
         }
 
@@ -1443,6 +1458,16 @@ window.MathJax = {
             el.className = 'exam-welcome-toast';
             const roleLabel = role === 'teacher' ? 'معلم' : 'طالب';
             el.innerHTML = '🎉 أهلاً ' + (name || '') + ' — تم تسجيل الدخول (' + roleLabel + ')';
+            document.body.appendChild(el);
+            requestAnimationFrame(function(){ el.classList.add('show'); });
+            setTimeout(function(){ el.classList.remove('show'); setTimeout(function(){ el.remove(); }, 350); }, 2600);
+        }
+
+        // إشعار عام بسيط يُستخدم في الميزات الجديدة بدل alert
+        function showToast(msg) {
+            const el = document.createElement('div');
+            el.className = 'exam-welcome-toast';
+            el.innerHTML = msg;
             document.body.appendChild(el);
             requestAnimationFrame(function(){ el.classList.add('show'); });
             setTimeout(function(){ el.classList.remove('show'); setTimeout(function(){ el.remove(); }, 350); }, 2600);
@@ -2287,18 +2312,31 @@ window.MathJax = {
             updateBloomAnalytics();
         }
 
+        function syncContentEditableState() {
+            const enabled = !!(isAuthenticated && (isDirectEditMode || isEditMode));
+            document.querySelectorAll('.editable-element, .q-body').forEach(el => {
+                el.contentEditable = enabled;
+            });
+        }
+
+        function unlockContentForAuthenticatedUser() {
+            // بمجرد تسجيل الدخول، الأزرار والتبديلات التالية بتشتغل عادي حسب حالتها
+            syncContentEditableState();
+        }
+
         function unlockEditMode() {
+            if (!isAuthenticated) { openAuthModal(); return; }
             isEditMode = !isEditMode;
             document.body.classList.toggle('edit-mode-active', isEditMode);
             document.getElementById('editPanel').style.display = isEditMode ? 'flex' : 'none';
             document.getElementById('toggleEditBtn').innerText = isEditMode ? 'إغلاق لوحة التحرير' : 'لوحة التحرير';
+            syncContentEditableState();
         }
 
         function toggleDirectEdit() {
+            if (!isAuthenticated) { openAuthModal(); return; }
             isDirectEditMode = !isDirectEditMode;
-            document.querySelectorAll('.editable-element, .q-body').forEach(el => {
-                el.contentEditable = isDirectEditMode;
-            });
+            syncContentEditableState();
             document.getElementById('quickEditBtn').innerText = isDirectEditMode ? 'إيقاف التعديل المباشر' : 'تعديل مباشر';
         }
 
@@ -2595,23 +2633,50 @@ window.MathJax = {
             }
         }
 
-        window.onload = function() {
+        window.onload = async function() {
             initThemes();
             loadAutoSavedState();
             reindexQuestions();
             calculateAnalytics();
             attachMathJaxBlur();
 
-            if (localStorage.getItem('examPlusTeacherAuth') === '1') {
-                // المعلم عمل حساب مرة واحدة، وبعد كده الجهاز ده بيفتكره تلقائي
-                isAuthenticated = true;
-                const tName = localStorage.getItem('examPlusTeacherName') || 'المعلم';
-                window._examPlusStudent = {
-                    id: 'teacher-main', name: tName, displayName: tName, role: 'teacher',
-                    code: null, deviceId: getExamPlusDeviceId(), permissions: {}
-                };
-                updateExamUserBadge();
-                epShowAdminSection(true);
+            const savedUsername = localStorage.getItem('examPlusTeacherUsername');
+            if (localStorage.getItem('examPlusTeacherAuth') === '1' && savedUsername) {
+                // نتأكد إن حساب الـ VIP لسه فعّال ومش منتهي الصلاحية من لوحة الأدمن قبل ما نسمح بالدخول التلقائي
+                let stillValid = false;
+                let freshName = localStorage.getItem('examPlusTeacherName') || 'VIP';
+                try {
+                    if (window._examPlusDb) {
+                        const snap = await window._examPlusDb.collection(EXAM_PLUS_TEACHER_COL).doc(savedUsername).get();
+                        if (snap.exists) {
+                            const d = snap.data();
+                            const expDate = d.expiresAt ? (d.expiresAt.toDate ? d.expiresAt.toDate() : new Date(d.expiresAt)) : null;
+                            const expired = !!(expDate && expDate.getTime() < Date.now());
+                            if (d.active !== false && !expired) {
+                                stillValid = true;
+                                freshName = d.name || freshName;
+                            }
+                        }
+                    } else {
+                        // مفيش اتصال بالخادم دلوقتي — نسمح بالدخول مؤقتًا لحد ما يتأكد لاحقًا بدل قفل المستخدم بالغلط
+                        stillValid = true;
+                    }
+                } catch (e) { stillValid = true; }
+
+                if (stillValid) {
+                    isAuthenticated = true;
+                    window._examPlusStudent = {
+                        id: 'vip-' + savedUsername, name: freshName, displayName: freshName, role: 'teacher',
+                        username: savedUsername, code: null, deviceId: getExamPlusDeviceId(), permissions: {}
+                    };
+                    updateExamUserBadge();
+                    epShowAdminSection(true);
+                } else {
+                    // الحساب اتوقف أو انتهت صلاحيته من الأدمن — نمسح تذكر الجهاز ونرجّعه لحالة زائر
+                    localStorage.removeItem('examPlusTeacherAuth');
+                    localStorage.removeItem('examPlusTeacherName');
+                    localStorage.removeItem('examPlusTeacherUsername');
+                }
             } else if (sessionStorage.getItem('examPlusAuth') === '1') {
                 isAuthenticated = true;
                 try {
@@ -2624,8 +2689,34 @@ window.MathJax = {
                 } catch (e) { /* تجاهل أي خطأ في استعادة الجلسة */ }
             }
 
+            // قفل كل المحتوى القابل للتحرير افتراضيًا، ومايتفتحش إلا بعد تسجيل الدخول واختيار وضع التحرير يدويًا
+            syncContentEditableState();
+
+            // تطبيق اسم/وضع الملزمة الافتراضي من لوحة الأدمن — فقط لو الجلسة دي جديدة تمامًا (مفيش حفظ محلي سابق)
+            if (!localStorage.getItem('examPlusAutoSave')) {
+                applyBookletDefaultsFromAdmin();
+            }
+
             pageFinishedLoading = true;
         };
+
+        async function applyBookletDefaultsFromAdmin() {
+            if (!window._examPlusDb) return;
+            try {
+                const snap = await window._examPlusDb.collection('examPlusSettings').doc('config').get();
+                if (!snap.exists) return;
+                const d = snap.data();
+                if (d.bookletDefaultTitle) {
+                    const titleInput = document.getElementById('coverBookletTitleInput');
+                    if (titleInput) titleInput.value = d.bookletDefaultTitle;
+                    const coverTitle = document.getElementById('coverMainTitle');
+                    if (coverTitle) coverTitle.innerText = d.bookletDefaultTitle;
+                }
+                if (d.bookletModeDefault === true && !isBookletMode) {
+                    toggleBookletMode();
+                }
+            } catch (e) { /* غير حرِج — تجاهل أي خطأ في تحميل الإعدادات الافتراضية */ }
+        }
     </script>
 
     <!-- ======================================================================
@@ -2668,20 +2759,18 @@ window.MathJax = {
         .thumbnail-item:hover { border-color: var(--primary-color); background: #f0f9ff; transform: translateX(-2px); }
         .thumbnail-item .thumb-type-tag { display:block; font-size: 9px; font-weight: 800; color: var(--primary-color); margin-top:2px; }
         .thumbnails-toggle-btn {
-            position: fixed; top: 50%; left: 24px; transform: translateY(-50%); width: 46px; height: 46px;
-            background: #ffffff; border: 1px solid var(--card-border); border-radius: 50%; box-shadow: var(--shadow-md);
-            display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 9997; color: #334155;
+            width: auto; height: auto; background: transparent; border: none; box-shadow: none;
+            display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: inherit;
         }
-        .thumbnails-toggle-btn:hover { color: var(--primary-color); border-color: var(--primary-color); }
 
-        /* ---------- 3) شريط أدوات عائم للميزات الجديدة ---------- */
+        /* ---------- 3) شريط أدوات الميزات الإضافية — أزرار عادية داخل لوحة التحكم (بديل الأزرار العائمة السابقة) ---------- */
         .adv-toolbar {
-            position: fixed; bottom: 24px; left: 90px; z-index: 9998; display: flex; flex-direction: column; gap: 8px;
+            display: flex; flex-wrap: wrap; gap: 8px;
         }
         .adv-fab {
-            width: 44px; height: 44px; border-radius: 50%; background: #ffffff; border: 1px solid var(--card-border);
-            box-shadow: var(--shadow-md); display: flex; align-items: center; justify-content: center; cursor: pointer;
-            color: #334155; position: relative; transition: all 0.2s ease;
+            width: auto; height: auto; border-radius: 8px; background: #ffffff; border: 1px solid var(--card-border);
+            box-shadow: none; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+            color: #334155; position: relative; transition: all 0.2s ease; padding: 7px 12px; font-size: 12px; font-weight: 700;
         }
         .adv-fab:hover { color: #fff; background: var(--primary-color); border-color: var(--primary-color); }
         .adv-fab .adv-fab-badge {
@@ -2748,9 +2837,10 @@ window.MathJax = {
         /* ---------- 9) مقبض سحب الصفحات ---------- */
         .page-drag-handle {
             position: absolute; top: 10px; left: 46px; z-index: 6; width: 30px; height: 30px; border-radius: 50%;
-            border: 1px solid var(--card-border); background: rgba(255,255,255,0.92); display: flex; align-items: center;
+            border: 1px solid var(--card-border); background: rgba(255,255,255,0.92); display: none; align-items: center;
             justify-content: center; cursor: grab; opacity: 0.45; transition: all 0.2s ease; color: #334155;
         }
+        body.edit-mode-active .page-drag-handle { display: flex; }
         .page-drag-handle:hover { opacity: 1; border-color: var(--primary-color); color: var(--primary-color); }
         .page.adv-drag-over { outline: 3px dashed var(--primary-color); outline-offset: -3px; }
 
@@ -2758,8 +2848,9 @@ window.MathJax = {
         .page-type-badge {
             position: absolute; top: 10px; right: 46px; z-index: 6; font-size: 9.5px; font-weight: 800;
             padding: 4px 9px; border-radius: 20px; background: #f1f5f9; color: #475569; border: 1px solid var(--card-border);
-            cursor: pointer; user-select: none;
+            cursor: pointer; user-select: none; pointer-events: none; opacity: 0.6;
         }
+        body.edit-mode-active .page-type-badge { pointer-events: auto; opacity: 1; }
         .page-type-badge[data-page-type="lesson"] { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
         .page-type-badge[data-page-type="exam"] { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
 
@@ -2776,35 +2867,8 @@ window.MathJax = {
         <span class="adv-search-count" id="advSearchCount"></span>
     </div>
 
-    <!-- زر ولوحة الصور المصغرة للصفحات -->
-    <div class="thumbnails-toggle-btn no-print" onclick="toggleThumbnailsSidebar()" title="عرض / إخفاء الصور المصغرة للصفحات">
-        <svg class="svg-ic" viewBox="0 0 24 24"><path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z"/></svg>
-    </div>
     <div class="thumbnails-sidebar no-print" id="thumbnailsSidebar">
         <h4>صفحات الملف</h4>
-    </div>
-
-    <!-- شريط الأدوات العائم للميزات الجديدة -->
-    <div class="adv-toolbar no-print">
-        <div class="adv-fab" onclick="openReviewModal()" title="الأسئلة المطلوب مراجعتها">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-            <span class="adv-fab-badge" id="advReviewBadgeCount" style="display:none;">0</span>
-        </div>
-        <div class="adv-fab" onclick="generateTOC()" title="توليد جدول المحتويات تلقائيًا">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
-        </div>
-        <div class="adv-fab" onclick="openQuestionBankModal()" title="بنك الأسئلة">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>
-        </div>
-        <div class="adv-fab" onclick="exportDirectPDF()" title="تصدير مباشر إلى PDF">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-        </div>
-        <div class="adv-fab" onclick="toggleCustomHeaderFooter()" title="تفعيل/إيقاف رأس وتذييل الطباعة المخصص">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M3 5h18v2H3V5zm0 12h18v2H3v-2zm4-4h10v2H7v-2z"/></svg>
-        </div>
-        <div class="adv-fab" onclick="openCoverCustomizeModal()" title="تخصيص غلاف الملزمة بالكامل">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M4 4h16v4H4V4zm0 6h16v10H4V10zm4 2v6h8v-6H8z"/></svg>
-        </div>
     </div>
 
     <!-- نافذة: تخصيص غلاف الملزمة -->
@@ -2902,6 +2966,20 @@ window.MathJax = {
                 <div class="btn-group">
                     <button class="btn btn-success" id="bankPreviewInsertBtn">إدراج في الامتحان الحالي</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: العناصر والصور المحفوظة لإعادة الاستخدام -->
+    <div class="modal-overlay" id="reusablesModal">
+        <div class="modal-card" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3>العناصر المحفوظة لإعادة الاستخدام</h3>
+                <button class="modal-close" onclick="closeReusablesModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:11px;color:#64748b;margin-bottom:10px;">من زر "💾 حفظ للاستخدام لاحقًا" اللي تحت أي سؤال، تقدر تحفظ أي عنصر (سؤال، فقرة، صورة داخله...) وتلاقيه هنا جاهز تدرجه في أي صفحة تانية أو أي ملزمة تانية.</p>
+                <div id="reusablesListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:55vh; overflow-y:auto;"></div>
             </div>
         </div>
     </div>
@@ -3133,6 +3211,7 @@ window.MathJax = {
     }
 
     function duplicatePage(pageId) {
+        if (!isAuthenticated) { if (typeof openAuthModal === 'function') openAuthModal(); return; }
         const page = document.getElementById(pageId);
         if (!page) return;
         const newPage = page.cloneNode(true);
@@ -3145,6 +3224,118 @@ window.MathJax = {
         updateThumbnails();
         if (typeof calculateAnalytics === 'function') calculateAnalytics();
         if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    function deletePageEl(pageId) {
+        if (!isAuthenticated) { if (typeof openAuthModal === 'function') openAuthModal(); return; }
+        const page = document.getElementById(pageId);
+        if (!page || page.classList.contains('cover-page')) return;
+        const contentPages = document.querySelectorAll('#pagesContainer .page:not(.cover-page)');
+        if (contentPages.length <= 1) {
+            if (typeof showToast === 'function') showToast('لازم تفضل صفحة واحدة على الأقل، مينفعش تتحذف');
+            else alert('لازم تفضل صفحة واحدة على الأقل، مينفعش تتحذف');
+            return;
+        }
+        const qCount = page.querySelectorAll('.question-card').length;
+        const msg = qCount > 0
+            ? `الصفحة دي فيها ${qCount} سؤال، هيتحذفوا كلهم نهائيًا. متأكد؟`
+            : 'حذف هذه الصفحة نهائيًا؟';
+        if (!confirm(msg)) return;
+        page.remove();
+        updateThumbnails();
+        if (typeof reindexQuestions === 'function') reindexQuestions();
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    /* ---------------------------------------------------------------
+       العناصر والصور المحفوظة لإعادة الاستخدام (مستقلة عن بنك الأسئلة)
+    --------------------------------------------------------------- */
+    const REUSABLES_KEY = 'examPlusReusablesV1';
+    function getReusables() {
+        try { return JSON.parse(localStorage.getItem(REUSABLES_KEY)) || []; } catch (e) { return []; }
+    }
+    function saveReusables(list) { localStorage.setItem(REUSABLES_KEY, JSON.stringify(list)); }
+
+    function saveElementToReusables(qId) {
+        const card = document.getElementById(qId);
+        if (!card) return;
+        const list = getReusables();
+        const bodyEl = card.querySelector('.q-body');
+        const rawLabel = bodyEl ? bodyEl.innerText.trim() : 'عنصر بدون عنوان';
+        const label = rawLabel.length > 60 ? rawLabel.slice(0, 60) + '…' : (rawLabel || 'عنصر بدون عنوان');
+        const img = card.querySelector('img[src]');
+        // استبدال المعرّف الأصلي بعلامة مؤقتة، وعند الإدراج نولّد معرّف جديد بدلها لتفادي تكرار الـ IDs
+        const html = card.outerHTML.split(qId).join('__RID__');
+        list.unshift({
+            id: 'r-' + Date.now(),
+            label,
+            html,
+            thumb: img ? img.src : null,
+            createdAt: Date.now()
+        });
+        if (list.length > 60) list.length = 60;
+        saveReusables(list);
+        if (typeof showToast === 'function') showToast('✅ تم حفظ العنصر في "العناصر المحفوظة" لإعادة استخدامه لاحقًا');
+        updateReusablesBadge();
+    }
+
+    function updateReusablesBadge() {
+        const badge = document.getElementById('reusablesBadgeCount');
+        if (!badge) return;
+        const n = getReusables().length;
+        badge.style.display = n > 0 ? 'flex' : 'none';
+        badge.innerText = n;
+    }
+
+    function openReusablesModal() {
+        renderReusablesList();
+        document.getElementById('reusablesModal').classList.add('open');
+    }
+    function closeReusablesModal() { document.getElementById('reusablesModal').classList.remove('open'); }
+
+    function renderReusablesList() {
+        const container = document.getElementById('reusablesListContainer');
+        if (!container) return;
+        const list = getReusables();
+        if (!list.length) {
+            container.innerHTML = '<p style="font-size:12px;color:#64748b;text-align:center;padding:20px 0;">لسه مفيش عناصر محفوظة — من أي سؤال اضغط "حفظ للاستخدام لاحقًا" عشان يظهر هنا.</p>';
+            return;
+        }
+        container.innerHTML = list.map(item => `
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #e2e8f0;border-radius:10px;padding:8px 10px;">
+                ${item.thumb ? `<img src="${item.thumb}" style="width:44px;height:44px;object-fit:cover;border-radius:6px;flex-shrink:0;" />` : ''}
+                <div style="flex:1;font-size:12px;color:#334155;">${item.label}</div>
+                <button class="btn btn-success" style="font-size:10px;padding:6px 10px;" onclick="insertReusableItem('${item.id}')">إدراج بالصفحة الحالية</button>
+                <button class="btn btn-danger" style="font-size:10px;padding:6px 10px;" onclick="deleteReusableItem('${item.id}')">حذف</button>
+            </div>
+        `).join('');
+    }
+
+    function insertReusableItem(id) {
+        const list = getReusables();
+        const item = list.find(x => x.id === id);
+        if (!item) return;
+        const newId = `q-${Date.now()}`;
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = item.html.split('__RID__').join(newId);
+        const clone = wrapper.firstElementChild;
+        if (!clone) return;
+        getActiveQuestionsContainer().appendChild(clone);
+        reindexQuestions();
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof attachMathJaxBlur === 'function') attachMathJaxBlur();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        if (typeof showToast === 'function') showToast('✅ تم إدراج العنصر بآخر صفحة');
+        closeReusablesModal();
+    }
+
+    function deleteReusableItem(id) {
+        if (!confirm('حذف هذا العنصر من العناصر المحفوظة؟')) return;
+        const list = getReusables().filter(x => x.id !== id);
+        saveReusables(list);
+        renderReusablesList();
+        updateReusablesBadge();
     }
 
     // سحب وإفلات لترتيب الصفحات (عبر مقبض مخصص لتفادي التعارض مع سحب الأسئلة)
@@ -3406,6 +3597,13 @@ window.MathJax = {
             bankBtn.innerText = '➕ حفظ في البنك';
             bankBtn.onclick = () => addQuestionToBank(qCard.id);
 
+            const reuseBtn = document.createElement('button');
+            reuseBtn.className = 'btn'; reuseBtn.style.cssText = 'font-size:10px;background:#7c3aed;';
+            reuseBtn.innerText = '💾 حفظ للاستخدام لاحقًا';
+            reuseBtn.title = 'احفظ هذا العنصر (والصورة الموجودة فيه إن وُجدت) عشان تقدر تدرجه في أي صفحة تانية بعدين';
+            reuseBtn.onclick = () => saveElementToReusables(qCard.id);
+
+            btnContainer.prepend(reuseBtn);
             btnContainer.prepend(bankBtn);
             btnContainer.prepend(lockBtn);
             btnContainer.prepend(revBtn);
@@ -3462,6 +3660,17 @@ window.MathJax = {
             dupBtn.onclick = () => duplicatePage(page.id);
             page.appendChild(dupBtn);
         }
+
+        if (!page.querySelector('[id^="pageDeleteBtn-"]')) {
+            const delBtn = document.createElement('button');
+            delBtn.id = 'pageDeleteBtn-' + (page.id || Date.now());
+            delBtn.className = 'page-settings-btn no-print';
+            delBtn.style.cssText = 'top:86px; color:#b91c1c;';
+            delBtn.title = 'حذف هذه الصفحة نهائيًا';
+            delBtn.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+            delBtn.onclick = () => deletePageEl(page.id);
+            page.appendChild(delBtn);
+        }
     }
 
     /* ---------------------------------------------------------------
@@ -3473,6 +3682,7 @@ window.MathJax = {
         document.querySelectorAll('#pagesContainer .page').forEach(applyAdvancedFeaturesToPage);
         updateThumbnails();
         updateReviewCount();
+        updateReusablesBadge();
         injectEnglishSubjects();
         enhanceCoverPage();
 
