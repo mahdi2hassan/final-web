@@ -499,7 +499,8 @@ window.MathJax = {
                 <div class="auth-login-box">
                     <div class="role-toggle" id="roleToggle">
                         <button type="button" class="role-btn active" data-role="student" onclick="selectAuthRole('student')">مستخدم جديد</button>
-
+                        <button type="button" class="role-btn" data-role="teacher" onclick="selectAuthRole('teacher')"> VIP</button>
+                    </div>
 
                     <!-- لوحة دخول الطالب -->
                     <div id="studentAuthPanel">
@@ -519,6 +520,27 @@ window.MathJax = {
                         <div class="auth-hint">🔑 الكود ده كود خاص بامتحانك بلس، هتاخده من الأستاذ مباشرة بعد الاشتراك.</div>
                     </div>
 
+                    <!-- لوحة إنشاء حساب المعلم (أول مرة فقط) -->
+                    <div id="teacherSetupPanel" style="display:none;">
+                        <div class="auth-hint">🆕 أول مرة تدخل بصفة معلم؟ اختار اسمك وكلمة مرور هتستخدمها بعد كده — مرة واحدة بس، ومش هتتطلب منك تاني على نفس الجهاز.</div>
+                        <label class="auth-field-label">اسمك</label>
+                        <input type="text" id="teacherSetupName" class="auth-text-input" placeholder="مثال: أ. مهدي حسن">
+                        <label class="auth-field-label">كلمة مرور جديدة</label>
+                        <input type="password" id="teacherSetupPass" class="auth-text-input" placeholder="4 حروف/أرقام على الأقل...">
+                        <label class="auth-field-label">تأكيد كلمة المرور</label>
+                        <input type="password" id="teacherSetupPass2" class="auth-text-input" placeholder="اكتب كلمة المرور تاني..." onkeydown="if(event.key==='Enter') createTeacherAccount()">
+                        <button class="btn" style="background: var(--primary-color); width:100%; justify-content:center; margin-top:4px;" onclick="createTeacherAccount()">إنشاء الحساب والدخول</button>
+                    </div>
+
+                    <!-- لوحة دخول المعلم (بعد إنشاء الحساب) -->
+                    <div id="teacherLoginPanel" style="display:none;">
+                        <div class="auth-hint" id="teacherLoginHint">أهلاً بيك تاني! اكتب كلمة المرور بتاعتك.</div>
+                        <label class="auth-field-label">كلمة المرور</label>
+                        <div class="auth-actions-row">
+                            <div class="pass-input-wrap"><input type="password" id="teacherPassInput" class="auth-text-input" onkeydown="if(event.key==='Enter') verifyTeacherLogin()"></div>
+                            <button class="btn" style="background: var(--primary-color);" onclick="verifyTeacherLogin()">دخول</button>
+                        </div>
+                    </div>
 
                     <div class="auth-error-msg" id="authErrorMsg"></div>
                 </div>
@@ -564,15 +586,28 @@ window.MathJax = {
                         </ul>
                         <a href="https://wa.me/201007586279?text=السلام%20عليكم%20اريد%20الاشتراك%20الشامل%20لمدة%20سنه%20في%20امتحانك%20بلس" target="_blank" class="btn btn-purple" style="font-size: 10px; width: 100%; justify-content: center; text-decoration: none;">اشترك الآن</a>
                     </div>
-                </div>
+             
+                <div class="sub-plan-card featured">
+                        <div class="badge"> VIP ACCOUNT (خصم 50%)</div>
+                        <div class="sub-title">خطة ترم - الأساسية</div>
+                        <div class="sub-price">5000 <span>ج.م / ترم</span></div>
+                        <div style="font-size: 10px; color: #94a3b8; text-decoration: line-through; margin-bottom: 6px;">بدلاً من 10000 ج.م</div>
+                        <ul style="font-size: 10px; text-align: right; padding-right: 15px; margin-bottom: 12px; color: #64748b;">
+                            <li>صلاحية كاملة لمدة ترم</li>
+                            <li>هتكون صاحب الموقع لمدة ترم </li>
+                            <li>    لديك الإمتيازات بالحصول علي التحديثات الجديدة</li>
+                        </ul>
+                        <a href="https://wa.me/201007586279?text=السلام%20عليكم%20اريد%20الاشتراك%20الاساسي%20لمدة%20ترم%20في%20امتحانك%20بلس" target="_blank" class="btn" style="background: var(--primary-color); font-size: 10px; width: 100%; justify-content: center; text-decoration: none;">VIP اشترك الآن</a>
+                    </div>   </div>
 
                 <div class="vodafone-box">
-                    <h4><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg> طرق الدفع المتاحة عبر فودافون كاش (Vodafone Cash)</h4>
+                    <h4><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg> طرق الدفع المتاحة عبر انستاباي او المحافظ الإلكترونية</h4>
                     <p style="font-size: 11px; color: #475569;">يرجى تحويل المبلغ المطلوبة لأحد الارقام التالية ثم التواصل معنا لتفعيل حسابك فوراً:</p>
                     <div class="phone-nums">
                         <span>01007586279 <button class="copy-btn" onclick="copyText('01007586279')">نسخ</button></span>
                         <span>|</span>
-                        <span>01153652279 <button class="copy-btn" onclick="copyText('01153652279')">نسخ</button></span>
+                     <h4><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg> طرق الدفع المتاحة عبر المحافظ الإلكترونية</h4>
+                           <span>01153652279 <button class="copy-btn" onclick="copyText('01153652279')">نسخ</button></span>
                     </div>
                 </div>
             </div>
