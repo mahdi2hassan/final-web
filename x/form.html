@@ -1,21 +1,50 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" id="htmlRoot">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>امتحانك بلس - EXAM PLUS</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
-    <!-- MathJax Configuration -->
-    <script>
-      window.MathJax = {
-        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
-        svg: { fontCache: 'global' }
-      };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <!-- html2canvas & QR Code -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="امتحانك بلس - أداة إنشاء وتنسيق نماذج الامتحانات بسهولة">
+<meta name="theme-color" content="#0284c7">
+<title>امتحانك بلس - EXAM PLUS</title>
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+<!-- MathJax Configuration -->
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<!-- html2canvas & QR Code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- ═══ ربط تسجيل الدخول بنظام أكواد امتحانك بلس المستقل (Firebase) ═══ -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+  (function initExamPlusFirebase(){
+    try{
+      if(!window.firebase){ return; }
+      if(!firebase.apps || !firebase.apps.length){
+        firebase.initializeApp({
+          apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
+          authDomain:"plusinmath-web.firebaseapp.com",
+          projectId:"plusinmath-web",
+          storageBucket:"plusinmath-web.firebasestorage.app",
+          messagingSenderId:"444492731461",
+          appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
+        });
+      }
+      window._examPlusDb = firebase.firestore();
+      // تسجيل دخول مجهول مطلوب عشان قواعد الأمان تسمح بقراءة/كتابة أكواد امتحانك بلس
+      firebase.auth().signInAnonymously().catch(function(e){ console.warn('exam-plus anon auth:', e.message); });
+    }catch(e){ console.warn('exam-plus firebase init failed:', e.message); }
+  })();
+</script>
 
     <style>
         :root {
@@ -103,16 +132,18 @@
         .modal-card {
             background: #ffffff; border-radius: 16px; width: 100%; max-width: 550px; overflow: hidden;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            max-height: 92vh; display: flex; flex-direction: column;
         }
         .modal-header {
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); color: #ffffff;
-            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+            padding: 14px clamp(14px,4vw,20px); display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0; gap: 10px;
         }
-        .modal-header h3 { font-size: 18px; font-weight: 800; margin: 0; }
-        .modal-close { background: none; border: none; color: #ffffff; font-size: 20px; cursor: pointer; opacity: 0.8; }
+        .modal-header h3 { font-size: clamp(14px,3.6vw,18px); font-weight: 800; margin: 0; display: flex; align-items: center; }
+        .modal-close { background: none; border: none; color: #ffffff; font-size: 20px; cursor: pointer; opacity: 0.8; flex-shrink: 0; }
         .modal-close:hover { opacity: 1; }
 
-        .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+        .modal-body { padding: clamp(12px,4vw,20px); display: flex; flex-direction: column; gap: 16px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
         .subs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
         .sub-plan-card {
@@ -208,14 +239,59 @@
         .block-controls { display: none; margin-top: 8px; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; flex-wrap: wrap; }
         .edit-mode-active .block-controls { display: flex !important; }
 
-        .pass-input-wrap { position: relative; flex: 1; }
+        /* ===== تحسينات نافذة الدخول ===== */
+        .auth-login-box { background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .auth-field-label { font-size: 11.5px; font-weight: 800; color: #334155; margin-top: 4px; }
+        .auth-field-label:first-child { margin-top: 0; }
+        .auth-text-input, .auth-code-input { width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; outline: none; font-family: 'Tajawal','Cairo',sans-serif; font-size: 13.5px; transition: border-color .15s; background: #fff; color: #0f172a; }
+        .auth-text-input:focus, .auth-code-input:focus { border-color: var(--primary-color); }
+        .auth-code-input { font-weight: 800; letter-spacing: 2px; }
+        .role-toggle { display: flex; gap: 8px; }
+        .role-btn { flex: 1; padding: 10px 8px; border-radius: 9px; border: 1.5px solid #cbd5e1; background: #fff; color: #475569; font-family: 'Tajawal','Cairo',sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; transition: all .15s; }
+        .role-btn:hover { border-color: var(--primary-color); }
+        .role-btn.active { background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); border-color: transparent; color: #fff; box-shadow: 0 4px 10px rgba(2,132,199,0.3); }
+        .auth-actions-row { display: flex; gap: 8px; }
+        .auth-actions-row .btn { flex-shrink: 0; padding: 10px 16px; }
+        .pass-input-wrap { position: relative; flex: 1; min-width: 0; }
         .pass-input-wrap input { width: 100%; }
-        .pass-toggle-eye { position: absolute; top: 50%; left: 8px; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; padding: 2px; display: flex; }
-        body.ltr-mode .pass-toggle-eye { left: auto; right: 8px; }
         .pass-input-wrap.shake-error input { border-color: #ef4444 !important; animation: shakeError 0.4s; }
         .auth-error-msg { color: #dc2626; font-size: 11px; font-weight: 700; text-align: center; min-height: 14px; }
+        .auth-hint { font-size: 10.5px; color: #64748b; text-align: center; line-height: 1.5; }
         .remember-me-row { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: #475569; font-weight: 700; }
-        .modal-lock-icon { width: 20px; height: 20px; fill: currentColor; vertical-align: middle; margin-left: 6px; }
+        .modal-lock-icon { width: 20px; height: 20px; fill: currentColor; vertical-align: middle; margin-left: 6px; flex-shrink: 0; }
+
+        .exam-welcome-toast {
+            position: fixed; top: 16px; left: 50%; transform: translate(-50%, -12px); background: #0f172a; color: #fff;
+            padding: 10px 18px; border-radius: 20px; font-size: 12.5px; font-weight: 800; box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+            z-index: 10500; opacity: 0; transition: all 0.3s ease; pointer-events: none; max-width: 90vw; text-align: center;
+        }
+        .exam-welcome-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+        .exam-user-badge {
+            position: fixed; top: 14px; inset-inline-start: 14px; z-index: 9997;
+            background: #fff; border: 1.5px solid #e2e8f0; border-radius: 24px; padding: 6px 12px 6px 6px;
+            display: none; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; color: #0f172a;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12); max-width: calc(100vw - 28px);
+        }
+        .exam-user-badge.show { display: flex; }
+        .exam-user-badge .avatar {
+            width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); color: #fff;
+            display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900;
+        }
+        .exam-user-badge span:not(.logout-x) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .exam-user-badge .logout-x { cursor: pointer; color: #94a3b8; font-size: 13px; margin-inline-start: 2px; flex-shrink: 0; }
+        .exam-user-badge .logout-x:hover { color: #ef4444; }
+
+        @media (max-width: 480px) {
+            .subs-grid { grid-template-columns: 1fr; }
+            .role-toggle { flex-direction: row; }
+            .role-btn { font-size: 12px; padding: 9px 6px; }
+            .auth-actions-row { flex-direction: column; }
+            .auth-actions-row .btn { width: 100%; justify-content: center; }
+            .phone-nums { flex-wrap: wrap; }
+            .exam-user-badge { font-size: 11px; padding: 5px 10px 5px 5px; max-width: calc(100vw - 20px); }
+        }
 
         .trash-item { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 10px; font-size: 12px; }
         .trash-item-text { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; color: #334155; }
@@ -398,6 +474,14 @@
         <svg class="svg-ic" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
     </div>
 
+    <!-- شارة المستخدم الحالي (تظهر بعد تسجيل الدخول) -->
+    <div class="exam-user-badge" id="examUserBadge">
+        <div class="avatar" id="examUserBadgeAvatar">؟</div>
+        <span id="examUserBadgeText">—</span>
+        <span class="logout-x" onclick="examPlusLogout()" title="تسجيل الخروج">✕</span>
+    </div>
+
+
     <!-- مؤشر الحفظ التلقائي -->
     <div class="save-indicator" id="saveIndicator">
         <svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
@@ -412,24 +496,34 @@
                 <button class="modal-close" onclick="closeAuthModal()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
             </div>
             <div class="modal-body">
-                <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px;">
-                    <label style="font-size: 12px; font-weight: 800; color: #334155; display: block; margin-bottom: 6px;">لجميع المشتركين الحاليين (أدخل الباسورد):</label>
-                    <div style="display: flex; gap: 8px;">
-                        <div class="pass-input-wrap" id="passInputWrap">
-                            <input type="password" id="modalPassInput" placeholder="أدخل كلمة المرور الخاص بك..." style="padding: 8px 34px 8px 10px; border: 1px solid #cbd5e1; border-radius: 6px; outline: none;" onkeydown="if(event.key==='Enter') verifyPasswordModal()">
-                            <button type="button" class="pass-toggle-eye" onclick="togglePassVisibility()" title="إظهار/إخفاء كلمة المرور">
-                                <svg class="svg-ic" id="eyeIcon" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
-                            </button>
+                <div class="auth-login-box">
+                    <div class="role-toggle" id="roleToggle">
+                        <button type="button" class="role-btn active" data-role="student" onclick="selectAuthRole('student')">مستخدم جديد</button>
+
+
+                    <!-- لوحة دخول الطالب -->
+                    <div id="studentAuthPanel">
+                        <label class="auth-field-label">الاسم</label>
+                        <input type="text" id="authNameInput" class="auth-text-input" placeholder="اكتب اسمك بالكامل..." onkeydown="if(event.key==='Enter') document.getElementById('modalPassInput').focus()">
+
+                        <label class="auth-field-label">كود امتحانك بلس</label>
+                        <div class="auth-actions-row">
+                            <div class="pass-input-wrap" id="passInputWrap">
+                                <input type="text" id="modalPassInput" class="auth-code-input" placeholder="اكتب الكود هنا..." autocomplete="off" autocapitalize="characters" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter') verifyPasswordModal()">
+                            </div>
+                            <button class="btn" id="authVerifyBtn" style="background: var(--primary-color);" onclick="verifyPasswordModal()">دخول</button>
                         </div>
-                        <button class="btn" style="background: var(--primary-color);" onclick="verifyPasswordModal()">دخول</button>
+                        <label class="remember-me-row">
+                            <input type="checkbox" id="rememberAuthCheck"> تذكرني في هذه الجلسة (حتى إغلاق الصفحة)
+                        </label>
+                        <div class="auth-hint">🔑 الكود ده كود خاص بامتحانك بلس، هتاخده من الأستاذ مباشرة بعد الاشتراك.</div>
                     </div>
+
+
                     <div class="auth-error-msg" id="authErrorMsg"></div>
-                    <label class="remember-me-row">
-                        <input type="checkbox" id="rememberAuthCheck"> تذكرني في هذه الجلسة (حتى إغلاق الصفحة)
-                    </label>
                 </div>
 
-                <div style="text-align: center; color: #64748b; font-size: 12px; font-weight: bold;">أو لا تملك كود؟ اختر خطة الاشتراك المناسبة:</div>
+                <div style="text-align: center; color: #64748b; font-size: 12px; font-weight: bold;">أو لا تملك كود؟ اختر خطة الاشتراك المناسبة، وهيوصلك كود امتحانك بلس من الأستاذ بعد التفعيل:</div>
 
                 <div class="subs-grid">
                     <div class="sub-plan-card">
@@ -636,6 +730,13 @@
                     <button class="btn btn-purple" style="background-color: #0d9488;" onclick="document.getElementById('jsonFileInput').click()">رفع ملف (JSON)</button>
                     <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="loadExamJSON(event)">
                     <button class="btn btn-print" onclick="window.print()">طباعة الورقة A4</button>
+                </div>
+            </div>
+
+            <div class="toolbar-section" id="epCodesAdminSection" style="display:none;">
+                <div class="toolbar-label">🔑 أكواد امتحانك بلس</div>
+                <div style="font-size:11.5px; color:#64748b; text-align:center; padding:6px 4px;">
+                    توليد ومتابعة أكواد امتحانك بلس بقى من لوحة تحكم منصة بلس — قسم "امتحانك بلس".
                 </div>
             </div>
             
@@ -915,6 +1016,8 @@
     </div>
 
     <script>
+        // ملاحظة: التحقق ده شكلي (client-side) زي أي تطبيق شغال بالكامل في المتصفح، وليس حماية حقيقية 100%.
+        // بيتستخدم بس عشان المعلم يختار كلمة مرور لنفسه مرة واحدة، مش قائمة أكواد مبيّتة في الكود.
         function simpleHash(str) {
             let hash = 5381;
             for (let i = 0; i < str.length; i++) {
@@ -924,18 +1027,13 @@
             return hash;
         }
 
-        const validPasswordHashes = [
-            'exam101', 'exam102', 'exam103', 'exam104', 'exam105', 'exam106', 'exam107', 'exam108', 'exam109', 'exam110',
-            'admin1', 'admin2', 'admin3', 'admin4', 'admin5', 'admin6', 'admin7', 'admin8', 'admin9', 'admin10',
-            'teacher1', 'teacher2', 'teacher3', 'teacher4', 'teacher5', 'pass2026', 'master2026', 'super1', 'super2', 'super3',
-            'math2026', 'physics2026', 'chem2026', 'arabic2026', 'english2026', 'bio2026', 'science2026', 'school1', 'school2', 'school3',
-            'key101', 'key102', 'key103', 'key104', 'key105', 'key106', 'key107', 'key108', 'key109', 'key110',
-            'plus1', 'plus2', 'plus3', 'plus4', 'plus5', 'plus6', 'plus7', 'plus8', 'plus9', 'plus10',
-            'top1', 'top2', 'top3', 'top4', 'top5', 'pro1', 'pro2', 'pro3', 'pro4', 'pro5',
-            'test1', 'test2', 'test3', 'test4', 'test5', 'quiz1', 'quiz2', 'quiz3', 'quiz4', 'quiz5',
-            'vip101', 'vip102', 'vip103', 'vip104', 'vip105', 'vip106', 'vip107', 'vip108', 'vip109', 'vip110',
-            'safe1', 'safe2', 'safe3', 'safe4', 'safe5', 'sec100'
-        ].map(simpleHash);
+        // ═══ نظام أكواد امتحانك بلس المستقل (منفصل تماماً عن أكواد اشتراك الطلاب في منصة بلس) ═══
+        const EXAM_PLUS_CODES_COL = 'examPlusCodes';
+        const EXAM_PLUS_TEACHER_COL = 'examPlusTeacher';
+        const EXAM_PLUS_SESSION_STALE_MS = 5 * 60 * 1000; // 5 دقايق بدون نبضة = الجلسة السابقة اتعتبرت خلصت
+        let _authSelectedRole = 'student';
+        let _examPlusTeacherDocCache = null; // null = لسه ما اتفحصش، false = مفيش حساب معلم، object = بيانات المعلم
+        let _examPlusHeartbeatTimer = null;
 
         const subjectBranchesMap = {
             "الرياضيات": ["الرياضيات (عامة)", "الرياضيات البحتا", "الرياضيات التطبيقية", "الجبر والهندسة الفضائية", "التفاضل والتكامل", "الاستاتيكا", "الديناميكا"],
@@ -985,33 +1083,333 @@
             document.getElementById('authModal').classList.remove('open');
         }
 
-        function togglePassVisibility() {
-            const input = document.getElementById('modalPassInput');
-            input.type = input.type === 'password' ? 'text' : 'password';
+        function showExamAuthError(msg) {
+            const errorMsg = document.getElementById('authErrorMsg');
+            if (errorMsg) { errorMsg.style.color = ''; errorMsg.innerText = msg; }
         }
 
-        function verifyPasswordModal() {
+        // ═══ التبديل بين لوحة الطالب ولوحتي المعلم (إنشاء حساب / دخول) ═══
+        async function selectAuthRole(role) {
+            _authSelectedRole = role;
+            document.querySelectorAll('#roleToggle .role-btn').forEach(function(b){
+                b.classList.toggle('active', b.dataset.role === role);
+            });
+            const errorMsg = document.getElementById('authErrorMsg');
+            if (errorMsg) errorMsg.innerText = '';
+            const studentPanel = document.getElementById('studentAuthPanel');
+            const setupPanel = document.getElementById('teacherSetupPanel');
+            const loginPanel = document.getElementById('teacherLoginPanel');
+
+            if (role === 'student') {
+                studentPanel.style.display = '';
+                setupPanel.style.display = 'none';
+                loginPanel.style.display = 'none';
+                return;
+            }
+
+            studentPanel.style.display = 'none';
+            const teacherData = await ensureTeacherDocChecked();
+            if (teacherData) {
+                setupPanel.style.display = 'none';
+                loginPanel.style.display = '';
+                const hint = document.getElementById('teacherLoginHint');
+                if (hint) hint.textContent = 'أهلاً بيك تاني يا ' + (teacherData.name || 'أستاذ') + '! اكتب كلمة المرور بتاعتك.';
+            } else {
+                setupPanel.style.display = '';
+                loginPanel.style.display = 'none';
+            }
+        }
+
+        async function ensureTeacherDocChecked() {
+            if (_examPlusTeacherDocCache !== null) return _examPlusTeacherDocCache;
+            if (!window._examPlusDb) return false;
+            try {
+                const snap = await window._examPlusDb.collection(EXAM_PLUS_TEACHER_COL).doc('main').get();
+                _examPlusTeacherDocCache = snap.exists ? snap.data() : false;
+            } catch (e) {
+                console.warn('exam-plus teacher check failed:', e.message);
+                _examPlusTeacherDocCache = false;
+            }
+            return _examPlusTeacherDocCache;
+        }
+
+        // ═══ إنشاء حساب المعلم — مرة واحدة بس لكل جهاز/متصفح لأول مرة يستخدم فيها التطبيق ═══
+        async function createTeacherAccount() {
+            const nameInput = document.getElementById('teacherSetupName');
+            const passInput = document.getElementById('teacherSetupPass');
+            const pass2Input = document.getElementById('teacherSetupPass2');
+            const name = nameInput.value.trim();
+            const pass = passInput.value;
+            const pass2 = pass2Input.value;
+
+            if (!name) { showExamAuthError('اكتب اسمك الأول.'); nameInput.focus(); return; }
+            if (!pass || pass.length < 4) { showExamAuthError('كلمة المرور لازم تكون 4 حروف/أرقام على الأقل.'); passInput.focus(); return; }
+            if (pass !== pass2) { showExamAuthError('كلمة المرور والتأكيد مش متطابقين.'); pass2Input.focus(); return; }
+            if (!window._examPlusDb) { showExamAuthError('تعذر الاتصال بالخادم دلوقتي، جرّب تاني بعد لحظات.'); return; }
+
+            try {
+                const docRef = window._examPlusDb.collection(EXAM_PLUS_TEACHER_COL).doc('main');
+                const existing = await docRef.get();
+                if (existing.exists) {
+                    // حماية من إنشاء حساب فوق حساب موجود (لو تم الإنشاء من جهاز تاني بالتوازي)
+                    _examPlusTeacherDocCache = existing.data();
+                    showExamAuthError('في حساب معلم متسجل بالفعل، من فضلك ادخل بكلمة المرور بتاعته.');
+                    selectAuthRole('teacher');
+                    return;
+                }
+                if (!firebase.auth().currentUser) {
+                    await new Promise(function(resolve){
+                        const iv = setInterval(function(){ if (firebase.auth().currentUser) { clearInterval(iv); resolve(); } }, 100);
+                        setTimeout(function(){ clearInterval(iv); resolve(); }, 3000);
+                    });
+                }
+                await docRef.set({
+                    name: name,
+                    passHash: simpleHash(pass),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                _examPlusTeacherDocCache = { name: name, passHash: simpleHash(pass) };
+                completeTeacherLogin(name);
+            } catch (e) {
+                showExamAuthError('حصل خطأ أثناء إنشاء الحساب: ' + e.message);
+            }
+        }
+
+        async function verifyTeacherLogin() {
+            const passInput = document.getElementById('teacherPassInput');
+            const pass = passInput.value;
+            if (!pass) { showExamAuthError('اكتب كلمة المرور.'); passInput.focus(); return; }
+
+            const teacherData = await ensureTeacherDocChecked();
+            if (!teacherData || simpleHash(pass) !== teacherData.passHash) {
+                showExamAuthError('كلمة المرور غلط، حاول تاني.');
+                passInput.value = '';
+                passInput.focus();
+                return;
+            }
+            passInput.value = '';
+            completeTeacherLogin(teacherData.name);
+        }
+
+        function completeTeacherLogin(name) {
+            isAuthenticated = true;
+            window._examPlusStudent = {
+                id: 'teacher-main',
+                name: name,
+                displayName: name,
+                role: 'teacher',
+                code: null,
+                deviceId: getExamPlusDeviceId(),
+                permissions: {}
+            };
+            // المعلم بيعمل حساب مرة واحدة بس — بعد كده الجهاز ده يفتكره تلقائي من غير ما يدخل كلمة مرور تاني
+            localStorage.setItem('examPlusTeacherAuth', '1');
+            localStorage.setItem('examPlusTeacherName', name);
+            closeAuthModal();
+            toggleControls();
+            updateExamUserBadge();
+            epShowAdminSection(true);
+            showExamWelcomeToast(name, 'teacher');
+        }
+
+        // ═══ دخول الطالب بكود امتحانك بلس المستقل ═══
+        async function verifyPasswordModal() {
+            const nameInput = document.getElementById('authNameInput');
             const passInput = document.getElementById('modalPassInput');
             const wrap = document.getElementById('passInputWrap');
             const errorMsg = document.getElementById('authErrorMsg');
-            const pass = passInput.value.trim();
+            const btn = document.getElementById('authVerifyBtn');
 
-            if (pass !== '' && validPasswordHashes.includes(simpleHash(pass))) {
-                isAuthenticated = true;
-                if (document.getElementById('rememberAuthCheck').checked) {
-                    sessionStorage.setItem('examPlusAuth', '1');
+            const name = nameInput.value.trim();
+            const code = passInput.value.trim().toUpperCase();
+
+            if (!name) { showExamAuthError('من فضلك اكتب اسمك الأول.'); nameInput.focus(); return; }
+            if (!code) { showExamAuthError('من فضلك اكتب كود امتحانك بلس.'); passInput.focus(); return; }
+            if (!window._examPlusDb) { showExamAuthError('تعذر الاتصال بالخادم دلوقتي، جرّب تاني بعد لحظات.'); return; }
+
+            errorMsg.style.color = '#64748b';
+            errorMsg.innerText = 'جاري التحقق من الكود...';
+            if (btn) btn.disabled = true;
+
+            try {
+                const granted = await verifyExamPlusCode(code, name);
+                if (granted) {
+                    isAuthenticated = true;
+                    if (document.getElementById('rememberAuthCheck').checked) {
+                        sessionStorage.setItem('examPlusAuth', '1');
+                        sessionStorage.setItem('examPlusStudent', JSON.stringify(window._examPlusStudent || {}));
+                    }
+                    errorMsg.style.color = '';
+                    errorMsg.innerText = '';
+                    passInput.value = '';
+                    closeAuthModal();
+                    toggleControls();
+                    updateExamUserBadge();
+                    showExamWelcomeToast(window._examPlusStudent && window._examPlusStudent.displayName || name, 'student');
+                    return;
                 }
-                errorMsg.innerText = '';
-                passInput.value = '';
-                closeAuthModal();
-                toggleControls();
-            } else {
-                errorMsg.innerText = 'كلمة المرور غير صحيحة، برجاء المحاولة مرة أخرى.';
-                wrap.classList.remove('shake-error');
-                void wrap.offsetWidth;
-                wrap.classList.add('shake-error');
-                passInput.focus();
+            } catch (e) {
+                console.warn('exam-plus code check failed:', e.message);
+                showExamAuthError('حصل خطأ أثناء التحقق من الكود، برجاء المحاولة مرة أخرى.');
+            } finally {
+                if (btn) btn.disabled = false;
             }
+
+            if (!errorMsg.innerText || errorMsg.innerText === 'جاري التحقق من الكود...') {
+                showExamAuthError('كود غير صحيح، تأكد إن الكود منسوخ زي ما هو من الأستاذ.');
+            }
+            wrap.classList.remove('shake-error');
+            void wrap.offsetWidth;
+            wrap.classList.add('shake-error');
+            passInput.focus();
+        }
+
+        // كود الطالب اسمه doc id نفسه في مجموعة examPlusCodes — منفصل تماماً عن users.subscriptionCode
+        async function verifyExamPlusCode(code, displayName) {
+            const db = window._examPlusDb;
+            if (!db) return false;
+            let snap;
+            try {
+                snap = await db.collection(EXAM_PLUS_CODES_COL).doc(code).get();
+            } catch (e) {
+                showExamAuthError('حصل خطأ أثناء التحقق، حاول تاني.');
+                return false;
+            }
+            if (!snap.exists) {
+                showExamAuthError('الكود غير موجود في نظام امتحانك بلس، تأكد إنه نفس الكود اللي بعته لك الأستاذ.');
+                return false;
+            }
+            const data = snap.data();
+
+            if (data.blocked) {
+                showExamAuthError('تم إيقاف هذا الكود، برجاء التواصل مع الأستاذ.');
+                return false;
+            }
+            const expDate = data.expiresAt ? (data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt)) : null;
+            const isExpiredByDate = !!(expDate && expDate.getTime() < Date.now());
+            if (data.active === false || isExpiredByDate) {
+                showExamAuthError('الكود ده منتهي أو متوقف حالياً، برجاء التواصل مع الأستاذ لتجديده.');
+                return false;
+            }
+
+            // منع استخدام نفس الكود من أكتر من جهاز في نفس الوقت
+            const deviceId = getExamPlusDeviceId();
+            const activeAtRaw = data.activeAt;
+            const activeAt = activeAtRaw ? (activeAtRaw.toDate ? activeAtRaw.toDate() : new Date(activeAtRaw)) : null;
+            const stillActiveElsewhere = !!(data.activeDeviceId && data.activeDeviceId !== deviceId && activeAt && (Date.now() - activeAt.getTime() < EXAM_PLUS_SESSION_STALE_MS));
+            if (stillActiveElsewhere) {
+                showExamAuthError('الكود ده مسجّل دخول عليه دلوقتي من جهاز تاني. استنى شوية أو اطلب من صاحب الكود يقفل الجلسة، وبعدين جرّب تاني.');
+                return false;
+            }
+
+            const upd = {
+                lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
+                loginCount: firebase.firestore.FieldValue.increment(1),
+                activeDeviceId: deviceId,
+                activeAt: firebase.firestore.FieldValue.serverTimestamp(),
+                studentName: displayName || data.studentName || ''
+            };
+            if (!data.firstLogin) upd.firstLogin = firebase.firestore.FieldValue.serverTimestamp();
+            if (!firebase.auth().currentUser) {
+                await new Promise(function(resolve){
+                    const iv = setInterval(function(){ if (firebase.auth().currentUser) { clearInterval(iv); resolve(); } }, 100);
+                    setTimeout(function(){ clearInterval(iv); resolve(); }, 3000);
+                });
+            }
+            db.collection(EXAM_PLUS_CODES_COL).doc(code).update(upd).catch(function(e){ console.warn('exam-plus login log failed:', e.message); });
+
+            window._examPlusStudent = {
+                id: code,
+                name: displayName || data.studentName || '',
+                displayName: displayName || data.studentName || '',
+                role: 'student',
+                code: code,
+                deviceId: deviceId,
+                permissions: data.permissions || {}
+            };
+            startExamPlusHeartbeat();
+            return true;
+        }
+
+        // ═══ جهاز/نبضة الجلسة — عشان منع مشاركة الكود بين أكتر من جهاز ═══
+        function getExamPlusDeviceId() {
+            let id = localStorage.getItem('examPlusDeviceId');
+            if (!id) {
+                id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+                localStorage.setItem('examPlusDeviceId', id);
+            }
+            return id;
+        }
+
+        function startExamPlusHeartbeat() {
+            stopExamPlusHeartbeat();
+            _examPlusHeartbeatTimer = setInterval(function () {
+                if (!isAuthenticated || !window._examPlusStudent || window._examPlusStudent.role !== 'student' || !window._examPlusDb) return;
+                window._examPlusDb.collection(EXAM_PLUS_CODES_COL).doc(window._examPlusStudent.code).update({
+                    activeAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).catch(function () {});
+            }, 2 * 60 * 1000);
+        }
+
+        function stopExamPlusHeartbeat() {
+            if (_examPlusHeartbeatTimer) { clearInterval(_examPlusHeartbeatTimer); _examPlusHeartbeatTimer = null; }
+        }
+
+        // محاولة (غير مضمونة 100%) لتحرير جلسة الطالب لما يقفل الصفحة، عشان يقدر يدخل من جهاز تاني فوراً
+        function releaseExamPlusSession() {
+            try {
+                if (window._examPlusStudent && window._examPlusStudent.role === 'student' && window._examPlusStudent.code && window._examPlusDb) {
+                    window._examPlusDb.collection(EXAM_PLUS_CODES_COL).doc(window._examPlusStudent.code).update({ activeDeviceId: null }).catch(function () {});
+                }
+            } catch (e) { /* تجاهل */ }
+        }
+        window.addEventListener('beforeunload', releaseExamPlusSession);
+
+        // ═══ شارة المستخدم الحالي + تسجيل الخروج ═══
+        function updateExamUserBadge() {
+            const badge = document.getElementById('examUserBadge');
+            if (!badge) return;
+            if (!isAuthenticated || !window._examPlusStudent) { badge.classList.remove('show'); return; }
+            const s = window._examPlusStudent;
+            const name = (s.displayName || s.name || '—').trim() || '—';
+            const roleLabel = s.role === 'teacher' ? '🧑‍🏫 معلم' : '🎓 طالب';
+            const avatarEl = document.getElementById('examUserBadgeAvatar');
+            const textEl = document.getElementById('examUserBadgeText');
+            if (avatarEl) avatarEl.textContent = (name[0] || '؟').toUpperCase();
+            if (textEl) textEl.textContent = roleLabel + ' · ' + name;
+            badge.classList.add('show');
+        }
+
+        function examPlusLogout() {
+            if (!confirm('هل تريد تسجيل الخروج من امتحانك بلس؟')) return;
+            stopExamPlusHeartbeat();
+            releaseExamPlusSession();
+            isAuthenticated = false;
+            window._examPlusStudent = null;
+            sessionStorage.removeItem('examPlusAuth');
+            sessionStorage.removeItem('examPlusStudent');
+            localStorage.removeItem('examPlusTeacherAuth');
+            localStorage.removeItem('examPlusTeacherName');
+            epShowAdminSection(false);
+            const wrap = document.getElementById('controlsWrapper');
+            if (wrap) wrap.classList.remove('open');
+            updateExamUserBadge();
+        }
+
+        function showExamWelcomeToast(name, role) {
+            const el = document.createElement('div');
+            el.className = 'exam-welcome-toast';
+            const roleLabel = role === 'teacher' ? 'معلم' : 'طالب';
+            el.innerHTML = '🎉 أهلاً ' + (name || '') + ' — تم تسجيل الدخول (' + roleLabel + ')';
+            document.body.appendChild(el);
+            requestAnimationFrame(function(){ el.classList.add('show'); });
+            setTimeout(function(){ el.classList.remove('show'); setTimeout(function(){ el.remove(); }, 350); }, 2600);
+        }
+
+        // ═══ لوحة المعلم لتوليد وإدارة أكواد امتحانك بلس ═══
+        function epShowAdminSection(show) {
+            const el = document.getElementById('epCodesAdminSection');
+            if (el) el.style.display = show ? '' : 'none';
         }
 
         function copyText(txt) {
@@ -2162,12 +2560,920 @@
             calculateAnalytics();
             attachMathJaxBlur();
 
-            if (sessionStorage.getItem('examPlusAuth') === '1') {
+            if (localStorage.getItem('examPlusTeacherAuth') === '1') {
+                // المعلم عمل حساب مرة واحدة، وبعد كده الجهاز ده بيفتكره تلقائي
                 isAuthenticated = true;
+                const tName = localStorage.getItem('examPlusTeacherName') || 'المعلم';
+                window._examPlusStudent = {
+                    id: 'teacher-main', name: tName, displayName: tName, role: 'teacher',
+                    code: null, deviceId: getExamPlusDeviceId(), permissions: {}
+                };
+                updateExamUserBadge();
+                epShowAdminSection(true);
+            } else if (sessionStorage.getItem('examPlusAuth') === '1') {
+                isAuthenticated = true;
+                try {
+                    const savedStudent = sessionStorage.getItem('examPlusStudent');
+                    if (savedStudent) {
+                        window._examPlusStudent = JSON.parse(savedStudent);
+                        updateExamUserBadge();
+                        startExamPlusHeartbeat();
+                    }
+                } catch (e) { /* تجاهل أي خطأ في استعادة الجلسة */ }
             }
 
             pageFinishedLoading = true;
         };
+    </script>
+
+    <!-- ======================================================================
+         إضافات "امتحانك بلس" — مجموعة الميزات المتقدمة الجديدة
+         كل ما يلي كود إضافي مستقل بالكامل، لا يحذف ولا يعدّل أي كود موجود سابقًا.
+         تم استخدام أسماء دوال ومعرّفات (id) جديدة تمامًا لضمان عدم أي تعارض.
+    ====================================================================== -->
+    <style id="advancedFeaturesStyle">
+        /* ---------- 1) شارات المراجعة والقفل على بطاقة السؤال ---------- */
+        .q-review-badge {
+            display: none; position: absolute; top: 10px; left: 40px; z-index: 5;
+            background: #f59e0b; color: #fff; font-size: 10px; font-weight: 800;
+            padding: 3px 8px; border-radius: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .q-lock-badge {
+            display: none; position: absolute; top: 10px; left: 40px; z-index: 5;
+            background: #dc2626; color: #fff; font-size: 10px; font-weight: 800;
+            padding: 3px 8px; border-radius: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .question-card.q-locked { outline: 2px dashed #dc2626; outline-offset: 3px; }
+        .question-card.q-locked .editable-element { cursor: not-allowed !important; }
+        .btn-adv-alt { background-color: #7c3aed !important; }
+        .btn-adv-review { background-color: #f59e0b !important; }
+        .btn-adv-lock { background-color: #dc2626 !important; }
+
+        /* ---------- 2) الصور المصغرة للصفحات ---------- */
+        .thumbnails-sidebar {
+            position: fixed; top: 0; right: -190px; width: 170px; height: 100vh;
+            background: #ffffff; border-left: 1px solid var(--card-border); box-shadow: -4px 0 14px rgba(0,0,0,0.08);
+            z-index: 9998; padding: 14px 10px; overflow-y: auto; transition: right 0.3s ease;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .thumbnails-sidebar.open { right: 0; }
+        .thumbnails-sidebar h4 { font-size: 12px; color: #475569; text-align: center; margin-bottom: 4px; }
+        .thumbnail-item {
+            border: 2px solid var(--card-border); border-radius: 8px; padding: 10px 6px; text-align: center;
+            font-size: 11px; font-weight: 700; color: #334155; cursor: pointer; background: #f8fafc;
+            transition: all 0.15s ease; white-space: pre-line; position: relative;
+        }
+        .thumbnail-item:hover { border-color: var(--primary-color); background: #f0f9ff; transform: translateX(-2px); }
+        .thumbnail-item .thumb-type-tag { display:block; font-size: 9px; font-weight: 800; color: var(--primary-color); margin-top:2px; }
+        .thumbnails-toggle-btn {
+            position: fixed; top: 50%; left: 24px; transform: translateY(-50%); width: 46px; height: 46px;
+            background: #ffffff; border: 1px solid var(--card-border); border-radius: 50%; box-shadow: var(--shadow-md);
+            display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 9997; color: #334155;
+        }
+        .thumbnails-toggle-btn:hover { color: var(--primary-color); border-color: var(--primary-color); }
+
+        /* ---------- 3) شريط أدوات عائم للميزات الجديدة ---------- */
+        .adv-toolbar {
+            position: fixed; bottom: 24px; left: 90px; z-index: 9998; display: flex; flex-direction: column; gap: 8px;
+        }
+        .adv-fab {
+            width: 44px; height: 44px; border-radius: 50%; background: #ffffff; border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-md); display: flex; align-items: center; justify-content: center; cursor: pointer;
+            color: #334155; position: relative; transition: all 0.2s ease;
+        }
+        .adv-fab:hover { color: #fff; background: var(--primary-color); border-color: var(--primary-color); }
+        .adv-fab .adv-fab-badge {
+            position: absolute; top: -6px; left: -6px; background: #dc2626; color: #fff; font-size: 10px;
+            font-weight: 800; border-radius: 20px; min-width: 18px; height: 18px; display: flex; align-items: center;
+            justify-content: center; padding: 0 4px;
+        }
+
+        /* ---------- 4) صندوق البحث داخل الأسئلة ---------- */
+        .adv-search-box {
+            position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 9997;
+            background: #ffffff; border: 1px solid var(--card-border); border-radius: 30px; box-shadow: var(--shadow-md);
+            display: flex; align-items: center; gap: 6px; padding: 6px 14px; width: min(360px, 80vw);
+        }
+        .adv-search-box input {
+            border: none; outline: none; flex: 1; font-size: 12.5px; font-family: inherit; background: transparent; color: var(--text-main);
+        }
+        .adv-search-box .svg-ic { color: #94a3b8; flex-shrink: 0; }
+        .adv-search-count { font-size: 10.5px; color: #94a3b8; white-space: nowrap; }
+
+        /* ---------- 5) جدول المحتويات ---------- */
+        .toc-container { border: 1px solid var(--card-border); border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; background: #f8fafc; }
+        .toc-title { font-size: 16px; font-weight: 900; color: var(--primary-color); margin-bottom: 10px; border-bottom: 2px solid var(--primary-color); padding-bottom: 6px; }
+        .toc-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+        .toc-item-h2 { font-weight: 800; font-size: 13px; color: var(--text-main); }
+        .toc-item-h3 { font-weight: 600; font-size: 12px; color: #475569; padding-right: 16px; }
+
+        /* ---------- 6) بنك الأسئلة ---------- */
+        .bank-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .bank-toolbar select, .bank-toolbar input {
+            flex: 1; min-width: 120px; border: 1px solid var(--card-border); border-radius: 8px; padding: 7px 10px; font-size: 12px; font-family: inherit;
+        }
+        .bank-grid { display: grid; grid-template-columns: 1fr; gap: 10px; max-height: 50vh; overflow-y: auto; padding-left: 4px; }
+        .bank-item {
+            border: 1px solid var(--card-border); border-radius: 10px; padding: 10px 12px; background: #fafafa;
+            display: flex; flex-direction: column; gap: 6px;
+        }
+        .bank-item-text { font-size: 12.5px; color: #1e293b; line-height: 1.6; }
+        .bank-item-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+        .bank-item-tags span { background: #e0f2fe; color: #075985; font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+        .bank-item-actions { display: flex; gap: 6px; justify-content: flex-end; }
+        .bank-item-actions .btn { font-size: 10px; padding: 5px 9px; }
+        .bank-empty-msg { text-align: center; color: #94a3b8; font-size: 12px; padding: 30px 0; }
+
+        /* ---------- 7) لوحة تخصيص غلاف الملزمة الجديدة ---------- */
+        .cover-adv-panel { border: 1px dashed var(--card-border); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .cover-adv-panel .adv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .cover-adv-panel label { font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 2px; display: block; }
+        .cover-adv-panel input[type="text"], .cover-adv-panel input[type="number"] {
+            width: 100%; border: 1px solid var(--card-border); border-radius: 8px; padding: 6px 9px; font-size: 12px; font-family: inherit;
+        }
+        #coverCustomImg { display: none; max-width: 160px; max-height: 160px; margin: 10px auto 0; border-radius: 10px; }
+        #coverGradeText { font-size: 1.05rem; color: #475569; margin-top: 4px; }
+
+        /* ---------- 8) رأس وتذييل مخصص للطباعة ---------- */
+        .custom-print-header, .custom-print-footer {
+            display: none; width: 100%; font-size: 9.5px; color: #64748b; justify-content: space-between;
+            padding: 4px 2px; border-bottom: 1px solid #e2e8f0; margin-bottom: 6px;
+        }
+        .custom-print-footer { border-bottom: none; border-top: 1px solid #e2e8f0; margin-bottom: 0; margin-top: 8px; padding-top: 4px; }
+        body.custom-header-footer-on .custom-print-header,
+        body.custom-header-footer-on .custom-print-footer { display: flex; }
+
+        /* ---------- 9) مقبض سحب الصفحات ---------- */
+        .page-drag-handle {
+            position: absolute; top: 10px; left: 46px; z-index: 6; width: 30px; height: 30px; border-radius: 50%;
+            border: 1px solid var(--card-border); background: rgba(255,255,255,0.92); display: flex; align-items: center;
+            justify-content: center; cursor: grab; opacity: 0.45; transition: all 0.2s ease; color: #334155;
+        }
+        .page-drag-handle:hover { opacity: 1; border-color: var(--primary-color); color: var(--primary-color); }
+        .page.adv-drag-over { outline: 3px dashed var(--primary-color); outline-offset: -3px; }
+
+        /* ---------- 10) شارة نوع الصفحة ---------- */
+        .page-type-badge {
+            position: absolute; top: 10px; right: 46px; z-index: 6; font-size: 9.5px; font-weight: 800;
+            padding: 4px 9px; border-radius: 20px; background: #f1f5f9; color: #475569; border: 1px solid var(--card-border);
+            cursor: pointer; user-select: none;
+        }
+        .page-type-badge[data-page-type="lesson"] { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+        .page-type-badge[data-page-type="exam"] { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+
+        @media print {
+            .thumbnails-sidebar, .thumbnails-toggle-btn, .adv-toolbar, .adv-search-box,
+            .page-drag-handle, .page-type-badge { display: none !important; }
+        }
+    </style>
+
+    <!-- صندوق البحث العائم داخل الأسئلة -->
+    <div class="adv-search-box no-print">
+        <svg class="svg-ic" viewBox="0 0 24 24" style="width:15px;height:15px;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="advQuestionSearchInput" placeholder="ابحث داخل الأسئلة..." oninput="searchQuestionsAdvanced(this.value)">
+        <span class="adv-search-count" id="advSearchCount"></span>
+    </div>
+
+    <!-- زر ولوحة الصور المصغرة للصفحات -->
+    <div class="thumbnails-toggle-btn no-print" onclick="toggleThumbnailsSidebar()" title="عرض / إخفاء الصور المصغرة للصفحات">
+        <svg class="svg-ic" viewBox="0 0 24 24"><path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z"/></svg>
+    </div>
+    <div class="thumbnails-sidebar no-print" id="thumbnailsSidebar">
+        <h4>صفحات الملف</h4>
+    </div>
+
+    <!-- شريط الأدوات العائم للميزات الجديدة -->
+    <div class="adv-toolbar no-print">
+        <div class="adv-fab" onclick="openReviewModal()" title="الأسئلة المطلوب مراجعتها">
+            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            <span class="adv-fab-badge" id="advReviewBadgeCount" style="display:none;">0</span>
+        </div>
+        <div class="adv-fab" onclick="generateTOC()" title="توليد جدول المحتويات تلقائيًا">
+            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
+        </div>
+        <div class="adv-fab" onclick="openQuestionBankModal()" title="بنك الأسئلة">
+            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>
+        </div>
+        <div class="adv-fab" onclick="exportDirectPDF()" title="تصدير مباشر إلى PDF">
+            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+        </div>
+        <div class="adv-fab" onclick="toggleCustomHeaderFooter()" title="تفعيل/إيقاف رأس وتذييل الطباعة المخصص">
+            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M3 5h18v2H3V5zm0 12h18v2H3v-2zm4-4h10v2H7v-2z"/></svg>
+        </div>
+        <div class="adv-fab" onclick="openCoverCustomizeModal()" title="تخصيص غلاف الملزمة بالكامل">
+            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M4 4h16v4H4V4zm0 6h16v10H4V10zm4 2v6h8v-6H8z"/></svg>
+        </div>
+    </div>
+
+    <!-- نافذة: تخصيص غلاف الملزمة -->
+    <div class="modal-overlay" id="coverCustomizeModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3>تخصيص غلاف الملزمة</h3>
+                <button class="modal-close" onclick="closeCoverCustomizeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="cover-adv-panel">
+                    <div>
+                        <label>اسم الملزمة</label>
+                        <input type="text" id="coverBookletTitleInput" placeholder="مثال: ملزمة الرياضيات الشاملة">
+                    </div>
+                    <div class="adv-grid">
+                        <div>
+                            <label>اسم المادة</label>
+                            <input type="text" id="coverBookletSubjectInput" placeholder="مثال: الرياضيات">
+                        </div>
+                        <div>
+                            <label>الصف الدراسي</label>
+                            <input type="text" id="coverBookletGradeInput" placeholder="مثال: الصف الأول الثانوي">
+                        </div>
+                    </div>
+                    <div class="adv-grid">
+                        <div>
+                            <label>اسم المعلم</label>
+                            <input type="text" id="coverBookletTeacherInput" placeholder="اسم المعلم">
+                        </div>
+                        <div>
+                            <label>العام الدراسي</label>
+                            <input type="text" id="coverBookletYearInput" placeholder="مثال: 2027/2026">
+                        </div>
+                    </div>
+                    <div>
+                        <label>شعار أو صورة الغلاف</label>
+                        <input type="file" id="coverBookletImageInput" accept="image/*" onchange="uploadCoverImage(this)">
+                    </div>
+                </div>
+                <div class="btn-group" style="margin-top:10px;">
+                    <button class="btn btn-success" onclick="updateCoverDataAdvanced()">تطبيق البيانات على الغلاف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: الأسئلة المطلوب مراجعتها -->
+    <div class="modal-overlay" id="reviewModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3>الأسئلة المطلوب مراجعتها</h3>
+                <button class="modal-close" onclick="closeReviewModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="reviewListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:50vh; overflow-y:auto;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: بنك الأسئلة -->
+    <div class="modal-overlay" id="questionBankModal">
+        <div class="modal-card" style="max-width: 620px;">
+            <div class="modal-header">
+                <h3>بنك الأسئلة</h3>
+                <button class="modal-close" onclick="closeQuestionBankModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="bank-toolbar">
+                    <select id="bankFilterStage"><option value="">كل المراحل</option><option>ابتدائي</option><option>إعدادي</option><option>ثانوي</option></select>
+                    <select id="bankFilterSubject"><option value="">كل المواد</option></select>
+                    <input type="text" id="bankFilterKeyword" placeholder="بحث بكلمة أو وحدة أو درس...">
+                </div>
+                <div class="bank-toolbar" style="margin-top:-4px;">
+                    <input type="text" id="bankNewStage" placeholder="المرحلة الدراسية">
+                    <input type="text" id="bankNewGrade" placeholder="الصف">
+                    <input type="text" id="bankNewSubject" placeholder="المادة">
+                    <input type="text" id="bankNewUnit" placeholder="الوحدة">
+                    <input type="text" id="bankNewLesson" placeholder="الدرس">
+                </div>
+                <div class="bank-grid" id="bankGridContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: معاينة سريعة لسؤال من البنك -->
+    <div class="modal-overlay" id="bankPreviewModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3>معاينة السؤال</h3>
+                <button class="modal-close" onclick="closeBankPreviewModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="bankPreviewContent" style="font-size:13px; line-height:1.8; color:#1e293b;"></div>
+                <div class="btn-group">
+                    <button class="btn btn-success" id="bankPreviewInsertBtn">إدراج في الامتحان الحالي</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    /* ==================================================================
+       سكربت الميزات المتقدمة الجديدة — إضافة مستقلة بالكامل
+       لا يستدعي أي تعديل على الدوال أو العناصر الأصلية، بل يتكامل معها
+       عبر MutationObserver وربط أحداث إضافية فقط.
+    ================================================================== */
+
+    /* ---------------------------------------------------------------
+       أولًا: التحكم في الأسئلة (سؤال بديل / مراجعة / قفل / بحث)
+    --------------------------------------------------------------- */
+    function addAlternateQuestion(qId) {
+        const q = document.getElementById(qId);
+        if (!q) return;
+        if (q.classList.contains('q-locked')) { alert('هذا السؤال مقفل، ألغِ القفل أولاً لإنشاء نسخة بديلة.'); return; }
+        const newQ = q.cloneNode(true);
+        newQ.id = 'q-' + Date.now();
+        newQ.removeAttribute('data-review');
+        newQ.classList.remove('q-locked');
+        const bodyEl = newQ.querySelector('.q-body');
+        if (bodyEl) {
+            let bodyText = bodyEl.innerText;
+            bodyText = bodyText.replace(/\d+/g, function () { return Math.floor(Math.random() * 20) + 1; });
+            bodyEl.innerText = bodyText + ' (نسخة بديلة)';
+        }
+        const revBadge = newQ.querySelector('.q-review-badge');
+        if (revBadge) revBadge.style.display = 'none';
+        const lockBadge = newQ.querySelector('.q-lock-badge');
+        if (lockBadge) lockBadge.style.display = 'none';
+        q.parentNode.insertBefore(newQ, q.nextSibling);
+        applyAdvancedControlsToCard(newQ);
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    function toggleReviewFlag(qId) {
+        const q = document.getElementById(qId);
+        if (!q) return;
+        const badge = q.querySelector('.q-review-badge');
+        if (q.getAttribute('data-review') === 'true') {
+            q.removeAttribute('data-review');
+            if (badge) badge.style.display = 'none';
+        } else {
+            q.setAttribute('data-review', 'true');
+            if (badge) badge.style.display = 'inline-block';
+        }
+        updateReviewCount();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    function updateReviewCount() {
+        const count = document.querySelectorAll('.question-card[data-review="true"]').length;
+        const badge = document.getElementById('advReviewBadgeCount');
+        if (badge) { badge.innerText = count; badge.style.display = count > 0 ? 'flex' : 'none'; }
+    }
+
+    function openReviewModal() {
+        const container = document.getElementById('reviewListContainer');
+        container.innerHTML = '';
+        const revQuestions = document.querySelectorAll('.question-card[data-review="true"]');
+        if (revQuestions.length === 0) {
+            container.innerHTML = '<p style="color:#94a3b8; font-size:12.5px; text-align:center; padding:20px 0;">لا توجد أسئلة محددة للمراجعة حاليًا.</p>';
+        } else {
+            revQuestions.forEach(q => {
+                const item = document.createElement('div');
+                item.style.cssText = 'padding:10px; border:1px solid var(--card-border); border-radius:8px; font-size:12.5px; display:flex; justify-content:space-between; align-items:center; gap:8px;';
+                const textSpan = document.createElement('span');
+                textSpan.innerText = (q.querySelector('.q-body') ? q.querySelector('.q-body').innerText : '').slice(0, 90);
+                const goBtn = document.createElement('button');
+                goBtn.className = 'btn btn-success'; goBtn.style.fontSize = '10px'; goBtn.innerText = 'الانتقال إليه';
+                goBtn.onclick = () => { closeReviewModal(); q.scrollIntoView({ behavior: 'smooth', block: 'center' }); };
+                item.appendChild(textSpan); item.appendChild(goBtn);
+                container.appendChild(item);
+            });
+        }
+        document.getElementById('reviewModal').classList.add('open');
+    }
+
+    function closeReviewModal() { document.getElementById('reviewModal').classList.remove('open'); }
+
+    function toggleLockQuestion(qId) {
+        const q = document.getElementById(qId);
+        if (!q) return;
+        const lockBadge = q.querySelector('.q-lock-badge');
+        if (q.classList.contains('q-locked')) {
+            q.classList.remove('q-locked');
+            if (lockBadge) lockBadge.style.display = 'none';
+        } else {
+            q.classList.add('q-locked');
+            if (lockBadge) lockBadge.style.display = 'inline-block';
+        }
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    function searchQuestionsAdvanced(keyword) {
+        const cards = document.querySelectorAll('.question-card, .lesson-block');
+        let visibleCount = 0;
+        const kw = keyword.trim().toLowerCase();
+        cards.forEach(card => {
+            if (!kw) { card.style.display = ''; visibleCount++; return; }
+            const text = card.innerText.toLowerCase();
+            if (text.includes(kw)) { card.style.display = ''; visibleCount++; }
+            else { card.style.display = 'none'; }
+        });
+        const countEl = document.getElementById('advSearchCount');
+        if (countEl) countEl.innerText = kw ? `${visibleCount} نتيجة` : '';
+    }
+    // اسم متوافق مع التسمية المطلوبة في الطلب الأصلي
+    function searchQuestions(keyword) { searchQuestionsAdvanced(keyword); }
+
+    /* ---------------------------------------------------------------
+       ثانيًا: وضع الملزمة (جدول المحتويات + الغلاف المتقدم)
+    --------------------------------------------------------------- */
+    function generateTOC() {
+        const pages = document.querySelectorAll('.page:not(.cover-page)');
+        let tocHTML = '<div class="toc-container"><div class="toc-title">جدول المحتويات</div><ul class="toc-list">';
+        let found = false;
+        pages.forEach((page, index) => {
+            const headings = page.querySelectorAll('h2, h3');
+            headings.forEach(h => {
+                const label = h.innerText.trim();
+                if (!label) return;
+                found = true;
+                if (h.tagName === 'H2') {
+                    tocHTML += `<li class="toc-item-h2">${label} .......... (صفحة ${index + 1})</li>`;
+                } else if (h.tagName === 'H3') {
+                    tocHTML += `<li class="toc-item-h3">${label} .......... (صفحة ${index + 1})</li>`;
+                }
+            });
+        });
+        tocHTML += '</ul></div>';
+        if (!found) { alert('لم يتم العثور على عناوين رئيسية أو فرعية لإنشاء جدول المحتويات. أضف عناوين من "وضع الملزمة" أولاً.'); return; }
+        const firstContentWrap = document.querySelector('.page:not(.cover-page) .content-wrap');
+        if (firstContentWrap) {
+            const oldTOC = document.querySelector('.toc-container');
+            if (oldTOC) oldTOC.remove();
+            firstContentWrap.insertAdjacentHTML('afterbegin', tocHTML);
+            if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        }
+    }
+
+    function updateCoverDataAdvanced() {
+        enhanceCoverPage();
+        const titleInput = document.getElementById('coverBookletTitleInput');
+        const subjectInput = document.getElementById('coverBookletSubjectInput');
+        const gradeInput = document.getElementById('coverBookletGradeInput');
+        const teacherInput = document.getElementById('coverBookletTeacherInput');
+        const yearInput = document.getElementById('coverBookletYearInput');
+        if (titleInput && titleInput.value && document.getElementById('coverMainTitle')) {
+            document.getElementById('coverMainTitle').innerText = titleInput.value;
+        }
+        if (subjectInput && subjectInput.value && document.getElementById('coverSubject')) {
+            document.getElementById('coverSubject').innerText = subjectInput.value;
+        }
+        if (teacherInput && teacherInput.value && document.getElementById('coverTeacher')) {
+            document.getElementById('coverTeacher').innerText = teacherInput.value;
+        }
+        const gradeText = document.getElementById('coverGradeText');
+        if (gradeText) gradeText.innerText = gradeInput && gradeInput.value ? gradeInput.value : '';
+        const yearText = document.getElementById('coverYearText');
+        if (yearText && yearInput && yearInput.value) {
+            yearText.innerText = 'العام الدراسي ' + yearInput.value + ' - منصة بلس';
+        }
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+    // اسم متوافق مع التسمية المطلوبة في الطلب الأصلي
+    function updateCoverData() { updateCoverDataAdvanced(); }
+
+    function openCoverCustomizeModal() {
+        enhanceCoverPage();
+        document.getElementById('coverCustomizeModal').classList.add('open');
+    }
+    function closeCoverCustomizeModal() { document.getElementById('coverCustomizeModal').classList.remove('open'); }
+
+    // إدراج عنصري "الصف الدراسي" و"صورة الغلاف" داخل صفحة الغلاف الحالية دون تعديل عناصرها الأصلية
+    function enhanceCoverPage() {
+        const coverPage = document.getElementById('coverPage');
+        if (!coverPage) return;
+        if (!document.getElementById('coverGradeText')) {
+            const gradeEl = document.createElement('div');
+            gradeEl.id = 'coverGradeText';
+            const teacherHeading = document.querySelector('#coverPage h3');
+            if (teacherHeading) teacherHeading.insertAdjacentElement('afterend', gradeEl);
+            else coverPage.appendChild(gradeEl);
+        }
+        if (!document.getElementById('coverCustomImg')) {
+            const img = document.createElement('img');
+            img.id = 'coverCustomImg';
+            img.alt = 'شعار الملزمة';
+            coverPage.appendChild(img);
+        }
+    }
+
+    function uploadCoverImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.getElementById('coverCustomImg');
+                if (img) { img.src = e.target.result; img.style.display = 'block'; }
+            };
+            reader.readAsDataURL(input.files[0]);
+            if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        }
+    }
+
+    /* ---------------------------------------------------------------
+       ثالثًا: الصفحات والتنسيق (صور مصغرة / نسخ صفحة / سحب وإفلات)
+    --------------------------------------------------------------- */
+    function toggleThumbnailsSidebar() {
+        document.getElementById('thumbnailsSidebar').classList.toggle('open');
+    }
+
+    function updateThumbnails() {
+        const sidebar = document.getElementById('thumbnailsSidebar');
+        if (!sidebar) return;
+        sidebar.querySelectorAll('.thumbnail-item').forEach(el => el.remove());
+        const pages = document.querySelectorAll('#pagesContainer .page, .page.cover-page');
+        pages.forEach((page, idx) => {
+            const thumb = document.createElement('div');
+            thumb.className = 'thumbnail-item';
+            const pageType = page.classList.contains('cover-page') ? 'غلاف' : (page.getAttribute('data-page-type') === 'lesson' ? 'شرح' : 'امتحان');
+            thumb.innerHTML = 'صفحة ' + (idx + 1) + '<span class="thumb-type-tag">' + pageType + '</span>';
+            thumb.onclick = () => page.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            sidebar.appendChild(thumb);
+        });
+    }
+
+    function duplicatePage(pageId) {
+        const page = document.getElementById(pageId);
+        if (!page) return;
+        const newPage = page.cloneNode(true);
+        newPage.id = 'page-' + Date.now();
+        newPage.querySelectorAll('[id]').forEach(el => {
+            if (el.id !== newPage.id) el.id = el.id + '-copy-' + Date.now();
+        });
+        page.parentNode.insertBefore(newPage, page.nextSibling);
+        applyAdvancedFeaturesToPage(newPage);
+        updateThumbnails();
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    // سحب وإفلات لترتيب الصفحات (عبر مقبض مخصص لتفادي التعارض مع سحب الأسئلة)
+    let advDraggedPage = null;
+    function handlePageDragStart(e) {
+        advDraggedPage = e.currentTarget.closest('.page');
+        e.dataTransfer.effectAllowed = 'move';
+    }
+    function handlePageDragOverTarget(e) {
+        e.preventDefault();
+        e.currentTarget.classList.add('adv-drag-over');
+    }
+    function handlePageDragLeaveTarget(e) { e.currentTarget.classList.remove('adv-drag-over'); }
+    function handlePageDropTarget(e) {
+        e.preventDefault();
+        const targetPage = e.currentTarget;
+        targetPage.classList.remove('adv-drag-over');
+        if (advDraggedPage && targetPage !== advDraggedPage && !targetPage.classList.contains('cover-page')) {
+            targetPage.parentNode.insertBefore(advDraggedPage, targetPage);
+            updateThumbnails();
+            if (typeof reindexQuestions === 'function') reindexQuestions();
+            if (typeof calculateAnalytics === 'function') calculateAnalytics();
+            if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        }
+        advDraggedPage = null;
+    }
+
+    // شارة نوع الصفحة (امتحان / شرح) قابلة للنقر للتبديل - إضافة مستقلة لا تمس منطق وضع الملزمة الحالي
+    function togglePageType(pageId) {
+        const page = document.getElementById(pageId);
+        if (!page) return;
+        const current = page.getAttribute('data-page-type') || 'exam';
+        const next = current === 'exam' ? 'lesson' : 'exam';
+        page.setAttribute('data-page-type', next);
+        const badge = page.querySelector('.page-type-badge');
+        if (badge) { badge.setAttribute('data-page-type', next); badge.innerText = next === 'lesson' ? 'صفحة شرح' : 'صفحة امتحان'; }
+        updateThumbnails();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    /* ---------------------------------------------------------------
+       رابعًا: بنك الأسئلة (تصنيف + معاينة + بحث بالفلاتر)
+    --------------------------------------------------------------- */
+    const QUESTION_BANK_KEY = 'examPlusQuestionBankV1';
+    function getQuestionBank() {
+        try { return JSON.parse(localStorage.getItem(QUESTION_BANK_KEY)) || []; } catch (e) { return []; }
+    }
+    function saveQuestionBank(bank) { localStorage.setItem(QUESTION_BANK_KEY, JSON.stringify(bank)); }
+
+    function addQuestionToBank(qId) {
+        const q = document.getElementById(qId);
+        if (!q) return;
+        const stage = (document.getElementById('bankNewStage') || {}).value || '';
+        const grade = (document.getElementById('bankNewGrade') || {}).value || '';
+        const subject = (document.getElementById('bankNewSubject') || {}).value || (typeof currentMainSubject !== 'undefined' ? currentMainSubject : '');
+        const unit = (document.getElementById('bankNewUnit') || {}).value || '';
+        const lesson = (document.getElementById('bankNewLesson') || {}).value || '';
+        const bank = getQuestionBank();
+        bank.push({
+            id: 'bank-' + Date.now(),
+            html: q.outerHTML,
+            text: (q.querySelector('.q-body') ? q.querySelector('.q-body').innerText : '').slice(0, 300),
+            stage, grade, subject, unit, lesson,
+            savedAt: Date.now()
+        });
+        saveQuestionBank(bank);
+        alert('تم حفظ السؤال في بنك الأسئلة بنجاح.');
+    }
+
+    function openQuestionBankModal() {
+        populateBankSubjectFilter();
+        renderQuestionBank();
+        document.getElementById('questionBankModal').classList.add('open');
+    }
+    function closeQuestionBankModal() { document.getElementById('questionBankModal').classList.remove('open'); }
+
+    function populateBankSubjectFilter() {
+        const sel = document.getElementById('bankFilterSubject');
+        if (!sel) return;
+        const bank = getQuestionBank();
+        const subjects = [...new Set(bank.map(i => i.subject).filter(Boolean))];
+        const currentVal = sel.value;
+        sel.innerHTML = '<option value="">كل المواد</option>' + subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+        sel.value = currentVal;
+    }
+
+    function renderQuestionBank() {
+        const grid = document.getElementById('bankGridContainer');
+        if (!grid) return;
+        const bank = getQuestionBank();
+        const stageF = document.getElementById('bankFilterStage').value;
+        const subjectF = document.getElementById('bankFilterSubject').value;
+        const kwF = document.getElementById('bankFilterKeyword').value.trim().toLowerCase();
+        const filtered = bank.filter(item => {
+            if (stageF && item.stage !== stageF) return false;
+            if (subjectF && item.subject !== subjectF) return false;
+            if (kwF) {
+                const hay = [item.text, item.unit, item.lesson, item.subject, item.grade].join(' ').toLowerCase();
+                if (!hay.includes(kwF)) return false;
+            }
+            return true;
+        });
+        grid.innerHTML = '';
+        if (filtered.length === 0) {
+            grid.innerHTML = '<div class="bank-empty-msg">لا توجد أسئلة محفوظة مطابقة. احفظ سؤالًا من زر "➕ حفظ في البنك" داخل بطاقة السؤال.</div>';
+            return;
+        }
+        filtered.slice().reverse().forEach(item => {
+            const el = document.createElement('div');
+            el.className = 'bank-item';
+            const tags = [item.stage, item.grade, item.subject, item.unit, item.lesson].filter(Boolean).map(t => `<span>${t}</span>`).join('');
+            el.innerHTML = `
+                <div class="bank-item-text">${item.text || '(بدون نص)'}</div>
+                <div class="bank-item-tags">${tags}</div>
+                <div class="bank-item-actions">
+                    <button class="btn" style="background:#475569;" onclick="previewBankItem('${item.id}')">معاينة</button>
+                    <button class="btn btn-success" onclick="insertBankItem('${item.id}')">إدراج بالامتحان</button>
+                    <button class="btn btn-danger" onclick="deleteBankItem('${item.id}')">حذف</button>
+                </div>`;
+            grid.appendChild(el);
+        });
+    }
+
+    function deleteBankItem(id) {
+        if (!confirm('هل تريد حذف هذا السؤال من بنك الأسئلة؟')) return;
+        saveQuestionBank(getQuestionBank().filter(i => i.id !== id));
+        renderQuestionBank();
+    }
+
+    function previewBankItem(id) {
+        const item = getQuestionBank().find(i => i.id === id);
+        if (!item) return;
+        document.getElementById('bankPreviewContent').innerText = item.text || '(بدون نص)';
+        document.getElementById('bankPreviewInsertBtn').onclick = () => { insertBankItem(id); closeBankPreviewModal(); };
+        document.getElementById('bankPreviewModal').classList.add('open');
+    }
+    function closeBankPreviewModal() { document.getElementById('bankPreviewModal').classList.remove('open'); }
+
+    function insertBankItem(id) {
+        const item = getQuestionBank().find(i => i.id === id);
+        if (!item) return;
+        const container = (typeof getActiveQuestionsContainer === 'function') ? getActiveQuestionsContainer() : document.querySelector('.questions-container');
+        if (!container) { alert('لا يوجد مكان نشط لإدراج السؤال. أضف صفحة امتحان أولاً.'); return; }
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = item.html;
+        const newCard = wrapper.firstElementChild;
+        if (!newCard) return;
+        newCard.id = 'q-' + Date.now();
+        newCard.removeAttribute('data-review');
+        newCard.classList.remove('q-locked');
+        container.appendChild(newCard);
+        applyAdvancedControlsToCard(newCard);
+        if (typeof reindexQuestions === 'function') reindexQuestions();
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof attachMathJaxBlur === 'function') attachMathJaxBlur();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    /* ---------------------------------------------------------------
+       خامسًا: الطباعة والتصدير (PDF مباشر + رأس/تذييل مخصص)
+    --------------------------------------------------------------- */
+    function exportDirectPDF() {
+        applyCustomHeaderFooterContent();
+        window.print();
+    }
+
+    function toggleCustomHeaderFooter() {
+        document.body.classList.toggle('custom-header-footer-on');
+        if (document.body.classList.contains('custom-header-footer-on')) {
+            applyCustomHeaderFooterContent();
+        }
+    }
+
+    function applyCustomHeaderFooterContent() {
+        const teacher = (document.getElementById('teacherNameInput') || {}).value || '';
+        const subject = (typeof currentMainSubject !== 'undefined' && currentMainSubject) || (document.getElementById('subjectSelect') || {}).value || '';
+        const year = new Date().getFullYear();
+        document.querySelectorAll('#pagesContainer .page').forEach((page, idx) => {
+            let header = page.querySelector('.custom-print-header');
+            let footer = page.querySelector('.custom-print-footer');
+            if (!header) {
+                header = document.createElement('div');
+                header.className = 'custom-print-header';
+                page.insertBefore(header, page.firstChild);
+            }
+            if (!footer) {
+                footer = document.createElement('div');
+                footer.className = 'custom-print-footer';
+                page.appendChild(footer);
+            }
+            header.innerHTML = `<span>${subject}</span><span>${teacher}</span>`;
+            footer.innerHTML = `<span>صفحة ${idx + 1}</span><span>العام الدراسي ${year}</span>`;
+        });
+    }
+
+    /* ---------------------------------------------------------------
+       سابعًا: دعم المواد باللغة الإنجليزية (LTR)
+    --------------------------------------------------------------- */
+    function injectEnglishSubjects() {
+        const select = document.getElementById('subjectSelect');
+        if (!select || document.getElementById('englishSubjectsGroup')) return;
+        const group = document.createElement('optgroup');
+        group.id = 'englishSubjectsGroup';
+        group.label = 'English Subjects (بالإنجليزية)';
+        const subjects = ['Mathematics', 'Science', 'English', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Geography', 'History'];
+        subjects.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s; opt.innerText = s;
+            group.appendChild(opt);
+        });
+        select.appendChild(group);
+    }
+
+    function handleSubjectChangeCustom(val) {
+        const ltrSubjects = ['Mathematics', 'Science', 'English', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'Geography', 'History'];
+        document.body.classList.toggle('ltr-mode', ltrSubjects.includes(val));
+    }
+
+    /* ---------------------------------------------------------------
+       دمج أزرار التحكم الجديدة داخل بطاقات الأسئلة الحالية والجديدة
+       (بدون تعديل دوال إنشاء الأسئلة الأصلية - عبر المراقبة الحية فقط)
+    --------------------------------------------------------------- */
+    function applyAdvancedControlsToCard(qCard) {
+        if (!qCard || qCard.dataset.advEnhanced === '1') return;
+        qCard.dataset.advEnhanced = '1';
+
+        // شارتا المراجعة والقفل
+        if (!qCard.querySelector('.q-review-badge')) {
+            const revBadge = document.createElement('div');
+            revBadge.className = 'q-review-badge'; revBadge.innerText = 'مراجعة';
+            qCard.appendChild(revBadge);
+        }
+        if (!qCard.querySelector('.q-lock-badge')) {
+            const lockBadge = document.createElement('div');
+            lockBadge.className = 'q-lock-badge'; lockBadge.innerText = 'مقفل';
+            qCard.appendChild(lockBadge);
+        }
+
+        // أزرار جديدة داخل شريط تحكم السؤال الحالي دون حذف أي زر موجود
+        const btnContainer = qCard.querySelector('.q-controls');
+        if (btnContainer && !btnContainer.querySelector('.btn-adv-alt')) {
+            const altBtn = document.createElement('button');
+            altBtn.className = 'btn btn-adv-alt'; altBtn.style.fontSize = '10px';
+            altBtn.innerText = 'سؤال بديل';
+            altBtn.onclick = () => addAlternateQuestion(qCard.id);
+
+            const revBtn = document.createElement('button');
+            revBtn.className = 'btn btn-adv-review'; revBtn.style.fontSize = '10px';
+            revBtn.innerText = 'مراجعة مطلوبة';
+            revBtn.onclick = () => toggleReviewFlag(qCard.id);
+
+            const lockBtn = document.createElement('button');
+            lockBtn.className = 'btn btn-adv-lock'; lockBtn.style.fontSize = '10px';
+            lockBtn.innerText = 'قفل السؤال';
+            lockBtn.onclick = () => toggleLockQuestion(qCard.id);
+
+            const bankBtn = document.createElement('button');
+            bankBtn.className = 'btn'; bankBtn.style.cssText = 'font-size:10px;background:#0891b2;';
+            bankBtn.innerText = '➕ حفظ في البنك';
+            bankBtn.onclick = () => addQuestionToBank(qCard.id);
+
+            btnContainer.prepend(bankBtn);
+            btnContainer.prepend(lockBtn);
+            btnContainer.prepend(revBtn);
+            btnContainer.prepend(altBtn);
+        }
+
+        // إن كان السؤال معلّمًا بالفعل، أظهر الشارات المناسبة
+        if (qCard.getAttribute('data-review') === 'true') {
+            const b = qCard.querySelector('.q-review-badge'); if (b) b.style.display = 'inline-block';
+        }
+        if (qCard.classList.contains('q-locked')) {
+            const b = qCard.querySelector('.q-lock-badge'); if (b) b.style.display = 'inline-block';
+        }
+    }
+
+    function applyAdvancedFeaturesToPage(page) {
+        if (!page || page.dataset.advPageEnhanced === '1') return;
+        page.dataset.advPageEnhanced = '1';
+        if (page.classList.contains('cover-page')) return;
+
+        if (!page.getAttribute('data-page-type')) page.setAttribute('data-page-type', 'exam');
+
+        if (!page.querySelector('.page-drag-handle')) {
+            const handle = document.createElement('div');
+            handle.className = 'page-drag-handle no-print';
+            handle.title = 'اسحب لإعادة ترتيب هذه الصفحة';
+            handle.setAttribute('draggable', 'true');
+            handle.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"/></svg>';
+            handle.addEventListener('dragstart', handlePageDragStart);
+            page.appendChild(handle);
+        }
+        page.addEventListener('dragover', handlePageDragOverTarget);
+        page.addEventListener('dragleave', handlePageDragLeaveTarget);
+        page.addEventListener('drop', handlePageDropTarget);
+
+        if (!page.querySelector('.page-type-badge')) {
+            const badge = document.createElement('div');
+            const currentType = page.getAttribute('data-page-type') || 'exam';
+            badge.className = 'page-type-badge no-print';
+            badge.setAttribute('data-page-type', currentType);
+            badge.innerText = currentType === 'lesson' ? 'صفحة شرح' : 'صفحة امتحان';
+            badge.title = 'اضغط للتبديل بين صفحة امتحان / صفحة شرح (تصنيف مستقل لكل صفحة)';
+            badge.onclick = () => togglePageType(page.id);
+            page.appendChild(badge);
+        }
+
+        if (!page.querySelector('[id^="pageDuplicateBtn-"]')) {
+            const dupBtn = document.createElement('button');
+            dupBtn.id = 'pageDuplicateBtn-' + (page.id || Date.now());
+            dupBtn.className = 'page-settings-btn no-print';
+            dupBtn.style.cssText = 'top:48px;';
+            dupBtn.title = 'نسخ هذه الصفحة كاملة';
+            dupBtn.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
+            dupBtn.onclick = () => duplicatePage(page.id);
+            page.appendChild(dupBtn);
+        }
+    }
+
+    /* ---------------------------------------------------------------
+       المراقبة الحية: تطبيق الإضافات تلقائيًا على أي سؤال/صفحة جديدة
+       تُنشأ عبر أدوات النظام الأصلية دون الحاجة لتعديل تلك الأدوات
+    --------------------------------------------------------------- */
+    function initAdvancedFeatures() {
+        document.querySelectorAll('.question-card').forEach(applyAdvancedControlsToCard);
+        document.querySelectorAll('#pagesContainer .page').forEach(applyAdvancedFeaturesToPage);
+        updateThumbnails();
+        updateReviewCount();
+        injectEnglishSubjects();
+        enhanceCoverPage();
+
+        const subjSelect = document.getElementById('subjectSelect');
+        if (subjSelect) {
+            subjSelect.addEventListener('change', (e) => handleSubjectChangeCustom(e.target.value));
+            handleSubjectChangeCustom(subjSelect.value);
+        }
+
+        const bankFilterStage = document.getElementById('bankFilterStage');
+        const bankFilterSubject = document.getElementById('bankFilterSubject');
+        const bankFilterKeyword = document.getElementById('bankFilterKeyword');
+        if (bankFilterStage) bankFilterStage.addEventListener('change', renderQuestionBank);
+        if (bankFilterSubject) bankFilterSubject.addEventListener('change', renderQuestionBank);
+        if (bankFilterKeyword) bankFilterKeyword.addEventListener('input', renderQuestionBank);
+
+        const observer = new MutationObserver(mutations => {
+            let pagesChanged = false;
+            mutations.forEach(m => {
+                m.addedNodes.forEach(node => {
+                    if (node.nodeType !== 1) return;
+                    if (node.classList && node.classList.contains('question-card')) {
+                        applyAdvancedControlsToCard(node);
+                    }
+                    node.querySelectorAll && node.querySelectorAll('.question-card').forEach(applyAdvancedControlsToCard);
+                    if (node.classList && node.classList.contains('page')) {
+                        applyAdvancedFeaturesToPage(node);
+                        pagesChanged = true;
+                    }
+                    node.querySelectorAll && node.querySelectorAll('.page').forEach(p => { applyAdvancedFeaturesToPage(p); pagesChanged = true; });
+                });
+            });
+            if (pagesChanged) updateThumbnails();
+        });
+        const pagesContainer = document.getElementById('pagesContainer');
+        if (pagesContainer) observer.observe(pagesContainer, { childList: true, subtree: true });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAdvancedFeatures);
+    } else {
+        initAdvancedFeatures();
+    }
     </script>
 </body>
 </html>
