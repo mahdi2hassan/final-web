@@ -1963,12 +1963,21 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="sh">
           <div class="sh-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
-            امتحانك بلس — إدارة الأكواد
+            امتحانك بلس — الإدارة
           </div>
           <div style="display:flex;gap:7px;flex-wrap:wrap">
-            <button class="btn ghost sm" onclick="loadExamPlus()"><svg><use href="#ic-refresh"/></svg>تحديث</button>
+            <button class="btn ghost sm" onclick="epRefreshCurrentTab()"><svg><use href="#ic-refresh"/></svg>تحديث</button>
           </div>
         </div>
+
+        <div class="ftabs" style="margin-bottom:14px">
+          <div class="ftab on" id="epMainTab-codes" onclick="setEPMainTab('codes')">🔑 الأكواد</div>
+          <div class="ftab" id="epMainTab-vip" onclick="setEPMainTab('vip')">👑 حسابات VIP</div>
+          <div class="ftab" id="epMainTab-booklet" onclick="setEPMainTab('booklet')">📖 إعدادات الملزمة</div>
+        </div>
+
+        <!-- ══ TAB: الأكواد ══ -->
+        <div id="epTabCodes">
 
         <div style="padding:12px;background:rgba(74,127,212,0.06);border:1px solid rgba(74,127,212,0.2);border-radius:12px;font-size:12px;color:var(--muted);margin-bottom:14px">
           ℹ️ الأكواد هنا مستقلة تمامًا عن كود اشتراك الطالب في المنصة — دي أكواد خاصة بأداة "امتحانك بلس" بس، وحظر أو مسح كود هنا ملوش أي علاقة باشتراك الطالب الأساسي.
@@ -2011,6 +2020,63 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             <tbody id="epTbl"><tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
           </table>
         </div></div>
+        </div><!-- /epTabCodes -->
+
+        <!-- ══ TAB: حسابات VIP ══ -->
+        <div id="epTabVip" style="display:none">
+          <div style="padding:12px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:12px;font-size:12px;color:var(--muted);margin-bottom:14px">
+            👑 حساب الـ VIP بيديله صلاحية كاملة يدخل بيها أداة "امتحانك بلس" كمعلم (يقدر يعدّل، يضيف، ينشئ ملازم) بدل الطلاب. تقدر تنشئ أكتر من حساب VIP، وتفعّل/توقف أي حساب في أي وقت من هنا.
+          </div>
+
+          <div style="background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:14px;padding:16px;margin-bottom:16px">
+            <div style="font-size:13px;font-weight:800;margin-bottom:12px;color:var(--gold2)">➕ إنشاء حساب VIP جديد</div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:10px">
+              <div class="ff" style="margin:0"><label>الاسم</label>
+                <input type="text" id="vipNewName" placeholder="مثال: أ. مهدي حسن"/></div>
+              <div class="ff" style="margin:0"><label>اسم الدخول (username)</label>
+                <input type="text" id="vipNewUsername" placeholder="حروف/أرقام إنجليزي بدون مسافات" style="direction:ltr" oninput="this.value=this.value.replace(/[^a-zA-Z0-9_\.]/g,'').toLowerCase()"/></div>
+              <div class="ff" style="margin:0"><label>كلمة مرور مبدئية</label>
+                <input type="text" id="vipNewPass" placeholder="4 حروف/أرقام على الأقل" style="direction:ltr"/></div>
+              <div class="ff" style="margin:0"><label>صلاحية الحساب حتى (اختياري)</label>
+                <input type="date" id="vipNewExpiry" style="direction:ltr"/></div>
+            </div>
+            <button class="btn ok sm" onclick="vipCreateAccount()"><svg><use href="#ic-plus"/></svg>إنشاء الحساب</button>
+          </div>
+
+          <div class="tw"><div class="tw-scroll">
+            <table>
+              <thead><tr>
+                <th>الاسم</th>
+                <th>اسم الدخول</th>
+                <th>تاريخ الإنشاء</th>
+                <th>آخر دخول</th>
+                <th>صلاحية حتى</th>
+                <th>الحالة</th>
+                <th>إجراء</th>
+              </tr></thead>
+              <tbody id="vipTbl"><tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
+            </table>
+          </div></div>
+        </div><!-- /epTabVip -->
+
+        <!-- ══ TAB: إعدادات الملزمة ══ -->
+        <div id="epTabBooklet" style="display:none">
+          <div style="padding:12px;background:rgba(74,127,212,0.06);border:1px solid rgba(74,127,212,0.2);border-radius:12px;font-size:12px;color:var(--muted);margin-bottom:14px">
+            📖 الإعدادات دي بتحدد القيم الافتراضية اللي تظهر لأي معلم/VIP لما يفتح أداة "امتحانك بلس" أو ينشئ ملزمة جديدة، وتقدر تتغيّر في أي وقت من هنا بدون لمس الكود.
+          </div>
+          <div style="background:rgba(8,13,28,0.5);border:1px solid var(--b2);border-radius:14px;padding:16px">
+            <div class="ff"><label>اسم الملزمة الافتراضي</label>
+              <input type="text" id="bkDefaultTitle" placeholder="مثال: ملزمة بلس"/></div>
+            <div class="ff"><label>وضع الملزمة الافتراضي</label>
+              <select id="bkDefaultMode">
+                <option value="off">عادي (وضع الامتحان/الشرح العادي)</option>
+                <option value="on">وضع الملزمة مفعّل تلقائيًا عند فتح الأداة</option>
+              </select>
+            </div>
+            <button class="btn ok sm" onclick="bkSaveSettings()"><svg><use href="#ic-check"/></svg>حفظ الإعدادات</button>
+          </div>
+        </div><!-- /epTabBooklet -->
+
       </div>
 
       <!-- ══ EXAM PLUS — تعديل تاريخ انتهاء الكود ══ -->
@@ -2692,6 +2758,16 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
       }
       // ← أضف هذا السطر للدرجات
       match /scores/{doc} {
+        allow read, write: if true;
+      }
+      // ← مجموعات "امتحانك بلس" المستقلة (أكواد الطلاب + حسابات VIP + الإعدادات الافتراضية)
+      match /examPlusCodes/{doc} {
+        allow read, write: if true;
+      }
+      match /examPlusTeacher/{doc} {
+        allow read, write: if true;
+      }
+      match /examPlusSettings/{doc} {
         allow read, write: if true;
       }
     }
@@ -9413,6 +9489,23 @@ window.exportHwCsv = ()=>{
 <script>
 (function(){
 
+  window.setEPMainTab = function(tab){
+    ['codes','vip','booklet'].forEach(t=>{
+      document.getElementById('epTab'+t.charAt(0).toUpperCase()+t.slice(1)).style.display = (t===tab)?'':'none';
+      document.getElementById('epMainTab-'+t)?.classList.toggle('on', t===tab);
+    });
+    if(tab==='vip') vipLoadAccounts();
+    if(tab==='booklet') bkLoadSettings();
+  };
+
+  window.epRefreshCurrentTab = function(){
+    const vipVisible = document.getElementById('epTabVip')?.style.display !== 'none';
+    const bkVisible = document.getElementById('epTabBooklet')?.style.display !== 'none';
+    if(vipVisible) vipLoadAccounts();
+    else if(bkVisible) bkLoadSettings();
+    else loadExamPlus();
+  };
+
   const EP_COL = 'examPlusCodes';
   const EP_SETTINGS_COL = 'examPlusSettings';
   const EP_SETTINGS_DOC = 'config';
@@ -9434,14 +9527,44 @@ window.exportHwCsv = ()=>{
     if(!window.db) return;
     try{
       const snap = await window.db.collection(EP_SETTINGS_COL).doc(EP_SETTINGS_DOC).get();
-      if(snap.exists && snap.data().defaultCodeDays){
-        window._epSettings.defaultCodeDays = snap.data().defaultCodeDays;
+      if(snap.exists){
+        const d = snap.data();
+        if(d.defaultCodeDays) window._epSettings.defaultCodeDays = d.defaultCodeDays;
+        window._epSettings.bookletDefaultTitle = d.bookletDefaultTitle || '';
+        window._epSettings.bookletModeDefault = !!d.bookletModeDefault;
       }
-    }catch(e){ /* استخدم القيمة الافتراضية 28 عند أي خطأ */ }
+    }catch(e){ /* استخدم القيم الافتراضية عند أي خطأ */ }
     const inp = document.getElementById('epDefaultDaysAdmin');
     if(inp) inp.value = window._epSettings.defaultCodeDays;
     const genInp = document.getElementById('epGenDaysAdmin');
     if(genInp && !genInp.value) genInp.placeholder = window._epSettings.defaultCodeDays + ' يوم (افتراضي)';
+  };
+
+  window.bkLoadSettings = async function(){
+    await loadEPSettings();
+    const titleInp = document.getElementById('bkDefaultTitle');
+    if(titleInp) titleInp.value = window._epSettings.bookletDefaultTitle || '';
+    const modeSel = document.getElementById('bkDefaultMode');
+    if(modeSel) modeSel.value = window._epSettings.bookletModeDefault ? 'on' : 'off';
+  };
+
+  window.bkSaveSettings = async function(){
+    if(!window.db) return;
+    const title = document.getElementById('bkDefaultTitle')?.value.trim() || '';
+    const modeOn = document.getElementById('bkDefaultMode')?.value === 'on';
+    try{
+      await window.db.collection(EP_SETTINGS_COL).doc(EP_SETTINGS_DOC).set({
+        bookletDefaultTitle: title,
+        bookletModeDefault: modeOn,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, {merge:true});
+      window._epSettings.bookletDefaultTitle = title;
+      window._epSettings.bookletModeDefault = modeOn;
+      window.toast?.('تم حفظ إعدادات الملزمة ✓','ok');
+      window.logActivity?.('📖','تعديل إعدادات الملزمة الافتراضية', title||'—');
+    }catch(e){
+      window.toast?.('حصل خطأ: '+e.message,'err');
+    }
   };
 
   window.epSaveDefaultDays = async function(){
@@ -9684,6 +9807,168 @@ window.exportHwCsv = ()=>{
     }catch(e){
       window.toast?.('حصل خطأ: '+e.message,'err');
     }
+  };
+
+  // ══════════════════════════════════════════════════════════
+  // حسابات VIP (معلّم) — مجموعة examPlusTeacher، كل حساب = doc منفصل
+  // doc id = username (لضمان تفرّده بنفس أسلوب أكواد الطلاب)
+  // ══════════════════════════════════════════════════════════
+  const VIP_COL = 'examPlusTeacher';
+
+  function vipSimpleHash(str){
+    let hash = 5381;
+    for(let i=0;i<str.length;i++){ hash = ((hash<<5)+hash) + str.charCodeAt(i); hash = hash & hash; }
+    return hash;
+  }
+
+  window.vipLoadAccounts = async function(){
+    if(!window.db) return;
+    const tb = document.getElementById('vipTbl');
+    if(tb) tb.innerHTML = '<tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr>';
+    try{
+      const snap = await window.db.collection(VIP_COL).get();
+      window._vipAccounts = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    }catch(e){
+      window._vipAccounts = [];
+      window.toast?.('تعذر تحميل حسابات VIP: '+e.message,'err');
+    }
+    vipRenderTable();
+  };
+
+  function vipFmtDate(ts){
+    if(!ts) return '—';
+    try{ const d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleString('ar-EG'); }catch(e){ return '—'; }
+  }
+
+  window.vipRenderTable = function(){
+    const all = window._vipAccounts||[];
+    const tb = document.getElementById('vipTbl');
+    if(!tb) return;
+    if(!all.length){
+      tb.innerHTML = '<tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>لا يوجد حسابات VIP بعد — أنشئ أول حساب من فوق</p></div></td></tr>';
+      return;
+    }
+    tb.innerHTML = all.map(x=>{
+      const exp = x.expiresAt ? (x.expiresAt.toDate?x.expiresAt.toDate():new Date(x.expiresAt)) : null;
+      const expired = !!(exp && exp.getTime() < Date.now());
+      const statusBadge = !x.active
+        ? '<span class="bd pu">⏸️ متوقف</span>'
+        : expired ? '<span class="bd err">⏰ منتهي</span>'
+        : '<span class="bd ok">✅ نشط</span>';
+      const safeName = (x.name||'—').replace(/</g,'&lt;');
+      const safeUser = (x.username||x.id||'—').replace(/</g,'&lt;');
+      return `<tr style="${!x.active?'opacity:.6':''}">
+        <td>${safeName}</td>
+        <td style="direction:ltr;text-align:right;font-family:monospace;font-weight:800">${safeUser}</td>
+        <td style="font-size:11px">${vipFmtDate(x.createdAt)}</td>
+        <td style="font-size:11px">${vipFmtDate(x.lastLogin)}</td>
+        <td>
+          <div style="display:flex;gap:4px;align-items:center">
+            <input type="date" id="vip-exp-${x.id}" value="${exp?exp.toISOString().split('T')[0]:''}" style="width:130px;padding:5px 6px;background:var(--inp);border:1px solid var(--b2);border-radius:7px;color:var(--text);font-size:11px;direction:ltr"/>
+            <button class="btn icon-btn" style="color:var(--blue)" onclick="vipSaveExpiry('${x.id}')" title="حفظ التاريخ"><svg><use href="#ic-check"/></svg></button>
+          </div>
+        </td>
+        <td>${statusBadge}</td>
+        <td>
+          <div style="display:flex;gap:6px">
+            ${x.active
+              ? `<button class="btn icon-btn" style="color:var(--warn)" onclick="vipToggleActive('${x.id}',false)" title="إيقاف الحساب"><svg><use href="#ic-shield-off"/></svg></button>`
+              : `<button class="btn icon-btn" style="color:var(--ok)" onclick="vipToggleActive('${x.id}',true)" title="تفعيل الحساب"><svg><use href="#ic-shield"/></svg></button>`}
+            <button class="btn icon-btn" style="color:var(--gold2)" onclick="vipResetPassword('${x.id}')" title="إعادة تعيين كلمة المرور"><svg><use href="#ic-key"/></svg></button>
+            <button class="btn icon-btn" style="color:var(--err)" onclick="vipDeleteAccount('${x.id}')" title="حذف الحساب"><svg><use href="#ic-trash"/></svg></button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  };
+
+  window.vipCreateAccount = async function(){
+    if(!window.db) return;
+    const name = document.getElementById('vipNewName')?.value.trim();
+    const username = document.getElementById('vipNewUsername')?.value.trim();
+    const pass = document.getElementById('vipNewPass')?.value;
+    const expiryVal = document.getElementById('vipNewExpiry')?.value;
+
+    if(!name){ window.toast?.('اكتب اسم صاحب الحساب','err'); return; }
+    if(!username || username.length<3){ window.toast?.('اسم الدخول لازم يكون 3 حروف/أرقام على الأقل','err'); return; }
+    if(!pass || pass.length<4){ window.toast?.('كلمة المرور لازم تكون 4 حروف/أرقام على الأقل','err'); return; }
+
+    try{
+      const ref = window.db.collection(VIP_COL).doc(username);
+      const existing = await ref.get();
+      if(existing.exists){ window.toast?.('اسم الدخول ده مستخدم بالفعل، اختار اسم تاني','err'); return; }
+
+      const data = {
+        name, username,
+        passHash: vipSimpleHash(pass),
+        active: true,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        createdBy: 'admin',
+        lastLogin: null,
+        loginCount: 0
+      };
+      if(expiryVal){
+        const d = new Date(expiryVal); d.setHours(23,59,59,0);
+        data.expiresAt = d;
+      }
+      await ref.set(data);
+      window.toast?.('تم إنشاء حساب VIP لـ '+name+' ✓','ok');
+      window.logActivity?.('👑','إنشاء حساب VIP', name+' ('+username+')');
+      ['vipNewName','vipNewUsername','vipNewPass','vipNewExpiry'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+      await vipLoadAccounts();
+    }catch(e){
+      window.toast?.('حصل خطأ: '+e.message,'err');
+    }
+  };
+
+  window.vipToggleActive = async function(id, active){
+    const msg = active ? 'تفعيل حساب VIP ده؟' : 'إيقاف حساب VIP ده؟ (هيتمنع من دخول لوحة التحرير فورًا)';
+    if(!confirm(msg)) return;
+    try{
+      await window.db.collection(VIP_COL).doc(id).update({ active });
+      const c = (window._vipAccounts||[]).find(x=>x.id===id);
+      if(c) c.active = active;
+      vipRenderTable();
+      window.toast?.(active?'تم تفعيل الحساب ✓':'تم إيقاف الحساب ⏸️','ok');
+      window.logActivity?.(active?'✅':'⏸️', active?'تفعيل حساب VIP':'إيقاف حساب VIP', id);
+    }catch(e){ window.toast?.('حصل خطأ: '+e.message,'err'); }
+  };
+
+  window.vipSaveExpiry = async function(id){
+    const val = document.getElementById('vip-exp-'+id)?.value;
+    try{
+      const update = {};
+      if(val){ const d = new Date(val); d.setHours(23,59,59,0); update.expiresAt = d; }
+      else { update.expiresAt = firebase.firestore.FieldValue.delete(); }
+      await window.db.collection(VIP_COL).doc(id).update(update);
+      const c = (window._vipAccounts||[]).find(x=>x.id===id);
+      if(c) c.expiresAt = val ? update.expiresAt : null;
+      vipRenderTable();
+      window.toast?.('تم حفظ تاريخ الصلاحية ✓','ok');
+      window.logActivity?.('📅','تعديل صلاحية حساب VIP', id);
+    }catch(e){ window.toast?.('حصل خطأ: '+e.message,'err'); }
+  };
+
+  window.vipResetPassword = async function(id){
+    const pass = prompt('اكتب كلمة المرور الجديدة لهذا الحساب (4 حروف/أرقام على الأقل):');
+    if(pass===null) return;
+    if(!pass || pass.length<4){ window.toast?.('كلمة المرور لازم تكون 4 حروف/أرقام على الأقل','err'); return; }
+    try{
+      await window.db.collection(VIP_COL).doc(id).update({ passHash: vipSimpleHash(pass) });
+      window.toast?.('تم تغيير كلمة المرور ✓','ok');
+      window.logActivity?.('🔑','إعادة تعيين كلمة مرور حساب VIP', id);
+    }catch(e){ window.toast?.('حصل خطأ: '+e.message,'err'); }
+  };
+
+  window.vipDeleteAccount = async function(id){
+    if(!confirm('حذف حساب VIP ده نهائي، والشخص ده مش هيقدر يدخل لوحة التحرير تاني. متأكد؟')) return;
+    try{
+      await window.db.collection(VIP_COL).doc(id).delete();
+      window._vipAccounts = (window._vipAccounts||[]).filter(x=>x.id!==id);
+      vipRenderTable();
+      window.toast?.('تم حذف الحساب ✓','ok');
+      window.logActivity?.('🗑️','حذف حساب VIP', id);
+    }catch(e){ window.toast?.('حصل خطأ: '+e.message,'err'); }
   };
 
 })();
