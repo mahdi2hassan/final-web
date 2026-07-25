@@ -88,7 +88,7 @@ window.MathJax = {
         .page.page-theme-5 { --primary-color: #9f1239; --accent-color: #f43f5e; --badge-bg: #be123c; --card-border: #fecdd3; --card-bg: #fff1f2; }
         .page.page-theme-6 { --primary-color: #5b21b6; --accent-color: #8b5cf6; --badge-bg: #7c3aed; --card-border: #ddd6fe; --card-bg: #f5f3ff; }
         .page.page-eco { --primary-color: #000000; --badge-bg: #000000; --accent-color: #000000; --card-border: #000000; --card-bg: #ffffff; }
-        .page.page-dual-column #questionsContainer { column-count: 2; column-gap: 15px; }
+        .page.page-dual-column .questions-container { column-count: 2; column-gap: 15px; }
         .page.page-dual-column .question-card { break-inside: avoid; display: inline-block; width: 100%; }
 
         .page-settings-btn {
@@ -109,7 +109,7 @@ window.MathJax = {
         body.ltr-mode .sub-questions-container { padding-right: 0 !important; padding-left: 10px !important; border-right: none !important; border-left: 2px solid var(--primary-color) !important; }
 
         /* الوضع المزدوج للطباعة */
-        body.dual-column-mode #questionsContainer { column-count: 2; column-gap: 15px; }
+        body.dual-column-mode .questions-container { column-count: 2; column-gap: 15px; }
         body.dual-column-mode .question-card { break-inside: avoid; display: inline-block; width: 100%; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', 'Cairo', sans-serif; }
@@ -366,6 +366,11 @@ window.MathJax = {
             transition: all 0.3s ease;
             margin-bottom: 20px;
             border: 1px solid #e2e8f0;
+        }
+        /* إصلاح: فاصل الصفحة كان مطبق على كل .page بما فيها الصفحة الأخيرة،
+           وده كان بيولّد صفحة بيضاء زيادة في نهاية الطباعة. دلوقتي بيتطبق
+           على كل صفحة ما عدا الصفحة الأخيرة فعليًا. */
+        .page:not(:last-child) {
             page-break-after: always;
             break-after: page;
         }
@@ -495,9 +500,11 @@ window.MathJax = {
                 padding: 15mm 15mm 12mm 15mm !important; 
                 margin: 0 !important; 
                 border: none !important; 
+                box-sizing: border-box !important;
+            }
+            .page:not(:last-child) {
                 page-break-after: always !important;
                 break-after: page !important;
-                box-sizing: border-box !important;
             }
             
             .question-card, .lesson-block { 
@@ -1021,7 +1028,9 @@ window.MathJax = {
                     <button class="btn" style="background-color:#475569;" onclick="addExplanationBlock()">+ فقرة شرح</button>
                     <button class="btn btn-purple" style="background-color:#0891b2;" onclick="addExampleBlock()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 5.5C4 4.67 4.67 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5v-13zM13 4h5.5c.83 0 1.5.67 1.5 1.5v13c0 .83-.67 1.5-1.5 1.5H13V4z"/></svg> + مثال محلول</button>
                     <button class="btn btn-warning" style="background-color:#d97706;" onclick="addNoteBlock()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg> + ملاحظة/تنبيه</button>
-                    <button class="btn btn-purple" style="background-color:#7c3aed;" onclick="addLessonImage()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg> + صورة توضيحية</button>
+                    <button class="btn btn-purple" style="background-color:#7c3aed;" onclick="addLessonImage()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg> + صورة من الهاتف</button>
+                    <button class="btn" style="background-color:#a855f7;" onclick="addLessonImageFromUrl()">+ صورة برابط</button>
+                    <button class="btn" style="background-color:#16a34a;" onclick="pasteLessonBlockAtEnd()" title="لصق آخر عنصر تم نسخه في نهاية هذه الصفحة">📥 لصق العنصر المنسوخ</button>
                     <button class="btn btn-eco" onclick="addPageBreak()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1L9.64 7.64zM6 8c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm0 12c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm6-7.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zM19 3l-6 6 2 2 7-7V3z"/></svg> إنهاء الصفحة (صفحة جديدة)</button>
                 </div>
             </div>
@@ -1835,10 +1844,17 @@ window.MathJax = {
             if (gradingTable) gradingTable.remove();
             if (studentBar) studentBar.remove();
 
-            const questionsContainer = newPage.querySelector('#questionsContainer');
+            const questionsContainer = newPage.querySelector('.questions-container');
             if (questionsContainer) {
                 questionsContainer.innerHTML = '';
+                // إزالة الـ id المكرر (كل صفحة أصبحت بتحمل نفس id الصفحة الأولى بعد الاستنساخ)،
+                // مع الإبقاء على الـ class عشان التنسيقات (CSS) والاستعلامات الأخرى تفضل شغالة
+                questionsContainer.removeAttribute('id');
             }
+            const clonedWatermark = newPage.querySelector('#watermarkText');
+            if (clonedWatermark) clonedWatermark.removeAttribute('id');
+            const clonedLogoWatermark = newPage.querySelector('#centerLogoWatermark');
+            if (clonedLogoWatermark) clonedLogoWatermark.removeAttribute('id');
 
             pagesContainer.appendChild(newPage);
             return newPage;
@@ -2363,6 +2379,192 @@ window.MathJax = {
             });
         }
 
+        // ═══════════════════════════════════════════════════════════════
+        // ═══ أدوات وضع الملزمة: تكرار/نسخ/لصق العناصر + إدراج الصور ═══
+        // ═══════════════════════════════════════════════════════════════
+        let lessonBlockClipboard = null;
+
+        function blockControlsHTML(id, opts) {
+            opts = opts || {};
+            const imageBtn = opts.imageSlot
+                ? `<button class="btn" style="background-color:#0ea5e9;font-size:10px;" onclick="insertImageIntoBlock('${id}')" title="إدراج صورة داخل هذا العنصر">🖼 إدراج صورة</button>`
+                : '';
+            return `
+                <div class="block-controls">
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
+                    ${imageBtn}
+                    <button class="btn" style="background-color:#0891b2;font-size:10px;" onclick="duplicateLessonBlock('${id}')" title="تكرار هذا العنصر">⧉ تكرار</button>
+                    <button class="btn" style="background-color:#64748b;font-size:10px;" onclick="copyLessonBlock('${id}')" title="نسخ هذا العنصر">📋 نسخ</button>
+                    <button class="btn" style="background-color:#16a34a;font-size:10px;" onclick="pasteLessonBlockAfter('${id}')" title="لصق العنصر المنسوخ بعد هذا العنصر">📥 لصق هنا</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
+                </div>`;
+        }
+
+        // اختيار صورة من الهاتف/الكمبيوتر مباشرة وتحويلها لصيغة يمكن تضمينها في الملف (base64)
+        function pickImageFile(callback) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.style.display = 'none';
+            document.body.appendChild(input);
+            input.addEventListener('change', () => {
+                const file = input.files && input.files[0];
+                if (file) fileToDataURL(file).then(callback).catch(() => alert('تعذّر قراءة الصورة، حاول مرة أخرى.'));
+                input.remove();
+            });
+            input.click();
+        }
+
+        function fileToDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // إدراج صورة داخل عنصر موجود (مثال/شرح/ملاحظة...) — تُنشئ "فتحة صورة" مخصصة داخل العنصر
+        function insertImageIntoBlock(blockId) {
+            pickImageFile((dataUrl) => {
+                const block = document.getElementById(blockId);
+                if (!block) return;
+                setBlockImageSlot(block, dataUrl);
+                calculateAnalytics();
+                saveExamToLocalStorage();
+            });
+        }
+
+        // ملء/إنشاء فتحة الصورة داخل عنصر معيّن بصورة (data URL) — يُستخدم من زر الإدراج، السحب والإفلات، واللصق المباشر
+        function setBlockImageSlot(block, dataUrl) {
+            let slot = block.querySelector('.block-image-slot');
+            if (!slot) {
+                slot = document.createElement('div');
+                slot.className = 'block-image-slot';
+                const controls = block.querySelector('.block-controls');
+                if (controls) block.insertBefore(slot, controls);
+                else block.appendChild(slot);
+            }
+            slot.innerHTML = `<div style="position:relative; display:inline-block; max-width:100%;">
+                <img src="${dataUrl}" style="max-width:100%; max-height:260px; border-radius:8px; border:1px solid #cbd5e1; display:block;" />
+                <button class="btn btn-danger" style="position:absolute; top:4px; left:4px; font-size:10px; padding:2px 6px;" onclick="event.stopPropagation(); this.closest('.block-image-slot').remove(); calculateAnalytics(); saveExamToLocalStorage();">✕</button>
+            </div>`;
+        }
+
+        // تكرار عنصر بالكامل (عنوان/مثال/شرح/صورة/ملاحظة...) مع تجديد كل الـ id الداخلية عشان الأزرار تفضل شغالة صح
+        function duplicateLessonBlock(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const newId = `lb-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+            const clone = el.cloneNode(true);
+            remapClonedBlockIds(clone, id, newId);
+            el.after(clone);
+            applyAdvancedControlsToLessonBlock(clone);
+            attachMathJaxBlur();
+            reindexExamples();
+            calculateAnalytics();
+            saveExamToLocalStorage();
+        }
+
+        function copyLessonBlock(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            lessonBlockClipboard = el.outerHTML;
+            showSaveIndicator();
+        }
+
+        function pasteLessonBlockAfter(id) {
+            if (!lessonBlockClipboard) { alert('لا يوجد عنصر منسوخ بعد. اضغط زر "نسخ" على أي عنصر أولاً.'); return; }
+            const el = document.getElementById(id);
+            if (!el) return;
+            insertClipboardBlock(el, 'after');
+        }
+
+        // زر عام في شريط أدوات الملزمة للصق آخر عنصر منسوخ في نهاية الصفحة الحالية مباشرة
+        function pasteLessonBlockAtEnd() {
+            if (!lessonBlockClipboard) { alert('لا يوجد عنصر منسوخ بعد. اضغط زر "نسخ" على أي عنصر أولاً.'); return; }
+            const container = getActiveQuestionsContainer();
+            insertClipboardBlock(container, 'append');
+        }
+
+        function insertClipboardBlock(target, mode) {
+            const temp = document.createElement('div');
+            temp.innerHTML = lessonBlockClipboard;
+            const pasted = temp.firstElementChild;
+            if (!pasted) return;
+            const oldId = pasted.id;
+            const newId = `lb-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+            remapClonedBlockIds(pasted, oldId, newId);
+            if (mode === 'after') target.after(pasted);
+            else target.appendChild(pasted);
+            applyAdvancedControlsToLessonBlock(pasted);
+            attachMathJaxBlur();
+            reindexExamples();
+            calculateAnalytics();
+            saveExamToLocalStorage();
+        }
+
+        // بعد استنساخ عنصر، لازم كل الـ id الداخلية (وأي onclick بيشاور عليها) تتغير لـ id جديد فريد
+        function remapClonedBlockIds(clone, oldId, newId) {
+            if (!oldId) { clone.id = newId; return; }
+            clone.id = newId;
+            clone.querySelectorAll('[id]').forEach(inner => {
+                if (inner.id.indexOf(oldId) !== -1) inner.id = inner.id.split(oldId).join(newId);
+            });
+            clone.querySelectorAll('[onclick]').forEach(btn => {
+                btn.setAttribute('onclick', btn.getAttribute('onclick').split(oldId).join(newId));
+            });
+        }
+
+        // ═══ سحب وإفلات لإعادة ترتيب عناصر الملزمة (بنفس أسلوب سحب الأسئلة الحالي) ═══
+        let advDraggedLesson = null;
+        function handleLessonDragStart(e) {
+            advDraggedLesson = e.currentTarget.closest('.lesson-block');
+            e.dataTransfer.effectAllowed = 'move';
+            e.stopPropagation();
+        }
+        function handleLessonDragOverTarget(e) {
+            if (!advDraggedLesson) return;
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.classList.add('lb-drag-over');
+        }
+        function handleLessonDragLeaveTarget(e) { e.currentTarget.classList.remove('lb-drag-over'); }
+        function handleLessonDropTarget(e) {
+            if (!advDraggedLesson) return;
+            e.preventDefault();
+            e.stopPropagation();
+            const targetBlock = e.currentTarget;
+            targetBlock.classList.remove('lb-drag-over');
+            if (targetBlock !== advDraggedLesson) {
+                targetBlock.parentNode.insertBefore(advDraggedLesson, targetBlock);
+                reindexExamples();
+                calculateAnalytics();
+                saveExamToLocalStorage();
+            }
+            advDraggedLesson = null;
+        }
+        // يضيف مقبض سحب لأي عنصر ملزمة جديد (تُستدعى تلقائيًا من نفس المراقبة الحية
+        // اللي بتضيف أدوات الأسئلة، فمفيش داعي نستدعيها يدويًا بعد كل إضافة/تكرار/لصق)
+        function applyAdvancedControlsToLessonBlock(block) {
+            if (!block || block.dataset.advLbEnhanced === '1') return;
+            block.dataset.advLbEnhanced = '1';
+            if (!block.querySelector('.lesson-drag-handle')) {
+                const handle = document.createElement('div');
+                handle.className = 'lesson-drag-handle no-print';
+                handle.title = 'اسحب لإعادة ترتيب هذا العنصر';
+                handle.setAttribute('draggable', 'true');
+                handle.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z"/></svg>';
+                handle.addEventListener('dragstart', handleLessonDragStart);
+                block.appendChild(handle);
+                block.addEventListener('dragover', handleLessonDragOverTarget);
+                block.addEventListener('dragleave', handleLessonDragLeaveTarget);
+                block.addEventListener('drop', handleLessonDropTarget);
+            }
+        }
+
+
         function addLessonHeading() {
             const id = `lb-${Date.now()}`;
             const div = document.createElement('div');
@@ -2370,12 +2572,9 @@ window.MathJax = {
             div.id = id;
             div.innerHTML = `
                 <h2 class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">عنوان الدرس الرئيسي</h2>
-                <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
-                </div>`;
+                ${blockControlsHTML(id)}`;
             getActiveQuestionsContainer().appendChild(div);
+            applyAdvancedControlsToLessonBlock(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
         }
 
@@ -2386,12 +2585,9 @@ window.MathJax = {
             div.id = id;
             div.innerHTML = `
                 <h3 class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">عنوان فرعي</h3>
-                <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
-                </div>`;
+                ${blockControlsHTML(id)}`;
             getActiveQuestionsContainer().appendChild(div);
+            applyAdvancedControlsToLessonBlock(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
         }
 
@@ -2402,12 +2598,9 @@ window.MathJax = {
             div.id = id;
             div.innerHTML = `
                 <div class="exp-text editable-element" contenteditable="${isDirectEditMode || isEditMode}">اكتب فقرة الشرح هنا... يمكنك استخدام شريط الرياضيات لإدراج المعادلات.</div>
-                <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
-                </div>`;
+                ${blockControlsHTML(id, { imageSlot: true })}`;
             getActiveQuestionsContainer().appendChild(div);
+            applyAdvancedControlsToLessonBlock(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
         }
 
@@ -2422,12 +2615,9 @@ window.MathJax = {
                     <div class="editable-element" style="margin-top:6px; font-weight:700;" contenteditable="${isDirectEditMode || isEditMode}">اكتب نص المثال المحلول هنا...</div>
                     <div class="example-solution"><strong>الحل:</strong> <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">اكتب خطوات الحل هنا...</span></div>
                 </div>
-                <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
-                </div>`;
+                ${blockControlsHTML(id, { imageSlot: true })}`;
             getActiveQuestionsContainer().appendChild(div);
+            applyAdvancedControlsToLessonBlock(div);
             reindexExamples(); attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
         }
 
@@ -2441,12 +2631,9 @@ window.MathJax = {
                     <span class="note-type-badge" onclick="cycleNoteType(this)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg> ملاحظة</span>
                     <span class="editable-element" style="flex:1;" contenteditable="${isDirectEditMode || isEditMode}">اكتب الملاحظة أو التنبيه الهام هنا...</span>
                 </div>
-                <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
-                </div>`;
+                ${blockControlsHTML(id)}`;
             getActiveQuestionsContainer().appendChild(div);
+            applyAdvancedControlsToLessonBlock(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
         }
 
@@ -2463,19 +2650,26 @@ window.MathJax = {
         }
 
         function addLessonImage() {
+            pickImageFile((dataUrl) => {
+                insertLessonImageBlock(dataUrl);
+            });
+        }
+
+        function addLessonImageFromUrl() {
             const url = prompt('أدخل رابط الصورة التوضيحية:');
-            if(!url) return;
+            if (!url) return;
+            insertLessonImageBlock(url);
+        }
+
+        function insertLessonImageBlock(src) {
             const id = `lb-${Date.now()}`;
             const div = document.createElement('div');
             div.className = 'lesson-block'; div.id = id;
             div.innerHTML = `
-                <div style="text-align:center;"><img src="${url}" style="max-width:100%; max-height:260px; border-radius:8px; border:1px solid #cbd5e1;" /></div>
-                <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
-                </div>`;
+                <div style="text-align:center;"><img src="${src}" style="max-width:100%; max-height:260px; border-radius:8px; border:1px solid #cbd5e1;" /></div>
+                ${blockControlsHTML(id)}`;
             getActiveQuestionsContainer().appendChild(div);
+            applyAdvancedControlsToLessonBlock(div);
             calculateAnalytics(); saveExamToLocalStorage();
         }
 
@@ -3221,6 +3415,19 @@ window.MathJax = {
         .question-drag-handle:hover { opacity: 1; border-color: var(--primary-color); color: var(--primary-color); }
         .question-card.q-drag-over { outline: 3px dashed var(--primary-color); outline-offset: -3px; }
 
+        /* ---------- سحب وإفلات عناصر الملزمة لإعادة الترتيب ---------- */
+        .lesson-drag-handle {
+            position: absolute; top: 8px; left: -2px; z-index: 6; width: 26px; height: 26px; border-radius: 50%;
+            border: 1px solid var(--card-border); background: rgba(255,255,255,0.92); display: none; align-items: center;
+            justify-content: center; cursor: grab; opacity: 0.5; color: #334155; transform: translateX(-50%);
+        }
+        body.edit-mode-active .lesson-drag-handle { display: flex; }
+        .lesson-drag-handle:hover { opacity: 1; border-color: var(--primary-color); color: var(--primary-color); }
+        .lesson-block.lb-drag-over { outline: 3px dashed var(--primary-color); outline-offset: -3px; }
+        .block-image-slot { text-align: center; margin-top: 8px; }
+        .lesson-block.lb-file-drop-over { outline: 3px dashed #16a34a; outline-offset: -3px; background: rgba(22,163,74,0.06); }
+        .page.lb-file-drop-over { outline: 3px dashed #16a34a; outline-offset: -6px; }
+
         /* ---------- 13) أزرار التراجع/الإعادة ---------- */
         .undo-redo-bar { display: flex; gap: 8px; }
 
@@ -3260,7 +3467,7 @@ window.MathJax = {
 
         @media print {
             .page-number-badge { color: #475569; background: transparent; border: none; }
-            .question-drag-handle, .q-img-tools-btn { display: none !important; }
+            .question-drag-handle, .lesson-drag-handle, .q-img-tools-btn { display: none !important; }
         }
     </style>
 
@@ -3833,6 +4040,54 @@ window.MathJax = {
         }
         advDraggedPage = null;
     }
+
+    // ═══ سحب وإفلات صورة من الهاتف/الكمبيوتر مباشرة فوق الصفحة (وضع الملزمة) ═══
+    function handlePageImageFileDragOver(e) {
+        if (!isBookletMode || !e.dataTransfer.types || !Array.from(e.dataTransfer.types).includes('Files')) return;
+        e.preventDefault();
+        e.currentTarget.classList.add('lb-file-drop-over');
+    }
+    function handlePageImageFileDragLeave(e) {
+        e.currentTarget.classList.remove('lb-file-drop-over');
+    }
+    function handlePageImageFileDrop(e) {
+        if (!isBookletMode || !e.dataTransfer.files || !e.dataTransfer.files.length) return;
+        const file = Array.from(e.dataTransfer.files).find(f => f.type && f.type.startsWith('image/'));
+        if (!file) return;
+        e.preventDefault();
+        e.currentTarget.classList.remove('lb-file-drop-over');
+        const targetBlock = e.target && e.target.closest ? e.target.closest('.lesson-block') : null;
+        fileToDataURL(file).then(dataUrl => {
+            if (targetBlock) {
+                setBlockImageSlot(targetBlock, dataUrl);
+                calculateAnalytics(); saveExamToLocalStorage();
+            } else {
+                insertLessonImageBlock(dataUrl);
+            }
+        });
+    }
+
+    // ═══ نسخ ولصق صورة مباشرة (Ctrl+V) داخل وضع الملزمة ═══
+    document.addEventListener('paste', function (e) {
+        if (!isBookletMode) return;
+        const items = e.clipboardData && e.clipboardData.items;
+        if (!items) return;
+        const imgItem = Array.from(items).find(it => it.type && it.type.startsWith('image/'));
+        if (!imgItem) return;
+        const file = imgItem.getAsFile();
+        if (!file) return;
+        e.preventDefault();
+        const active = document.activeElement;
+        const targetBlock = active && active.closest ? active.closest('.lesson-block') : null;
+        fileToDataURL(file).then(dataUrl => {
+            if (targetBlock) {
+                setBlockImageSlot(targetBlock, dataUrl);
+                calculateAnalytics(); saveExamToLocalStorage();
+            } else {
+                insertLessonImageBlock(dataUrl);
+            }
+        });
+    });
 
     // شارة نوع الصفحة (امتحان / شرح) قابلة للنقر للتبديل - إضافة مستقلة لا تمس منطق وضع الملزمة الحالي
     function togglePageType(pageId) {
@@ -4553,6 +4808,9 @@ window.MathJax = {
         page.addEventListener('dragover', handlePageDragOverTarget);
         page.addEventListener('dragleave', handlePageDragLeaveTarget);
         page.addEventListener('drop', handlePageDropTarget);
+        page.addEventListener('dragover', handlePageImageFileDragOver);
+        page.addEventListener('dragleave', handlePageImageFileDragLeave);
+        page.addEventListener('drop', handlePageImageFileDrop);
 
         if (!page.querySelector('.page-type-badge')) {
             const badge = document.createElement('div');
@@ -4594,6 +4852,7 @@ window.MathJax = {
     --------------------------------------------------------------- */
     function initAdvancedFeatures() {
         document.querySelectorAll('.question-card').forEach(applyAdvancedControlsToCard);
+        document.querySelectorAll('.lesson-block').forEach(applyAdvancedControlsToLessonBlock);
         document.querySelectorAll('#pagesContainer .page').forEach(applyAdvancedFeaturesToPage);
         updateThumbnails();
         updateReviewCount();
@@ -4623,6 +4882,10 @@ window.MathJax = {
                         applyAdvancedControlsToCard(node);
                     }
                     node.querySelectorAll && node.querySelectorAll('.question-card').forEach(applyAdvancedControlsToCard);
+                    if (node.classList && node.classList.contains('lesson-block')) {
+                        applyAdvancedControlsToLessonBlock(node);
+                    }
+                    node.querySelectorAll && node.querySelectorAll('.lesson-block').forEach(applyAdvancedControlsToLessonBlock);
                     if (node.classList && node.classList.contains('page')) {
                         applyAdvancedFeaturesToPage(node);
                         pagesChanged = true;
@@ -4721,8 +4984,10 @@ window.MathJax = {
         pc.innerHTML = html;
         examLastSnapshot = html;
         pc.querySelectorAll('.question-card').forEach(q => { delete q.dataset.advEnhanced; });
+        pc.querySelectorAll('.lesson-block').forEach(b => { delete b.dataset.advLbEnhanced; });
         pc.querySelectorAll('.page').forEach(p => { delete p.dataset.advPageEnhanced; });
         document.querySelectorAll('.question-card').forEach(applyAdvancedControlsToCard);
+        document.querySelectorAll('.lesson-block').forEach(applyAdvancedControlsToLessonBlock);
         document.querySelectorAll('#pagesContainer .page').forEach(applyAdvancedFeaturesToPage);
         updateThumbnails();
         if (typeof reindexQuestions === 'function') reindexQuestions();
