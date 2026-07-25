@@ -459,6 +459,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
   <symbol id="ic-dash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
   <symbol id="ic-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></symbol>
   <symbol id="ic-key" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></symbol>
+  <symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
   <symbol id="ic-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></symbol>
   <symbol id="ic-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M2 12h2M20 12h2"/></symbol>
   <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></symbol>
@@ -1995,6 +1996,13 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center">
           <input type="number" id="epGenCountAdmin" min="1" max="50" value="5" title="عدد الأكواد" style="width:80px;padding:9px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;text-align:center"/>
           <input type="number" id="epGenDaysAdmin" min="1" max="3650" placeholder="أيام الصلاحية" title="صلاحية هذه الدفعة (أيام)" style="width:120px;padding:9px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;text-align:center"/>
+          <select id="epGenMaxDevAdmin" title="أقصى عدد أجهزة مسموح بيها لكل كود من هذه الدفعة" style="padding:9px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none">
+            <option value="1" selected>جهاز واحد</option>
+            <option value="2">2 أجهزة</option>
+            <option value="3">3 أجهزة</option>
+            <option value="5">5 أجهزة</option>
+            <option value="10">10 أجهزة</option>
+          </select>
           <button class="btn ok sm" onclick="epGenerateCodesAdmin()"><svg><use href="#ic-plus"/></svg>توليد أكواد جديدة</button>
           <input type="text" id="epSearchInp" placeholder="بحث بالكود أو اسم المستخدم..." oninput="renderExamPlus()" style="flex:1;min-width:220px;padding:9px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"/>
         </div>
@@ -2013,11 +2021,12 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
               <th>اسم المستخدم</th>
               <th>آخر دخول</th>
               <th>عدد مرات الدخول</th>
+              <th>الأجهزة</th>
               <th>تاريخ الانتهاء</th>
               <th>الحالة</th>
               <th>إجراء</th>
             </tr></thead>
-            <tbody id="epTbl"><tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
+            <tbody id="epTbl"><tr><td colspan="8"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
           </table>
         </div></div>
         </div><!-- /epTabCodes -->
@@ -2768,6 +2777,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         allow read, write: if true;
       }
       match /examPlusSettings/{doc} {
+        allow read, write: if true;
+      }
+      // ← نسخ احتياطية سحابية دورية لملازم/امتحانات حسابات الـ VIP (بديل لـ localStorage فقط)
+      match /examPlusBackups/{doc} {
         allow read, write: if true;
       }
     }
@@ -9507,6 +9520,23 @@ window.exportHwCsv = ()=>{
   };
 
   const EP_COL = 'examPlusCodes';
+  const EP_SESSION_STALE_MS = 5 * 60 * 1000; // نفس مدة انتهاء الجلسة المستخدمة في examform.html
+  function epActiveDeviceCount(x){
+    const map = x.activeDevices && typeof x.activeDevices==='object' ? x.activeDevices : {};
+    const now = Date.now();
+    let count = Object.keys(map).filter(id=>{
+      const ts = map[id];
+      if(!ts) return false;
+      const t = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+      return (now - t) < EP_SESSION_STALE_MS;
+    }).length;
+    // توافق مع الأكواد القديمة اللي لسه بتستخدم activeDeviceId المفرد
+    if(count===0 && x.activeDeviceId && x.activeAt){
+      const t = x.activeAt.toDate ? x.activeAt.toDate().getTime() : new Date(x.activeAt).getTime();
+      if((now - t) < EP_SESSION_STALE_MS) count = 1;
+    }
+    return count;
+  }
   const EP_SETTINGS_COL = 'examPlusSettings';
   const EP_SETTINGS_DOC = 'config';
   let _epFilter = 'all';
@@ -9589,7 +9619,7 @@ window.exportHwCsv = ()=>{
   window.loadExamPlus = async function(){
     if(!window.db) return;
     const tb = document.getElementById('epTbl');
-    if(tb) tb.innerHTML = '<tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr>';
+    if(tb) tb.innerHTML = '<tr><td colspan="8"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr>';
     loadEPSettings();
     try{
       const snap = await window.db.collection(EP_COL).orderBy('createdAt','desc').limit(500).get();
@@ -9606,6 +9636,7 @@ window.exportHwCsv = ()=>{
     const n = Math.min(parseInt(document.getElementById('epGenCountAdmin')?.value)||1, 50);
     const daysInput = parseInt(document.getElementById('epGenDaysAdmin')?.value);
     const days = (daysInput && daysInput>0) ? daysInput : (window._epSettings.defaultCodeDays || 28);
+    const maxDevices = parseInt(document.getElementById('epGenMaxDevAdmin')?.value) || 1;
     const expiresAt = new Date(Date.now() + days*86400000);
     const created = [];
     try{
@@ -9621,13 +9652,13 @@ window.exportHwCsv = ()=>{
         await window.db.collection(EP_COL).doc(code).set({
           code, active:true, blocked:false,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          expiresAt, validityDays: days,
-          loginCount:0, studentName:'', permissions:{}
+          expiresAt, validityDays: days, maxDevices,
+          loginCount:0, studentName:'', permissions:{}, activeDevices:{}
         });
         created.push(code);
       }
-      window.toast?.('تم توليد '+n+' كود بصلاحية '+days+' يوم ✓','ok');
-      window.logActivity?.('🔑','توليد أكواد امتحانك بلس', created.join(', ')+' — صلاحية '+days+' يوم');
+      window.toast?.('تم توليد '+n+' كود بصلاحية '+days+' يوم (حد أقصى '+maxDevices+' جهاز) ✓','ok');
+      window.logActivity?.('🔑','توليد أكواد امتحانك بلس', created.join(', ')+' — صلاحية '+days+' يوم — حد '+maxDevices+' جهاز');
       const genInp = document.getElementById('epGenDaysAdmin');
       if(genInp) genInp.value = '';
       await loadExamPlus();
@@ -9689,7 +9720,7 @@ window.exportHwCsv = ()=>{
     if(!tb) return;
 
     if(!f.length){
-      tb.innerHTML = '<tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>لا يوجد أكواد مطابقة</p></div></td></tr>';
+      tb.innerHTML = '<tr><td colspan="8"><div class="empty"><svg><use href="#ic-users"/></svg><p>لا يوجد أكواد مطابقة</p></div></td></tr>';
       return;
     }
 
@@ -9709,11 +9740,20 @@ window.exportHwCsv = ()=>{
       }
       const safeName = (x.studentName||'—').replace(/</g,'&lt;');
       const safeCode = (x.code||x.id||'—').replace(/</g,'&lt;');
+      const maxDev = x.maxDevices||1;
+      const activeCount = epActiveDeviceCount(x);
+      const devCell = `<div style="display:flex;flex-direction:column;gap:3px;align-items:flex-start">
+        <span style="color:${activeCount>=maxDev?'var(--warn)':'var(--ok)'};font-size:11px;font-weight:800">${activeCount}/${maxDev}</span>
+        <select id="ep-maxdev-${x.id}" onchange="epSetMaxDevices('${x.id}',this.value)" style="padding:2px 6px;background:rgba(8,13,28,0.8);border:1px solid var(--b2);border-radius:6px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:10px">
+          ${[1,2,3,5,10].map(n=>`<option value="${n}" ${maxDev===n?'selected':''}>${n} ${n===1?'جهاز':'أجهزة'}</option>`).join('')}
+        </select>
+      </div>`;
       return `<tr style="${x.blocked?'opacity:.6':''}">
         <td style="direction:ltr;text-align:right;font-family:monospace;font-weight:800">${safeCode}</td>
         <td>${safeName}</td>
         <td>${fmtDate(x.lastLogin)}</td>
         <td>${x.loginCount||0}</td>
+        <td>${devCell}</td>
         <td>${expiryCell}</td>
         <td>${statusBadge}</td>
         <td>
@@ -9779,6 +9819,19 @@ window.exportHwCsv = ()=>{
     const days = parseInt(document.getElementById('epExtendCustomDays')?.value);
     if(!days || days<1){ window.toast?.('ادخل عدد أيام صحيح','err'); return; }
     epExtendExpiry(days);
+  };
+
+  // ── تعديل الحد الأقصى لعدد الأجهزة المسموح بيها لكود معيّن ──
+  window.epSetMaxDevices = async function(id, val){
+    const n = parseInt(val) || 1;
+    try{
+      await window.db.collection(EP_COL).doc(id).update({ maxDevices: n });
+      const c = (window._examPlusCodes||[]).find(x=>x.id===id);
+      if(c) c.maxDevices = n;
+      renderExamPlus();
+      window.toast?.('تم تحديد الحد الأقصى بـ '+n+' جهاز ✓','ok');
+      window.logActivity?.('📱','تعديل حد أجهزة كود امتحانك بلس', id+' → '+n+' جهاز');
+    }catch(e){ window.toast?.('حصل خطأ: '+e.message,'err'); }
   };
 
   window.epToggleBlock = async function(id, block){
@@ -9874,6 +9927,7 @@ window.exportHwCsv = ()=>{
             ${x.active
               ? `<button class="btn icon-btn" style="color:var(--warn)" onclick="vipToggleActive('${x.id}',false)" title="إيقاف الحساب"><svg><use href="#ic-shield-off"/></svg></button>`
               : `<button class="btn icon-btn" style="color:var(--ok)" onclick="vipToggleActive('${x.id}',true)" title="تفعيل الحساب"><svg><use href="#ic-shield"/></svg></button>`}
+            <button class="btn icon-btn" style="color:var(--purple)" onclick="vipShowActivity('${x.id}','${safeUser.replace(/'/g,"")}','${safeName.replace(/'/g,"")}')" title="سجل نشاط هذا الحساب"><svg><use href="#ic-clock"/></svg></button>
             <button class="btn icon-btn" style="color:var(--gold2)" onclick="vipResetPassword('${x.id}')" title="إعادة تعيين كلمة المرور"><svg><use href="#ic-key"/></svg></button>
             <button class="btn icon-btn" style="color:var(--err)" onclick="vipDeleteAccount('${x.id}')" title="حذف الحساب"><svg><use href="#ic-trash"/></svg></button>
           </div>
@@ -9971,8 +10025,56 @@ window.exportHwCsv = ()=>{
     }catch(e){ window.toast?.('حصل خطأ: '+e.message,'err'); }
   };
 
+  // ── تايم لاين نشاط حساب VIP معيّن (بيفلتر من سجل النشاط الموجود أصلاً) ──
+  window.vipShowActivity = function(id, username, name){
+    const all = (typeof getActivity === 'function') ? getActivity() : [];
+    const needle = (username||'').toLowerCase();
+    const needleName = (name||'').toLowerCase();
+    const rows = all.filter(a=>{
+      const blob = ((a.detail||'')+' '+(a.action||'')).toLowerCase();
+      return (needle && blob.includes(needle)) || (needleName && blob.includes(needleName)) || (id && blob.includes(String(id).toLowerCase()));
+    });
+    const titleEl = document.getElementById('vipActivityTitle');
+    if(titleEl) titleEl.textContent = 'سجل نشاط: ' + (name||username||id);
+    const listEl = document.getElementById('vipActivityList');
+    if(listEl){
+      if(!rows.length){
+        listEl.innerHTML = '<div class="empty"><p>لا يوجد نشاط مسجل لهذا الحساب على هذا الجهاز حتى الآن</p></div>';
+      } else {
+        listEl.innerHTML = rows.map(a=>{
+          const d = new Date(a.time);
+          const dateStr = d.toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});
+          const timeStr = d.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+          return `<div style="display:flex;gap:10px;padding:10px 12px;border-bottom:1px solid var(--b2);align-items:flex-start">
+            <span style="font-size:20px;flex-shrink:0;margin-top:2px">${a.icon||'•'}</span>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:800">${a.action||''}</div>
+              ${a.detail?`<div style="font-size:11px;color:var(--muted);margin-top:2px;word-break:break-all">${a.detail}</div>`:''}
+              <div style="display:flex;gap:8px;margin-top:4px;align-items:center">
+                <span style="font-size:10px;background:rgba(74,127,212,0.1);color:var(--blue);border-radius:5px;padding:1px 6px;font-weight:700">👤 ${a.who||'مجهول'}</span>
+                <span style="font-size:10px;color:var(--muted)">${dateStr} · ${timeStr}</span>
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
+    openModal('vipActivityModal');
+  };
+
 })();
 </script>
+
+<!-- ══ VIP ACTIVITY TIMELINE MODAL ══ -->
+<div id="vipActivityModal" class="mbg">
+  <div class="mbx" style="max-width:560px;max-height:85vh;overflow-y:auto;position:relative">
+    <button onclick="closeModal('vipActivityModal')" style="position:absolute;top:12px;left:12px;width:30px;height:30px;border-radius:50%;border:1px solid var(--b2);background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:18px">×</button>
+    <h3 id="vipActivityTitle" style="font-size:16px;font-weight:800;margin-bottom:6px;padding-left:44px">سجل نشاط الحساب</h3>
+    <p style="font-size:11px;color:var(--muted);margin-bottom:14px">السجل ده مبني على النشاط المسجل من هذا الجهاز/المتصفح بس (مش مركزي بين كل أجهزة الإدمن).</p>
+    <div id="vipActivityList"></div>
+  </div>
+</div>
+
 
 <!-- ══ DS DETAIL MODAL ══ -->
 <div id="dsDetailModal" class="mbg">
