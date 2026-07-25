@@ -356,7 +356,12 @@ window.MathJax = {
             box-sizing: border-box;
             background-color: var(--bg-page) !important;
             border-radius: 12px;
-            padding: 25px 30px;
+            /* إصلاح مهم: كانت الحشوة هنا 25px 30px (≈6.6مم) بينما حشوة الطباعة
+               15مم/12مم — فرق كبير خلّى نظام التقسيم التلقائي (اللي بيحسب على
+               الشاشة) يسمح بمحتوى أكتر بكتير من اللي هيتسع فعليًا في الورقة
+               المطبوعة، فكانت المعاينة والمطبوع يطلعوا مختلفين تمامًا. دلوقتي
+               الحشوة موحّدة مع حشوة الطباعة بالظبط (لازم تفضل متطابقة). */
+            padding: 15mm 15mm 12mm 15mm;
             box-shadow: var(--shadow-md);
             position: relative;
             overflow: hidden;
@@ -376,6 +381,11 @@ window.MathJax = {
         }
 
         .page.has-ornament-border { border: 8px double var(--primary-color); padding: 18px 22px; }
+
+        /* ===== وضع الشاشة: يحوّل الصفحة لمقاس A4 أفقي (Landscape) ===== */
+        body.screen-mode .page { width: 297mm; min-height: 210mm; }
+        .screen-mode-doctype-select { display: none; }
+        body.screen-mode .screen-mode-doctype-select { display: inline-block; }
         .cover-page { display: none; flex-direction: column; justify-content: center; align-items: center; border: 4px double var(--primary-color); padding: 40px; text-align: center; gap: 20px; }
         body.show-cover .cover-page { display: flex; }
 
@@ -472,6 +482,9 @@ window.MathJax = {
                 size: A4 portrait; 
                 margin: 0; 
             }
+            /* ملحوظة: حجم @page لا يمكن تخصيصه بمحدد CSS عادي حسب حالة الصفحة،
+               فبيتم التحكم فيه ديناميكيًا عبر وسم <style> منفصل (dynamicPrintSizeStyle)
+               يتم تحديثه من دالة updatePrintPageSize() عند تفعيل/إلغاء وضع الشاشة. */
             html, body {
                 width: 210mm;
                 height: auto;
@@ -480,6 +493,7 @@ window.MathJax = {
                 margin: 0 !important;
                 color: #000 !important;
             }
+            body.screen-mode, body.screen-mode html { width: 297mm; }
             .settings-gear-btn, .admin-controls-wrapper, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator, .page-settings-btn { display: none !important; }
             .manual-page-break { border: none !important; margin: 0 !important; page-break-before: always !important; break-before: page !important; }
             [contenteditable="true"], .editable-element { border: none !important; background: transparent !important; }
@@ -501,6 +515,10 @@ window.MathJax = {
                 margin: 0 !important; 
                 border: none !important; 
                 box-sizing: border-box !important;
+            }
+            body.screen-mode .page {
+                width: 297mm !important;
+                min-height: 210mm !important;
             }
             .page:not(:last-child) {
                 page-break-after: always !important;
@@ -915,6 +933,11 @@ window.MathJax = {
                     <button class="btn btn-purple" style="background-color: #d97706;" onclick="toggleBubbleSheet()">ورقة Bubble Sheet</button>
                     <button class="btn btn-purple" onclick="toggleHomeworkMode()">وضع الواجب</button>
                     <button class="btn btn-purple" style="background-color:#4338ca;" onclick="toggleDualColumn()">وضع العمودين</button>
+                    <button id="screenModeBtn" class="btn btn-purple" style="background-color:#be185d;" onclick="toggleScreenMode()" title="يحوّل مقاس الصفحة لأفقي (A4 Landscape) للعرض على الشاشة">وضع الشاشة (أفقي)</button>
+                    <select class="screen-mode-doctype-select" onchange="handleScreenModeDocType(this)" title="نوع المستند في وضع الشاشة">
+                        <option value="exam">وضع أسئلة</option>
+                        <option value="booklet">وضع ملزمة</option>
+                    </select>
                     <button class="btn btn-purple" style="background-color:#0d9488;" onclick="toggleCoverPage()">غلاف الامتحان</button>
                     <button class="btn btn-warning" style="background-color:#0284c7;" onclick="toggleOrnamentBorder()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg> إطار زخرفي</button>
                     <button class="btn btn-eco" onclick="toggleEcoMode()">توفير الأحبار</button>
@@ -1895,10 +1918,12 @@ window.MathJax = {
         // عشان القياس يبقى في نفس "مساحة الزووم" اللي بيتطبق فعليًا على الشاشات
         // الصغيرة (.page{zoom:...}) فيبقى قابل للمقارنة المباشرة مع scrollHeight.
         function getA4HeightPxFor(pageEl) {
+            const isLandscape = document.body.classList.contains('screen-mode');
+            const mm = isLandscape ? 210 : 297;
             const probe = document.createElement('div');
-            probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;height:297mm;width:1px;top:0;left:0;';
+            probe.style.cssText = `position:absolute;visibility:hidden;pointer-events:none;height:${mm}mm;width:1px;top:0;left:0;`;
             pageEl.appendChild(probe);
-            const h = probe.offsetHeight || (297 * 3.7795);
+            const h = probe.offsetHeight || (mm * 3.7795);
             pageEl.removeChild(probe);
             return h;
         }
@@ -2371,6 +2396,8 @@ window.MathJax = {
             }
             calculateAnalytics();
             saveExamToLocalStorage();
+            const docTypeSelect = document.querySelector('.screen-mode-doctype-select');
+            if (docTypeSelect) docTypeSelect.value = isBookletMode ? 'booklet' : 'exam';
         }
 
         function reindexExamples() {
@@ -2841,6 +2868,38 @@ window.MathJax = {
         function toggleDualColumn() {
             isDualColumn = !isDualColumn;
             document.body.classList.toggle('dual-column-mode', isDualColumn);
+        }
+
+        // ═══ وضع الشاشة: يحوّل الصفحة لمقاس A4 أفقي (Landscape)، مع اختيار نوع المستند ═══
+        let isScreenMode = false;
+        function toggleScreenMode() {
+            isScreenMode = !isScreenMode;
+            document.body.classList.toggle('screen-mode', isScreenMode);
+            const btn = document.getElementById('screenModeBtn');
+            if (btn) btn.classList.toggle('active', isScreenMode);
+            updatePrintPageSize();
+            schedulePageOverflowCheck();
+            saveExamToLocalStorage();
+        }
+
+        // عند اختيار نوع المستند (أسئلة / ملزمة) داخل وضع الشاشة
+        function handleScreenModeDocType(select) {
+            const wantsBooklet = select.value === 'booklet';
+            if (wantsBooklet !== isBookletMode) toggleBookletMode();
+        }
+
+        // تحديث حجم صفحة الطباعة (@page) ديناميكيًا حسب وضع الشاشة، لأن حجم @page
+        // لا يمكن ربطه بـ class على body مباشرة، فبنكتب/نمسح ستايل مخصص لحظة الطباعة
+        function updatePrintPageSize() {
+            let styleTag = document.getElementById('dynamicPrintSizeStyle');
+            if (!styleTag) {
+                styleTag = document.createElement('style');
+                styleTag.id = 'dynamicPrintSizeStyle';
+                document.head.appendChild(styleTag);
+            }
+            styleTag.textContent = isScreenMode
+                ? '@media print { @page { size: A4 landscape; margin: 0; } }'
+                : '';
         }
 
         /* ===== تنسيق مستقل لكل صفحة ===== */
