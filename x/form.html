@@ -50,6 +50,26 @@
         body.eco-print { --primary-color: #000000 !important; --badge-bg: #000000 !important; --accent-color: #000000 !important; --card-border: #000000 !important; --card-bg: #ffffff !important; }
         body.homework-mode .q-score-tag, body.homework-mode .score-pill-wrap { display: none !important; }
 
+        /* تنسيق مستقل لكل صفحة على حدة (يُطبَّق على عنصر الصفحة نفسه فيتفوق على قالب الجسم العام) */
+        .page.page-theme-1 { --primary-color: #0891b2; --accent-color: #06b6d4; --badge-bg: #155e75; --card-border: #a5f3fc; --card-bg: #f0fdf4; }
+        .page.page-theme-2 { --primary-color: #1e293b; --accent-color: #334155; --badge-bg: #d97706; --card-border: #cbd5e1; --card-bg: #fffbf5; }
+        .page.page-theme-3 { --primary-color: #1e1b4b; --accent-color: #312e81; --badge-bg: #eab308; --card-border: #fef08a; --card-bg: #ffffff; }
+        .page.page-theme-4 { --primary-color: #065f46; --accent-color: #10b981; --badge-bg: #047857; --card-border: #a7f3d0; --card-bg: #f0fdf4; }
+        .page.page-theme-5 { --primary-color: #9f1239; --accent-color: #f43f5e; --badge-bg: #be123c; --card-border: #fecdd3; --card-bg: #fff1f2; }
+        .page.page-theme-6 { --primary-color: #5b21b6; --accent-color: #8b5cf6; --badge-bg: #7c3aed; --card-border: #ddd6fe; --card-bg: #f5f3ff; }
+        .page.page-eco { --primary-color: #000000; --badge-bg: #000000; --accent-color: #000000; --card-border: #000000; --card-bg: #ffffff; }
+        .page.page-dual-column #questionsContainer { column-count: 2; column-gap: 15px; }
+        .page.page-dual-column .question-card { break-inside: avoid; display: inline-block; width: 100%; }
+
+        .page-settings-btn {
+            position: absolute; top: 10px; left: 10px; z-index: 6; width: 30px; height: 30px; border-radius: 50%;
+            border: 1px solid var(--card-border); background: rgba(255,255,255,0.92); display: flex; align-items: center;
+            justify-content: center; cursor: pointer; opacity: 0.45; transition: all 0.2s ease; color: #334155;
+        }
+        .page-settings-btn:hover { opacity: 1; transform: rotate(45deg); border-color: var(--primary-color); color: var(--primary-color); }
+        .page-settings-btn .svg-ic { width: 15px; height: 15px; }
+        .page-settings-note { font-size: 11px; color: #64748b; line-height: 1.6; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px 10px; }
+
         /* LTR */
         body.ltr-mode { dir: ltr !important; }
         body.ltr-mode .page { direction: ltr !important; text-align: left !important; }
@@ -342,7 +362,7 @@
                 margin: 0 !important;
                 color: #000 !important;
             }
-            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator { display: none !important; }
+            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator, .page-settings-btn { display: none !important; }
             .manual-page-break { border: none !important; margin: 0 !important; page-break-before: always !important; break-before: page !important; }
             [contenteditable="true"], .editable-element { border: none !important; background: transparent !important; }
             
@@ -389,7 +409,7 @@
         <div class="modal-card">
             <div class="modal-header">
                 <h3><svg class="modal-lock-icon" viewBox="0 0 24 24"><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 0 1 6 0v3z"/></svg>تسجيل الدخول والاشتراك - منصة بلس</h3>
-                <button class="modal-close" onclick="closeAuthModal()">✕</button>
+                <button class="modal-close" onclick="closeAuthModal()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
             </div>
             <div class="modal-body">
                 <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 10px;">
@@ -453,7 +473,7 @@
                 </div>
 
                 <div class="vodafone-box">
-                    <h4>📱 طرق الدفع المتاحة عبر فودافون كاش (Vodafone Cash)</h4>
+                    <h4><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></svg> طرق الدفع المتاحة عبر فودافون كاش (Vodafone Cash)</h4>
                     <p style="font-size: 11px; color: #475569;">يرجى تحويل المبلغ المطلوبة لأحد الارقام التالية ثم التواصل معنا لتفعيل حسابك فوراً:</p>
                     <div class="phone-nums">
                         <span>01007586279 <button class="copy-btn" onclick="copyText('01007586279')">نسخ</button></span>
@@ -469,12 +489,51 @@
     <div class="modal-overlay" id="trashModal">
         <div class="modal-card" style="max-width: 480px;">
             <div class="modal-header">
-                <h3>🗑️ سلة المحذوفات (آخر 10 عناصر)</h3>
-                <button class="modal-close" onclick="closeTrashModal()">✕</button>
+                <h3><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> سلة المحذوفات (آخر 10 عناصر)</h3>
+                <button class="modal-close" onclick="closeTrashModal()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
             </div>
             <div class="modal-body">
                 <div id="trashListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:340px; overflow-y:auto;"></div>
                 <button class="btn btn-danger" style="width:100%; justify-content:center;" onclick="emptyTrash()">إفراغ السلة نهائيًا</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة التنسيق المستقل لكل صفحة -->
+    <div class="modal-overlay" id="pageSettingsModal">
+        <div class="modal-card" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3><svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg> تنسيق مستقل لهذه الصفحة</h3>
+                <button class="modal-close" onclick="closePageSettingsModal()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+            </div>
+            <div class="modal-body">
+                <div class="page-settings-note">هذه الإعدادات تخص هذه الصفحة فقط، ولا تتأثر بتغيير القالب العام أو باقي الصفحات — مفيدة مثلاً بعد الضغط على "إنهاء الصفحة" لو حبيت الصفحة الجديدة يكون لها شكل مختلف.</div>
+                <div class="input-group">
+                    <label>قالب الألوان الخاص بالصفحة:</label>
+                    <select id="pageThemeSelect">
+                        <option value="inherit">افتراضي (نفس باقي الورقة)</option>
+                        <option value="page-theme-1">قالب مستقل 1 - سماوي</option>
+                        <option value="page-theme-2">قالب مستقل 2 - كهرماني داكن</option>
+                        <option value="page-theme-3">قالب مستقل 3 - نيلي/ذهبي</option>
+                        <option value="page-theme-4">قالب مستقل 4 - أخضر</option>
+                        <option value="page-theme-5">قالب مستقل 5 - وردي</option>
+                        <option value="page-theme-6">قالب مستقل 6 - بنفسجي</option>
+                    </select>
+
+                    <label>تقسيم الأعمدة لهذه الصفحة:</label>
+                    <select id="pageColumnsSelect">
+                        <option value="single">عمود واحد</option>
+                        <option value="dual">عمودين (مناسب للأسئلة القصيرة)</option>
+                    </select>
+
+                    <label style="margin-top:6px; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                        <input type="checkbox" id="pageEcoCheck"> طباعة اقتصادية بالأبيض والأسود لهذه الصفحة فقط
+                    </label>
+                </div>
+                <div class="btn-group" style="justify-content:flex-start;">
+                    <button class="btn btn-success" onclick="applyPageSettings()">تطبيق على هذه الصفحة</button>
+                    <button class="btn btn-warning" onclick="resetPageSettings()">استعادة الافتراضي</button>
+                </div>
             </div>
         </div>
     </div>
@@ -493,13 +552,13 @@
             </div>
 
             <div class="bloom-stats-bar" id="bloomStatsBar">
-                <div>🧠 تذكر: <span id="bloomRememberCount">0</span></div>
-                <div>💡 فهم/تطبيق: <span id="bloomApplyCount">0</span></div>
-                <div>📊 تحليل/تقويم: <span id="bloomAnalyzeCount">0</span></div>
+                <div><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2a4 4 0 00-4 4 4 4 0 00-2.5 7.14A3.5 3.5 0 008 19a3.48 3.48 0 002-.63A3.48 3.48 0 0012 19a3.48 3.48 0 002-.63A3.48 3.48 0 0016 19a3.5 3.5 0 002.5-5.86A4 4 0 0016 6a4 4 0 00-4-4z"/></svg> تذكر: <span id="bloomRememberCount">0</span></div>
+                <div><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg> فهم/تطبيق: <span id="bloomApplyCount">0</span></div>
+                <div><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg> تحليل/تقويم: <span id="bloomAnalyzeCount">0</span></div>
             </div>
 
             <div class="font-controls">
-                <span>🔤 الخطوط:</span>
+                <span><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9.93 13.5h4.14L12 7.98zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-4.05 16.5l-1.14-3H9.17l-1.12 3H5.96l5.11-13h1.86l5.11 13h-2.09z"/></svg> الخطوط:</span>
                 <label>الحجم:</label>
                 <input type="range" id="fontSizeSlider" min="11" max="20" step="0.5" value="14.5" oninput="changeFontSize(this.value)">
                 <span id="fontSizeVal">14.5px</span>
@@ -508,12 +567,12 @@
                 <input type="range" id="lineHeightSlider" min="1.2" max="2.5" step="0.1" value="1.7" oninput="changeLineHeight(this.value)">
                 <span id="lineHeightVal">1.7</span>
 
-                <label style="margin-right:10px;">🎨 لون حُر:</label>
+                <label style="margin-right:10px;"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.09-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg> لون حُر:</label>
                 <input type="color" id="customColorPicker" value="#0284c7" onchange="applyCustomColor(this.value)">
             </div>
 
             <div class="font-controls" style="background: #fff7ed; color: #c2410c;">
-                <span>💧 إعدادات العلامة المائية:</span>
+                <span><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg> إعدادات العلامة المائية:</span>
                 <label>الشفافية:</label>
                 <input type="range" id="watermarkOpacitySlider" min="0" max="1" step="0.05" value="0.05" oninput="changeWatermarkOpacity(this.value)">
                 <span id="watermarkOpacityVal">5%</span>
@@ -534,43 +593,43 @@
             </div>
 
             <div class="toolbar-section">
-                <div class="toolbar-label">🖊️ أدوات التحرير والذكاء الاصطناعي</div>
+                <div class="toolbar-label"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 000-1.42l-2.34-2.34a1.003 1.003 0 00-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/></svg> أدوات التحرير والذكاء الاصطناعي</div>
                 <div class="btn-group">
                     <button id="toggleEditBtn" class="btn btn-warning" onclick="unlockEditMode()">لوحة التحرير</button>
                     <button id="quickEditBtn" class="btn btn-success" onclick="toggleDirectEdit()">تعديل مباشر</button>
-                    <button id="bookletModeBtn" class="btn btn-booklet" onclick="toggleBookletMode()">📘 وضع الملزمة</button>
-                    <button class="btn btn-ai" onclick="generateAIQuestion()">🤖 توليد أسئلة بالذكاء الاصطناعي</button>
-                    <button id="voiceBtn" class="btn btn-voice" onclick="toggleVoiceTyping()">🎤 كتابة بالصوت</button>
+                    <button id="bookletModeBtn" class="btn btn-booklet" onclick="toggleBookletMode()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 5.5C4 4.67 4.67 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5v-13zM13 4h5.5c.83 0 1.5.67 1.5 1.5v13c0 .83-.67 1.5-1.5 1.5H13V4z"/></svg> وضع الملزمة</button>
+                    <button class="btn btn-ai" onclick="generateAIQuestion()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2a2 2 0 012 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 017 7h1a1 1 0 011 1v3a1 1 0 01-1 1h-1v1a2 2 0 01-2 2H6a2 2 0 01-2-2v-1H3a1 1 0 01-1-1v-3a1 1 0 011-1h1a7 7 0 017-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 012-2zM6 14a1 1 0 100 2 1 1 0 000-2zm12 0a1 1 0 100 2 1 1 0 000-2zM8 16v2h8v-2H8z"/></svg> توليد أسئلة بالذكاء الاصطناعي</button>
+                    <button id="voiceBtn" class="btn btn-voice" onclick="toggleVoiceTyping()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg> كتابة بالصوت</button>
                 </div>
             </div>
 
             <div class="toolbar-section">
-                <div class="toolbar-label">🎨 أوضاع العرض والتنسيق</div>
+                <div class="toolbar-label"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.09-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg> أوضاع العرض والتنسيق</div>
                 <div class="btn-group">
                     <button class="btn btn-purple" style="background-color: #0284c7;" onclick="toggleAnswerKey()">نموذج الإجابة</button>
                     <button class="btn btn-purple" style="background-color: #d97706;" onclick="toggleBubbleSheet()">ورقة Bubble Sheet</button>
                     <button class="btn btn-purple" onclick="toggleHomeworkMode()">وضع الواجب</button>
                     <button class="btn btn-purple" style="background-color:#4338ca;" onclick="toggleDualColumn()">وضع العمودين</button>
                     <button class="btn btn-purple" style="background-color:#0d9488;" onclick="toggleCoverPage()">غلاف الامتحان</button>
-                    <button class="btn btn-warning" style="background-color:#0284c7;" onclick="toggleOrnamentBorder()">🖼️ إطار زخرفي</button>
+                    <button class="btn btn-warning" style="background-color:#0284c7;" onclick="toggleOrnamentBorder()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg> إطار زخرفي</button>
                     <button class="btn btn-eco" onclick="toggleEcoMode()">توفير الأحبار</button>
                 </div>
             </div>
 
             <div class="toolbar-section">
-                <div class="toolbar-label">🏦 الدرجات وبنك الأسئلة</div>
+                <div class="toolbar-label"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2L2 8v2h20V8L12 2zM4 11v8H2v2h20v-2h-2v-8h-2v8h-3v-8h-2v8h-3v-8H8v8H6v-8H4z"/></svg> الدرجات وبنك الأسئلة</div>
                 <div class="btn-group">
-                    <button class="btn btn-warning" style="background-color:#c026d3;" onclick="autoDistributeScores()">⚖️ توزيع الدرجات تلقائياً</button>
-                    <button class="btn btn-purple" style="background-color:#15803d;" onclick="saveToQuestionBank()">💾 حفظ لبنك الأسئلة</button>
-                    <button class="btn btn-purple" style="background-color:#b45309;" onclick="loadFromQuestionBank()">📦 استدعاء من البنك</button>
+                    <button class="btn btn-warning" style="background-color:#c026d3;" onclick="autoDistributeScores()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 3v1H4l3.5 8L4 20h16l-3.5-8L20 4h-8V3h-.001zM7 6h2.34l-2.34 5.34L4.66 6H7zm10 0h2.34l-2.34 5.34L14.66 6H17z"/></svg> توزيع الدرجات تلقائياً</button>
+                    <button class="btn btn-purple" style="background-color:#15803d;" onclick="saveToQuestionBank()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg> حفظ لبنك الأسئلة</button>
+                    <button class="btn btn-purple" style="background-color:#b45309;" onclick="loadFromQuestionBank()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16zM12 4.15L18.5 8 12 11.85 5.5 8 12 4.15zM5 9.85l6 3.47v6.85l-6-3.47V9.85zm8 10.32v-6.85l6-3.47v6.85l-6 3.47z"/></svg> استدعاء من البنك</button>
                     <button class="btn btn-warning" style="background-color:#c026d3;" onclick="shuffleQuestionsAB()">توليد نموذج A/B</button>
-                    <button class="btn btn-warning" style="background-color:#0284c7;" onclick="openTrashModal()">🗑️ سلة المحذوفات</button>
-                    <button class="btn btn-danger" onclick="clearAllQuestions()">🗑️ حذف كل المحتوى</button>
+                    <button class="btn btn-warning" style="background-color:#0284c7;" onclick="openTrashModal()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> سلة المحذوفات</button>
+                    <button class="btn btn-danger" onclick="clearAllQuestions()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف كل المحتوى</button>
                 </div>
             </div>
 
             <div class="toolbar-section">
-                <div class="toolbar-label">💾 الحفظ والتصدير والطباعة</div>
+                <div class="toolbar-label"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg> الحفظ والتصدير والطباعة</div>
                 <div class="btn-group">
                     <button class="btn btn-success" style="background-color: #0d9488;" onclick="exportToImages()">تصدير كصور HD</button>
                     <button class="btn btn-purple" style="background-color: #059669;" onclick="saveExamJSON()">حفظ الملف (JSON)</button>
@@ -593,7 +652,7 @@
                     
                     <label>اختر المادة:</label>
                     <select id="subjectSelect" onchange="handleSubjectChange(this.value)">
-                        <optgroup label="📐 المواد العلمية والرياضيات">
+                        <optgroup label="<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M22.7 19.4L4.6 1.3c-.4-.4-1-.4-1.4 0L1.3 3.2c-.4.4-.4 1 0 1.4l1.4 1.4-1.4 1.4c-.2.2-.2.5 0 .7l1.4 1.4c.2.2.5.2.7 0l1.4-1.4 1.4 1.4-1.4 1.4c-.2.2-.2.5 0 .7L6.2 13c.2.2.5.2.7 0l1.4-1.4 1.4 1.4-1.4 1.4c-.2.2-.2.5 0 .7l1.4 1.4c.2.2.5.2.7 0l1.4-1.4L19.4 22.7c.4.4 1 .4 1.4 0l1.9-1.9c.4-.4.4-1 0-1.4z"/></svg> المواد العلمية والرياضيات">
                             <option value="الرياضيات">الرياضيات (عامة)</option>
                             <option value="العلوم">العلوم (عامة)</option>
                             <option value="الفيزياء">الفيزياء</option>
@@ -602,14 +661,14 @@
                             <option value="الجيولوجيا">الجيولوجيا وعلم الأرض</option>
                             <option value="الحاسب الآلي">الحاسب الآلي والتكنولوجيا</option>
                         </optgroup>
-                        <optgroup label="📚 اللغات والأدب">
+                        <optgroup label="<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg> اللغات والأدب">
                             <option value="اللغة العربية">اللغة العربية</option>
                             <option value="English">English (اللغة الإنجليزية)</option>
                             <option value="اللغة الفرنسية">اللغة الفرنسية</option>
                             <option value="اللغة الألمانية">اللغة الألمانية</option>
                             <option value="اللغة الإيطالية">اللغة الإيطالية</option>
                         </optgroup>
-                        <optgroup label="🌍 المواد الاجتماعية والإنسانية">
+                        <optgroup label="<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm7.94 9h-3.02c-.14-2.34-.79-4.5-1.85-6.24A8.03 8.03 0 0119.94 11zM12 4c1.2 1.62 2.13 4.08 2.4 7h-4.8c.27-2.92 1.2-5.38 2.4-7zM4.06 11a8.03 8.03 0 015.87-6.24C8.87 6.5 8.22 8.66 8.08 11H4.06zm0 2h4.02c.14 2.34.79 4.5 1.85 6.24A8.03 8.03 0 014.06 13zM12 20c-1.2-1.62-2.13-4.08-2.4-7h4.8c-.27 2.92-1.2 5.38-2.4 7zm3.11-.76c1.06-1.74 1.71-3.9 1.85-6.24h3.02a8.03 8.03 0 01-4.87 6.24z"/></svg> المواد الاجتماعية والإنسانية">
                             <option value="الدراسات الاجتماعية">الدراسات الاجتماعية</option>
                             <option value="التاريخ">التاريخ</option>
                             <option value="الجغرافيا">الجغرافيا</option>
@@ -617,13 +676,13 @@
                             <option value="علم النفس والاجتماع">علم النفس والاجتماع</option>
                             <option value="التربية الدينية">التربية الدينية</option>
                         </optgroup>
-                        <optgroup label="📊 المواد التجارية والإدارية">
+                        <optgroup label="<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg> المواد التجارية والإدارية">
                             <option value="الإحصاء">الإحصاء</option>
                             <option value="المحاسبة">المحاسبة</option>
                             <option value="الإنتاج">إدارة الأعمال والإنتاج</option>
                         </optgroup>
-                        <optgroup label="⚙️ خيارات مخصصة">
-                            <option value="CUSTOM">➕ مادة مخصصة...</option>
+                        <optgroup label="<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg> خيارات مخصصة">
+                            <option value="CUSTOM"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> مادة مخصصة...</option>
                         </optgroup>
                     </select>
 
@@ -645,19 +704,19 @@
                     <button class="btn btn-success" style="background-color: #0284c7;" onclick="addMCQQuestion()">+ سؤال اختياري</button>
                     <button class="btn btn-purple" style="background-color: #7c3aed;" onclick="addMatchQuestion()">+ سؤال توصيل</button>
                     <button class="btn btn-purple" style="background-color: #b45309;" onclick="addTrueFalseQuestion()">+ صواب/خطأ</button>
-                    <button class="btn btn-warning" style="background-color: #ea580c;" onclick="addStatsQuestion()">📊 + سؤال إحصائي</button>
-                    <button class="btn btn-success" style="background-color: #0891b2;" onclick="addFillBlankQuestion()">✏️ + أكمل الفراغات</button>
-                    <button class="btn btn-eco" onclick="addPageBreak()">✂️ إنهاء الصفحة (صفحة جديدة)</button>
+                    <button class="btn btn-warning" style="background-color: #ea580c;" onclick="addStatsQuestion()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M5 9.2h3V19H5V9.2zM10.6 5h2.8v14h-2.8V5zm5.6 8H19v6h-2.8v-6z"/></svg> + سؤال إحصائي</button>
+                    <button class="btn btn-success" style="background-color: #0891b2;" onclick="addFillBlankQuestion()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 000-1.42l-2.34-2.34a1.003 1.003 0 00-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/></svg> + أكمل الفراغات</button>
+                    <button class="btn btn-eco" onclick="addPageBreak()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1L9.64 7.64zM6 8c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm0 12c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm6-7.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zM19 3l-6 6 2 2 7-7V3z"/></svg> إنهاء الصفحة (صفحة جديدة)</button>
                 </div>
 
                 <div class="input-group lesson-tools" id="lessonToolsRow">
                     <button class="btn btn-success" onclick="addLessonHeading()">+ عنوان رئيسي</button>
                     <button class="btn btn-success" style="background-color:#0284c7;" onclick="addLessonSubheading()">+ عنوان فرعي</button>
                     <button class="btn" style="background-color:#475569;" onclick="addExplanationBlock()">+ فقرة شرح</button>
-                    <button class="btn btn-purple" style="background-color:#0891b2;" onclick="addExampleBlock()">📘 + مثال محلول</button>
-                    <button class="btn btn-warning" style="background-color:#d97706;" onclick="addNoteBlock()">💡 + ملاحظة/تنبيه</button>
-                    <button class="btn btn-purple" style="background-color:#7c3aed;" onclick="addLessonImage()">🖼️ + صورة توضيحية</button>
-                    <button class="btn btn-eco" onclick="addPageBreak()">✂️ إنهاء الصفحة (صفحة جديدة)</button>
+                    <button class="btn btn-purple" style="background-color:#0891b2;" onclick="addExampleBlock()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 5.5C4 4.67 4.67 4 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5v-13zM13 4h5.5c.83 0 1.5.67 1.5 1.5v13c0 .83-.67 1.5-1.5 1.5H13V4z"/></svg> + مثال محلول</button>
+                    <button class="btn btn-warning" style="background-color:#d97706;" onclick="addNoteBlock()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg> + ملاحظة/تنبيه</button>
+                    <button class="btn btn-purple" style="background-color:#7c3aed;" onclick="addLessonImage()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg> + صورة توضيحية</button>
+                    <button class="btn btn-eco" onclick="addPageBreak()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1L9.64 7.64zM6 8c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm0 12c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm6-7.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zM19 3l-6 6 2 2 7-7V3z"/></svg> إنهاء الصفحة (صفحة جديدة)</button>
                 </div>
             </div>
         </div>
@@ -676,6 +735,9 @@
         
         <!-- الصفحة الأولية -->
         <div class="page" id="page-1">
+            <button class="page-settings-btn" title="تنسيق مستقل لهذه الصفحة" onclick="openPageSettings(this.closest('.page').id)">
+                <svg class="svg-ic" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            </button>
             <div class="watermark" id="watermarkText">أ. مهدي حسن</div>
             <img id="centerLogoWatermark" class="center-logo-watermark" />
 
@@ -768,12 +830,12 @@
                             <div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">5</span></div>
                         </div>
                         <div class="q-controls">
-                            <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('q-1')">➕ إضافة سؤال فرعي</button>
+                            <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('q-1')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> إضافة سؤال فرعي</button>
                             <input type="file" accept="image/*" onchange="uploadQuestionImage(this, 'q-1')">
-                            <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('q-1')">🌐 صورة من رابط</button>
+                            <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('q-1')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm7.94 9h-3.02c-.14-2.34-.79-4.5-1.85-6.24A8.03 8.03 0 0119.94 11zM12 4c1.2 1.62 2.13 4.08 2.4 7h-4.8c.27-2.92 1.2-5.38 2.4-7zM4.06 11a8.03 8.03 0 015.87-6.24C8.87 6.5 8.22 8.66 8.08 11H4.06zm0 2h4.02c.14 2.34.79 4.5 1.85 6.24A8.03 8.03 0 014.06 13zM12 20c-1.2-1.62-2.13-4.08-2.4-7h4.8c-.27 2.92-1.2 5.38-2.4 7zm3.11-.76c1.06-1.74 1.71-3.9 1.85-6.24h3.02a8.03 8.03 0 01-4.87 6.24z"/></svg> صورة من رابط</button>
                             <button class="btn btn-purple" style="font-size:10px;" onclick="addLines('q-1')">+ أسطر إجابة</button>
-                            <button class="btn btn-warning" style="font-size:10px;" onclick="addGraphCanvas('q-1')">📈 رسم بياني هندسي</button>
-                            <button class="btn btn-danger" onclick="removeQuestion('q-1')">🗑️ حذف السؤال</button>
+                            <button class="btn btn-warning" style="font-size:10px;" onclick="addGraphCanvas('q-1')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg> رسم بياني هندسي</button>
+                            <button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('q-1')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('q-1')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button>
                         </div>
                     </div>
 
@@ -791,11 +853,11 @@
                         <div class="answer-key-box"><strong>الإجابة الصحيحة:</strong> <span class="editable-element">الخيار الأول</span></div>
                         <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
                         <div class="q-controls">
-                            <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('q-2')">➕ إضافة سؤال فرعي</button>
+                            <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('q-2')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> إضافة سؤال فرعي</button>
                             <input type="file" accept="image/*" onchange="uploadQuestionImage(this, 'q-2')">
-                            <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('q-2')">🌐 صورة من رابط</button>
-                            <button class="btn btn-warning" style="font-size:10px;" onclick="addGraphCanvas('q-2')">📈 رسم بياني هندسي</button>
-                            <button class="btn btn-danger" onclick="removeQuestion('q-2')">🗑️ حذف السؤال</button>
+                            <button class="btn btn-purple" style="font-size:10px;" onclick="addImageFromUrl('q-2')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm7.94 9h-3.02c-.14-2.34-.79-4.5-1.85-6.24A8.03 8.03 0 0119.94 11zM12 4c1.2 1.62 2.13 4.08 2.4 7h-4.8c.27-2.92 1.2-5.38 2.4-7zM4.06 11a8.03 8.03 0 015.87-6.24C8.87 6.5 8.22 8.66 8.08 11H4.06zm0 2h4.02c.14 2.34.79 4.5 1.85 6.24A8.03 8.03 0 014.06 13zM12 20c-1.2-1.62-2.13-4.08-2.4-7h4.8c-.27 2.92-1.2 5.38-2.4 7zm3.11-.76c1.06-1.74 1.71-3.9 1.85-6.24h3.02a8.03 8.03 0 01-4.87 6.24z"/></svg> صورة من رابط</button>
+                            <button class="btn btn-warning" style="font-size:10px;" onclick="addGraphCanvas('q-2')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg> رسم بياني هندسي</button>
+                            <button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('q-2')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('q-2')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button>
                         </div>
                     </div>
 
@@ -829,10 +891,10 @@
                         <div class="answer-lines" id="lines-q-3"><div class="line-item"></div><div class="line-item"></div></div>
                         <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">6</span></div></div>
                         <div class="q-controls">
-                            <button class="btn btn-success" style="font-size:10px;" onclick="addStatsColumn('q-3')">➕ إضافة عمود</button>
-                            <button class="btn btn-warning" style="font-size:10px;" onclick="removeStatsColumn('q-3')">➖ حذف عمود</button>
-                            <button class="btn btn-purple" style="font-size:10px;" onclick="addStatsRow('q-3')">➕ إضافة صف بيانات</button>
-                            <button class="btn btn-danger" onclick="removeQuestion('q-3')">🗑️ حذف السؤال</button>
+                            <button class="btn btn-success" style="font-size:10px;" onclick="addStatsColumn('q-3')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> إضافة عمود</button>
+                            <button class="btn btn-warning" style="font-size:10px;" onclick="removeStatsColumn('q-3')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H5v-2h14v2z"/></svg> حذف عمود</button>
+                            <button class="btn btn-purple" style="font-size:10px;" onclick="addStatsRow('q-3')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> إضافة صف بيانات</button>
+                            <button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('q-3')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('q-3')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button>
                         </div>
                     </div>
 
@@ -1109,7 +1171,11 @@
             const firstPage = document.getElementById('page-1');
             const newPage = firstPage.cloneNode(true);
             newPage.id = `page-${pageCount}`;
-            
+
+            // كل صفحة جديدة تبدأ بتنسيق مستقل افتراضي (بدون وراثة أي تخصيص كان مطبقاً على الصفحة الأولى)
+            [...newPage.classList].filter(c => c.startsWith('page-theme-')).forEach(c => newPage.classList.remove(c));
+            newPage.classList.remove('page-dual-column', 'page-eco');
+
             const headerTop = newPage.querySelector('.header-top');
             const gradingTable = newPage.querySelector('.grading-summary-table');
             const studentBar = newPage.querySelector('.student-bar');
@@ -1284,7 +1350,7 @@
                     <div class="answer-key-box"><strong>الإجابة الصحيحة:</strong> <span class="editable-element">${item.key}</span></div>
                     <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">${item.score}</span></div></div>
                     <div class="q-controls">
-                        <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
+                        <button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button>
                     </div>`;
             } else {
                 card.innerHTML = `
@@ -1295,7 +1361,7 @@
                     <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">${item.key}</span></div>
                     <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">${item.score}</span></div></div>
                     <div class="q-controls">
-                        <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
+                        <button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button>
                     </div>`;
             }
 
@@ -1315,7 +1381,7 @@
                 recognition.stop();
                 isRecording = false;
                 btn.classList.remove('recording');
-                btn.innerHTML = '🎤 كتابة بالصوت';
+                btn.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg> كتابة بالصوت';
                 return;
             }
 
@@ -1327,7 +1393,7 @@
             recognition.onstart = function() {
                 isRecording = true;
                 btn.classList.add('recording');
-                btn.innerHTML = '🔴 جاري التسجيل...';
+                btn.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><circle cx="12" cy="12" r="8" fill="#ef4444"/></svg> جاري التسجيل...';
             };
 
             recognition.onresult = function(event) {
@@ -1343,7 +1409,7 @@
             recognition.onend = function() {
                 isRecording = false;
                 btn.classList.remove('recording');
-                btn.innerHTML = '🎤 كتابة بالصوت';
+                btn.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg> كتابة بالصوت';
             };
 
             recognition.start();
@@ -1357,7 +1423,7 @@
 
             const subItem = document.createElement('div');
             subItem.className = 'sub-question-item';
-            subItem.innerHTML = `<span contenteditable="true">( ${letter} ) اكتب السؤال الفرعي...</span> <button style="background:none; border:none; color:red; cursor:pointer;" onclick="this.parentElement.remove(); calculateAnalytics();">✕</button>`;
+            subItem.innerHTML = `<span contenteditable="true">( ${letter} ) اكتب السؤال الفرعي...</span> <button style="background:none; border:none; color:red; cursor:pointer;" onclick="this.parentElement.remove(); calculateAnalytics();"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>`;
             container.appendChild(subItem);
             calculateAnalytics();
             attachMathJaxBlur();
@@ -1385,8 +1451,8 @@
                 <div class="answer-key-box"><strong>الإجابة النموذجية:</strong> <span class="editable-element">إجابة المعلم النموذجية...</span></div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">5</span></div></div>
                 <div class="q-controls">
-                    <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('${qId}')">➕ إضافة سؤال فرعي</button>
-                    <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
+                    <button class="btn btn-success" style="font-size:10px;" onclick="addSubQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> إضافة سؤال فرعي</button>
+                    <button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button>
                 </div>`;
             getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
@@ -1409,7 +1475,7 @@
                 <div class="answer-key-box"><strong>الإجابة الصحيحة:</strong> <span class="editable-element">الخيار الأول</span></div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
                 <div class="q-controls">
-                    <button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button>
+                    <button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button>
                 </div>`;
             getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
@@ -1428,7 +1494,7 @@
                     <div class="match-column"><div class="match-column-title">العمود (ب)</div><div class="match-item" contenteditable="true">أ. التناظر الأول</div></div>
                 </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">4</span></div></div>
-                <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
+                <div class="q-controls"><button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button></div>`;
             getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
@@ -1440,12 +1506,12 @@
             card.innerHTML = `
                 <div class="q-number-badge"><span class="q-num"></span></div>
                 <div class="q-bloom-tag" onclick="cycleBloomTag(this)">تقويم</div>
-                <div class="q-body editable-element">ضع علامة (✔) أو علامة (❌):</div>
+                <div class="q-body editable-element">ضع علامة (<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>) أو علامة (<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>):</div>
                 <div class="tf-container">
                     <div class="tf-row"><span contenteditable="true">العبارة الأولى هنا...</span><span class="tf-box">(  )</span></div>
                 </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
-                <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
+                <div class="q-controls"><button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button></div>`;
             getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
@@ -1462,7 +1528,7 @@
                     <div class="sub-question-item"><span contenteditable="true">1. ناتج جمع 2 + 3 يساوي .....................</span></div>
                 </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">2</span></div></div>
-                <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
+                <div class="q-controls"><button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button></div>`;
             getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
@@ -1486,7 +1552,7 @@
                     </table>
                 </div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">6</span></div></div>
-                <div class="q-controls"><button class="btn btn-danger" onclick="removeQuestion('${qId}')">🗑️ حذف السؤال</button></div>`;
+                <div class="q-controls"><button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button></div>`;
             getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
@@ -1570,9 +1636,9 @@
             div.innerHTML = `
                 <h2 class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">عنوان الدرس الرئيسي</h2>
                 <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
                 </div>`;
             getActiveQuestionsContainer().appendChild(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
@@ -1586,9 +1652,9 @@
             div.innerHTML = `
                 <h3 class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">عنوان فرعي</h3>
                 <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
                 </div>`;
             getActiveQuestionsContainer().appendChild(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
@@ -1602,9 +1668,9 @@
             div.innerHTML = `
                 <div class="exp-text editable-element" contenteditable="${isDirectEditMode || isEditMode}">اكتب فقرة الشرح هنا... يمكنك استخدام شريط الرياضيات لإدراج المعادلات.</div>
                 <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
                 </div>`;
             getActiveQuestionsContainer().appendChild(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
@@ -1622,9 +1688,9 @@
                     <div class="example-solution"><strong>الحل:</strong> <span class="editable-element" contenteditable="${isDirectEditMode || isEditMode}">اكتب خطوات الحل هنا...</span></div>
                 </div>
                 <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
                 </div>`;
             getActiveQuestionsContainer().appendChild(div);
             reindexExamples(); attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
@@ -1637,13 +1703,13 @@
             div.id = id;
             div.innerHTML = `
                 <div class="note-block note-info">
-                    <span class="note-type-badge" onclick="cycleNoteType(this)">ℹ️ ملاحظة</span>
+                    <span class="note-type-badge" onclick="cycleNoteType(this)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg> ملاحظة</span>
                     <span class="editable-element" style="flex:1;" contenteditable="${isDirectEditMode || isEditMode}">اكتب الملاحظة أو التنبيه الهام هنا...</span>
                 </div>
                 <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
                 </div>`;
             getActiveQuestionsContainer().appendChild(div);
             attachMathJaxBlur(); calculateAnalytics(); saveExamToLocalStorage();
@@ -1652,11 +1718,11 @@
         function cycleNoteType(badgeEl) {
             const parent = badgeEl.closest('.note-block');
             if(parent.classList.contains('note-info')) {
-                parent.classList.remove('note-info'); parent.classList.add('note-tip'); badgeEl.innerText = '💡 إرشاد';
+                parent.classList.remove('note-info'); parent.classList.add('note-tip'); badgeEl.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg> إرشاد';
             } else if(parent.classList.contains('note-tip')) {
-                parent.classList.remove('note-tip'); parent.classList.add('note-warning'); badgeEl.innerText = '⚠️ تنبيه';
+                parent.classList.remove('note-tip'); parent.classList.add('note-warning'); badgeEl.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg> تنبيه';
             } else {
-                parent.classList.remove('note-warning'); parent.classList.add('note-info'); badgeEl.innerText = 'ℹ️ ملاحظة';
+                parent.classList.remove('note-warning'); parent.classList.add('note-info'); badgeEl.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg> ملاحظة';
             }
             saveExamToLocalStorage();
         }
@@ -1670,9 +1736,9 @@
             div.innerHTML = `
                 <div style="text-align:center;"><img src="${url}" style="max-width:100%; max-height:260px; border-radius:8px; border:1px solid #cbd5e1;" /></div>
                 <div class="block-controls">
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)">⬆️ لأعلى</button>
-                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)">⬇️ لأسفل</button>
-                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')">🗑️ حذف</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',-1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8-8 8z"/></svg> لأعلى</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="moveLessonBlock('${id}',1)"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8 8-8z"/></svg> لأسفل</button>
+                    <button class="btn btn-danger" style="font-size:10px;" onclick="removeLessonBlock('${id}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف</button>
                 </div>`;
             getActiveQuestionsContainer().appendChild(div);
             calculateAnalytics(); saveExamToLocalStorage();
@@ -1712,6 +1778,21 @@
                 calculateAnalytics();
                 saveExamToLocalStorage();
             }
+        }
+
+        function duplicateQuestion(qId) {
+            const original = document.getElementById(qId);
+            if (!original) return;
+            const newQId = `q-${Date.now()}`;
+            const wrapper = document.createElement('div');
+            // إعادة توليد كل المعرّفات الفرعية المرتبطة بالسؤال (الصور، الأسئلة الفرعية، جداول الإحصاء...) دفعة واحدة
+            wrapper.innerHTML = original.outerHTML.split(qId).join(newQId);
+            const clone = wrapper.firstElementChild;
+            original.insertAdjacentElement('afterend', clone);
+            reindexQuestions();
+            calculateAnalytics();
+            attachMathJaxBlur();
+            saveExamToLocalStorage();
         }
 
         function reindexQuestions() {
@@ -1818,6 +1899,52 @@
         function toggleDualColumn() {
             isDualColumn = !isDualColumn;
             document.body.classList.toggle('dual-column-mode', isDualColumn);
+        }
+
+        /* ===== تنسيق مستقل لكل صفحة ===== */
+        let currentPageSettingsTarget = null;
+
+        function openPageSettings(pageId) {
+            const page = document.getElementById(pageId);
+            if (!page) return;
+            currentPageSettingsTarget = pageId;
+
+            const themeClass = [...page.classList].find(c => c.startsWith('page-theme-'));
+            document.getElementById('pageThemeSelect').value = themeClass || 'inherit';
+            document.getElementById('pageColumnsSelect').value = page.classList.contains('page-dual-column') ? 'dual' : 'single';
+            document.getElementById('pageEcoCheck').checked = page.classList.contains('page-eco');
+
+            document.getElementById('pageSettingsModal').classList.add('open');
+        }
+
+        function closePageSettingsModal() {
+            document.getElementById('pageSettingsModal').classList.remove('open');
+        }
+
+        function applyPageSettings() {
+            const page = document.getElementById(currentPageSettingsTarget);
+            if (!page) return;
+
+            [...page.classList].filter(c => c.startsWith('page-theme-')).forEach(c => page.classList.remove(c));
+            const theme = document.getElementById('pageThemeSelect').value;
+            if (theme !== 'inherit') page.classList.add(theme);
+
+            page.classList.toggle('page-dual-column', document.getElementById('pageColumnsSelect').value === 'dual');
+            page.classList.toggle('page-eco', document.getElementById('pageEcoCheck').checked);
+
+            closePageSettingsModal();
+            saveExamToLocalStorage();
+        }
+
+        function resetPageSettings() {
+            const page = document.getElementById(currentPageSettingsTarget);
+            if (!page) return;
+
+            [...page.classList].filter(c => c.startsWith('page-theme-')).forEach(c => page.classList.remove(c));
+            page.classList.remove('page-dual-column', 'page-eco');
+
+            closePageSettingsModal();
+            saveExamToLocalStorage();
         }
 
         function toggleCoverPage() {
