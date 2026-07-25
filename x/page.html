@@ -1974,8 +1974,18 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
           ℹ️ الأكواد هنا مستقلة تمامًا عن كود اشتراك الطالب في المنصة — دي أكواد خاصة بأداة "امتحانك بلس" بس، وحظر أو مسح كود هنا ملوش أي علاقة باشتراك الطالب الأساسي.
         </div>
 
+        <!-- إعداد مدة الصلاحية الافتراضية -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;padding:12px;background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.2);border-radius:12px">
+          <span style="font-size:12px;font-weight:800;color:var(--gold2);white-space:nowrap">⏳ مدة صلاحية الكود الافتراضية</span>
+          <input type="number" id="epDefaultDaysAdmin" min="1" max="3650" value="28" style="width:80px;padding:8px 10px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;text-align:center"/>
+          <span style="font-size:11px;color:var(--muted)">يوم</span>
+          <button class="btn ghost sm" onclick="epSaveDefaultDays()"><svg><use href="#ic-check"/></svg>حفظ كافتراضي</button>
+          <span style="font-size:11px;color:var(--muted)">هتتطبق تلقائيًا على أي أكواد جديدة تتولد من هنا (تقدر تغيّرها لكل دفعة توليد كمان)</span>
+        </div>
+
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;align-items:center">
-          <input type="number" id="epGenCountAdmin" min="1" max="50" value="5" style="width:80px;padding:9px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;text-align:center"/>
+          <input type="number" id="epGenCountAdmin" min="1" max="50" value="5" title="عدد الأكواد" style="width:80px;padding:9px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;text-align:center"/>
+          <input type="number" id="epGenDaysAdmin" min="1" max="3650" placeholder="أيام الصلاحية" title="صلاحية هذه الدفعة (أيام)" style="width:120px;padding:9px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;text-align:center"/>
           <button class="btn ok sm" onclick="epGenerateCodesAdmin()"><svg><use href="#ic-plus"/></svg>توليد أكواد جديدة</button>
           <input type="text" id="epSearchInp" placeholder="بحث بالكود أو اسم الطالب..." oninput="renderExamPlus()" style="flex:1;min-width:220px;padding:9px 12px;background:var(--inp);border:1.5px solid var(--b1);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none"/>
         </div>
@@ -1983,6 +1993,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="ftabs">
           <div class="ftab on" onclick="setEPF('all',this)">الكل <span id="ep-count">0</span></div>
           <div class="ftab" onclick="setEPF('active',this)">فعّال</div>
+          <div class="ftab" onclick="setEPF('expired',this)">منتهي</div>
           <div class="ftab" onclick="setEPF('blocked',this)">محظور</div>
         </div>
 
@@ -1993,12 +2004,39 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
               <th>اسم الطالب</th>
               <th>آخر دخول</th>
               <th>عدد مرات الدخول</th>
+              <th>تاريخ الانتهاء</th>
               <th>الحالة</th>
               <th>إجراء</th>
             </tr></thead>
-            <tbody id="epTbl"><tr><td colspan="6"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
+            <tbody id="epTbl"><tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr></tbody>
           </table>
         </div></div>
+      </div>
+
+      <!-- ══ EXAM PLUS — تعديل تاريخ انتهاء الكود ══ -->
+      <div class="mbg" id="epExpiryModal">
+        <div class="modal" style="max-width:400px">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:15px;height:15px"><use href="#ic-key"/></svg>
+            تعديل صلاحية الكود <span id="epExpModalCode" style="color:var(--gold2);font-family:monospace"></span>
+          </h3>
+          <div class="ff"><label>تحديد تاريخ انتهاء بالظبط</label>
+            <div style="display:flex;gap:6px">
+              <input type="date" id="epExpDateInput" style="flex:1;direction:ltr"/>
+              <button class="btn ok sm" onclick="epSaveExactExpiry()">حفظ</button>
+            </div>
+          </div>
+          <div class="ff"><label>أو إضافة أيام على التاريخ الحالي</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn ghost sm" onclick="epExtendExpiry(7)">+7 أيام</button>
+              <button class="btn ghost sm" onclick="epExtendExpiry(14)">+14 يوم</button>
+              <button class="btn ghost sm" onclick="epExtendExpiry(28)">+28 يوم</button>
+              <input type="number" id="epExtendCustomDays" min="1" max="3650" placeholder="مخصص" style="width:70px;padding:8px;background:var(--inp);border:1.5px solid var(--b2);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:12px;outline:none;text-align:center"/>
+              <button class="btn ghost sm" onclick="epExtendExpiryCustom()">+إضافة</button>
+            </div>
+          </div>
+          <button class="btn ghost sm" style="width:100%;justify-content:center;margin-top:6px" onclick="closeModal('epExpiryModal')">إغلاق</button>
+        </div>
       </div>
 
     </div><!-- content -->
@@ -9376,7 +9414,11 @@ window.exportHwCsv = ()=>{
 (function(){
 
   const EP_COL = 'examPlusCodes';
+  const EP_SETTINGS_COL = 'examPlusSettings';
+  const EP_SETTINGS_DOC = 'config';
   let _epFilter = 'all';
+  let _epExpiryTargetId = null;
+  window._epSettings = window._epSettings || { defaultCodeDays: 28 };
   const epCharset = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   function epMakeCode(){ return Array.from({length:6},()=>epCharset[Math.floor(Math.random()*epCharset.length)]).join(''); }
 
@@ -9387,10 +9429,45 @@ window.exportHwCsv = ()=>{
     renderExamPlus();
   };
 
+  // ── تحميل/حفظ إعداد مدة الصلاحية الافتراضية ──
+  window.loadEPSettings = async function(){
+    if(!window.db) return;
+    try{
+      const snap = await window.db.collection(EP_SETTINGS_COL).doc(EP_SETTINGS_DOC).get();
+      if(snap.exists && snap.data().defaultCodeDays){
+        window._epSettings.defaultCodeDays = snap.data().defaultCodeDays;
+      }
+    }catch(e){ /* استخدم القيمة الافتراضية 28 عند أي خطأ */ }
+    const inp = document.getElementById('epDefaultDaysAdmin');
+    if(inp) inp.value = window._epSettings.defaultCodeDays;
+    const genInp = document.getElementById('epGenDaysAdmin');
+    if(genInp && !genInp.value) genInp.placeholder = window._epSettings.defaultCodeDays + ' يوم (افتراضي)';
+  };
+
+  window.epSaveDefaultDays = async function(){
+    if(!window.db) return;
+    const val = parseInt(document.getElementById('epDefaultDaysAdmin')?.value);
+    if(!val || val<1){ window.toast?.('ادخل عدد أيام صحيح','err'); return; }
+    try{
+      await window.db.collection(EP_SETTINGS_COL).doc(EP_SETTINGS_DOC).set({
+        defaultCodeDays: val,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, {merge:true});
+      window._epSettings.defaultCodeDays = val;
+      const genInp = document.getElementById('epGenDaysAdmin');
+      if(genInp) genInp.placeholder = val + ' يوم (افتراضي)';
+      window.toast?.('تم حفظ مدة الصلاحية الافتراضية ('+val+' يوم) ✓','ok');
+      window.logActivity?.('⏳','تعديل مدة صلاحية أكواد امتحانك بلس الافتراضية', val+' يوم');
+    }catch(e){
+      window.toast?.('حصل خطأ: '+e.message,'err');
+    }
+  };
+
   window.loadExamPlus = async function(){
     if(!window.db) return;
     const tb = document.getElementById('epTbl');
-    if(tb) tb.innerHTML = '<tr><td colspan="6"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr>';
+    if(tb) tb.innerHTML = '<tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>جاري التحميل...</p></div></td></tr>';
+    loadEPSettings();
     try{
       const snap = await window.db.collection(EP_COL).orderBy('createdAt','desc').limit(500).get();
       window._examPlusCodes = snap.docs.map(d=>({id:d.id, ...d.data()}));
@@ -9404,6 +9481,9 @@ window.exportHwCsv = ()=>{
   window.epGenerateCodesAdmin = async function(){
     if(!window.db) return;
     const n = Math.min(parseInt(document.getElementById('epGenCountAdmin')?.value)||1, 50);
+    const daysInput = parseInt(document.getElementById('epGenDaysAdmin')?.value);
+    const days = (daysInput && daysInput>0) ? daysInput : (window._epSettings.defaultCodeDays || 28);
+    const expiresAt = new Date(Date.now() + days*86400000);
     const created = [];
     try{
       for(let i=0;i<n;i++){
@@ -9418,12 +9498,15 @@ window.exportHwCsv = ()=>{
         await window.db.collection(EP_COL).doc(code).set({
           code, active:true, blocked:false,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          expiresAt, validityDays: days,
           loginCount:0, studentName:'', permissions:{}
         });
         created.push(code);
       }
-      window.toast?.('تم توليد '+n+' كود ✓','ok');
-      window.logActivity?.('🔑','توليد أكواد امتحانك بلس', created.join(', '));
+      window.toast?.('تم توليد '+n+' كود بصلاحية '+days+' يوم ✓','ok');
+      window.logActivity?.('🔑','توليد أكواد امتحانك بلس', created.join(', ')+' — صلاحية '+days+' يوم');
+      const genInp = document.getElementById('epGenDaysAdmin');
+      if(genInp) genInp.value = '';
       await loadExamPlus();
     }catch(e){
       window.toast?.('حصل خطأ: '+e.message,'err');
@@ -9438,13 +9521,23 @@ window.exportHwCsv = ()=>{
     }catch(e){ return '—'; }
   }
 
+  function epGetExpiry(x){
+    if(!x.expiresAt) return null;
+    return x.expiresAt.toDate ? x.expiresAt.toDate() : new Date(x.expiresAt);
+  }
+  function epIsExpired(x){
+    const exp = epGetExpiry(x);
+    return !!(exp && exp.getTime() < Date.now());
+  }
+
   window.renderExamPlus = function(){
     const all = window._examPlusCodes||[];
     const q = (document.getElementById('epSearchInp')?.value||'').trim().toLowerCase();
 
     let f = all.filter(x=>{
       if(_epFilter==='blocked') return !!x.blocked;
-      if(_epFilter==='active')  return !x.blocked && x.active !== false;
+      if(_epFilter==='expired') return !x.blocked && epIsExpired(x);
+      if(_epFilter==='active')  return !x.blocked && x.active !== false && !epIsExpired(x);
       return true;
     }).filter(x=>{
       if(!q) return true;
@@ -9473,14 +9566,24 @@ window.exportHwCsv = ()=>{
     if(!tb) return;
 
     if(!f.length){
-      tb.innerHTML = '<tr><td colspan="6"><div class="empty"><svg><use href="#ic-users"/></svg><p>لا يوجد أكواد مطابقة</p></div></td></tr>';
+      tb.innerHTML = '<tr><td colspan="7"><div class="empty"><svg><use href="#ic-users"/></svg><p>لا يوجد أكواد مطابقة</p></div></td></tr>';
       return;
     }
 
     tb.innerHTML = f.map(x=>{
+      const expired = epIsExpired(x);
       const statusBadge = x.blocked
         ? '<span class="bd err">⛔ محظور</span>'
+        : expired ? '<span class="bd err">⏰ منتهي</span>'
         : (x.active === false ? '<span class="bd pu">⏸️ متوقف</span>' : '<span class="bd ok">✅ فعّال</span>');
+      const exp = epGetExpiry(x);
+      let expiryCell = '<span style="color:var(--muted)">—</span>';
+      if(exp){
+        const daysLeft = Math.ceil((exp.getTime()-Date.now())/86400000);
+        const color = expired ? 'var(--err)' : (daysLeft<=5 ? 'var(--warn)' : 'var(--ok)');
+        const label = expired ? 'منتهي منذ '+Math.abs(daysLeft)+' يوم' : daysLeft+' يوم متبقي';
+        expiryCell = `<span style="color:${color};font-weight:700;font-size:11px">${exp.toLocaleDateString('ar-EG')}<br><span style="font-size:10px;opacity:.85">${label}</span></span>`;
+      }
       const safeName = (x.studentName||'—').replace(/</g,'&lt;');
       const safeCode = (x.code||x.id||'—').replace(/</g,'&lt;');
       return `<tr style="${x.blocked?'opacity:.6':''}">
@@ -9488,9 +9591,11 @@ window.exportHwCsv = ()=>{
         <td>${safeName}</td>
         <td>${fmtDate(x.lastLogin)}</td>
         <td>${x.loginCount||0}</td>
+        <td>${expiryCell}</td>
         <td>${statusBadge}</td>
         <td>
           <div style="display:flex;gap:6px">
+            <button class="btn icon-btn" style="color:var(--blue)" onclick="epOpenExpiryModal('${x.id}')" title="تعديل الصلاحية"><svg><use href="#ic-edit"/></svg></button>
             ${x.blocked
               ? `<button class="btn icon-btn" style="color:var(--ok)" onclick="epToggleBlock('${x.id}',false)" title="إلغاء الحظر"><svg><use href="#ic-shield"/></svg></button>`
               : `<button class="btn icon-btn" style="color:var(--warn)" onclick="epToggleBlock('${x.id}',true)" title="حظر الكود"><svg><use href="#ic-shield-off"/></svg></button>`}
@@ -9499,6 +9604,58 @@ window.exportHwCsv = ()=>{
         </td>
       </tr>`;
     }).join('');
+  };
+
+  // ── تعديل صلاحية كود موجود ──
+  window.epOpenExpiryModal = function(id){
+    _epExpiryTargetId = id;
+    const x = (window._examPlusCodes||[]).find(c=>c.id===id);
+    if(!x) return;
+    document.getElementById('epExpModalCode').textContent = x.code||x.id;
+    const exp = epGetExpiry(x);
+    document.getElementById('epExpDateInput').value = exp ? exp.toISOString().split('T')[0] : '';
+    document.getElementById('epExtendCustomDays').value = '';
+    openModal('epExpiryModal');
+  };
+
+  window.epSaveExactExpiry = async function(){
+    if(!_epExpiryTargetId) return;
+    const val = document.getElementById('epExpDateInput')?.value;
+    if(!val){ window.toast?.('اختار تاريخ','err'); return; }
+    const newExpiry = new Date(val);
+    newExpiry.setHours(23,59,59,0);
+    if(isNaN(newExpiry)){ window.toast?.('تاريخ غير صحيح','err'); return; }
+    try{
+      await window.db.collection(EP_COL).doc(_epExpiryTargetId).update({ expiresAt: newExpiry });
+      const c = (window._examPlusCodes||[]).find(x=>x.id===_epExpiryTargetId);
+      if(c) c.expiresAt = newExpiry;
+      renderExamPlus();
+      window.toast?.('✅ تم تحديد تاريخ الانتهاء: '+newExpiry.toLocaleDateString('ar-EG'),'ok');
+      window.logActivity?.('📅','تعديل صلاحية كود امتحانك بلس', _epExpiryTargetId+' → '+newExpiry.toLocaleDateString('ar-EG'));
+      closeModal('epExpiryModal');
+    }catch(e){ window.toast?.('خطأ: '+e.message,'err'); }
+  };
+
+  window.epExtendExpiry = async function(days){
+    if(!_epExpiryTargetId || !days) return;
+    try{
+      const x = (window._examPlusCodes||[]).find(c=>c.id===_epExpiryTargetId);
+      let baseDate = epGetExpiry(x);
+      if(!baseDate || baseDate.getTime() < Date.now()) baseDate = new Date();
+      const newExpiry = new Date(baseDate.getTime() + days*86400000);
+      await window.db.collection(EP_COL).doc(_epExpiryTargetId).update({ expiresAt: newExpiry });
+      if(x) x.expiresAt = newExpiry;
+      renderExamPlus();
+      window.toast?.('✅ تم إضافة '+days+' يوم — ينتهي '+newExpiry.toLocaleDateString('ar-EG'),'ok');
+      window.logActivity?.('🎁','تمديد صلاحية كود امتحانك بلس', _epExpiryTargetId+' +'+days+' يوم');
+      closeModal('epExpiryModal');
+    }catch(e){ window.toast?.('خطأ: '+e.message,'err'); }
+  };
+
+  window.epExtendExpiryCustom = function(){
+    const days = parseInt(document.getElementById('epExtendCustomDays')?.value);
+    if(!days || days<1){ window.toast?.('ادخل عدد أيام صحيح','err'); return; }
+    epExtendExpiry(days);
   };
 
   window.epToggleBlock = async function(id, block){
