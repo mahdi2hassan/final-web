@@ -740,6 +740,46 @@ window.MathJax = {
             </div>
 
             <div class="toolbar-section">
+                <div class="toolbar-label"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg> أدوات إضافية</div>
+                <div class="adv-toolbar no-print">
+                    <div class="adv-fab" onclick="toggleThumbnailsSidebar()" title="عرض / إخفاء الصور المصغرة للصفحات">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z"/></svg>
+                        صور مصغرة للصفحات
+                    </div>
+                    <div class="adv-fab" onclick="openReviewModal()" title="الأسئلة المطلوب مراجعتها">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                        أسئلة تحتاج مراجعة
+                        <span class="adv-fab-badge" id="advReviewBadgeCount" style="display:none;">0</span>
+                    </div>
+                    <div class="adv-fab" onclick="generateTOC()" title="توليد جدول المحتويات تلقائيًا">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
+                        جدول المحتويات
+                    </div>
+                    <div class="adv-fab" onclick="openQuestionBankModal()" title="بنك الأسئلة">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>
+                        بنك الأسئلة
+                    </div>
+                    <div class="adv-fab" onclick="exportDirectPDF()" title="تصدير مباشر إلى PDF">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        تصدير PDF مباشر
+                    </div>
+                    <div class="adv-fab" onclick="toggleCustomHeaderFooter()" title="تفعيل/إيقاف رأس وتذييل الطباعة المخصص">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M3 5h18v2H3V5zm0 12h18v2H3v-2zm4-4h10v2H7v-2z"/></svg>
+                        رأس وتذييل الطباعة
+                    </div>
+                    <div class="adv-fab" onclick="openCoverCustomizeModal()" title="تخصيص غلاف الملزمة بالكامل">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M4 4h16v4H4V4zm0 6h16v10H4V10zm4 2v6h8v-6H8z"/></svg>
+                        تخصيص الغلاف
+                    </div>
+                    <div class="adv-fab" onclick="openReusablesModal()" title="عناصر وصور محفوظة لإعادة الاستخدام">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        العناصر المحفوظة
+                        <span class="adv-fab-badge" id="reusablesBadgeCount" style="display:none;">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toolbar-section">
                 <div class="toolbar-label"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.09-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg> أوضاع العرض والتنسيق</div>
                 <div class="btn-group">
                     <button class="btn btn-purple" style="background-color: #0284c7;" onclick="toggleAnswerKey()">نموذج الإجابة</button>
@@ -2668,20 +2708,18 @@ window.MathJax = {
         .thumbnail-item:hover { border-color: var(--primary-color); background: #f0f9ff; transform: translateX(-2px); }
         .thumbnail-item .thumb-type-tag { display:block; font-size: 9px; font-weight: 800; color: var(--primary-color); margin-top:2px; }
         .thumbnails-toggle-btn {
-            position: fixed; top: 50%; left: 24px; transform: translateY(-50%); width: 46px; height: 46px;
-            background: #ffffff; border: 1px solid var(--card-border); border-radius: 50%; box-shadow: var(--shadow-md);
-            display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 9997; color: #334155;
+            width: auto; height: auto; background: transparent; border: none; box-shadow: none;
+            display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: inherit;
         }
-        .thumbnails-toggle-btn:hover { color: var(--primary-color); border-color: var(--primary-color); }
 
-        /* ---------- 3) شريط أدوات عائم للميزات الجديدة ---------- */
+        /* ---------- 3) شريط أدوات الميزات الإضافية — أزرار عادية داخل لوحة التحكم (بديل الأزرار العائمة السابقة) ---------- */
         .adv-toolbar {
-            position: fixed; bottom: 24px; left: 90px; z-index: 9998; display: flex; flex-direction: column; gap: 8px;
+            display: flex; flex-wrap: wrap; gap: 8px;
         }
         .adv-fab {
-            width: 44px; height: 44px; border-radius: 50%; background: #ffffff; border: 1px solid var(--card-border);
-            box-shadow: var(--shadow-md); display: flex; align-items: center; justify-content: center; cursor: pointer;
-            color: #334155; position: relative; transition: all 0.2s ease;
+            width: auto; height: auto; border-radius: 8px; background: #ffffff; border: 1px solid var(--card-border);
+            box-shadow: none; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+            color: #334155; position: relative; transition: all 0.2s ease; padding: 7px 12px; font-size: 12px; font-weight: 700;
         }
         .adv-fab:hover { color: #fff; background: var(--primary-color); border-color: var(--primary-color); }
         .adv-fab .adv-fab-badge {
@@ -2776,35 +2814,8 @@ window.MathJax = {
         <span class="adv-search-count" id="advSearchCount"></span>
     </div>
 
-    <!-- زر ولوحة الصور المصغرة للصفحات -->
-    <div class="thumbnails-toggle-btn no-print" onclick="toggleThumbnailsSidebar()" title="عرض / إخفاء الصور المصغرة للصفحات">
-        <svg class="svg-ic" viewBox="0 0 24 24"><path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z"/></svg>
-    </div>
     <div class="thumbnails-sidebar no-print" id="thumbnailsSidebar">
         <h4>صفحات الملف</h4>
-    </div>
-
-    <!-- شريط الأدوات العائم للميزات الجديدة -->
-    <div class="adv-toolbar no-print">
-        <div class="adv-fab" onclick="openReviewModal()" title="الأسئلة المطلوب مراجعتها">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-            <span class="adv-fab-badge" id="advReviewBadgeCount" style="display:none;">0</span>
-        </div>
-        <div class="adv-fab" onclick="generateTOC()" title="توليد جدول المحتويات تلقائيًا">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
-        </div>
-        <div class="adv-fab" onclick="openQuestionBankModal()" title="بنك الأسئلة">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>
-        </div>
-        <div class="adv-fab" onclick="exportDirectPDF()" title="تصدير مباشر إلى PDF">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-        </div>
-        <div class="adv-fab" onclick="toggleCustomHeaderFooter()" title="تفعيل/إيقاف رأس وتذييل الطباعة المخصص">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M3 5h18v2H3V5zm0 12h18v2H3v-2zm4-4h10v2H7v-2z"/></svg>
-        </div>
-        <div class="adv-fab" onclick="openCoverCustomizeModal()" title="تخصيص غلاف الملزمة بالكامل">
-            <svg class="svg-ic" viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M4 4h16v4H4V4zm0 6h16v10H4V10zm4 2v6h8v-6H8z"/></svg>
-        </div>
     </div>
 
     <!-- نافذة: تخصيص غلاف الملزمة -->
@@ -3461,6 +3472,17 @@ window.MathJax = {
             dupBtn.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
             dupBtn.onclick = () => duplicatePage(page.id);
             page.appendChild(dupBtn);
+        }
+
+        if (!page.querySelector('[id^="pageDeleteBtn-"]')) {
+            const delBtn = document.createElement('button');
+            delBtn.id = 'pageDeleteBtn-' + (page.id || Date.now());
+            delBtn.className = 'page-settings-btn no-print';
+            delBtn.style.cssText = 'top:86px; color:#b91c1c;';
+            delBtn.title = 'حذف هذه الصفحة نهائيًا';
+            delBtn.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
+            delBtn.onclick = () => deletePageEl(page.id);
+            page.appendChild(delBtn);
         }
     }
 
