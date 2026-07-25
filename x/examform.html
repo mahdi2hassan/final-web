@@ -484,14 +484,19 @@ window.MathJax = {
                 border-radius: 0 !important; 
                 width: 210mm !important; 
                 min-height: 297mm !important; 
-                height: 297mm !important; 
+                /* ملحوظة إصلاح مهمة: كان فيه "height: 297mm !important" مع "overflow: hidden"
+                   (موروثة من تنسيق الصفحة الأساسي) و"page-break-inside: avoid !important" مع
+                   بعض. الاتنين مع بعض كانوا بيخلوا أي محتوى أطول من صفحة A4 وحدة يتقص/يختفي
+                   تمامًا عند الطباعة بدل ما ينتقل لصفحة تانية — وده سبب "فاصل الطباعة مش شغال".
+                   دلوقتي مع نظام التقسيم التلقائي للصفحات (auto-pagination) بقى كل .page
+                   مفروض يتملى لحد ارتفاع صفحة A4 بالظبط، فمينفعش نحدد height ثابت ولازم
+                   overflow يبقى visible عشان أي فارق بسيط ميضيعش. */
+                overflow: visible !important;
                 padding: 15mm 15mm 12mm 15mm !important; 
                 margin: 0 !important; 
                 border: none !important; 
                 page-break-after: always !important;
                 break-after: page !important;
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
                 box-sizing: border-box !important;
             }
             
@@ -929,6 +934,7 @@ window.MathJax = {
                     <button class="btn btn-purple" style="background-color: #0d9488;" onclick="document.getElementById('jsonFileInput').click()">رفع ملف (JSON)</button>
                     <input type="file" id="jsonFileInput" accept=".json" style="display:none;" onchange="loadExamJSON(event)">
                     <button class="btn btn-print" onclick="window.print()">طباعة الورقة A4</button>
+                    <button class="btn btn-warning" style="background-color:#7c3aed;" onclick="restoreFromCloudBackup()" title="استرجاع آخر نسخة سحابية محفوظة لحسابك لو البيانات المحلية ضاعت">☁️ استرجاع نسخة سحابية</button>
                 </div>
             </div>
 
@@ -1463,22 +1469,37 @@ window.MathJax = {
                 return false;
             }
 
-            // منع استخدام نفس الكود من أكتر من جهاز في نفس الوقت
+            // منع استخدام نفس الكود من أكتر من عدد الأجهزة المسموح بيه (maxDevices — زي باقي المنصة)
             const deviceId = getExamPlusDeviceId();
-            const activeAtRaw = data.activeAt;
-            const activeAt = activeAtRaw ? (activeAtRaw.toDate ? activeAtRaw.toDate() : new Date(activeAtRaw)) : null;
-            const stillActiveElsewhere = !!(data.activeDeviceId && data.activeDeviceId !== deviceId && activeAt && (Date.now() - activeAt.getTime() < EXAM_PLUS_SESSION_STALE_MS));
-            if (stillActiveElsewhere) {
-                showExamAuthError('الكود ده مسجّل دخول عليه دلوقتي من جهاز تاني. استنى شوية أو اطلب من صاحب الكود يقفل الجلسة، وبعدين جرّب تاني.');
+            const maxDev = (typeof data.maxDevices === 'number' && data.maxDevices > 0) ? data.maxDevices : 1;
+
+            // نقرأ خريطة الأجهزة الحالية (activeDevices: { deviceId: timestamp }).
+            // ولو الكود قديم ولسه شغال بالنظام القديم (activeDeviceId مفرد بس)، بنعتبره
+            // جهاز واحد فعّال ضمن نفس الحساب عشان التوافق مع الأكواد اللي اتولدت قبل التحديث.
+            const rawDevices = data.activeDevices && typeof data.activeDevices === 'object' ? data.activeDevices : {};
+            const now = Date.now();
+            const isStale = (ts) => {
+                if (!ts) return true;
+                const t = ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+                return (now - t) >= EXAM_PLUS_SESSION_STALE_MS;
+            };
+            const activeDeviceIds = Object.keys(rawDevices).filter(id => !isStale(rawDevices[id]));
+            if (data.activeDeviceId && !isStale(data.activeAt) && !activeDeviceIds.includes(data.activeDeviceId)) {
+                activeDeviceIds.push(data.activeDeviceId);
+            }
+
+            const alreadyOnThisDevice = activeDeviceIds.includes(deviceId);
+            if (!alreadyOnThisDevice && activeDeviceIds.length >= maxDev) {
+                showExamAuthError('الكود ده وصل للحد الأقصى المسموح به من الأجهزة (' + maxDev + '). اقفل الجلسة من جهاز تاني الأول، أو اطلب من الأستاذ يزوّد عدد الأجهزة المسموح بيها لهذا الكود.');
                 return false;
             }
 
             const upd = {
                 lastLogin: firebase.firestore.FieldValue.serverTimestamp(),
                 loginCount: firebase.firestore.FieldValue.increment(1),
-                activeDeviceId: deviceId,
                 activeAt: firebase.firestore.FieldValue.serverTimestamp(),
-                studentName: displayName || data.studentName || ''
+                studentName: displayName || data.studentName || '',
+                [`activeDevices.${deviceId}`]: firebase.firestore.FieldValue.serverTimestamp()
             };
             if (!data.firstLogin) upd.firstLogin = firebase.firestore.FieldValue.serverTimestamp();
             if (!firebase.auth().currentUser) {
@@ -1516,8 +1537,10 @@ window.MathJax = {
             stopExamPlusHeartbeat();
             _examPlusHeartbeatTimer = setInterval(function () {
                 if (!isAuthenticated || !window._examPlusStudent || window._examPlusStudent.role !== 'student' || !window._examPlusDb) return;
+                const deviceId = window._examPlusStudent.deviceId || getExamPlusDeviceId();
                 window._examPlusDb.collection(EXAM_PLUS_CODES_COL).doc(window._examPlusStudent.code).update({
-                    activeAt: firebase.firestore.FieldValue.serverTimestamp()
+                    activeAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    [`activeDevices.${deviceId}`]: firebase.firestore.FieldValue.serverTimestamp()
                 }).catch(function () {});
             }, 2 * 60 * 1000);
         }
@@ -1526,19 +1549,52 @@ window.MathJax = {
             if (_examPlusHeartbeatTimer) { clearInterval(_examPlusHeartbeatTimer); _examPlusHeartbeatTimer = null; }
         }
 
-        // محاولة (غير مضمونة 100%) لتحرير جلسة الطالب لما يقفل الصفحة، عشان يقدر يدخل من جهاز تاني فوراً
+        // محاولة (غير مضمونة 100%) لتحرير جلسة الطالب لما يقفل الصفحة، عشان مكانه يفضى فورًا
+        // ضمن حد الأجهزة المسموح بيه للكود ده (activeDevices map)
         function releaseExamPlusSession() {
             try {
                 if (window._examPlusStudent && window._examPlusStudent.role === 'student' && window._examPlusStudent.code && window._examPlusDb) {
-                    window._examPlusDb.collection(EXAM_PLUS_CODES_COL).doc(window._examPlusStudent.code).update({ activeDeviceId: null }).catch(function () {});
+                    const deviceId = window._examPlusStudent.deviceId || getExamPlusDeviceId();
+                    window._examPlusDb.collection(EXAM_PLUS_CODES_COL).doc(window._examPlusStudent.code).update({
+                        [`activeDevices.${deviceId}`]: firebase.firestore.FieldValue.delete(),
+                        activeDeviceId: firebase.firestore.FieldValue.delete()
+                    }).catch(function () {});
                 }
             } catch (e) { /* تجاهل */ }
         }
         window.addEventListener('beforeunload', releaseExamPlusSession);
 
+        // ═══════════════════════════════════════════════════════════════
+        // ═══ إغلاق تلقائي بعد خمول لجلسة VIP (حماية الأجهزة العامة زي
+        // معامل الكمبيوتر بالمدرسة — لو حد نسي يسجّل خروج، الجلسة بتتقفل
+        // لوحدها بعد فترة عدم نشاط بدل ما تفضل مفتوحة لأي حد يستخدم الجهاز) ═══
+        // ═══════════════════════════════════════════════════════════════
+        const VIP_IDLE_TIMEOUT_MS = 20 * 60 * 1000; // 20 دقيقة بدون أي تفاعل
+        let _vipIdleTimer = null;
+
+        function resetVipIdleTimer() {
+            clearTimeout(_vipIdleTimer);
+            _vipIdleTimer = null;
+            if (!isAuthenticated || !window._examPlusStudent || window._examPlusStudent.role !== 'teacher') return;
+            _vipIdleTimer = setTimeout(autoLogoutIdleVIP, VIP_IDLE_TIMEOUT_MS);
+        }
+
+        function autoLogoutIdleVIP() {
+            if (!isAuthenticated || !window._examPlusStudent || window._examPlusStudent.role !== 'teacher') return;
+            performExamPlusLogout();
+            if (typeof showToast === 'function') {
+                showToast('⏱️ تم تسجيل الخروج تلقائيًا لعدم النشاط — حماية لحساب الـ VIP على الأجهزة العامة');
+            }
+        }
+
+        ['mousemove', 'keydown', 'mousedown', 'touchstart', 'scroll'].forEach(function (evt) {
+            window.addEventListener(evt, resetVipIdleTimer, { passive: true });
+        });
+
         // ═══ شارة المستخدم الحالي + تسجيل الخروج ═══
         function updateExamUserBadge() {
             const badge = document.getElementById('examUserBadge');
+            resetVipIdleTimer();
             if (!badge) return;
             if (!isAuthenticated || !window._examPlusStudent) { badge.classList.remove('show'); return; }
             const s = window._examPlusStudent;
@@ -1553,6 +1609,12 @@ window.MathJax = {
 
         function examPlusLogout() {
             if (!confirm('هل تريد تسجيل الخروج من امتحانك بلس؟')) return;
+            performExamPlusLogout();
+        }
+
+        function performExamPlusLogout() {
+            clearTimeout(_vipIdleTimer);
+            _vipIdleTimer = null;
             stopExamPlusHeartbeat();
             releaseExamPlusSession();
             isAuthenticated = false;
@@ -1620,12 +1682,15 @@ window.MathJax = {
         }
 
         function changeLayout(layout) {
-            document.body.className = '';
+            // مهم: كان الكود قبل كده بيمسح كل الكلاسات اللي على body (className = '') وبعدين
+            // يرجّع بس شوية كلاسات معروفة. ده كان بيمسح بالغلط أي حالة تانية مش متوقعة هنا،
+            // أهمها edit-mode-active (وده اللي كان بيخفي زرار "تخصيص الصفحة" بعد أي تغيير قالب)،
+            // وكمان show-cover / show-answer-key / show-bubble-sheet وغيرهم.
+            // الحل: نمسح كلاسات القالب (theme-N) بس، ونسيب أي حالة تانية زي ما هي.
+            Array.from(document.body.classList).forEach(c => {
+                if (/^theme-\d+$/.test(c)) document.body.classList.remove(c);
+            });
             document.body.classList.add(layout);
-            if(isEcoMode) document.body.classList.add('eco-print');
-            if(isDualColumn) document.body.classList.add('dual-column-mode');
-            if(isEnglishLTR) document.body.classList.add('ltr-mode');
-            if(isEditMode) document.body.classList.add('edit-mode-active');
             saveExamToLocalStorage();
         }
 
@@ -1793,6 +1858,90 @@ window.MathJax = {
             const pages = document.querySelectorAll('.page');
             const lastPage = pages[pages.length - 1];
             return lastPage.querySelector('.questions-container');
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // ═══ تقسيم تلقائي للصفحات (Auto-pagination) ═══
+        // بمجرد ما محتوى صفحة A4 يوصل لآخرها، بننقل آخر عنصر اتضاف تلقائيًا
+        // لصفحة جديدة (بننشئها لو مش موجودة) — بدل ما المحتوى يتقص أو يفضل
+        // مكوّم في صفحة واحدة وهو أطول من A4.
+        // ═══════════════════════════════════════════════════════════════
+        let _autoPaginating = false;
+        let _autoPaginateTimer = null;
+
+        function schedulePageOverflowCheck() {
+            if (_autoPaginating) return; // منع اللوب اللانهائي وقت التنفيذ نفسه
+            clearTimeout(_autoPaginateTimer);
+            _autoPaginateTimer = setTimeout(enforcePageOverflow, 120);
+        }
+
+        // بنقيس ارتفاع صفحة A4 (297مم) بالبكسل *داخل* نفس عنصر الصفحة نفسه،
+        // عشان القياس يبقى في نفس "مساحة الزووم" اللي بيتطبق فعليًا على الشاشات
+        // الصغيرة (.page{zoom:...}) فيبقى قابل للمقارنة المباشرة مع scrollHeight.
+        function getA4HeightPxFor(pageEl) {
+            const probe = document.createElement('div');
+            probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;height:297mm;width:1px;top:0;left:0;';
+            pageEl.appendChild(probe);
+            const h = probe.offsetHeight || (297 * 3.7795);
+            pageEl.removeChild(probe);
+            return h;
+        }
+
+        function enforcePageOverflow() {
+            if (_autoPaginating) return;
+            _autoPaginating = true;
+            try {
+                let guard = 0;
+                let changed = true;
+                while (changed && guard < 80) {
+                    changed = false;
+                    guard++;
+                    const pages = Array.from(document.querySelectorAll('#pagesContainer > .page'));
+                    for (let i = 0; i < pages.length; i++) {
+                        const page = pages[i];
+                        const qc = page.querySelector('.questions-container');
+                        if (!qc || qc.children.length === 0) continue;
+                        const maxH = getA4HeightPxFor(page);
+                        if (page.scrollHeight > maxH + 3 && qc.children.length > 1) {
+                            const lastChild = qc.lastElementChild;
+                            let nextPage = pages[i + 1];
+                            if (!nextPage) {
+                                nextPage = createNewPage();
+                                pages.push(nextPage);
+                            }
+                            const nextQc = nextPage.querySelector('.questions-container');
+                            if (nextQc) {
+                                nextQc.insertBefore(lastChild, nextQc.firstChild);
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+                removeAutoEmptyTrailingPages();
+            } finally {
+                _autoPaginating = false;
+            }
+        }
+
+        // بعد ما محتوى ينتقل بعيد عن صفحة، ممكن تفضل صفحة فاضية في النص أو الآخر —
+        // بنشيلها تلقائيًا (ما عدا الصفحة الأولى وآخر صفحة، عشان تفضل مساحة شغل متاحة).
+        function removeAutoEmptyTrailingPages() {
+            const pages = Array.from(document.querySelectorAll('#pagesContainer > .page'));
+            for (let i = pages.length - 2; i >= 1; i--) {
+                const page = pages[i];
+                const qc = page.querySelector('.questions-container');
+                if (qc && qc.children.length === 0) page.remove();
+            }
+        }
+
+        function initAutoPagination() {
+            const container = document.getElementById('pagesContainer');
+            if (!container || !window.MutationObserver) return;
+            const observer = new MutationObserver(function (mutations) {
+                if (_autoPaginating) return;
+                schedulePageOverflowCheck();
+            });
+            observer.observe(container, { childList: true, subtree: true, characterData: true });
         }
 
         function addGraphCanvas(qId) {
@@ -2736,6 +2885,7 @@ window.MathJax = {
             };
             localStorage.setItem('examPlusAutoSave', JSON.stringify(state));
             showSaveIndicator();
+            scheduleCloudBackup();
         }
 
         function loadAutoSavedState() {
@@ -2754,12 +2904,86 @@ window.MathJax = {
             }
         }
 
+        // ═══════════════════════════════════════════════════════════════
+        // ═══ نسخة احتياطية سحابية دورية للملازم (مش localStorage بس) ═══
+        // localStorage ممكن يتمسح (تنظيف متصفح، جهاز تاني، مسح بيانات الموقع...)
+        // فبنحفظ نسخة كمان في Firestore لحساب الـ VIP بتاعه، كل شوية وبعد أي
+        // تغيير حقيقي، عشان لو حصل أي حاجة محلي، شغل المعلم يفضل موجود.
+        // ═══════════════════════════════════════════════════════════════
+        const EXAM_PLUS_BACKUPS_COL = 'examPlusBackups';
+        const CLOUD_BACKUP_DEBOUNCE_MS = 20 * 1000;      // بعد آخر تعديل بـ 20 ثانية
+        const CLOUD_BACKUP_MIN_INTERVAL_MS = 3 * 60 * 1000; // وميحفظش أكتر من مرة كل 3 دقايق
+        let _cloudBackupDebounceTimer = null;
+        let _lastCloudBackupAt = 0;
+
+        function currentVipBackupKey() {
+            const s = window._examPlusStudent;
+            if (!isAuthenticated || !s || s.role !== 'teacher' || !s.username) return null;
+            return s.username;
+        }
+
+        function scheduleCloudBackup() {
+            if (!currentVipBackupKey() || !window._examPlusDb) return;
+            clearTimeout(_cloudBackupDebounceTimer);
+            _cloudBackupDebounceTimer = setTimeout(runCloudBackup, CLOUD_BACKUP_DEBOUNCE_MS);
+        }
+
+        async function runCloudBackup(force) {
+            const key = currentVipBackupKey();
+            if (!key || !window._examPlusDb) return;
+            if (!force && (Date.now() - _lastCloudBackupAt) < CLOUD_BACKUP_MIN_INTERVAL_MS) return;
+            try {
+                const savedRaw = localStorage.getItem('examPlusAutoSave');
+                if (!savedRaw) return;
+                await window._examPlusDb.collection(EXAM_PLUS_BACKUPS_COL).doc(key).set({
+                    teacherUsername: key,
+                    teacherName: (window._examPlusStudent && window._examPlusStudent.displayName) || '',
+                    state: savedRaw,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                _lastCloudBackupAt = Date.now();
+            } catch (e) {
+                console.warn('cloud backup failed:', e.message);
+            }
+        }
+
+        // نبضة دورية إضافية (كل 3 دقايق) تضمن إن في نسخة سحابية حديثة حتى لو
+        // المعلم فاتح الصفحة من فترة من غير ما يعمل تعديلات كتير جديدة
+        setInterval(function () { runCloudBackup(false); }, CLOUD_BACKUP_MIN_INTERVAL_MS);
+
+        // استرجاع آخر نسخة سحابية محفوظة لحساب الـ VIP الحالي (لو الجهاز مسح بياناته المحلية)
+        async function restoreFromCloudBackup() {
+            const key = currentVipBackupKey();
+            if (!key || !window._examPlusDb) {
+                alert('محتاج تكون مسجّل دخول كحساب VIP عشان تقدر تسترجع نسخة سحابية.');
+                return;
+            }
+            try {
+                const snap = await window._examPlusDb.collection(EXAM_PLUS_BACKUPS_COL).doc(key).get();
+                if (!snap.exists) { alert('مفيش نسخة احتياطية سحابية محفوظة لحسابك لسه.'); return; }
+                const data = snap.data();
+                const when = data.updatedAt && data.updatedAt.toDate ? data.updatedAt.toDate().toLocaleString('ar-EG') : '—';
+                if (!confirm('هيتم استرجاع آخر نسخة سحابية محفوظة (بتاريخ ' + when + ') وهتستبدل أي محتوى حالي على الشاشة دلوقتي. متأكد؟')) return;
+                localStorage.setItem('examPlusAutoSave', data.state);
+                loadAutoSavedState();
+                reindexQuestions();
+                calculateAnalytics();
+                attachMathJaxBlur();
+                if (typeof showToast === 'function') showToast('☁️ تم استرجاع آخر نسخة احتياطية سحابية بنجاح');
+            } catch (e) {
+                alert('حصل خطأ أثناء الاسترجاع: ' + e.message);
+            }
+        }
+        window.restoreFromCloudBackup = restoreFromCloudBackup;
+
         window.onload = async function() {
             initThemes();
             loadAutoSavedState();
             reindexQuestions();
             calculateAnalytics();
             attachMathJaxBlur();
+            initAutoPagination();
+            schedulePageOverflowCheck();
 
             const savedUsername = localStorage.getItem('examPlusTeacherUsername');
             if (localStorage.getItem('examPlusTeacherAuth') === '1' && savedUsername) {
