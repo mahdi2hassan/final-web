@@ -62,6 +62,12 @@ window.MathJax = {
             --base-line-height: 1.7;
             --admin-bg: #ffffff;
             --admin-text: #0f172a;
+            /* هوامش الصفحة — نفس القيم بالظبط تُستخدم في الشاشة والطباعة معًا،
+               فلا يمكن أبدًا يحصل فرق بينهم زي المشكلة اللي كانت قبل كده */
+            --page-margin-top: 15mm;
+            --page-margin-right: 15mm;
+            --page-margin-bottom: 12mm;
+            --page-margin-left: 15mm;
             --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.08), 0 2px 6px -1px rgba(0,0,0,0.04);
             --watermark-opacity: 0.05;
             --watermark-zindex: 1;
@@ -361,7 +367,7 @@ window.MathJax = {
                الشاشة) يسمح بمحتوى أكتر بكتير من اللي هيتسع فعليًا في الورقة
                المطبوعة، فكانت المعاينة والمطبوع يطلعوا مختلفين تمامًا. دلوقتي
                الحشوة موحّدة مع حشوة الطباعة بالظبط (لازم تفضل متطابقة). */
-            padding: 15mm 15mm 12mm 15mm;
+            padding: var(--page-margin-top) var(--page-margin-right) var(--page-margin-bottom) var(--page-margin-left);
             box-shadow: var(--shadow-md);
             position: relative;
             overflow: hidden;
@@ -494,7 +500,12 @@ window.MathJax = {
                 color: #000 !important;
             }
             body.screen-mode, body.screen-mode html { width: 297mm; }
-            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator, .page-settings-btn { display: none !important; }
+            /* إصلاح جذري: أي عنصر واجهة عائم (شارة المستخدم، إشعارات، الشريط الجانبي
+               للصور المصغرة، صندوق البحث...) كان بيظهر في الطباعة لأنه مش جوه
+               #pagesContainer أصلاً. بدل ما نفضل نلاحق كل عنصر جديد بالاسم، بنخفي
+               كل حاجة على مستوى body غير المحتوى القابل للطباعة فعليًا. */
+            body > *:not(#pagesContainer):not(#coverPage) { display: none !important; }
+            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator, .page-settings-btn, .exam-user-badge, .exam-welcome-toast, .thumbnails-sidebar, .adv-search-box, .adv-toolbar { display: none !important; }
             .manual-page-break { border: none !important; margin: 0 !important; page-break-before: always !important; break-before: page !important; }
             [contenteditable="true"], .editable-element { border: none !important; background: transparent !important; }
             
@@ -511,7 +522,7 @@ window.MathJax = {
                    مفروض يتملى لحد ارتفاع صفحة A4 بالظبط، فمينفعش نحدد height ثابت ولازم
                    overflow يبقى visible عشان أي فارق بسيط ميضيعش. */
                 overflow: visible !important;
-                padding: 15mm 15mm 12mm 15mm !important; 
+                padding: var(--page-margin-top) var(--page-margin-right) var(--page-margin-bottom) var(--page-margin-left) !important; 
                 margin: 0 !important; 
                 border: none !important; 
                 box-sizing: border-box !important;
@@ -938,6 +949,7 @@ window.MathJax = {
                         <option value="exam">وضع أسئلة</option>
                         <option value="booklet">وضع ملزمة</option>
                     </select>
+                    <button class="btn" style="background-color:#0f766e;" onclick="toggleMarginPanel()">📐 الهوامش</button>
                     <button class="btn btn-purple" style="background-color:#0d9488;" onclick="toggleCoverPage()">غلاف الامتحان</button>
                     <button class="btn btn-warning" style="background-color:#0284c7;" onclick="toggleOrnamentBorder()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg> إطار زخرفي</button>
                     <button class="btn btn-eco" onclick="toggleEcoMode()">توفير الأحبار</button>
@@ -1057,6 +1069,21 @@ window.MathJax = {
                     <button class="btn btn-eco" onclick="addPageBreak()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1L9.64 7.64zM6 8c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm0 12c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm6-7.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zM19 3l-6 6 2 2 7-7V3z"/></svg> إنهاء الصفحة (صفحة جديدة)</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- لوحة صغيرة للتحكم في هوامش الصفحة (تنطبق على الشاشة والطباعة معًا بنفس القيم) -->
+    <div class="margin-panel no-print" id="marginPanel" style="display:none;">
+        <h4 style="margin:0 0 8px; font-size:13px; color:#334155;">هوامش الصفحة (بالمليمتر)</h4>
+        <div class="margin-panel-grid">
+            <label>أعلى <input type="number" id="marginTop" min="0" max="60" step="1"></label>
+            <label>أسفل <input type="number" id="marginBottom" min="0" max="60" step="1"></label>
+            <label>يمين <input type="number" id="marginRight" min="0" max="60" step="1"></label>
+            <label>شمال <input type="number" id="marginLeft" min="0" max="60" step="1"></label>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+            <button class="btn btn-success" style="flex:1; font-size:12px;" onclick="applyPageMargins()">تطبيق</button>
+            <button class="btn btn-warning" style="flex:1; font-size:12px;" onclick="resetPageMargins()">استعادة الافتراضي</button>
         </div>
     </div>
 
@@ -2953,6 +2980,63 @@ window.MathJax = {
                 : '';
         }
 
+        // ═══ التحكم في هوامش الصفحة (تنطبق على الشاشة والطباعة بنفس القيمة بالظبط) ═══
+        const MARGIN_KEY = 'examPlusPageMargins';
+        const DEFAULT_MARGINS = { top: 15, right: 15, bottom: 12, left: 15 };
+
+        function toggleMarginPanel() {
+            const panel = document.getElementById('marginPanel');
+            if (!panel) return;
+            const opening = panel.style.display === 'none' || !panel.style.display;
+            if (opening) {
+                const m = loadPageMargins();
+                document.getElementById('marginTop').value = m.top;
+                document.getElementById('marginRight').value = m.right;
+                document.getElementById('marginBottom').value = m.bottom;
+                document.getElementById('marginLeft').value = m.left;
+            }
+            panel.style.display = opening ? 'block' : 'none';
+        }
+
+        function loadPageMargins() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(MARGIN_KEY));
+                if (saved && typeof saved.top === 'number') return saved;
+            } catch (e) { /* تجاهل */ }
+            return { ...DEFAULT_MARGINS };
+        }
+
+        function applyPageMarginsValues(m) {
+            const root = document.documentElement.style;
+            root.setProperty('--page-margin-top', m.top + 'mm');
+            root.setProperty('--page-margin-right', m.right + 'mm');
+            root.setProperty('--page-margin-bottom', m.bottom + 'mm');
+            root.setProperty('--page-margin-left', m.left + 'mm');
+            schedulePageOverflowCheck();
+        }
+
+        function applyPageMargins() {
+            const m = {
+                top: Math.max(0, Math.min(60, parseFloat(document.getElementById('marginTop').value) || 0)),
+                right: Math.max(0, Math.min(60, parseFloat(document.getElementById('marginRight').value) || 0)),
+                bottom: Math.max(0, Math.min(60, parseFloat(document.getElementById('marginBottom').value) || 0)),
+                left: Math.max(0, Math.min(60, parseFloat(document.getElementById('marginLeft').value) || 0)),
+            };
+            localStorage.setItem(MARGIN_KEY, JSON.stringify(m));
+            applyPageMarginsValues(m);
+            showSaveIndicator();
+            toggleMarginPanel();
+        }
+
+        function resetPageMargins() {
+            localStorage.removeItem(MARGIN_KEY);
+            applyPageMarginsValues(DEFAULT_MARGINS);
+            document.getElementById('marginTop').value = DEFAULT_MARGINS.top;
+            document.getElementById('marginRight').value = DEFAULT_MARGINS.right;
+            document.getElementById('marginBottom').value = DEFAULT_MARGINS.bottom;
+            document.getElementById('marginLeft').value = DEFAULT_MARGINS.left;
+        }
+
         /* ===== تنسيق مستقل لكل صفحة ===== */
         let currentPageSettingsTarget = null;
 
@@ -3537,6 +3621,14 @@ window.MathJax = {
         .block-image-slot { text-align: center; margin-top: 8px; }
         .lesson-block.lb-file-drop-over { outline: 3px dashed #16a34a; outline-offset: -3px; background: rgba(22,163,74,0.06); }
         .page.lb-file-drop-over { outline: 3px dashed #16a34a; outline-offset: -6px; }
+        .margin-panel {
+            position: fixed; top: 70px; left: 50%; transform: translateX(-50%); z-index: 9997;
+            background: #fff; border: 1px solid var(--card-border); border-radius: 14px; box-shadow: var(--shadow-md);
+            padding: 14px; width: min(320px, 88vw);
+        }
+        .margin-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .margin-panel-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #475569; font-weight: 700; }
+        .margin-panel-grid input { padding: 6px 8px; border: 1px solid var(--card-border); border-radius: 8px; font-size: 13px; text-align: center; }
 
         /* ---------- 13) أزرار التراجع/الإعادة ---------- */
         .undo-redo-bar { display: flex; gap: 8px; }
@@ -4961,6 +5053,7 @@ window.MathJax = {
        تُنشأ عبر أدوات النظام الأصلية دون الحاجة لتعديل تلك الأدوات
     --------------------------------------------------------------- */
     function initAdvancedFeatures() {
+        applyPageMarginsValues(loadPageMargins());
         document.querySelectorAll('.question-card').forEach(applyAdvancedControlsToCard);
         document.querySelectorAll('.lesson-block').forEach(applyAdvancedControlsToLessonBlock);
         document.querySelectorAll('#pagesContainer .page').forEach(applyAdvancedFeaturesToPage);
