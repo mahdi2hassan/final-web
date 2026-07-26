@@ -13,6 +13,7 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --border: rgba(255, 255, 255, 0.1);
+            --whatsapp-color: #25d366;
         }
 
         * {
@@ -22,7 +23,7 @@
         }
 
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
             color: var(--text-main);
             min-height: 100vh;
@@ -46,40 +47,38 @@
         }
 
         .icon-wrapper {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             background: rgba(56, 189, 248, 0.1);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 38px;
-            margin: 0 auto 24px;
+            font-size: 32px;
+            margin: 0 auto 20px;
             border: 1px solid rgba(56, 189, 248, 0.2);
             animation: float 3s ease-in-out infinite;
         }
 
         h1 {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 12px;
-            color: var(--text-main);
         }
 
         p.description {
-            font-size: 1rem;
+            font-size: 0.95rem;
             line-height: 1.6;
             color: var(--text-muted);
-            margin-bottom: 28px;
+            margin-bottom: 25px;
         }
 
-        /* قسم التبرع */
         .donation-box {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             text-align: right;
         }
 
@@ -87,14 +86,14 @@
             font-size: 0.95rem;
             font-weight: 600;
             color: var(--primary);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .donation-desc {
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             color: var(--text-muted);
             margin-bottom: 15px;
             line-height: 1.5;
@@ -108,14 +107,22 @@
             border: 1px dashed rgba(56, 189, 248, 0.4);
             padding: 10px 14px;
             border-radius: 12px;
-            direction: ltr; /* لجعل الرقم مرتب من اليسار لليمين */
+            direction: ltr;
+            margin-bottom: 10px;
+        }
+
+        .wallet-label {
+            font-size: 0.75rem;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 2px;
+            text-align: left;
         }
 
         .wallet-number {
             font-family: monospace;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: bold;
-            letter-spacing: 1px;
             color: #fff;
         }
 
@@ -132,53 +139,75 @@
             font-family: inherit;
         }
 
-        .copy-btn:hover {
-            background: #7dd3fc;
+        .copy-btn:hover { background: #7dd3fc; }
+        .copy-btn.copied { background: #4ade80; color: #0f172a; }
+
+        .contact-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(37, 211, 102, 0.15);
+            color: var(--whatsapp-color);
+            border: 1px solid rgba(37, 211, 102, 0.3);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
         }
 
-        .copy-btn.copied {
-            background: #4ade80;
-            color: #0f172a;
+        .contact-btn:hover {
+            background: rgba(37, 211, 102, 0.25);
         }
 
         .footer-note {
             font-size: 0.85rem;
             color: var(--text-muted);
+            margin-top: 15px;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-6px); }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- الأيقونة -->
-        <div class="icon-wrapper">🛠️</div>
+        <div class="icon-wrapper">⚠️</div>
 
-        <!-- العنوان والوصف -->
         <h1>توقف الموقع مؤقتاً</h1>
         <p class="description">
-            نظراً لارتفاع تكاليف التشغيل، تم إيقاف الموقع والخدمات التابعة له (مثل <strong>امتحانات</strong> و<strong>السبورة الذكية</strong>).
+            نظراً لارتفاع تكاليف التشغيل والخوادم، تم إيقاف الموقع والخدمات التابعة له (مثل <strong>امتحانات</strong> و<strong>السبورة الذكية</strong>).
         </p>
 
-        <!-- قسم التبرع ودعم التشغيل -->
         <div class="donation-box">
             <div class="donation-title">
-                <span>❤️</span> ساهم في إعادة تشغيل الموقع
+                <span>❤️</span> المساهمة في استعادة الخدمة
             </div>
             <div class="donation-desc">
-                إذا كنت ترغب في دعمنا للاستمرار وتغطية التكاليف، يمكنك التبرع عبر المحفظة الإلكترونية:
+                يمكنك التبرع لدعم مصاريف الاستضافة عبر المحفظة الإلكترونية 
             </div>
+            
             <div class="wallet-container">
-                <span class="wallet-number" id="walletNum">01153652279</span>
-                <button class="copy-btn" id="copyBtn" onclick="copyWallet()">نسخ الرقم</button>
+                <div>
+                    <span class="wallet-label">فودافون كاش / اتصالات / اورنج كاش/اي محفظة اخري</span>
+                    <span class="wallet-number" id="walletNum">01153652279</span>
+                </div>
+                <button class="copy-btn" id="copyBtn" onclick="copyWallet()">نسخ</button>
             </div>
         </div>
 
-        <div class="footer-note">شكراً لتفهمكم ودعمكم المستمر 🙏</div>
+        <!-- زر تواصل واتساب لإرسال الإيصال أو الدعم التقني -->
+        <a href="https://wa.me/201153652279" target="_blank" class="contact-btn">
+            💬 تواصل معنا / إرسال إيصال التحويل
+        </a>
+
+        <div class="footer-note">نشكر تفهمكم ودعمكم المستمر 🙏</div>
     </div>
 
     <script>
@@ -191,11 +220,9 @@
                 btn.classList.add('copied');
 
                 setTimeout(() => {
-                    btn.innerText = 'نسخ الرقم';
+                    btn.innerText = 'نسخ';
                     btn.classList.remove('copied');
                 }, 2500);
-            }).catch(err => {
-                console.error('فشل النسخ:', err);
             });
         }
     </script>
