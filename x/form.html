@@ -356,7 +356,12 @@ window.MathJax = {
             box-sizing: border-box;
             background-color: var(--bg-page) !important;
             border-radius: 12px;
-            padding: 25px 30px;
+            /* إصلاح مهم: كانت الحشوة هنا 25px 30px (≈6.6مم) بينما حشوة الطباعة
+               15مم/12مم — فرق كبير خلّى نظام التقسيم التلقائي (اللي بيحسب على
+               الشاشة) يسمح بمحتوى أكتر بكتير من اللي هيتسع فعليًا في الورقة
+               المطبوعة، فكانت المعاينة والمطبوع يطلعوا مختلفين تمامًا. دلوقتي
+               الحشوة موحّدة مع حشوة الطباعة بالظبط (لازم تفضل متطابقة). */
+            padding: 15mm 15mm 12mm 15mm;
             box-shadow: var(--shadow-md);
             position: relative;
             overflow: hidden;
@@ -1978,6 +1983,20 @@ window.MathJax = {
                 schedulePageOverflowCheck();
             });
             observer.observe(container, { childList: true, subtree: true, characterData: true });
+
+            // إصلاح مهم: أي صورة (من الهاتف/رابط/لصق) بتتضاف كـ <img> جديد، فده
+            // بيسجَّل كـ "تغيير" ويشغّل فحص الامتلاء فورًا — لكن في تلك اللحظة
+            // الصورة لسه بتتحمّل ومساحتها الحقيقية على الصفحة لسه مش معروفة،
+            // فالفحص كان بيقيس ارتفاع الصفحة *قبل* ما تاخد الصورة حجمها الفعلي.
+            // وبعد ما الصورة تخلّص تحميل، مفيش أي "تغيير" تاني في الصفحة يخلي
+            // الفحص يتكرر، فكانت المشكلة بتفضل مخفية للأبد وتطلع صفحة واحدة
+            // بس بتكبر بلا حدود بدل ما تتقسم. الحل: نتابع حدث "load" لأي صورة
+            // (بمرحلة الـ capture لأن load مبيعملش bubble) ونعيد الفحص بعدها.
+            container.addEventListener('load', function (e) {
+                if (e.target && e.target.tagName === 'IMG') {
+                    schedulePageOverflowCheck();
+                }
+            }, true);
         }
 
         function addGraphCanvas(qId) {
