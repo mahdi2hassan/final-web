@@ -4,16 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>توقف مؤقت للخدمة</title>
+    <!-- استدعاء خط Cairo ليعطي مظهر عربي احترافي -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
             --primary: #38bdf8;
-            --primary-hover: #0284c7;
-            --bg-dark: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
+            --primary-glow: rgba(56, 189, 248, 0.25);
+            --bg-dark: #090d16;
+            --card-bg: rgba(15, 23, 42, 0.75);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.08);
             --whatsapp-color: #25d366;
+            --whatsapp-glow: rgba(37, 211, 102, 0.2);
         }
 
         * {
@@ -23,68 +29,105 @@
         }
 
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+            font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-dark);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* دوائر إضاءة متحركة في الخلفية */
+        .bg-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: 0;
+            pointer-events: none;
+        }
+        .glow-1 {
+            width: 300px;
+            height: 300px;
+            background: rgba(56, 189, 248, 0.15);
+            top: -50px;
+            right: -50px;
+        }
+        .glow-2 {
+            width: 250px;
+            height: 250px;
+            background: rgba(99, 102, 241, 0.12);
+            bottom: -50px;
+            left: -50px;
         }
 
         .container {
+            position: relative;
+            z-index: 1;
             width: 100%;
-            max-width: 520px;
+            max-width: 480px;
             background: var(--card-bg);
-            padding: 40px 30px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            padding: 40px 28px;
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border);
             text-align: center;
         }
 
         .icon-wrapper {
-            width: 70px;
-            height: 70px;
-            background: rgba(56, 189, 248, 0.1);
-            border-radius: 50%;
+            width: 76px;
+            height: 76px;
+            background: radial-gradient(circle, var(--primary-glow) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 32px;
+            font-size: 36px;
             margin: 0 auto 20px;
             border: 1px solid rgba(56, 189, 248, 0.2);
-            animation: float 3s ease-in-out infinite;
+            animation: pulse-glow 3s infinite ease-in-out;
         }
 
         h1 {
             font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 12px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         p.description {
-            font-size: 0.95rem;
-            line-height: 1.6;
+            font-size: 0.92rem;
+            line-height: 1.7;
             color: var(--text-muted);
             margin-bottom: 25px;
+            font-weight: 400;
         }
 
+        /* بطاقة التبرع */
         .donation-box {
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(30, 41, 59, 0.4);
             border: 1px solid var(--border);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
             text-align: right;
+            transition: border-color 0.3s ease;
+        }
+
+        .donation-box:hover {
+            border-color: rgba(56, 189, 248, 0.3);
         }
 
         .donation-title {
             font-size: 0.95rem;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary);
             margin-bottom: 6px;
             display: flex;
@@ -95,7 +138,7 @@
         .donation-desc {
             font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 15px;
+            margin-bottom: 16px;
             line-height: 1.5;
         }
 
@@ -103,108 +146,134 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px dashed rgba(56, 189, 248, 0.4);
-            padding: 10px 14px;
-            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px dashed rgba(56, 189, 248, 0.3);
+            padding: 12px 14px;
+            border-radius: 14px;
             direction: ltr;
-            margin-bottom: 10px;
         }
 
-        .wallet-label {
-            font-size: 0.75rem;
-            color: var(--primary);
-            display: block;
-            margin-bottom: 2px;
+        .wallet-info {
             text-align: left;
         }
 
+        .wallet-label {
+            font-size: 0.72rem;
+            color: var(--primary);
+            display: block;
+            margin-bottom: 2px;
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+        }
+
         .wallet-number {
-            font-family: monospace;
-            font-size: 1.05rem;
-            font-weight: bold;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.15rem;
+            font-weight: 700;
             color: #fff;
+            letter-spacing: 1px;
         }
 
         .copy-btn {
             background: var(--primary);
-            color: #0f172a;
+            color: #090d16;
             border: none;
-            padding: 6px 14px;
-            border-radius: 8px;
+            padding: 8px 18px;
+            border-radius: 10px;
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s ease;
-            font-family: inherit;
+            font-family: 'Cairo', sans-serif;
+            box-shadow: 0 4px 12px var(--primary-glow);
         }
 
-        .copy-btn:hover { background: #7dd3fc; }
-        .copy-btn.copied { background: #4ade80; color: #0f172a; }
+        .copy-btn:hover {
+            transform: translateY(-1px);
+            background: #7dd3fc;
+        }
 
+        .copy-btn.copied {
+            background: #4ade80;
+            color: #090d16;
+            box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+        }
+
+        /* زر الواتساب */
         .contact-btn {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
             width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            background: rgba(37, 211, 102, 0.15);
+            padding: 14px;
+            border-radius: 16px;
+            background: rgba(37, 211, 102, 0.1);
             color: var(--whatsapp-color);
-            border: 1px solid rgba(37, 211, 102, 0.3);
+            border: 1px solid rgba(37, 211, 102, 0.25);
             text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
+            font-weight: 700;
+            font-size: 0.92rem;
+            transition: all 0.3s ease;
         }
 
         .contact-btn:hover {
-            background: rgba(37, 211, 102, 0.25);
+            background: rgba(37, 211, 102, 0.2);
+            border-color: rgba(37, 211, 102, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--whatsapp-glow);
         }
 
         .footer-note {
             font-size: 0.85rem;
             color: var(--text-muted);
-            margin-top: 15px;
+            margin-top: 20px;
+            font-weight: 600;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.2); }
+            50% { transform: scale(1.04); box-shadow: 0 0 20px 5px rgba(56, 189, 248, 0.3); }
         }
     </style>
 </head>
 <body>
 
+    <!-- خلفية مضاءة -->
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+
     <div class="container">
+        <!-- الأيقونة -->
         <div class="icon-wrapper">⚠️</div>
 
+        <!-- العنوان الرئيسي والوصف -->
         <h1>توقف الموقع مؤقتاً</h1>
         <p class="description">
             نظراً لارتفاع تكاليف التشغيل والخوادم، تم إيقاف الموقع والخدمات التابعة له (مثل <strong>امتحانات</strong> و<strong>السبورة الذكية</strong>).
         </p>
 
+        <!-- بطاقة التبرع -->
         <div class="donation-box">
             <div class="donation-title">
                 <span>❤️</span> المساهمة في استعادة الخدمة
             </div>
             <div class="donation-desc">
-                يمكنك التبرع لدعم مصاريف الاستضافة عبر المحفظة الإلكترونية 
+                يمكنك التبرع لدعم مصاريف الاستضافة عبر المحفظة الإلكترونية:
             </div>
             
             <div class="wallet-container">
-                <div>
-                    <span class="wallet-label">فودافون كاش / اتصالات / اورنج كاش/اي محفظة اخري</span>
+                <div class="wallet-info">
+                    <span class="wallet-label">فودافون كاش / أورنج / اتصالات / أي محفظة</span>
                     <span class="wallet-number" id="walletNum">01153652279</span>
                 </div>
                 <button class="copy-btn" id="copyBtn" onclick="copyWallet()">نسخ</button>
             </div>
         </div>
 
-        <!-- زر تواصل واتساب لإرسال الإيصال أو الدعم التقني -->
+        <!-- زر تواصل واتساب -->
         <a href="https://wa.me/201153652279" target="_blank" class="contact-btn">
-            💬 تواصل معنا / إرسال إيصال التحويل
+            <span>💬</span> تواصل معنا / إرسال إيصال التحويل
         </a>
 
         <div class="footer-note">نشكر تفهمكم ودعمكم المستمر 🙏</div>
@@ -216,6 +285,22 @@
             const btn = document.getElementById('copyBtn');
 
             navigator.clipboard.writeText(number).then(() => {
+                btn.innerText = 'تم النسخ! ✓';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.innerText = 'نسخ';
+                    btn.classList.remove('copied');
+                }, 2500);
+            }).catch(() => {
+                // حل بديل في حال لم يعمل Clipboard API في بعض المتصفحات القديمة
+                const input = document.createElement('input');
+                input.value = number;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                
                 btn.innerText = 'تم النسخ! ✓';
                 btn.classList.add('copied');
 
