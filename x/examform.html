@@ -1955,6 +1955,21 @@ window.MathJax = {
             return h;
         }
 
+        // إصلاح مهم: في "وضع العمودين" (column-count:2)، ارتفاع الصفحة الحقيقي
+        // (scrollHeight) بيبقى غير موثوق لقياس الامتلاء — تخطيط الأعمدة المتعددة
+        // بيحسب الارتفاع بطريقة معقدة (موازنة الأعمدة) بتختلف عن التدفق العادي،
+        // وده كان بيخلي كشف الامتلاء يفشل بصمت بمجرد ما وضع العمودين يتفعّل (تحديدًا
+        // بعد الصفحة الأولى). الحل: نلغي تأثير الأعمدة مؤقتًا (سطر واحد) وقت القياس
+        // بس، ونرجّعه فورًا — القياس بيتم في نفس اللحظة قبل أي إعادة رسم فيشوفهاش المستخدم.
+        function measurePageContentHeight(page) {
+            const qc = page.querySelector('.questions-container');
+            const hadColumns = qc && getComputedStyle(qc).columnCount !== 'auto' && getComputedStyle(qc).columnCount !== '1';
+            if (hadColumns) qc.style.columnCount = '1';
+            const h = page.scrollHeight;
+            if (hadColumns) qc.style.columnCount = '';
+            return h;
+        }
+
         function enforcePageOverflow() {
             if (_autoPaginating) return;
             _autoPaginating = true;
@@ -1973,7 +1988,7 @@ window.MathJax = {
                             const qc = page.querySelector('.questions-container');
                             if (!qc || qc.children.length === 0) continue;
                             const maxH = getA4HeightPxFor(page);
-                            if (page.scrollHeight > maxH + 3 && qc.children.length > 1) {
+                            if (measurePageContentHeight(page) > maxH + 3 && qc.children.length > 1) {
                                 const lastChild = qc.lastElementChild;
                                 let nextPage = pages[i + 1];
                                 if (!nextPage) {
@@ -2004,7 +2019,7 @@ window.MathJax = {
                                 pullGuard++;
                                 const candidate = nextQc.firstElementChild;
                                 qc.appendChild(candidate);
-                                if (page.scrollHeight <= maxH + 3) {
+                                if (measurePageContentHeight(page) <= maxH + 3) {
                                     changed = true;
                                 } else {
                                     nextQc.insertBefore(candidate, nextQc.firstChild);
