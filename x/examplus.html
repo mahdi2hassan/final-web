@@ -3,73 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الموقع قيد الصيانة</title>
+    <title>توقف مؤقت للخدمة</title>
     <style>
+        :root {
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #f8fafc;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
             padding: 20px;
         }
+
         .container {
-            max-width: 600px;
-            background: rgba(255, 255, 255, 0.05);
+            width: 100%;
+            max-width: 520px;
+            background: var(--card-bg);
             padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            text-align: center;
         }
-        .icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            color: #38bdf8;
-        }
-        p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #cbd5e1;
-            margin-bottom: 25px;
-        }
-        .badge {
-            display: inline-block;
+
+        .icon-wrapper {
+            width: 80px;
+            height: 80px;
             background: rgba(56, 189, 248, 0.1);
-            color: #38bdf8;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            margin: 0 auto 24px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            animation: float 3s ease-in-out infinite;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        p.description {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+        }
+
+        /* قسم التبرع */
+        .donation-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        .donation-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .donation-desc {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .wallet-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(56, 189, 248, 0.4);
+            padding: 10px 14px;
+            border-radius: 12px;
+            direction: ltr; /* لجعل الرقم مرتب من اليسار لليمين */
+        }
+
+        .wallet-number {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .copy-btn {
+            background: var(--primary);
+            color: #0f172a;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .copy-btn:hover {
+            background: #7dd3fc;
+        }
+
+        .copy-btn.copied {
+            background: #4ade80;
+            color: #0f172a;
+        }
+
+        .footer-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="icon">🛠️</div>
-        <h1>الموقع قيد الصيانة حالياً</h1>
-        <p>نحن نعمل على تحسين تجربتك وإضافة ميزات جديدة. سنعود للعمل في أقرب وقت ممكن!</p>
-        <div class="badge">شكراً لتفهمكم وصبركم 🙏</div>
+        <!-- الأيقونة -->
+        <div class="icon-wrapper">🛠️</div>
+
+        <!-- العنوان والوصف -->
+        <h1>توقف الموقع مؤقتاً</h1>
+        <p class="description">
+            نظراً لارتفاع تكاليف التشغيل، تم إيقاف الموقع والخدمات التابعة له (مثل <strong>امتحانات</strong> و<strong>السبورة الذكية</strong>).
+        </p>
+
+        <!-- قسم التبرع ودعم التشغيل -->
+        <div class="donation-box">
+            <div class="donation-title">
+                <span>❤️</span> ساهم في إعادة تشغيل الموقع
+            </div>
+            <div class="donation-desc">
+                إذا كنت ترغب في دعمنا للاستمرار وتغطية التكاليف، يمكنك التبرع عبر المحفظة الإلكترونية:
+            </div>
+            <div class="wallet-container">
+                <span class="wallet-number" id="walletNum">01153652279</span>
+                <button class="copy-btn" id="copyBtn" onclick="copyWallet()">نسخ الرقم</button>
+            </div>
+        </div>
+
+        <div class="footer-note">شكراً لتفهمكم ودعمكم المستمر 🙏</div>
     </div>
 
+    <script>
+        function copyWallet() {
+            const number = document.getElementById('walletNum').innerText;
+            const btn = document.getElementById('copyBtn');
+
+            navigator.clipboard.writeText(number).then(() => {
+                btn.innerText = 'تم النسخ! ✓';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.innerText = 'نسخ الرقم';
+                    btn.classList.remove('copied');
+                }, 2500);
+            }).catch(err => {
+                console.error('فشل النسخ:', err);
+            });
+        }
+    </script>
 </body>
 </html>
