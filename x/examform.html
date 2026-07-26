@@ -1938,6 +1938,8 @@ window.MathJax = {
                     changed = false;
                     guard++;
                     const pages = Array.from(document.querySelectorAll('#pagesContainer > .page'));
+
+                    // المرحلة أ: دفع أي محتوى زايد عن مقاس الصفحة للصفحة اللي بعدها (تُنشأ لو مش موجودة)
                     for (let i = 0; i < pages.length; i++) {
                         const page = pages[i];
                         const qc = page.querySelector('.questions-container');
@@ -1957,8 +1959,30 @@ window.MathJax = {
                             }
                         }
                     }
+
+                    // المرحلة ب: سحب محتوى الصفحة التالية للخلف لملء أي مساحة فاضية —
+                    // بدون ما نعدي فاصل صفحة يدوي (منتهي الصفحة) اتحط عمدًا من المستخدم
+                    for (let i = 0; i < pages.length - 1; i++) {
+                        const page = pages[i];
+                        const nextPage = pages[i + 1];
+                        const qc = page.querySelector('.questions-container');
+                        const nextQc = nextPage.querySelector('.questions-container');
+                        if (!qc || !nextQc) continue;
+                        const maxH = getA4HeightPxFor(page);
+                        while (nextQc.firstElementChild && !nextQc.firstElementChild.classList.contains('manual-page-break')) {
+                            const candidate = nextQc.firstElementChild;
+                            qc.appendChild(candidate);
+                            if (page.scrollHeight <= maxH + 3) {
+                                changed = true;
+                            } else {
+                                nextQc.insertBefore(candidate, nextQc.firstChild);
+                                break;
+                            }
+                        }
+                    }
+
+                    removeAutoEmptyTrailingPages();
                 }
-                removeAutoEmptyTrailingPages();
             } finally {
                 _autoPaginating = false;
             }
@@ -1983,6 +2007,20 @@ window.MathJax = {
                 schedulePageOverflowCheck();
             });
             observer.observe(container, { childList: true, subtree: true, characterData: true });
+
+            // إصلاح مهم: أي صورة (من الهاتف/رابط/لصق) بتتضاف كـ <img> جديد، فده
+            // بيسجَّل كـ "تغيير" ويشغّل فحص الامتلاء فورًا — لكن في تلك اللحظة
+            // الصورة لسه بتتحمّل ومساحتها الحقيقية على الصفحة لسه مش معروفة،
+            // فالفحص كان بيقيس ارتفاع الصفحة *قبل* ما تاخد الصورة حجمها الفعلي.
+            // وبعد ما الصورة تخلّص تحميل، مفيش أي "تغيير" تاني في الصفحة يخلي
+            // الفحص يتكرر، فكانت المشكلة بتفضل مخفية للأبد وتطلع صفحة واحدة
+            // بس بتكبر بلا حدود بدل ما تتقسم. الحل: نتابع حدث "load" لأي صورة
+            // (بمرحلة الـ capture لأن load مبيعملش bubble) ونعيد الفحص بعدها.
+            container.addEventListener('load', function (e) {
+                if (e.target && e.target.tagName === 'IMG') {
+                    schedulePageOverflowCheck();
+                }
+            }, true);
         }
 
         function addGraphCanvas(qId) {
