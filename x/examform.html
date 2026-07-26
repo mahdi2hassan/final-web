@@ -3149,7 +3149,9 @@ window.MathJax = {
             document.querySelectorAll('[contenteditable="true"]').forEach(el => {
                 el.onblur = function() {
                     if (window.MathJax && this.innerText.includes('$')) {
-                        MathJax.typesetPromise([this]);
+                        MathJax.typesetPromise([this]).then(schedulePageOverflowCheck).catch(function(){});
+                    } else {
+                        schedulePageOverflowCheck();
                     }
                     saveExamToLocalStorage();
                 };
@@ -3387,6 +3389,9 @@ window.MathJax = {
             attachMathJaxBlur();
             initAutoPagination();
             schedulePageOverflowCheck();
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(schedulePageOverflowCheck).catch(function(){});
+            }
 
             const savedUsername = localStorage.getItem('examPlusTeacherUsername');
             if (localStorage.getItem('examPlusTeacherAuth') === '1' && savedUsername) {
