@@ -9,7 +9,7 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&family=El+Messiri:wght@500;600;700;800&family=Almarai:wght@400;700;800&family=Amiri:wght@400;700&family=Markazi+Text:wght@400;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Reem+Kufi:wght@400;600;700&display=swap" rel="stylesheet">
 <!-- MathJax Configuration -->
 <script>
 window.MathJax = {
@@ -21,6 +21,7 @@ window.MathJax = {
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <!-- html2canvas & QR Code -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <!-- ═══ ربط تسجيل الدخول بنظام أكواد امتحانك بلس المستقل (Firebase) ═══ -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -60,6 +61,7 @@ window.MathJax = {
             --card-radius: 12px;
             --base-font-size: 14.5px;
             --base-line-height: 1.7;
+            --exam-font-family: 'Tajawal', 'Cairo', sans-serif;
             --admin-bg: #ffffff;
             --admin-text: #0f172a;
             /* هوامش الصفحة — نفس القيم بالظبط تُستخدم في الشاشة والطباعة معًا،
@@ -71,6 +73,9 @@ window.MathJax = {
             --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.08), 0 2px 6px -1px rgba(0,0,0,0.04);
             --watermark-opacity: 0.05;
             --watermark-zindex: 1;
+            --watermark-rotation: -30deg;
+            --watermark-font: inherit;
+            --subject-icon-svg: none;
         }
 
         body.dark-admin-mode { --admin-bg: #1e293b; --admin-text: #f8fafc; }
@@ -94,6 +99,118 @@ window.MathJax = {
         .page.page-theme-5 { --primary-color: #9f1239; --accent-color: #f43f5e; --badge-bg: #be123c; --card-border: #fecdd3; --card-bg: #fff1f2; }
         .page.page-theme-6 { --primary-color: #5b21b6; --accent-color: #8b5cf6; --badge-bg: #7c3aed; --card-border: #ddd6fe; --card-bg: #f5f3ff; }
         .page.page-eco { --primary-color: #000000; --badge-bg: #000000; --accent-color: #000000; --card-border: #000000; --card-bg: #ffffff; }
+
+        /* ============================================================
+           قوالب زخرفية إضافية (7-12): خلفية + شريط عنوان/فوتر بس،
+           من غير أي اسم مادة أو معلم ثابت — كل النصوص بتتسحب من
+           العناصر الديناميكية الموجودة بالفعل (header-banner فاضي،
+           subject-badge، exam-footer) فتشتغل صح مع بيانات أي مستخدم
+           وبنفس مقاسات الصفحة (رأسي/أفقي) المستخدمة في باقي الموقع.
+           ============================================================ */
+        .page.page-theme-7, .page.page-theme-8 {
+            --primary-color: #4a221c; --accent-color: #8a5a3c; --badge-bg: #4a221c; --card-border: #d8cdb0; --card-bg: #fffaf0;
+            background-color: #f7f2e7 !important;
+        }
+        .page.page-theme-7 { background-image: repeating-linear-gradient(to bottom, transparent 0 27px, #d8cdb0 27px 28px) !important; background-position: 0 110px; }
+        .page.page-theme-8 { background-image: none !important; }
+
+        .page.page-theme-9 {
+            --primary-color: #7a3b2e; --accent-color: #c9a06a; --badge-bg: #7a3b2e; --card-border: #c9a06a; --card-bg: #fff8ec;
+            background-color: #e7cba8 !important;
+        }
+
+        .page.page-theme-10 {
+            --primary-color: #0f3d63; --accent-color: #1d6fae; --badge-bg: #0f3d63; --card-border: #bcd9ef; --card-bg: #f4faff;
+            background-color: #eaf4fc !important;
+            background-image:
+                repeating-linear-gradient(0deg, rgba(29,111,174,.12) 0 1px, transparent 1px 22px),
+                repeating-linear-gradient(90deg, rgba(29,111,174,.12) 0 1px, transparent 1px 22px) !important;
+        }
+
+        .page.page-theme-11 {
+            --primary-color: #7a5b1e; --accent-color: #b8902f; --badge-bg: #5b3d10; --card-border: #e6cf94; --card-bg: #fffdf5;
+            background-color: #fbf6e6 !important;
+        }
+
+        .page.page-theme-12 {
+            --primary-color: #1f5c3e; --accent-color: #4c8f6a; --badge-bg: #1f5c3e; --card-border: #bfe0cd; --card-bg: #f5fbf7;
+            background-color: #eef6f0 !important;
+            background-image: repeating-linear-gradient(45deg, rgba(76,143,106,.06) 0 10px, transparent 10px 20px) !important;
+        }
+
+        /* شريط عنوان زخرفي: بيلوّن header-banner الفاضي الموجود بالفعل ويحط جيب أيقونة المادة فيه */
+        .page.page-theme-7 .header-banner, .page.page-theme-8 .header-banner, .page.page-theme-9 .header-banner,
+        .page.page-theme-10 .header-banner, .page.page-theme-11 .header-banner, .page.page-theme-12 .header-banner {
+            height: 34px; border-radius: 8px; margin-bottom: 16px; position: relative;
+            background: var(--primary-color); box-shadow: 0 3px 6px rgba(0,0,0,.15);
+        }
+        .page.page-theme-7 .header-banner::after, .page.page-theme-8 .header-banner::after, .page.page-theme-9 .header-banner::after,
+        .page.page-theme-10 .header-banner::after, .page.page-theme-11 .header-banner::after, .page.page-theme-12 .header-banner::after {
+            content: ''; position: absolute; top: 4px; left: 8px; width: 26px; height: 26px; border-radius: 6px;
+            background-color: #fff; background-image: var(--subject-icon-svg); background-repeat: no-repeat;
+            background-position: center; background-size: 15px 15px; box-shadow: 0 2px 4px rgba(0,0,0,.12);
+        }
+        /* حافة ممزّقة (ورق قديم) لقالب 9 بس */
+        .page.page-theme-9 .header-banner { height: 40px; border-radius: 0; }
+        .page.page-theme-9 .header-banner::before {
+            content: ''; position: absolute; left: 0; right: 0; bottom: -8px; height: 8px;
+            background:
+                linear-gradient(135deg, transparent 5px, var(--primary-color) 5px) 0 0/14px 100%,
+                linear-gradient(-135deg, transparent 5px, var(--primary-color) 5px) 0 0/14px 100%;
+        }
+        .page.page-theme-9 .exam-footer::before {
+            content: ''; position: absolute; left: 0; right: 0; top: -8px; height: 8px;
+            background:
+                linear-gradient(45deg, transparent 5px, var(--primary-color) 5px) 0 0/14px 100%,
+                linear-gradient(-45deg, transparent 5px, var(--primary-color) 5px) 0 0/14px 100%;
+        }
+
+        /* حافة موجية (زخرفة عربية) لقالب 11 بس */
+        .page.page-theme-11 .header-banner::before {
+            content: ''; position: absolute; left: 0; right: 0; bottom: -6px; height: 12px;
+            background: radial-gradient(circle at 6px 0, transparent 6px, var(--primary-color) 6px) 0 -6px/12px 12px repeat-x;
+        }
+        .page.page-theme-11 .exam-footer::before {
+            content: ''; position: absolute; left: 0; right: 0; top: -6px; height: 12px;
+            background: radial-gradient(circle at 6px 12px, transparent 6px, var(--primary-color) 6px) 0 0/12px 12px repeat-x;
+        }
+
+        /* شريط الفوتر الزخرفي: بيحول exam-footer الموجود (فيه بيانات المستخدم فعليًا) لشريط ملون */
+        .page.page-theme-7 .exam-footer, .page.page-theme-8 .exam-footer, .page.page-theme-9 .exam-footer,
+        .page.page-theme-10 .exam-footer, .page.page-theme-11 .exam-footer, .page.page-theme-12 .exam-footer {
+            background: var(--primary-color); color: #fff; border: none; border-radius: 8px;
+            padding: 8px 14px; position: relative; margin-top: 10px;
+        }
+        .page.page-theme-9 .exam-footer { border-radius: 0; margin-top: 16px; }
+        .page.page-theme-7 .exam-footer strong, .page.page-theme-8 .exam-footer strong, .page.page-theme-9 .exam-footer strong,
+        .page.page-theme-10 .exam-footer strong, .page.page-theme-11 .exam-footer strong, .page.page-theme-12 .exam-footer strong { color: #fff; }
+        .page.page-theme-7 #footerPhone, .page.page-theme-8 #footerPhone, .page.page-theme-9 #footerPhone,
+        .page.page-theme-10 #footerPhone, .page.page-theme-11 #footerPhone, .page.page-theme-12 #footerPhone { color: #fff; opacity: .85; }
+
+        /* توفير حبر: لو "طباعة اقتصادية" مفعّلة على الصفحة، الشرايط والخلفيات الملونة بتتحول لحدود سادة بس */
+        .page.page-eco.page-theme-7, .page.page-eco.page-theme-8, .page.page-eco.page-theme-9,
+        .page.page-eco.page-theme-10, .page.page-eco.page-theme-11, .page.page-eco.page-theme-12 {
+            background-color: #ffffff !important; background-image: none !important;
+        }
+        .page.page-eco.page-theme-7 .header-banner, .page.page-eco.page-theme-8 .header-banner, .page.page-eco.page-theme-9 .header-banner,
+        .page.page-eco.page-theme-10 .header-banner, .page.page-eco.page-theme-11 .header-banner, .page.page-eco.page-theme-12 .header-banner,
+        .page.page-eco.page-theme-7 .exam-footer, .page.page-eco.page-theme-8 .exam-footer, .page.page-eco.page-theme-9 .exam-footer,
+        .page.page-eco.page-theme-10 .exam-footer, .page.page-eco.page-theme-11 .exam-footer, .page.page-eco.page-theme-12 .exam-footer {
+            background: #ffffff !important; border: 2px solid #000 !important; color: #000 !important;
+        }
+        .page.page-eco.page-theme-7 .header-banner::after, .page.page-eco.page-theme-8 .header-banner::after, .page.page-eco.page-theme-9 .header-banner::after,
+        .page.page-eco.page-theme-10 .header-banner::after, .page.page-eco.page-theme-11 .header-banner::after, .page.page-eco.page-theme-12 .header-banner::after {
+            background-color: #fff !important; box-shadow: none !important; border: 1px solid #000;
+        }
+
+        /* أيقونة كبيرة شفافة في خلفية الصفحة تتغير أوتوماتيك حسب المادة (مثل العلامة المائية بالظبط) */
+        .page.page-theme-7::before, .page.page-theme-8::before, .page.page-theme-9::before,
+        .page.page-theme-10::before, .page.page-theme-11::before, .page.page-theme-12::before {
+            content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+            background-image: var(--subject-icon-svg); background-repeat: no-repeat;
+            background-position: center 62%; background-size: 220px 220px; opacity: .05;
+        }
+        .page.page-eco::before { opacity: .03 !important; }
         .page.page-dual-column .questions-container { column-count: 2; column-gap: 15px; }
         .page.page-dual-column .question-card { break-inside: avoid; display: inline-block; width: 100%; }
 
@@ -107,6 +224,10 @@ window.MathJax = {
         .page-settings-btn .svg-ic { width: 15px; height: 15px; }
         .page-settings-note { font-size: 11px; color: #64748b; line-height: 1.6; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px 10px; }
 
+        .theme-swatch-btn { width: 34px; height: 34px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; padding: 0; transition: all .15s ease; }
+        .theme-swatch-btn:hover { transform: scale(1.08); }
+        .theme-swatch-btn.active { border-color: #0f172a; box-shadow: 0 0 0 2px #fff, 0 0 0 4px #0f172a; }
+
         /* LTR */
         body.ltr-mode { dir: ltr !important; }
         body.ltr-mode .page { direction: ltr !important; text-align: left !important; }
@@ -118,7 +239,7 @@ window.MathJax = {
         body.dual-column-mode .questions-container { column-count: 2; column-gap: 15px; }
         body.dual-column-mode .question-card { break-inside: avoid; display: inline-block; width: 100%; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', 'Cairo', sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--exam-font-family, 'Tajawal', 'Cairo', sans-serif); }
         body { background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 260px); display: flex; flex-direction: column; align-items: center; padding: 10px; min-height: 100vh; color: var(--text-main); }
 
         .svg-ic { width: 18px; height: 18px; fill: currentColor; vertical-align: middle; display: inline-block; }
@@ -171,13 +292,70 @@ window.MathJax = {
         .phone-nums { display: flex; justify-content: center; gap: 12px; font-weight: 800; font-size: 14px; color: #0f172a; margin-top: 4px; }
         .copy-btn { background: #fee2e2; border: none; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-right: 4px; }
 
+        /* ══ لوحة الأدوات كشريط جانبي ثابت (بدل الشريط الأفقي العلوي القديم) ══ */
         .admin-controls-wrapper {
-            width: 100%; max-width: 210mm; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; margin-bottom: 0;
+            position: fixed; top: 0; left: 0; height: 100vh; height: 100dvh;
+            width: min(340px, 90vw); max-width: none;
+            transform: translateX(-102%);
+            transition: transform 0.32s cubic-bezier(.4,0,.2,1);
+            z-index: 950; margin-bottom: 0; overflow: hidden;
         }
-        .admin-controls-wrapper.open { max-height: 4000px; margin-bottom: 15px; }
+        .admin-controls-wrapper.open { transform: translateX(0); margin-bottom: 0; }
         .admin-controls {
-            background: var(--admin-bg); color: var(--admin-text); border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;
-            box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 12px;
+            background: var(--admin-bg); color: var(--admin-text); border: 1px solid #e2e8f0; border-inline-start: none;
+            border-radius: 0 16px 16px 0; padding: 16px 14px 26px; height: 100%; box-sizing: border-box;
+            box-shadow: 10px 0 30px -8px rgba(15,23,42,0.25); display: flex; flex-direction: column; gap: 12px;
+            overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent;
+        }
+        .admin-controls::-webkit-scrollbar { width: 7px; }
+        .admin-controls::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .admin-controls::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .tools-panel-header {
+            position: sticky; top: -16px; margin: -16px -14px 6px; padding: 12px 14px;
+            background: var(--admin-bg); z-index: 2; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .tools-panel-header h3 { font-size: 13.5px; font-weight: 900; color: var(--primary-color); display: flex; align-items: center; gap: 6px; }
+        .tools-panel-close {
+            width: 28px; height: 28px; border-radius: 50%; border: none; background: #f1f5f9; color: #475569;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s ease;
+        }
+        .tools-panel-close:hover { background: #fee2e2; color: #dc2626; transform: rotate(90deg); }
+
+        /* لما لوحة الأدوات مفتوحة، زرار الترس العائم بيتحرك يمين شوية عشان ميتغطاش بالشريط الجانبي */
+        body.tools-panel-open .settings-gear-btn {
+            transform: translateX(min(340px, 90vw));
+        }
+        body.tools-panel-open .settings-gear-btn:hover { transform: translateX(min(340px, 90vw)) rotate(90deg) scale(1.1); }
+        /* على الشاشات الضيقة، اللوحة بتاخد العرض كله تقريبًا فمفيش مكان نزحزح الترس له —
+           بنخفيه بدل ما "يخبط" في محتوى اللوحة، وأصلاً زرار الإغلاق (×) جوه اللوحة والخلفية الشفافة كافيين لقفلها */
+        @media (max-width: 640px) {
+            body.tools-panel-open .settings-gear-btn { transform: none; opacity: 0; pointer-events: none; }
+        }
+
+        .tools-backdrop {
+            position: fixed; inset: 0; background: rgba(15,23,42,0.45); backdrop-filter: blur(1.5px);
+            z-index: 930; opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
+        }
+        .tools-backdrop.show { opacity: 1; visibility: visible; }
+
+        /* ══ شريط تنسيق عائم صغير يظهر عند تحديد نص داخل أي خانة قابلة للتعديل ══ */
+        #textFormatToolbar {
+            position: fixed; display: none; align-items: center; gap: 3px; background: #1e2f47; color: #fff;
+            border-radius: 10px; padding: 5px 6px; box-shadow: 0 8px 20px rgba(0,0,0,0.28); z-index: 10600;
+            font-family: 'Tajawal','Cairo',sans-serif;
+        }
+        #textFormatToolbar.show { display: flex; }
+        #textFormatToolbar button {
+            background: transparent; border: none; color: #fff; width: 28px; height: 28px; border-radius: 6px;
+            cursor: pointer; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+            transition: background .15s ease;
+        }
+        #textFormatToolbar button:hover { background: rgba(255,255,255,0.18); }
+        #textFormatToolbar .fmt-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.25); margin: 0 2px; }
+        #textFormatToolbar input[type="color"] {
+            width: 24px; height: 24px; border: none; border-radius: 6px; padding: 0; background: transparent; cursor: pointer;
         }
 
         .analytics-bar {
@@ -218,6 +396,69 @@ window.MathJax = {
         .toolbar-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .toolbar-label { font-size: 11px; font-weight: 800; color: #64748b; display: flex; align-items: center; gap: 6px; }
         .toolbar-label .svg-ic { width: 14px; height: 14px; opacity: 0.7; }
+
+        /* ══════════════════════════════════════════════════════════
+           تجميل الشريط الجانبي: خط El Messiri، هوية كحلي/ذهبي (زي منصة بلس)،
+           زرار في كل سطر، وأقسام قابلة للطي — كل ده محصور جوه .admin-controls
+           فقط عشان ورقة الامتحان المطبوعة تفضل زي ما هي بالظبط
+           ══════════════════════════════════════════════════════════ */
+        :root { --side-navy: #1e2f47; --side-navy-2: #2d4258; --side-gold: #d4af37; --side-gold-soft: #f2d98a; }
+
+        .admin-controls, .admin-controls .btn, .admin-controls .toolbar-label, .admin-controls h3 {
+            font-family: 'El Messiri', 'Tajawal', 'Cairo', sans-serif;
+        }
+
+        .tools-panel-header {
+            background: linear-gradient(120deg, var(--side-navy) 0%, var(--side-navy-2) 100%);
+            border-radius: 0 14px 0 0; border-bottom: none; box-shadow: 0 2px 10px rgba(30,47,71,0.25);
+        }
+        .tools-panel-header h3 { color: #fff; font-size: 15px; letter-spacing: .2px; }
+        .tools-panel-header h3 .svg-ic { fill: var(--side-gold-soft); }
+        .tools-panel-close { background: rgba(255,255,255,0.14); color: #fff; }
+        .tools-panel-close:hover { background: #fee2e2; color: #dc2626; }
+
+        .admin-controls-wrapper::before {
+            content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 4px;
+            background: linear-gradient(180deg, var(--side-gold) 0%, var(--side-navy) 55%, var(--side-gold) 100%);
+        }
+        .admin-controls-wrapper { position: fixed; } /* موجودة أصلاً، مجرد تأكيد عشان الـ ::before */
+
+        .toolbar-section { border-bottom: none; margin-bottom: 6px; padding-bottom: 0; }
+        .toolbar-label {
+            cursor: pointer; user-select: none; justify-content: space-between; font-size: 12px; font-weight: 800;
+            color: var(--side-navy-2); background: linear-gradient(90deg, #f8fafc, #ffffff);
+            border-inline-start: 3px solid var(--side-gold); border-radius: 8px; padding: 9px 10px; margin-bottom: 8px;
+            transition: background .2s ease;
+        }
+        .toolbar-label:hover { background: #f0f9ff; }
+        .toolbar-label:focus-visible { outline: 2px solid var(--side-gold); outline-offset: 1px; }
+        body.dark-admin-mode .toolbar-label { background: rgba(255,255,255,0.06); color: #f2d98a; }
+        .toolbar-chevron { display: inline-flex; margin-inline-start: auto; transition: transform .25s ease; opacity: .75; }
+        .toolbar-chevron .svg-ic { fill: currentColor; }
+        .toolbar-section.collapsed .toolbar-chevron { transform: rotate(-90deg); }
+        .toolbar-content { max-height: 3000px; overflow: hidden; opacity: 1; transition: max-height .35s ease, opacity .25s ease, margin-top .25s ease; }
+        .toolbar-section.collapsed .toolbar-content { max-height: 0; opacity: 0; margin-top: 0; }
+
+        /* زرار في كل سطر لمجموعات الأزرار الرئيسية داخل الشريط الجانبي */
+        .admin-controls .btn-group { flex-direction: column; align-items: stretch; gap: 8px; }
+        .admin-controls .btn-group .btn {
+            width: 100%; justify-content: flex-start; border-radius: 10px; padding: 11px 14px; font-size: 12.5px;
+            box-shadow: 0 1px 3px rgba(15,23,42,0.08);
+        }
+        .admin-controls .btn-group .btn:hover { transform: translateY(-1px) scale(1.008); box-shadow: 0 4px 10px rgba(15,23,42,0.14); opacity: 1; }
+        .admin-controls .btn-group select { width: 100%; }
+
+        /* ══ باركود QR في زاوية كل صفحة ══ */
+        .page-qr-badge {
+            position: absolute; bottom: 10px; left: 10px; display: none; flex-direction: column; align-items: center; gap: 3px;
+            z-index: 5; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px;
+        }
+        .page-qr-canvas { width: 74px; height: 74px; }
+        .page-qr-canvas img, .page-qr-canvas canvas { display: block; width: 74px !important; height: 74px !important; }
+        .page-qr-caption { font-size: 7.5px; color: #64748b; max-width: 84px; text-align: center; line-height: 1.2; }
+
+        /* ══ وضع الخط المريح: تباعد أوسع بين الحروف والكلمات لصعوبات القراءة ══ */
+        body.comfort-reading-mode .page { letter-spacing: 0.4px; word-spacing: 1.5px; }
 
         .btn-booklet { background: linear-gradient(135deg, #0891b2, #0e7490); }
         .btn-booklet.active { background: linear-gradient(135deg, #0e7490, #164e63); box-shadow: inset 0 0 0 2px #fbbf24; }
@@ -396,9 +637,9 @@ window.MathJax = {
         body.show-cover .cover-page { display: flex; }
 
         .watermark { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(var(--watermark-rotation)); 
             font-size: 4rem; font-weight: 900; color: #0f172a; white-space: nowrap; pointer-events: none; 
-            z-index: var(--watermark-zindex); opacity: var(--watermark-opacity); 
+            z-index: var(--watermark-zindex); opacity: var(--watermark-opacity); font-family: var(--watermark-font); 
         }
         .center-logo-watermark { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
@@ -415,7 +656,9 @@ window.MathJax = {
         .title-brand .brand-icon-box { background: #f1f5f9; color: var(--primary-color); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
         .title-brand h1 { font-size: 22px; font-weight: 900; color: var(--primary-color); line-height: 1.1; }
         .session-badge { background: #f1f5f9; border: 1px dashed var(--primary-color); border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 800; color: var(--primary-color); display: inline-block; }
-        .subject-badge { background: var(--primary-color); color: #fff; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 800; display: inline-block; }
+        .subject-badge { background: var(--primary-color); color: #fff; border-radius: 6px; padding: 2px 8px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; }
+        .subject-icon-wrap { display: inline-flex; width: 12px; height: 12px; }
+        .subject-icon-wrap svg { width: 12px; height: 12px; }
         
         .teacher-info-card { border: 1px solid var(--card-border); border-radius: 8px; padding: 6px 12px; background: #ffffff; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
         .teacher-info-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--primary-color); }
@@ -505,7 +748,7 @@ window.MathJax = {
                #pagesContainer أصلاً. بدل ما نفضل نلاحق كل عنصر جديد بالاسم، بنخفي
                كل حاجة على مستوى body غير المحتوى القابل للطباعة فعليًا. */
             body > *:not(#pagesContainer):not(#coverPage) { display: none !important; }
-            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator, .page-settings-btn, .exam-user-badge, .exam-welcome-toast, .thumbnails-sidebar, .adv-search-box, .adv-toolbar { display: none !important; }
+            .settings-gear-btn, .admin-controls-wrapper, .tools-backdrop, #textFormatToolbar, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator, .page-settings-btn, .exam-user-badge, .exam-welcome-toast, .thumbnails-sidebar, .adv-search-box, .adv-toolbar { display: none !important; }
             .manual-page-break { border: none !important; margin: 0 !important; page-break-before: always !important; break-before: page !important; }
             [contenteditable="true"], .editable-element { border: none !important; background: transparent !important; }
             
@@ -719,7 +962,22 @@ window.MathJax = {
                 <div class="page-settings-note">هذه الإعدادات تخص هذه الصفحة فقط، ولا تتأثر بتغيير القالب العام أو باقي الصفحات — مفيدة مثلاً بعد الضغط على "إنهاء الصفحة" لو حبيت الصفحة الجديدة يكون لها شكل مختلف.</div>
                 <div class="input-group">
                     <label>قالب الألوان الخاص بالصفحة:</label>
-                    <select id="pageThemeSelect">
+                    <div id="pageThemeSwatches" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+                        <button type="button" class="theme-swatch-btn" data-theme="inherit" title="افتراضي" onclick="selectPageThemeSwatch('inherit', this)" style="background:linear-gradient(135deg,#e2e8f0,#f8fafc);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-1" title="سماوي" onclick="selectPageThemeSwatch('page-theme-1', this)" style="background:linear-gradient(135deg,#0891b2,#06b6d4);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-2" title="كهرماني داكن" onclick="selectPageThemeSwatch('page-theme-2', this)" style="background:linear-gradient(135deg,#1e293b,#d97706);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-3" title="نيلي/ذهبي" onclick="selectPageThemeSwatch('page-theme-3', this)" style="background:linear-gradient(135deg,#1e1b4b,#eab308);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-4" title="أخضر" onclick="selectPageThemeSwatch('page-theme-4', this)" style="background:linear-gradient(135deg,#065f46,#10b981);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-5" title="وردي" onclick="selectPageThemeSwatch('page-theme-5', this)" style="background:linear-gradient(135deg,#9f1239,#f43f5e);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-6" title="بنفسجي" onclick="selectPageThemeSwatch('page-theme-6', this)" style="background:linear-gradient(135deg,#5b21b6,#8b5cf6);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-7" title="دفتر كيمياء (بأسطر)" onclick="selectPageThemeSwatch('page-theme-7', this)" style="background:linear-gradient(135deg,#f7f2e7,#4a221c);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-8" title="دفتر كيمياء (بدون أسطر)" onclick="selectPageThemeSwatch('page-theme-8', this)" style="background:linear-gradient(135deg,#f7f2e7,#8a5a3c);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-9" title="محاضرة / ورق قديم" onclick="selectPageThemeSwatch('page-theme-9', this)" style="background:linear-gradient(135deg,#e7cba8,#7a3b2e);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-10" title="مخطط هندسي (فيزياء)" onclick="selectPageThemeSwatch('page-theme-10', this)" style="background:linear-gradient(135deg,#eaf4fc,#0f3d63);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-11" title="زخرفة عربية/أدبية" onclick="selectPageThemeSwatch('page-theme-11', this)" style="background:linear-gradient(135deg,#fbf6e6,#7a5b1e);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-12" title="جغرافيا وخرائط" onclick="selectPageThemeSwatch('page-theme-12', this)" style="background:linear-gradient(135deg,#eef6f0,#1f5c3e);"></button>
+                    </div>
+                    <select id="pageThemeSelect" style="display:none;">
                         <option value="inherit">افتراضي (نفس باقي الورقة)</option>
                         <option value="page-theme-1">قالب مستقل 1 - سماوي</option>
                         <option value="page-theme-2">قالب مستقل 2 - كهرماني داكن</option>
@@ -727,6 +985,12 @@ window.MathJax = {
                         <option value="page-theme-4">قالب مستقل 4 - أخضر</option>
                         <option value="page-theme-5">قالب مستقل 5 - وردي</option>
                         <option value="page-theme-6">قالب مستقل 6 - بنفسجي</option>
+                        <option value="page-theme-7">قالب زخرفي 7 - دفتر كيمياء (بأسطر)</option>
+                        <option value="page-theme-8">قالب زخرفي 8 - دفتر كيمياء (بدون أسطر)</option>
+                        <option value="page-theme-9">قالب زخرفي 9 - محاضرة / ورق قديم</option>
+                        <option value="page-theme-10">قالب زخرفي 10 - مخطط هندسي (فيزياء)</option>
+                        <option value="page-theme-11">قالب زخرفي 11 - زخرفة عربية/أدبية</option>
+                        <option value="page-theme-12">قالب زخرفي 12 - جغرافيا وخرائط</option>
                     </select>
 
                     <label>تقسيم الأعمدة لهذه الصفحة:</label>
@@ -747,9 +1011,31 @@ window.MathJax = {
         </div>
     </div>
 
-    <!-- لوحة التحكم الإدارية -->
+    <!-- خلفية شفافة تُغلق لوحة الأدوات عند الضغط عليها (خصوصًا على الموبايل) -->
+    <div class="tools-backdrop no-print" id="toolsBackdrop" onclick="closeControls()"></div>
+
+    <!-- شريط تنسيق عائم صغير يظهر عند تحديد نص -->
+    <div id="textFormatToolbar" class="no-print">
+        <button type="button" title="غامق" onmousedown="fmtExec(event,'bold')"><b>B</b></button>
+        <button type="button" title="تسطير" onmousedown="fmtExec(event,'underline')"><u>U</u></button>
+        <div class="fmt-sep"></div>
+        <button type="button" title="تصغير الخط" onmousedown="fmtFontSize(event,-1)">A-</button>
+        <button type="button" title="تكبير الخط" onmousedown="fmtFontSize(event,1)">A+</button>
+        <div class="fmt-sep"></div>
+        <input type="color" id="fmtColorInput" title="لون النص" value="#0f172a" onmousedown="fmtSaveSelection(event)" oninput="fmtApplyColor(this.value)">
+        <div class="fmt-sep"></div>
+        <button type="button" title="مسح التنسيق" onmousedown="fmtExec(event,'removeFormat')">✕</button>
+    </div>
+
+    <!-- لوحة التحكم الإدارية (شريط جانبي) -->
     <div class="admin-controls-wrapper" id="controlsWrapper">
         <div class="admin-controls">
+            <div class="tools-panel-header">
+                <h3><svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6l-3 3-4.3-4.3C.6 7.1 1 10.1 3 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.4-.4.4-1 0-1.4z"/></svg> لوحة الأدوات</h3>
+                <button class="tools-panel-close" onclick="closeControls()" title="غلق اللوحة">
+                    <svg class="svg-ic" viewBox="0 0 24 24" style="width:15px;height:15px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
             <div class="analytics-bar">
                 <div>الزمن المتوقع: <span id="estTimeCalc">0 دقيقة</span></div>
                 <div>المستوى: <span id="difficultyCalc">متوازن</span></div>
@@ -768,6 +1054,17 @@ window.MathJax = {
 
             <div class="font-controls">
                 <span><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9.93 13.5h4.14L12 7.98zM20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-4.05 16.5l-1.14-3H9.17l-1.12 3H5.96l5.11-13h1.86l5.11 13h-2.09z"/></svg> الخطوط:</span>
+                <label>الخط:</label>
+                <select id="examFontSelect" onchange="changeExamFont(this.value)" style="font-family: inherit; padding: 3px 6px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                    <option value="'Tajawal','Cairo',sans-serif">Tajawal (افتراضي)</option>
+                    <option value="'Cairo','Tajawal',sans-serif">Cairo</option>
+                    <option value="'Almarai','Tajawal',sans-serif">Almarai</option>
+                    <option value="'Amiri','Cairo',serif">Amiri (نسخي كلاسيكي)</option>
+                    <option value="'Markazi Text','Cairo',serif">Markazi Text</option>
+                    <option value="'IBM Plex Sans Arabic','Tajawal',sans-serif">IBM Plex Sans Arabic</option>
+                    <option value="'Reem Kufi','Cairo',sans-serif">Reem Kufi (عناوين بارزة)</option>
+                </select>
+
                 <label>الحجم:</label>
                 <input type="range" id="fontSizeSlider" min="11" max="20" step="0.5" value="14.5" oninput="changeFontSize(this.value)">
                 <span id="fontSizeVal">14.5px</span>
@@ -778,6 +1075,10 @@ window.MathJax = {
 
                 <label style="margin-right:10px;"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.09-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg> لون حُر:</label>
                 <input type="color" id="customColorPicker" value="#0284c7" onchange="applyCustomColor(this.value)">
+
+                <label style="margin-right:10px; cursor:pointer;">
+                    <input type="checkbox" id="comfortReadingCheck" onchange="toggleComfortReadingMode(this.checked)"> وضع الخط المريح (لصعوبات القراءة)
+                </label>
             </div>
 
             <div class="font-controls" style="background: #fff7ed; color: #c2410c;">
@@ -789,6 +1090,39 @@ window.MathJax = {
                 <label style="margin-right:10px; cursor:pointer;">
                     <input type="checkbox" id="watermarkOnTopCheck" onchange="toggleWatermarkPosition(this.checked)"> إظهار العلامة فوق النصوص
                 </label>
+
+                <label style="margin-right:10px;">الاتجاه:</label>
+                <select id="watermarkOrientationSelect" onchange="changeWatermarkOrientation(this.value)">
+                    <option value="-30">مائل (افتراضي)</option>
+                    <option value="0">أفقي</option>
+                    <option value="-45">مائل حاد</option>
+                    <option value="90">رأسي</option>
+                </select>
+
+                <label style="margin-right:10px;">خط العلامة:</label>
+                <select id="watermarkFontSelect" onchange="changeWatermarkFont(this.value)">
+                    <option value="'Tajawal','Cairo',sans-serif">Tajawal (افتراضي)</option>
+                    <option value="'Cairo','Tajawal',sans-serif">Cairo</option>
+                    <option value="'Almarai','Tajawal',sans-serif">Almarai</option>
+                    <option value="'Amiri','Cairo',serif">Amiri (نسخي كلاسيكي)</option>
+                    <option value="'Markazi Text','Cairo',serif">Markazi Text</option>
+                    <option value="'Reem Kufi','Cairo',sans-serif">Reem Kufi</option>
+                </select>
+            </div>
+
+            <div class="font-controls" style="background: #ecfeff; color: #0e7490; flex-wrap: wrap;">
+                <span><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M3 11h8V3H3v8zm2-6h4v4H5V5zM3 21h8v-8H3v8zm2-6h4v4H5v-4zM13 3v8h8V3h-8zm6 6h-4V5h4v4zm-6 4h2v2h-2v-2zm2 2h2v2h-2v-2zm-2 2h2v2h-2v-2zm2 2h2v2h-2v-2zm2-4h2v2h-2v-2zm0 4h2v2h-2v-2zm2-6h2v2h-2v-2z"/></svg> باركود QR للتسليم/النموذج:</span>
+                <label style="cursor:pointer;">
+                    <input type="checkbox" id="qrEnableCheck" onchange="updateQRSettings()"> إظهار QR في الورقة
+                </label>
+                <label style="margin-right:10px;">الرابط:</label>
+                <input type="url" id="qrLinkInput" placeholder="https://..." style="flex:1 1 180px; min-width:140px; padding:4px 8px; border-radius:6px; border:1px solid #a5f3fc; font-family: inherit;" oninput="updateQRSettings()">
+                <label style="margin-right:10px;">مكانه:</label>
+                <select id="qrScopeSelect" onchange="updateQRSettings()" style="font-family: inherit; padding: 3px 6px; border-radius: 6px; border: 1px solid #a5f3fc;">
+                    <option value="all">كل الصفحات</option>
+                    <option value="lastOnly">آخر صفحة بس</option>
+                    <option value="coverOnly">صفحة الغلاف بس</option>
+                </select>
             </div>
 
             <div class="math-toolbar">
@@ -1139,16 +1473,16 @@ window.MathJax = {
                 <table class="grading-summary-table" id="gradingSummaryTable">
                     <thead>
                         <tr id="gradingHeaderRow">
-                            <th id="lblQTable">السؤال</th>
+                            <th>السؤال</th>
                             <th>س1</th>
                             <th>س2</th>
                             <th>س3</th>
-                            <th id="lblTotalTable">المجموع</th>
+                            <th>المجموع</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr id="gradingBodyRow">
-                            <td id="lblScoreTable">الدرجة</td>
+                            <td>الدرجة</td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -1689,8 +2023,7 @@ window.MathJax = {
             document.body.classList.remove('edit-mode-active');
             const editPanelEl = document.getElementById('editPanel');
             if (editPanelEl) editPanelEl.style.display = 'none';
-            const wrap = document.getElementById('controlsWrapper');
-            if (wrap) wrap.classList.remove('open');
+            closeControls();
             syncContentEditableState();
             updateExamUserBadge();
         }
@@ -1727,7 +2060,163 @@ window.MathJax = {
         }
 
         function toggleControls() {
-            document.getElementById('controlsWrapper').classList.toggle('open');
+            const wrap = document.getElementById('controlsWrapper');
+            const isOpen = wrap.classList.toggle('open');
+            document.body.classList.toggle('tools-panel-open', isOpen);
+            const backdrop = document.getElementById('toolsBackdrop');
+            if (backdrop) backdrop.classList.toggle('show', isOpen);
+        }
+
+        function closeControls() {
+            const wrap = document.getElementById('controlsWrapper');
+            if (!wrap.classList.contains('open')) return;
+            wrap.classList.remove('open');
+            document.body.classList.remove('tools-panel-open');
+            const backdrop = document.getElementById('toolsBackdrop');
+            if (backdrop) backdrop.classList.remove('show');
+        }
+
+        document.addEventListener('keydown', function(e){
+            if (e.key === 'Escape') closeControls();
+        });
+
+        function initToolsAccordion() {
+            const sections = document.querySelectorAll('.admin-controls .toolbar-section');
+            sections.forEach(function(sec, idx) {
+                const label = sec.querySelector(':scope > .toolbar-label');
+                if (!label || sec.querySelector(':scope > .toolbar-content')) return;
+                const content = document.createElement('div');
+                content.className = 'toolbar-content';
+                let node = label.nextSibling;
+                while (node) {
+                    const next = node.nextSibling;
+                    content.appendChild(node);
+                    node = next;
+                }
+                sec.appendChild(content);
+
+                const chevron = document.createElement('span');
+                chevron.className = 'toolbar-chevron';
+                chevron.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>';
+                label.appendChild(chevron);
+                label.setAttribute('role', 'button');
+                label.setAttribute('tabindex', '0');
+
+                const sectionKey = sec.id || ('toolbarSec' + idx);
+                if (localStorage.getItem('toolbarCollapsed:' + sectionKey) === '1') {
+                    sec.classList.add('collapsed');
+                }
+
+                function toggleSection() {
+                    const collapsed = sec.classList.toggle('collapsed');
+                    localStorage.setItem('toolbarCollapsed:' + sectionKey, collapsed ? '1' : '0');
+                }
+                label.addEventListener('click', toggleSection);
+                label.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSection(); }
+                });
+            });
+        }
+        document.addEventListener('DOMContentLoaded', initToolsAccordion);
+
+        function initAdvSearchBoxCollapse() {
+            const box = document.querySelector('.adv-search-box');
+            const input = document.getElementById('advQuestionSearchInput');
+            if (!box || !input) return;
+            box.classList.add('collapsed');
+            box.addEventListener('click', function() {
+                if (box.classList.contains('collapsed')) {
+                    box.classList.remove('collapsed');
+                    input.focus();
+                }
+            });
+            input.addEventListener('blur', function() {
+                setTimeout(function() {
+                    if (!input.value.trim()) box.classList.add('collapsed');
+                }, 150);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', initAdvSearchBoxCollapse);
+
+        // ═══ شريط التنسيق العائم (بولد / تسطير / حجم / لون) ═══
+        try { document.execCommand('styleWithCSS', false, true); } catch (e) {}
+        let fmtSavedRange = null;
+
+        function fmtIsInsideEditable(node) {
+            const el = node && node.nodeType === 1 ? node : (node ? node.parentElement : null);
+            return el ? el.closest('[contenteditable="true"], .editable-element') : null;
+        }
+
+        function fmtUpdateToolbar() {
+            const bar = document.getElementById('textFormatToolbar');
+            if (!bar) return;
+            const sel = window.getSelection();
+            if (!sel || sel.rangeCount === 0 || sel.isCollapsed) { bar.classList.remove('show'); return; }
+            const range = sel.getRangeAt(0);
+            if (!fmtIsInsideEditable(range.commonAncestorContainer)) { bar.classList.remove('show'); return; }
+            fmtSavedRange = range.cloneRange();
+            const rect = range.getBoundingClientRect();
+            if (!rect || (rect.width === 0 && rect.height === 0)) { bar.classList.remove('show'); return; }
+            bar.classList.add('show');
+            const barRect = bar.getBoundingClientRect();
+            let top = rect.top - barRect.height - 8;
+            if (top < 4) top = rect.bottom + 8;
+            let left = rect.left + rect.width / 2 - barRect.width / 2;
+            left = Math.max(6, Math.min(left, window.innerWidth - barRect.width - 6));
+            bar.style.top = top + 'px';
+            bar.style.left = left + 'px';
+        }
+        document.addEventListener('selectionchange', fmtUpdateToolbar);
+
+        function fmtRestoreSelection() {
+            if (!fmtSavedRange) return;
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(fmtSavedRange);
+        }
+
+        function fmtExec(e, cmd) {
+            e.preventDefault(); // يمنع فقد التحديد لما نضغط على الزرار
+            fmtRestoreSelection();
+            document.execCommand(cmd, false, null);
+            fmtUpdateToolbar();
+        }
+
+        function fmtSaveSelection(e) {
+            // اختيار اللون بيفتح واجهة النظام وده هياخد الفوكس، فبنحفظ التحديد قبلها بلحظة
+            fmtRestoreSelection();
+        }
+
+        function fmtApplyColor(color) {
+            fmtRestoreSelection();
+            document.execCommand('foreColor', false, color);
+            fmtUpdateToolbar();
+        }
+
+        function fmtFontSize(e, delta) {
+            e.preventDefault();
+            fmtRestoreSelection();
+            const sel = window.getSelection();
+            if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+            const range = sel.getRangeAt(0);
+            const container = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
+            const currentSize = parseFloat(window.getComputedStyle(container).fontSize) || 14.5;
+            const newSize = Math.max(8, Math.min(48, currentSize + delta));
+            const span = document.createElement('span');
+            span.style.fontSize = newSize + 'px';
+            try {
+                range.surroundContents(span);
+            } catch (err) {
+                const frag = range.extractContents();
+                span.appendChild(frag);
+                range.insertNode(span);
+            }
+            sel.removeAllRanges();
+            const newRange = document.createRange();
+            newRange.selectNodeContents(span);
+            sel.addRange(newRange);
+            fmtSavedRange = newRange.cloneRange();
+            fmtUpdateToolbar();
         }
 
         function initThemes() {
@@ -1763,6 +2252,16 @@ window.MathJax = {
         function changeWatermarkOpacity(val) {
             document.documentElement.style.setProperty('--watermark-opacity', val);
             document.getElementById('watermarkOpacityVal').innerText = `${Math.round(val * 100)}%`;
+            saveExamToLocalStorage();
+        }
+
+        function changeWatermarkOrientation(val) {
+            document.documentElement.style.setProperty('--watermark-rotation', `${val}deg`);
+            saveExamToLocalStorage();
+        }
+
+        function changeWatermarkFont(val) {
+            document.documentElement.style.setProperty('--watermark-font', val);
             saveExamToLocalStorage();
         }
 
@@ -1842,8 +2341,46 @@ window.MathJax = {
             }
         }
 
+        /* ══ مكتبة أيقونات تلقائية حسب المادة (مطابقة لقائمة المواد الافتراضية في الموقع) ══ */
+        const SUBJECT_ICONS = {
+            'الرياضيات': '<path d="M4 4h16M4 20h16M8 4l8 16M16 4l-8 16"/>',
+            'العلوم': '<path d="M9 3h6M10 3v5l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/>',
+            'الفيزياء': '<circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="9" ry="3.6"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(120 12 12)"/>',
+            'الكيمياء': '<path d="M9 3h6M10 3v5l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3M8 14h8"/>',
+            'الأحياء': '<path d="M12 2c-4 4-4 8 0 12s4 8 0 12M12 2c4 4 4 8 0 12s-4 8 0 12"/>',
+            'الجيولوجيا': '<path d="M3 18l5-9 4 6 3-5 6 8H3z"/>',
+            'الحاسب الآلي': '<rect x="3" y="4" width="18" height="12" rx="1"/><path d="M8 20h8M12 16v4"/>',
+            'اللغة العربية': '<path d="M4 20c4-1 6-4 6-8V5M14 20c4-1 6-4 6-8"/>',
+            'English': '<path d="M4 5h7v14H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM20 5h-7v14h7a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/>',
+            'اللغة الفرنسية': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/>',
+            'اللغة الألمانية': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/>',
+            'اللغة الإيطالية': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/>',
+            'الدراسات الاجتماعية': '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/>',
+            'التاريخ': '<circle cx="12" cy="13" r="7"/><path d="M12 9v4l3 2M9 3h6"/>',
+            'الجغرافيا': '<path d="M12 21s7-6.5 7-11a7 7 0 1 0-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.3"/>',
+            'الفلسفة والمنطق': '<path d="M9 18h6M10 21h4M12 3a5 5 0 0 0-3 9c.6.5 1 1.2 1 2h4c0-.8.4-1.5 1-2a5 5 0 0 0-3-9z"/>',
+            'علم النفس والاجتماع': '<circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M2 20c0-3 3-5 6-5s6 2 6 5M10 20c0-3 3-5 6-5s6 2 6 5"/>',
+            'التربية الدينية': '<path d="M12 3c-2 3-2 15 0 18M6 4c3 1 3 15 0 18M18 4c-3 1-3 15 0 18"/>',
+            'الإحصاء': '<path d="M4 20V10M10 20V4M16 20v7M4 20h16"/>',
+            'المحاسبة': '<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M8 7h8M8 11h8M8 15h5"/>',
+            'الإنتاج': '<rect x="3" y="7" width="18" height="13" rx="1"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+            'default': '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/>'
+        };
+        function getSubjectIconMarkup(subject) {
+            const path = SUBJECT_ICONS[subject] || SUBJECT_ICONS['default'];
+            return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+        }
+        function applySubjectIcon(subject) {
+            const badge = document.getElementById('displaySubjectBadge');
+            if (badge) badge.innerHTML = `<span class="subject-icon-wrap">${getSubjectIconMarkup(subject)}</span><span>${subject}</span>`;
+            const path = SUBJECT_ICONS[subject] || SUBJECT_ICONS['default'];
+            const svgForBg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23334155" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+            document.documentElement.style.setProperty('--subject-icon-svg', `url("data:image/svg+xml,${encodeURIComponent(svgForBg).replace(/'/g, '%27')}")`);
+        }
+
         function updateSubjectInfo(subject) {
-            document.getElementById('displaySubjectBadge').innerText = subject;
+            applySubjectIcon(subject);
+            suggestThemeForSubject(subject);
             document.getElementById('displaySubjectText').innerText = subject;
             document.getElementById('coverSubject').innerText = `مادة ${subject}`;
 
@@ -1873,6 +2410,84 @@ window.MathJax = {
             document.getElementById('lineHeightVal').innerText = val;
             saveExamToLocalStorage();
         }
+
+        function changeExamFont(val) {
+            document.documentElement.style.setProperty('--exam-font-family', val);
+            saveExamToLocalStorage();
+        }
+
+        let _preComfortFontSize = null, _preComfortLineHeight = null;
+        function toggleComfortReadingMode(enabled) {
+            const root = document.documentElement;
+            document.body.classList.toggle('comfort-reading-mode', enabled);
+            if (enabled) {
+                _preComfortFontSize = getComputedStyle(root).getPropertyValue('--base-font-size').trim();
+                _preComfortLineHeight = getComputedStyle(root).getPropertyValue('--base-line-height').trim();
+                root.style.setProperty('--base-font-size', '19px');
+                root.style.setProperty('--base-line-height', '2.1');
+            } else if (_preComfortFontSize) {
+                root.style.setProperty('--base-font-size', _preComfortFontSize);
+                root.style.setProperty('--base-line-height', _preComfortLineHeight);
+            }
+            saveExamToLocalStorage();
+        }
+
+        // ══ باركود QR لكل صفحة: يودي لصفحة تسليم الإجابة أونلاين أو نموذج الإجابة ══
+        let qrSettings = { url: '', enabled: false, scope: 'all' };
+
+        function ensurePageHasQRSlot(pageEl) {
+            if (!pageEl) return null;
+            let badge = pageEl.querySelector(':scope > .page-qr-badge');
+            if (badge) return badge;
+            badge = document.createElement('div');
+            badge.className = 'page-qr-badge';
+            badge.innerHTML = '<div class="page-qr-canvas"></div><div class="page-qr-caption">امسح لتسليم الإجابة / النموذج</div>';
+            pageEl.appendChild(badge);
+            return badge;
+        }
+
+        function renderAllPageQRCodes() {
+            const pages = Array.from(document.querySelectorAll('#pagesContainer .page'));
+            pages.forEach(function(pageEl, idx) {
+                const badge = ensurePageHasQRSlot(pageEl);
+                if (!badge) return;
+                const canvasHolder = badge.querySelector('.page-qr-canvas');
+                const shouldShow = qrSettings.enabled && !!qrSettings.url && (
+                    qrSettings.scope === 'all' ||
+                    (qrSettings.scope === 'lastOnly' && idx === pages.length - 1) ||
+                    (qrSettings.scope === 'coverOnly' && pageEl.id === 'coverPage')
+                );
+                badge.style.display = shouldShow ? 'flex' : 'none';
+                if (shouldShow && typeof QRCode !== 'undefined') {
+                    canvasHolder.innerHTML = '';
+                    try {
+                        new QRCode(canvasHolder, { text: qrSettings.url, width: 74, height: 74, correctLevel: QRCode.CorrectLevel.M });
+                    } catch (e) {}
+                }
+            });
+        }
+
+        function updateQRSettings() {
+            qrSettings.url = document.getElementById('qrLinkInput').value.trim();
+            qrSettings.enabled = document.getElementById('qrEnableCheck').checked;
+            qrSettings.scope = document.getElementById('qrScopeSelect').value;
+            renderAllPageQRCodes();
+            saveExamToLocalStorage();
+        }
+
+        const _pagesQRObserver = new MutationObserver(function(mutations) {
+            let changed = false;
+            mutations.forEach(function(m) {
+                m.addedNodes.forEach(function(n) {
+                    if (n.nodeType === 1 && n.classList && n.classList.contains('page')) changed = true;
+                });
+            });
+            if (changed) renderAllPageQRCodes();
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('pagesContainer');
+            if (container) _pagesQRObserver.observe(container, { childList: true });
+        });
 
         function createNewPage() {
             const pagesContainer = document.getElementById('pagesContainer');
@@ -2858,13 +3473,13 @@ window.MathJax = {
             const headerRow = document.getElementById('gradingHeaderRow');
             const bodyRow = document.getElementById('gradingBodyRow');
             if (headerRow && bodyRow) {
-                let hHtml = `<th id="lblQTable">${isEnglishLTR ? 'Q' : 'السؤال'}</th>`;
-                let bHtml = `<td id="lblScoreTable">${isEnglishLTR ? 'Score' : 'الدرجة'}</td>`;
+                let hHtml = `<th>${isEnglishLTR ? 'Q' : 'السؤال'}</th>`;
+                let bHtml = `<td>${isEnglishLTR ? 'Score' : 'الدرجة'}</td>`;
                 cards.forEach((_, i) => {
                     hHtml += `<th>${isEnglishLTR ? 'Q' + (i + 1) : 'س' + (i + 1)}</th>`;
                     bHtml += `<td></td>`;
                 });
-                hHtml += `<th id="lblTotalTable">${isEnglishLTR ? 'Total' : 'المجموع'}</th>`;
+                hHtml += `<th>${isEnglishLTR ? 'Total' : 'المجموع'}</th>`;
                 bHtml += `<td></td>`;
                 headerRow.innerHTML = hHtml;
                 bodyRow.innerHTML = bHtml;
@@ -3052,7 +3667,33 @@ window.MathJax = {
             document.getElementById('marginLeft').value = DEFAULT_MARGINS.left;
         }
 
-        /* ===== تنسيق مستقل لكل صفحة ===== */
+        /* ══ تذكّر القالب المفضل لكل مادة واقتراحه تلقائيًا في المرة الجاية ══ */
+        function getSubjectThemeMap() {
+            try { return JSON.parse(localStorage.getItem('examPlusSubjectThemeMap') || '{}'); }
+            catch (e) { return {}; }
+        }
+        function saveSubjectThemePref(subject, theme) {
+            if (!subject || !theme || theme === 'inherit') return;
+            const map = getSubjectThemeMap();
+            map[subject] = theme;
+            localStorage.setItem('examPlusSubjectThemeMap', JSON.stringify(map));
+        }
+        const PAGE_THEME_NAMES = {
+            'page-theme-1': 'سماوي', 'page-theme-2': 'كهرماني داكن', 'page-theme-3': 'نيلي/ذهبي',
+            'page-theme-4': 'أخضر', 'page-theme-5': 'وردي', 'page-theme-6': 'بنفسجي',
+            'page-theme-7': 'دفتر كيمياء (بأسطر)', 'page-theme-8': 'دفتر كيمياء (بدون أسطر)',
+            'page-theme-9': 'محاضرة / ورق قديم', 'page-theme-10': 'مخطط هندسي (فيزياء)',
+            'page-theme-11': 'زخرفة عربية/أدبية', 'page-theme-12': 'جغرافيا وخرائط'
+        };
+        function suggestThemeForSubject(subject) {
+            const pref = getSubjectThemeMap()[subject];
+            if (pref && typeof showToast === 'function') {
+                const themeName = PAGE_THEME_NAMES[pref] || pref;
+                showToast(`💡 عندك قالب مفضل محفوظ لمادة "${subject}" (${themeName}) — تقدر تطبقه من زر "تنسيق مستقل لهذه الصفحة"`);
+            }
+        }
+
+        /* ═══ تنسيق مستقل لكل صفحة ═══ */
         let currentPageSettingsTarget = null;
 
         function openPageSettings(pageId) {
@@ -3061,11 +3702,21 @@ window.MathJax = {
             currentPageSettingsTarget = pageId;
 
             const themeClass = [...page.classList].find(c => c.startsWith('page-theme-'));
-            document.getElementById('pageThemeSelect').value = themeClass || 'inherit';
+            const activeTheme = themeClass || 'inherit';
+            document.getElementById('pageThemeSelect').value = activeTheme;
+            document.querySelectorAll('.theme-swatch-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === activeTheme);
+            });
             document.getElementById('pageColumnsSelect').value = page.classList.contains('page-dual-column') ? 'dual' : 'single';
             document.getElementById('pageEcoCheck').checked = page.classList.contains('page-eco');
 
             document.getElementById('pageSettingsModal').classList.add('open');
+        }
+
+        function selectPageThemeSwatch(theme, btnEl) {
+            document.getElementById('pageThemeSelect').value = theme;
+            document.querySelectorAll('.theme-swatch-btn').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
         }
 
         function closePageSettingsModal() {
@@ -3079,6 +3730,9 @@ window.MathJax = {
             [...page.classList].filter(c => c.startsWith('page-theme-')).forEach(c => page.classList.remove(c));
             const theme = document.getElementById('pageThemeSelect').value;
             if (theme !== 'inherit') page.classList.add(theme);
+
+            const currentSubjectText = document.getElementById('displaySubjectText');
+            if (currentSubjectText) saveSubjectThemePref(currentSubjectText.innerText.trim(), theme);
 
             page.classList.toggle('page-dual-column', document.getElementById('pageColumnsSelect').value === 'dual');
             page.classList.toggle('page-eco', document.getElementById('pageEcoCheck').checked);
@@ -3136,13 +3790,50 @@ window.MathJax = {
             }
         }
 
-        function insertSymbol(sym) {
-            const activeEl = document.activeElement;
-            if (activeEl && activeEl.isContentEditable) {
-                activeEl.innerText += ` $${sym}$ `;
-            } else {
-                alert('اضغط داخل خانة نصية مفعلة لإدراج الرمز.');
+        let lastFocusedEditable = null;
+        let lastSavedRange = null;
+
+        document.addEventListener('focusin', function(e) {
+            if (e.target && e.target.isContentEditable) {
+                lastFocusedEditable = e.target;
             }
+        });
+        document.addEventListener('selectionchange', function() {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && lastFocusedEditable && lastFocusedEditable.contains(sel.anchorNode)) {
+                lastSavedRange = sel.getRangeAt(0).cloneRange();
+            }
+        });
+
+        function insertSymbol(sym) {
+            // بنستخدم آخر خانة نص كانت متفعلة (مش العنصر النشط حاليًا)، لأن الضغط على زرار
+            // الرمز في اللوحة الجانبية بينقل الفوكس للزرار نفسه قبل ما الكود ده يشتغل —
+            // وده كان بيخلي التطبيق يقول "حدد مربع النص" حتى لو المستخدم كان محدده فعلاً.
+            const target = (document.activeElement && document.activeElement.isContentEditable)
+                ? document.activeElement
+                : lastFocusedEditable;
+
+            if (!target || !document.body.contains(target)) {
+                alert('حدد مربع النص اللي عايز تضيف فيه الرمز، وبعدين اضغط على الرمز.');
+                return;
+            }
+
+            const text = ` $${sym}$ `;
+            target.focus();
+
+            let inserted = false;
+            if (lastSavedRange && target.contains(lastSavedRange.startContainer)) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(lastSavedRange);
+                inserted = document.execCommand('insertText', false, text);
+            }
+            if (!inserted) {
+                target.innerText += text;
+            }
+
+            const sel2 = window.getSelection();
+            if (sel2 && sel2.rangeCount > 0) lastSavedRange = sel2.getRangeAt(0).cloneRange();
         }
 
         function attachMathJaxBlur() {
@@ -3286,7 +3977,12 @@ window.MathJax = {
                 isBooklet: isBookletMode,
                 isDual: isDualColumn,
                 fontSize: document.getElementById('fontSizeSlider').value,
-                lineHeight: document.getElementById('lineHeightSlider').value
+                lineHeight: document.getElementById('lineHeightSlider').value,
+                examFont: document.getElementById('examFontSelect') ? document.getElementById('examFontSelect').value : '',
+                comfortReading: document.getElementById('comfortReadingCheck') ? document.getElementById('comfortReadingCheck').checked : false,
+                qrEnabled: document.getElementById('qrEnableCheck') ? document.getElementById('qrEnableCheck').checked : false,
+                qrUrl: document.getElementById('qrLinkInput') ? document.getElementById('qrLinkInput').value : '',
+                qrScope: document.getElementById('qrScopeSelect') ? document.getElementById('qrScopeSelect').value : 'all'
             };
             localStorage.setItem('examPlusAutoSave', JSON.stringify(state));
             showSaveIndicator();
@@ -3304,6 +4000,20 @@ window.MathJax = {
                     if (state.grade) document.getElementById('gradeClassInput').value = state.grade;
                     if (state.fontSize) changeFontSize(state.fontSize);
                     if (state.lineHeight) changeLineHeight(state.lineHeight);
+                    if (state.examFont && document.getElementById('examFontSelect')) {
+                        document.getElementById('examFontSelect').value = state.examFont;
+                        changeExamFont(state.examFont);
+                    }
+                    if (state.comfortReading && document.getElementById('comfortReadingCheck')) {
+                        document.getElementById('comfortReadingCheck').checked = true;
+                        toggleComfortReadingMode(true);
+                    }
+                    if (document.getElementById('qrEnableCheck')) {
+                        document.getElementById('qrEnableCheck').checked = !!state.qrEnabled;
+                        document.getElementById('qrLinkInput').value = state.qrUrl || '';
+                        document.getElementById('qrScopeSelect').value = state.qrScope || 'all';
+                        updateQRSettings();
+                    }
                     updateHeaderInfo();
                 } catch(e) {}
             }
@@ -3536,8 +4246,12 @@ window.MathJax = {
         .adv-search-box {
             position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 9997;
             background: #ffffff; border: 1px solid var(--card-border); border-radius: 30px; box-shadow: var(--shadow-md);
-            display: flex; align-items: center; gap: 6px; padding: 6px 14px; width: min(360px, 80vw);
+            display: flex; align-items: center; gap: 6px; padding: 6px 14px; width: min(360px, 80vw); height: 34px; box-sizing: border-box;
+            transition: width 0.25s ease, padding 0.25s ease, border-radius 0.25s ease;
         }
+        .adv-search-box.collapsed { width: 34px; padding: 0; justify-content: center; cursor: pointer; }
+        .adv-search-box.collapsed input, .adv-search-box.collapsed .adv-search-count { display: none; }
+        .adv-search-box.collapsed:hover { box-shadow: 0 6px 16px rgba(2,132,199,0.25); }
         .adv-search-box input {
             border: none; outline: none; flex: 1; font-size: 12.5px; font-family: inherit; background: transparent; color: var(--text-main);
         }
@@ -5277,6 +5991,13 @@ window.MathJax = {
     } else {
         initAdvancedFeatures();
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const initialSubject = document.getElementById('subjectSelect');
+        if (initialSubject && initialSubject.value && initialSubject.value !== 'CUSTOM' && typeof applySubjectIcon === 'function') {
+            applySubjectIcon(initialSubject.value);
+        }
+    });
     </script>
 </body>
 </html>
