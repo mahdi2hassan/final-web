@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>سبورة بلس المتكاملة | الأستاذ مهدي حسن - ExamPlus</title>
     <!-- الخطوط العربية -->
-    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Cairo:wght@400;500;600;700;800;900&family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;600&display=swap" rel="stylesheet">
     <!-- مكتبة الأيقونات Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- مكتبة jsPDF لتصدير الدرس كـ PDF -->
@@ -15,7 +15,8 @@
     <!-- مكتبة QR Code -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+        html, body { overscroll-behavior: none; }
         body {
             font-family: 'Cairo', sans-serif;
             background: #07080c;
@@ -25,7 +26,10 @@
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
         }
+        h1, h2, h3, h4 { font-family: 'Cairo', sans-serif; letter-spacing: 0.2px; }
 
         /* الهيدر الزجاجي الهولوغرامي */
         .header {
@@ -90,19 +94,23 @@
         }
 
         button, select {
-            padding: 5px 8px; border-radius: 6px;
+            padding: 6px 9px; border-radius: 7px;
             border: 1px solid rgba(255, 255, 255, 0.12);
             background: rgba(255, 255, 255, 0.05); color: #e4e4e7;
             cursor: pointer; font-size: 11px; font-family: 'Cairo', sans-serif;
             font-weight: 600; display: flex; align-items: center; gap: 4px;
-            transition: all 0.2s ease; white-space: nowrap;
+            transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease;
+            white-space: nowrap;
         }
         button:hover { background: rgba(124, 58, 237, 0.3); color: #fff; border-color: rgba(168, 85, 247, 0.5); }
+        button:active { transform: scale(0.94); }
         button.active {
             background: linear-gradient(135deg, #7c3aed, #ec4899);
             color: #fff; font-weight: 700; border: none;
             box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
         }
+        button svg.lucide, .sidebar-toggle svg.lucide { width: 14px; height: 14px; flex-shrink: 0; }
+        .sidebar-toggle svg.lucide { width: 18px; height: 18px; }
         .neon-btn {
             width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); cursor: pointer; flex-shrink: 0;
         }
@@ -167,10 +175,79 @@
             padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(168, 85, 247, 0.4);
         }
 
+        /* الكتابة الحية على السبورة - بدون نوافذ منبثقة */
+        .live-text-input {
+            position: absolute; z-index: 25;
+            min-width: 40px; min-height: 1.4em;
+            background: transparent; color: #ffff00;
+            border: 1.5px dashed rgba(168, 85, 247, 0.7); border-radius: 6px;
+            padding: 4px 8px; outline: none;
+            font-family: 'Cairo', sans-serif; font-size: 24px; line-height: 1.3;
+            white-space: pre-wrap; word-break: break-word;
+            box-shadow: 0 0 18px rgba(124, 58, 237, 0.35);
+            cursor: text; direction: rtl;
+        }
+        .live-text-toolbar {
+            position: absolute; z-index: 26; display: flex; gap: 4px;
+            background: rgba(18, 21, 33, 0.97); backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.5); border-radius: 8px;
+            padding: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+        .live-text-toolbar button { padding: 4px 6px; font-size: 10px; }
+        .live-text-toolbar select { padding: 4px; font-size: 10px; }
+
+        /* الشريط الجانبي للإضافات */
+        .sidebar-toggle {
+            position: absolute; top: 12px; right: 12px; z-index: 22;
+            width: 38px; height: 38px; border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #ec4899); border: none;
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 14px rgba(124, 58, 237, 0.55);
+        }
+        .sidebar {
+            position: absolute; top: 0; right: -280px; height: 100%; width: 260px;
+            background: rgba(13, 15, 23, 0.97); backdrop-filter: blur(18px);
+            border-left: 1px solid rgba(168, 85, 247, 0.35);
+            box-shadow: -8px 0 30px rgba(0,0,0,0.5);
+            z-index: 21; transition: right 0.28s ease;
+            padding: 54px 12px 14px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 14px;
+        }
+        .sidebar.open { right: 0; }
+        .sidebar h5 {
+            font-size: 11px; color: #c084fc; text-transform: uppercase; letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(168, 85, 247, 0.25); padding-bottom: 6px; margin-bottom: 2px;
+        }
+        .sidebar-section { display: flex; flex-direction: column; gap: 6px; }
+        .sidebar-section button { justify-content: flex-start; width: 100%; padding: 9px 10px; font-size: 12px; }
+        .sidebar-backdrop {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.5); z-index: 19;
+            display: none;
+        }
+        .sidebar-backdrop.open { display: block; }
+
+        /* إشعار خفيف بدل alert() */
+        .toast {
+            position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%) translateY(20px);
+            background: rgba(18, 21, 33, 0.95); border: 1px solid rgba(168, 85, 247, 0.5);
+            color: #fff; padding: 9px 18px; border-radius: 20px; font-size: 12px; font-weight: 600;
+            z-index: 200; opacity: 0; pointer-events: none; transition: all 0.25s ease;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.5); white-space: nowrap;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
         @media (max-width: 768px) {
             .header { padding: 6px 10px; font-size: 11px; }
             .copyright-tag { display: none; }
             .brand-logo { font-size: 11px; }
+            .toolbar { padding: 5px 6px; gap: 4px; }
+            button, select { padding: 8px 9px; font-size: 12px; }
+            .tool-group { padding: 4px 5px; }
+            .sidebar { width: 78%; max-width: 300px; }
+            .live-text-input { font-size: 20px; }
+        }
+        @media (max-width: 420px) {
+            .whatsapp-btn span, .whatsapp-btn { font-size: 10px; padding: 4px 8px; }
         }
     </style>
 </head>
@@ -238,37 +315,19 @@
             <button id="btnIconsModal"><i data-lucide="pi"></i> رموز</button>
         </div>
 
-        <!-- تفاعل واختبارات ExamPlus -->
-        <div class="tool-group">
-            <button id="btnQuizModal"><i data-lucide="help-circle"></i> سؤال</button>
-            <button id="btnOverlay"><i data-lucide="eye-off"></i> كشف الحل</button>
-            <button id="btnWheelModal"><i data-lucide="disc"></i> العجلة</button>
-            <button id="btnStampModal"><i data-lucide="award"></i> تقييم</button>
-        </div>
-
-        <!-- أدوات المساعدة -->
-        <div class="tool-group">
-            <button id="btnVoice"><i data-lucide="mic"></i> صوت</button>
-            <button id="btnSticky"><i data-lucide="sticky-note"></i> ملصق</button>
-            <button id="btnCalc"><i data-lucide="calculator"></i> حاسبة</button>
-            <button id="btnSplit"><i data-lucide="columns"></i> انقسام</button>
-            <button id="btnCurtain"><i data-lucide="film"></i> ستارة</button>
-            <button id="btnFullScreen"><i data-lucide="maximize"></i> تكبير</button>
-        </div>
-
         <!-- إدارة الصفحات والحفظ -->
         <div class="tool-group">
             <select id="bgSelect">
                 <option value="black">⚫ سوداء</option>
                 <option value="white">⚪ بيضاء</option>
                 <option value="grid">📐 شبكة</option>
+                <option value="ruled">📝 مسطرة</option>
+                <option value="ruledwhite">📄 مسطرة بيضاء</option>
             </select>
             <button id="btnPrevPage">◀</button>
             <span id="pageIndicator" style="font-size:10px; color:#c084fc; font-weight:bold;">1 / 1</span>
             <button id="btnNextPage">▶</button>
             <button id="btnAddPage" style="background: rgba(34, 197, 94, 0.2);"><i data-lucide="plus"></i></button>
-            <button id="btnExportPDF" style="background: rgba(236, 72, 153, 0.2);"><i data-lucide="file-text"></i> PDF</button>
-            <button id="btnQR"><i data-lucide="qr-code"></i> QR</button>
             <button id="btnSave" style="background: linear-gradient(135deg, #7c3aed, #ec4899); border:none;"><i data-lucide="download"></i> حفظ</button>
             <button id="btnUndo" style="background: rgba(249, 115, 22, 0.2);"><i data-lucide="undo-2"></i></button>
             <button id="btnClear" style="background: rgba(239, 68, 68, 0.2);"><i data-lucide="trash-2"></i></button>
@@ -278,6 +337,36 @@
     <!-- منطقة الشرح -->
     <div class="canvas-container" id="container">
         <div class="watermark">منصة Plus in Math - الأستاذ مهدي حسن</div>
+
+        <!-- زر فتح القائمة الجانبية -->
+        <button class="sidebar-toggle" id="btnSidebarToggle" title="إضافات"><i data-lucide="layout-panel-left"></i></button>
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+        <!-- القائمة الجانبية للإضافات -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-section">
+                <h5>تفاعل واختبارات</h5>
+                <button id="btnQuizModal"><i data-lucide="help-circle"></i> سؤال سريع</button>
+                <button id="btnOverlay"><i data-lucide="eye-off"></i> كشف الحل</button>
+                <button id="btnWheelModal"><i data-lucide="disc"></i> عجلة الأسماء</button>
+                <button id="btnStampModal"><i data-lucide="award"></i> ختم تقييم</button>
+            </div>
+            <div class="sidebar-section">
+                <h5>أدوات مساعدة</h5>
+                <button id="btnVoice"><i data-lucide="mic"></i> كتابة صوتية</button>
+                <button id="btnSticky"><i data-lucide="sticky-note"></i> ملصق ملاحظة</button>
+                <button id="btnCalc"><i data-lucide="calculator"></i> آلة حاسبة</button>
+                <button id="btnSplit"><i data-lucide="columns"></i> سبورة مقسومة</button>
+                <button id="btnCurtain"><i data-lucide="film"></i> ستارة الحجب</button>
+                <button id="btnFullScreen"><i data-lucide="maximize"></i> ملء الشاشة</button>
+            </div>
+            <div class="sidebar-section">
+                <h5>تصدير ومشاركة</h5>
+                <button id="btnExportPDF"><i data-lucide="file-text"></i> تصدير PDF</button>
+                <button id="btnQR"><i data-lucide="qr-code"></i> رمز QR</button>
+            </div>
+        </div>
+
         <div class="curtain" id="curtain">▼ اسحب الستارة لحجب/إظهار الشرح ▼</div>
         
         <div class="answer-overlay" id="answerOverlay" onclick="this.style.display='none'">
@@ -362,6 +451,8 @@
             <button onclick="addStamp('💯 إجابة نموذجية')" style="background:rgba(34,197,94,0.2); color:#86efac;">💯 إجابة نموذجية</button>
             <button onclick="closeModals()" style="background:#333; justify-content:center;">إلغاء</button>
         </div>
+
+        <div class="toast" id="toast"></div>
     </div>
 
     <script>
@@ -381,7 +472,7 @@
         let pdfPageNum = 1;
         let pdfTotalPages = 1;
 
-        function getBgColor() { return currentBg === 'white' ? '#ffffff' : '#050608'; }
+        function getBgColor() { return (currentBg === 'white' || currentBg === 'ruledwhite') ? '#ffffff' : '#050608'; }
 
         function saveState() {
             if (!pages[currentPageIndex]) pages[currentPageIndex] = [];
@@ -399,6 +490,7 @@
             ctx.fillStyle = getBgColor();
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             if (currentBg === 'grid') drawGrid();
+            if (currentBg === 'ruled' || currentBg === 'ruledwhite') drawRuled();
             const history = pages[currentPageIndex];
             if (history && history.length > 0) {
                 ctx.putImageData(history[history.length - 1], 0, 0);
@@ -410,6 +502,22 @@
             ctx.lineWidth = 1;
             for (let x = 0; x < canvas.width; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
             for (let y = 0; y < canvas.height; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+        }
+
+        function drawRuled() {
+            const isWhite = currentBg === 'ruledwhite';
+            // خطوط أفقية بتباعد كراسة عادية
+            ctx.strokeStyle = isWhite ? '#c7d2fe' : '#2a2438';
+            ctx.lineWidth = 1;
+            const lineGap = 44;
+            for (let y = lineGap; y < canvas.height; y += lineGap) {
+                ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(canvas.width, y + 0.5); ctx.stroke();
+            }
+            // هامش جانبي أحمر (يمين الصفحة لأنها RTL)
+            ctx.strokeStyle = isWhite ? '#fca5a5' : '#7f1d3d';
+            ctx.lineWidth = 1.5;
+            const marginX = canvas.width - 50;
+            ctx.beginPath(); ctx.moveTo(marginX, 0); ctx.lineTo(marginX, canvas.height); ctx.stroke();
         }
 
         window.addEventListener('resize', initCanvas);
@@ -581,7 +689,7 @@
         };
 
         document.getElementById('btnVoice').onclick = () => {
-            if (!('webkitSpeechRecognition' in window)) { alert("خاصية الصوت غير مدعومة هنا."); return; }
+            if (!('webkitSpeechRecognition' in window)) { showToast("خاصية الصوت غير مدعومة على هذا المتصفح"); return; }
             const rec = new webkitSpeechRecognition(); rec.lang = 'ar-EG';
             rec.onresult = (e) => {
                 const txt = e.results[0][0].transcript;
@@ -589,7 +697,7 @@
                 ctx.fillText(txt, canvas.width/2 - 60, canvas.height/2);
                 saveState();
             };
-            rec.start(); alert("تحدث الآن...");
+            rec.start(); showToast("🎙️ تحدث الآن...");
         };
 
         document.getElementById('btnSplit').onclick = () => {
@@ -661,12 +769,101 @@
             c.style.display = c.style.display === 'block' ? 'none' : 'block'; c.style.height = '50%';
         };
 
+        // ✍️ الكتابة الحية: يظهر مربع كتابة شفاف فوق السبورة فور الضغط،
+        // ويكتب المستخدم مباشرة (Live) بدون أي نافذة منبثقة أو Prompt
+        let liveTextEl = null, liveTextToolbarEl = null;
+
         function addArabicText(x, y) {
-            const text = prompt("اكتب النص المراد تحويله لخط عربي:");
+            if (liveTextEl) commitLiveText();
+
+            const wrapperRect = container.getBoundingClientRect();
+            const fontFamily = document.getElementById('textFontSelect') ? document.getElementById('textFontSelect').value : "'Cairo', sans-serif";
+            const fontSize = document.getElementById('textSizeRange') ? document.getElementById('textSizeRange').value : 28;
+            const color = document.getElementById('colorPicker').value;
+
+            liveTextEl = document.createElement('div');
+            liveTextEl.className = 'live-text-input';
+            liveTextEl.contentEditable = 'true';
+            liveTextEl.style.left = x + 'px';
+            liveTextEl.style.top = (y - fontSize * 0.75) + 'px';
+            liveTextEl.style.color = color;
+            liveTextEl.style.fontFamily = fontFamily;
+            liveTextEl.style.fontSize = fontSize + 'px';
+            container.appendChild(liveTextEl);
+            liveTextEl.focus();
+
+            // شريط تحكم صغير فوق مربع الكتابة (خط، حجم، إنهاء)
+            liveTextToolbarEl = document.createElement('div');
+            liveTextToolbarEl.className = 'live-text-toolbar';
+            liveTextToolbarEl.style.left = x + 'px';
+            liveTextToolbarEl.style.top = Math.max(4, y - fontSize * 0.75 - 40) + 'px';
+            liveTextToolbarEl.innerHTML = `
+                <select id="textFontSelect">
+                    <option value="'Cairo', sans-serif">Cairo</option>
+                    <option value="'Aref Ruqaa', serif">أرف رقعة</option>
+                    <option value="'Amiri', serif">أميري</option>
+                    <option value="'Reem Kufi', sans-serif">ريم كوفي</option>
+                </select>
+                <input type="range" id="textSizeRange" min="14" max="64" value="${fontSize}" style="width:60px;">
+                <button onclick="commitLiveText()" style="background:#22c55e; color:#fff;">✔ تم</button>
+                <button onclick="cancelLiveText()" style="background:#ef4444; color:#fff;">✕</button>
+            `;
+            container.appendChild(liveTextToolbarEl);
+
+            document.getElementById('textFontSelect').value = fontFamily;
+            document.getElementById('textFontSelect').addEventListener('input', (e) => {
+                if (liveTextEl) liveTextEl.style.fontFamily = e.target.value;
+            });
+            document.getElementById('textSizeRange').addEventListener('input', (e) => {
+                if (liveTextEl) liveTextEl.style.fontSize = e.target.value + 'px';
+            });
+
+            liveTextEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') { e.preventDefault(); cancelLiveText(); }
+            });
+        }
+
+        // إنهاء الكتابة تلقائياً عند الضغط خارج مربع النص
+        document.addEventListener('mousedown', (e) => {
+            if (!liveTextEl) return;
+            if (e.target === liveTextEl || liveTextEl.contains(e.target)) return;
+            if (liveTextToolbarEl && liveTextToolbarEl.contains(e.target)) return;
+            commitLiveText();
+        }, true);
+
+        function commitLiveText() {
+            if (!liveTextEl) return;
+            const text = liveTextEl.innerText.trim();
             if (text) {
-                ctx.font = "28px 'Aref Ruqaa', serif"; ctx.fillStyle = document.getElementById('colorPicker').value;
-                ctx.fillText(text, x, y); saveState();
+                const rect = liveTextEl.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                const fontSize = parseFloat(liveTextEl.style.fontSize) || 28;
+                const fontFamily = liveTextEl.style.fontFamily || "'Cairo', sans-serif";
+                const color = liveTextEl.style.color || '#ffff00';
+                const startX = rect.left - containerRect.left;
+                const boxWidth = Math.max(rect.width, 20);
+                let startY = rect.top - containerRect.top + fontSize;
+
+                ctx.font = `${fontSize}px ${fontFamily}`;
+                ctx.fillStyle = color;
+                ctx.textAlign = 'right';
+                ctx.direction = 'rtl';
+                const lines = text.split('\n');
+                lines.forEach((line, i) => {
+                    ctx.fillText(line, startX + boxWidth, startY + i * (fontSize * 1.3));
+                });
+                // إعادة ضبط المحاذاة الافتراضية حتى لا تؤثر على أدوات أخرى
+                ctx.textAlign = 'left'; ctx.direction = 'ltr';
+                saveState();
             }
+            removeLiveTextEls();
+        }
+
+        function cancelLiveText() { removeLiveTextEls(); }
+
+        function removeLiveTextEls() {
+            if (liveTextEl) { liveTextEl.remove(); liveTextEl = null; }
+            if (liveTextToolbarEl) { liveTextToolbarEl.remove(); liveTextToolbarEl = null; }
         }
 
         function addStamp(t) {
@@ -677,6 +874,51 @@
         document.getElementById('bgSelect').onchange = (e) => {
             currentBg = e.target.value; redrawCanvas();
         };
+
+        // إدارة الصفحات: التنقل بين الصفحات وإضافة صفحة جديدة
+        function updatePageIndicator() {
+            document.getElementById('pageIndicator').innerText = `${currentPageIndex + 1} / ${pages.length}`;
+        }
+
+        document.getElementById('btnPrevPage').onclick = () => {
+            if (currentPageIndex > 0) {
+                currentPageIndex--; redrawCanvas(); updatePageIndicator();
+            } else { showToast('أنت بالفعل في أول صفحة'); }
+        };
+
+        document.getElementById('btnNextPage').onclick = () => {
+            if (currentPageIndex < pages.length - 1) {
+                currentPageIndex++; redrawCanvas(); updatePageIndicator();
+            } else { showToast('أنت بالفعل في آخر صفحة'); }
+        };
+
+        document.getElementById('btnAddPage').onclick = () => {
+            pages.push([]);
+            currentPageIndex = pages.length - 1;
+            redrawCanvas(); saveState(); updatePageIndicator();
+            showToast('تمت إضافة صفحة جديدة ✨');
+        };
+
+        // إشعار خفيف بدل نوافذ alert المزعجة
+        let toastTimer;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+        }
+
+        // القائمة الجانبية للإضافات
+        const sidebar = document.getElementById('sidebar');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        function toggleSidebar(open) {
+            const shouldOpen = open !== undefined ? open : !sidebar.classList.contains('open');
+            sidebar.classList.toggle('open', shouldOpen);
+            sidebarBackdrop.classList.toggle('open', shouldOpen);
+        }
+        document.getElementById('btnSidebarToggle').onclick = () => toggleSidebar();
+        sidebarBackdrop.onclick = () => toggleSidebar(false);
+        sidebar.addEventListener('click', (e) => { if (e.target.closest('button')) toggleSidebar(false); });
 
         document.getElementById('btnExportPDF').onclick = () => {
             const { jsPDF } = window.jspdf;
