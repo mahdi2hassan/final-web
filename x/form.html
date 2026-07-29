@@ -9,7 +9,7 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&family=El+Messiri:wght@500;600;700;800&display=swap" rel="stylesheet">
 <!-- MathJax Configuration -->
 <script>
 window.MathJax = {
@@ -252,6 +252,61 @@ window.MathJax = {
         .toolbar-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .toolbar-label { font-size: 11px; font-weight: 800; color: #64748b; display: flex; align-items: center; gap: 6px; }
         .toolbar-label .svg-ic { width: 14px; height: 14px; opacity: 0.7; }
+
+        /* ══════════════════════════════════════════════════════════
+           تجميل الشريط الجانبي: خط El Messiri، هوية كحلي/ذهبي (زي منصة بلس)،
+           زرار في كل سطر، وأقسام قابلة للطي — كل ده محصور جوه .admin-controls
+           فقط عشان ورقة الامتحان المطبوعة تفضل زي ما هي بالظبط
+           ══════════════════════════════════════════════════════════ */
+        :root { --side-navy: #1e2f47; --side-navy-2: #2d4258; --side-gold: #d4af37; --side-gold-soft: #f2d98a; }
+
+        .admin-controls, .admin-controls .btn, .admin-controls .toolbar-label, .admin-controls h3 {
+            font-family: 'El Messiri', 'Tajawal', 'Cairo', sans-serif;
+        }
+
+        .tools-panel-header {
+            background: linear-gradient(120deg, var(--side-navy) 0%, var(--side-navy-2) 100%);
+            border-radius: 0 14px 0 0; border-bottom: none; box-shadow: 0 2px 10px rgba(30,47,71,0.25);
+        }
+        .tools-panel-header h3 { color: #fff; font-size: 15px; letter-spacing: .2px; }
+        .tools-panel-header h3 .svg-ic { fill: var(--side-gold-soft); }
+        .tools-panel-close { background: rgba(255,255,255,0.14); color: #fff; }
+        .tools-panel-close:hover { background: #fee2e2; color: #dc2626; }
+
+        .admin-controls-wrapper::before {
+            content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 4px;
+            background: linear-gradient(180deg, var(--side-gold) 0%, var(--side-navy) 55%, var(--side-gold) 100%);
+        }
+        .admin-controls-wrapper { position: fixed; } /* موجودة أصلاً، مجرد تأكيد عشان الـ ::before */
+
+        .toolbar-section { border-bottom: none; margin-bottom: 6px; padding-bottom: 0; }
+        .toolbar-label {
+            cursor: pointer; user-select: none; justify-content: space-between; font-size: 12px; font-weight: 800;
+            color: var(--side-navy-2); background: linear-gradient(90deg, #f8fafc, #ffffff);
+            border-inline-start: 3px solid var(--side-gold); border-radius: 8px; padding: 9px 10px; margin-bottom: 8px;
+            transition: background .2s ease;
+        }
+        .toolbar-label:hover { background: #f0f9ff; }
+        .toolbar-label:focus-visible { outline: 2px solid var(--side-gold); outline-offset: 1px; }
+        body.dark-admin-mode .toolbar-label { background: rgba(255,255,255,0.06); color: #f2d98a; }
+        .toolbar-chevron { display: inline-flex; margin-inline-start: auto; transition: transform .25s ease; opacity: .75; }
+        .toolbar-chevron .svg-ic { fill: currentColor; }
+        .toolbar-section.collapsed .toolbar-chevron { transform: rotate(-90deg); }
+        .toolbar-content { max-height: 3000px; overflow: hidden; opacity: 1; transition: max-height .35s ease, opacity .25s ease, margin-top .25s ease; }
+        .toolbar-section.collapsed .toolbar-content { max-height: 0; opacity: 0; margin-top: 0; }
+
+        /* زرار في كل سطر لمجموعات الأزرار الرئيسية داخل الشريط الجانبي */
+        .admin-controls .btn-group { flex-direction: column; align-items: stretch; gap: 8px; }
+        .admin-controls .btn-group .btn {
+            width: 100%; justify-content: flex-start; border-radius: 10px; padding: 11px 14px; font-size: 12.5px;
+            box-shadow: 0 1px 3px rgba(15,23,42,0.08);
+        }
+        .admin-controls .btn-group .btn:hover { transform: translateY(-1px) scale(1.008); box-shadow: 0 4px 10px rgba(15,23,42,0.14); opacity: 1; }
+        .admin-controls .btn-group select { width: 100%; }
+
+        @media (max-width: 480px) {
+            .admin-controls-wrapper { width: 92vw; }
+        }
 
         .btn-booklet { background: linear-gradient(135deg, #0891b2, #0e7490); }
         .btn-booklet.active { background: linear-gradient(135deg, #0e7490, #164e63); box-shadow: inset 0 0 0 2px #fbbf24; }
@@ -1788,6 +1843,45 @@ window.MathJax = {
         document.addEventListener('keydown', function(e){
             if (e.key === 'Escape') closeControls();
         });
+
+        function initToolsAccordion() {
+            const sections = document.querySelectorAll('.admin-controls .toolbar-section');
+            sections.forEach(function(sec, idx) {
+                const label = sec.querySelector(':scope > .toolbar-label');
+                if (!label || sec.querySelector(':scope > .toolbar-content')) return;
+                const content = document.createElement('div');
+                content.className = 'toolbar-content';
+                let node = label.nextSibling;
+                while (node) {
+                    const next = node.nextSibling;
+                    content.appendChild(node);
+                    node = next;
+                }
+                sec.appendChild(content);
+
+                const chevron = document.createElement('span');
+                chevron.className = 'toolbar-chevron';
+                chevron.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:13px;height:13px;"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>';
+                label.appendChild(chevron);
+                label.setAttribute('role', 'button');
+                label.setAttribute('tabindex', '0');
+
+                const sectionKey = sec.id || ('toolbarSec' + idx);
+                if (localStorage.getItem('toolbarCollapsed:' + sectionKey) === '1') {
+                    sec.classList.add('collapsed');
+                }
+
+                function toggleSection() {
+                    const collapsed = sec.classList.toggle('collapsed');
+                    localStorage.setItem('toolbarCollapsed:' + sectionKey, collapsed ? '1' : '0');
+                }
+                label.addEventListener('click', toggleSection);
+                label.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSection(); }
+                });
+            });
+        }
+        document.addEventListener('DOMContentLoaded', initToolsAccordion);
 
         function initThemes() {
             const select = document.getElementById('themeSelector');
