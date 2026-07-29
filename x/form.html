@@ -207,12 +207,35 @@ window.MathJax = {
             transform: translateX(min(340px, 90vw));
         }
         body.tools-panel-open .settings-gear-btn:hover { transform: translateX(min(340px, 90vw)) rotate(90deg) scale(1.1); }
+        /* على الشاشات الضيقة، اللوحة بتاخد العرض كله تقريبًا فمفيش مكان نزحزح الترس له —
+           بنخفيه بدل ما "يخبط" في محتوى اللوحة، وأصلاً زرار الإغلاق (×) جوه اللوحة والخلفية الشفافة كافيين لقفلها */
+        @media (max-width: 640px) {
+            body.tools-panel-open .settings-gear-btn { transform: none; opacity: 0; pointer-events: none; }
+        }
 
         .tools-backdrop {
             position: fixed; inset: 0; background: rgba(15,23,42,0.45); backdrop-filter: blur(1.5px);
             z-index: 930; opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
         }
         .tools-backdrop.show { opacity: 1; visibility: visible; }
+
+        /* ══ شريط تنسيق عائم صغير يظهر عند تحديد نص داخل أي خانة قابلة للتعديل ══ */
+        #textFormatToolbar {
+            position: fixed; display: none; align-items: center; gap: 3px; background: #1e2f47; color: #fff;
+            border-radius: 10px; padding: 5px 6px; box-shadow: 0 8px 20px rgba(0,0,0,0.28); z-index: 10600;
+            font-family: 'Tajawal','Cairo',sans-serif;
+        }
+        #textFormatToolbar.show { display: flex; }
+        #textFormatToolbar button {
+            background: transparent; border: none; color: #fff; width: 28px; height: 28px; border-radius: 6px;
+            cursor: pointer; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+            transition: background .15s ease;
+        }
+        #textFormatToolbar button:hover { background: rgba(255,255,255,0.18); }
+        #textFormatToolbar .fmt-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.25); margin: 0 2px; }
+        #textFormatToolbar input[type="color"] {
+            width: 24px; height: 24px; border: none; border-radius: 6px; padding: 0; background: transparent; cursor: pointer;
+        }
 
         .analytics-bar {
             background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; color: #0f172a;
@@ -590,7 +613,7 @@ window.MathJax = {
                #pagesContainer أصلاً. بدل ما نفضل نلاحق كل عنصر جديد بالاسم، بنخفي
                كل حاجة على مستوى body غير المحتوى القابل للطباعة فعليًا. */
             body > *:not(#pagesContainer):not(#coverPage) { display: none !important; }
-            .settings-gear-btn, .admin-controls-wrapper, .tools-backdrop, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator, .page-settings-btn, .exam-user-badge, .exam-welcome-toast, .thumbnails-sidebar, .adv-search-box, .adv-toolbar { display: none !important; }
+            .settings-gear-btn, .admin-controls-wrapper, .tools-backdrop, #textFormatToolbar, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator, .page-settings-btn, .exam-user-badge, .exam-welcome-toast, .thumbnails-sidebar, .adv-search-box, .adv-toolbar { display: none !important; }
             .manual-page-break { border: none !important; margin: 0 !important; page-break-before: always !important; break-before: page !important; }
             [contenteditable="true"], .editable-element { border: none !important; background: transparent !important; }
             
@@ -834,6 +857,19 @@ window.MathJax = {
 
     <!-- خلفية شفافة تُغلق لوحة الأدوات عند الضغط عليها (خصوصًا على الموبايل) -->
     <div class="tools-backdrop no-print" id="toolsBackdrop" onclick="closeControls()"></div>
+
+    <!-- شريط تنسيق عائم صغير يظهر عند تحديد نص -->
+    <div id="textFormatToolbar" class="no-print">
+        <button type="button" title="غامق" onmousedown="fmtExec(event,'bold')"><b>B</b></button>
+        <button type="button" title="تسطير" onmousedown="fmtExec(event,'underline')"><u>U</u></button>
+        <div class="fmt-sep"></div>
+        <button type="button" title="تصغير الخط" onmousedown="fmtFontSize(event,-1)">A-</button>
+        <button type="button" title="تكبير الخط" onmousedown="fmtFontSize(event,1)">A+</button>
+        <div class="fmt-sep"></div>
+        <input type="color" id="fmtColorInput" title="لون النص" value="#0f172a" onmousedown="fmtSaveSelection(event)" oninput="fmtApplyColor(this.value)">
+        <div class="fmt-sep"></div>
+        <button type="button" title="مسح التنسيق" onmousedown="fmtExec(event,'removeFormat')">✕</button>
+    </div>
 
     <!-- لوحة التحكم الإدارية (شريط جانبي) -->
     <div class="admin-controls-wrapper" id="controlsWrapper">
@@ -1897,6 +1933,87 @@ window.MathJax = {
             });
         }
         document.addEventListener('DOMContentLoaded', initAdvSearchBoxCollapse);
+
+        // ═══ شريط التنسيق العائم (بولد / تسطير / حجم / لون) ═══
+        try { document.execCommand('styleWithCSS', false, true); } catch (e) {}
+        let fmtSavedRange = null;
+
+        function fmtIsInsideEditable(node) {
+            const el = node && node.nodeType === 1 ? node : (node ? node.parentElement : null);
+            return el ? el.closest('[contenteditable="true"], .editable-element') : null;
+        }
+
+        function fmtUpdateToolbar() {
+            const bar = document.getElementById('textFormatToolbar');
+            if (!bar) return;
+            const sel = window.getSelection();
+            if (!sel || sel.rangeCount === 0 || sel.isCollapsed) { bar.classList.remove('show'); return; }
+            const range = sel.getRangeAt(0);
+            if (!fmtIsInsideEditable(range.commonAncestorContainer)) { bar.classList.remove('show'); return; }
+            fmtSavedRange = range.cloneRange();
+            const rect = range.getBoundingClientRect();
+            if (!rect || (rect.width === 0 && rect.height === 0)) { bar.classList.remove('show'); return; }
+            bar.classList.add('show');
+            const barRect = bar.getBoundingClientRect();
+            let top = rect.top - barRect.height - 8;
+            if (top < 4) top = rect.bottom + 8;
+            let left = rect.left + rect.width / 2 - barRect.width / 2;
+            left = Math.max(6, Math.min(left, window.innerWidth - barRect.width - 6));
+            bar.style.top = top + 'px';
+            bar.style.left = left + 'px';
+        }
+        document.addEventListener('selectionchange', fmtUpdateToolbar);
+
+        function fmtRestoreSelection() {
+            if (!fmtSavedRange) return;
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(fmtSavedRange);
+        }
+
+        function fmtExec(e, cmd) {
+            e.preventDefault(); // يمنع فقد التحديد لما نضغط على الزرار
+            fmtRestoreSelection();
+            document.execCommand(cmd, false, null);
+            fmtUpdateToolbar();
+        }
+
+        function fmtSaveSelection(e) {
+            // اختيار اللون بيفتح واجهة النظام وده هياخد الفوكس، فبنحفظ التحديد قبلها بلحظة
+            fmtRestoreSelection();
+        }
+
+        function fmtApplyColor(color) {
+            fmtRestoreSelection();
+            document.execCommand('foreColor', false, color);
+            fmtUpdateToolbar();
+        }
+
+        function fmtFontSize(e, delta) {
+            e.preventDefault();
+            fmtRestoreSelection();
+            const sel = window.getSelection();
+            if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+            const range = sel.getRangeAt(0);
+            const container = range.commonAncestorContainer.nodeType === 1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
+            const currentSize = parseFloat(window.getComputedStyle(container).fontSize) || 14.5;
+            const newSize = Math.max(8, Math.min(48, currentSize + delta));
+            const span = document.createElement('span');
+            span.style.fontSize = newSize + 'px';
+            try {
+                range.surroundContents(span);
+            } catch (err) {
+                const frag = range.extractContents();
+                span.appendChild(frag);
+                range.insertNode(span);
+            }
+            sel.removeAllRanges();
+            const newRange = document.createRange();
+            newRange.selectNodeContents(span);
+            sel.addRange(newRange);
+            fmtSavedRange = newRange.cloneRange();
+            fmtUpdateToolbar();
+        }
 
         function initThemes() {
             const select = document.getElementById('themeSelector');
