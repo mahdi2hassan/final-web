@@ -304,10 +304,6 @@ window.MathJax = {
         .admin-controls .btn-group .btn:hover { transform: translateY(-1px) scale(1.008); box-shadow: 0 4px 10px rgba(15,23,42,0.14); opacity: 1; }
         .admin-controls .btn-group select { width: 100%; }
 
-        @media (max-width: 480px) {
-            .admin-controls-wrapper { width: 92vw; }
-        }
-
         .btn-booklet { background: linear-gradient(135deg, #0891b2, #0e7490); }
         .btn-booklet.active { background: linear-gradient(135deg, #0e7490, #164e63); box-shadow: inset 0 0 0 2px #fbbf24; }
 
@@ -1883,6 +1879,25 @@ window.MathJax = {
         }
         document.addEventListener('DOMContentLoaded', initToolsAccordion);
 
+        function initAdvSearchBoxCollapse() {
+            const box = document.querySelector('.adv-search-box');
+            const input = document.getElementById('advQuestionSearchInput');
+            if (!box || !input) return;
+            box.classList.add('collapsed');
+            box.addEventListener('click', function() {
+                if (box.classList.contains('collapsed')) {
+                    box.classList.remove('collapsed');
+                    input.focus();
+                }
+            });
+            input.addEventListener('blur', function() {
+                setTimeout(function() {
+                    if (!input.value.trim()) box.classList.add('collapsed');
+                }, 150);
+            });
+        }
+        document.addEventListener('DOMContentLoaded', initAdvSearchBoxCollapse);
+
         function initThemes() {
             const select = document.getElementById('themeSelector');
             for(let i = 1; i <= 50; i++) {
@@ -3289,13 +3304,50 @@ window.MathJax = {
             }
         }
 
-        function insertSymbol(sym) {
-            const activeEl = document.activeElement;
-            if (activeEl && activeEl.isContentEditable) {
-                activeEl.innerText += ` $${sym}$ `;
-            } else {
-                alert('اضغط داخل خانة نصية مفعلة لإدراج الرمز.');
+        let lastFocusedEditable = null;
+        let lastSavedRange = null;
+
+        document.addEventListener('focusin', function(e) {
+            if (e.target && e.target.isContentEditable) {
+                lastFocusedEditable = e.target;
             }
+        });
+        document.addEventListener('selectionchange', function() {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && lastFocusedEditable && lastFocusedEditable.contains(sel.anchorNode)) {
+                lastSavedRange = sel.getRangeAt(0).cloneRange();
+            }
+        });
+
+        function insertSymbol(sym) {
+            // بنستخدم آخر خانة نص كانت متفعلة (مش العنصر النشط حاليًا)، لأن الضغط على زرار
+            // الرمز في اللوحة الجانبية بينقل الفوكس للزرار نفسه قبل ما الكود ده يشتغل —
+            // وده كان بيخلي التطبيق يقول "حدد مربع النص" حتى لو المستخدم كان محدده فعلاً.
+            const target = (document.activeElement && document.activeElement.isContentEditable)
+                ? document.activeElement
+                : lastFocusedEditable;
+
+            if (!target || !document.body.contains(target)) {
+                alert('حدد مربع النص اللي عايز تضيف فيه الرمز، وبعدين اضغط على الرمز.');
+                return;
+            }
+
+            const text = ` $${sym}$ `;
+            target.focus();
+
+            let inserted = false;
+            if (lastSavedRange && target.contains(lastSavedRange.startContainer)) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(lastSavedRange);
+                inserted = document.execCommand('insertText', false, text);
+            }
+            if (!inserted) {
+                target.innerText += text;
+            }
+
+            const sel2 = window.getSelection();
+            if (sel2 && sel2.rangeCount > 0) lastSavedRange = sel2.getRangeAt(0).cloneRange();
         }
 
         function attachMathJaxBlur() {
@@ -3689,8 +3741,12 @@ window.MathJax = {
         .adv-search-box {
             position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 9997;
             background: #ffffff; border: 1px solid var(--card-border); border-radius: 30px; box-shadow: var(--shadow-md);
-            display: flex; align-items: center; gap: 6px; padding: 6px 14px; width: min(360px, 80vw);
+            display: flex; align-items: center; gap: 6px; padding: 6px 14px; width: min(360px, 80vw); height: 34px; box-sizing: border-box;
+            transition: width 0.25s ease, padding 0.25s ease, border-radius 0.25s ease;
         }
+        .adv-search-box.collapsed { width: 34px; padding: 0; justify-content: center; cursor: pointer; }
+        .adv-search-box.collapsed input, .adv-search-box.collapsed .adv-search-count { display: none; }
+        .adv-search-box.collapsed:hover { box-shadow: 0 6px 16px rgba(2,132,199,0.25); }
         .adv-search-box input {
             border: none; outline: none; flex: 1; font-size: 12.5px; font-family: inherit; background: transparent; color: var(--text-main);
         }
