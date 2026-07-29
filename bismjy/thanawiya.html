@@ -3,140 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الاستعلام عن النتيجة</title>
-    <!-- مكتبة قراءة ملفات الإكسل -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <title>منصة الاستعلام عن النتائج</title>
+    <!-- مكتبة Papaparse لقراءة ملفات CSV الضخمة بسرعة -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <!-- خط القاهرة -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --accent-bg: #f1f5f9;
+            --success-color: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 90vh;
+            min-height: 100vh;
+            padding: 20px;
         }
+
         .container {
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: var(--card-bg);
             width: 100%;
-            max-width: 500px;
+            max-width: 520px;
+            padding: 30px 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
         }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; }
-        .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-size: 16px;
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
         }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
         }
-        button:hover { background-color: #0056b3; }
-        .result-box {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-right: 4px solid #007bff;
-            border-radius: 6px;
-            white-space: pre-line;
-            font-family: monospace;
-            font-size: 15px;
+
+        .header p {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* شريط الإحصائيات البسيط */
+        .stats-bar {
+            background-color: #eff6ff;
+            border: 1px dashed #bfdbfe;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 20px;
             display: none;
         }
-        .status-msg { text-align: center; margin-top: 10px; font-weight: bold; }
-        .error { color: red; }
+
+        .search-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            flex: 2;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #475569;
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background-color: #cbd5e1;
+        }
+
+        /* كارت عرض النتيجة */
+        .result-card {
+            display: none;
+            margin-top: 20px;
+            background: var(--accent-bg);
+            padding: 20px;
+            border-radius: 12px;
+            border-right: 5px solid var(--primary-color);
+            font-family: monospace;
+            white-space: pre-line;
+            font-size: 15px;
+            line-height: 1.8;
+            color: #0f172a;
+        }
+
+        .action-buttons {
+            display: none;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 10px;
+            font-size: 13px;
+            border-radius: 8px;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-action:hover {
+            background-color: #f1f5f9;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         .loading { color: #d97706; }
+        .error { color: #dc2626; }
+
+        @media print {
+            body { background: white; }
+            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; }
+            .search-box, .btn-group, .action-buttons, .header p, .status, .stats-bar { display: none !important; }
+            .result-card { display: block !important; border-right: 5px solid #000; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>موقع الاستعلام عن النتيجة</h2>
-
-    <div class="input-group">
-        <label for="searchInput">ادخل رقم الجلوس أو اسم الطالب:</label>
-        <input type="text" id="searchInput" placeholder="اكتب هنا للبحث...">
+    <div class="header">
+        <h1>🎓 استعلام النتيجة</h1>
+        <p>ادخل رقم الجلوس أو اسم الطالب للبحث المباشر</p>
     </div>
 
-    <button onclick="searchStudent()">عرض النتيجة</button>
+    <!-- شريط الإحصائيات السريع -->
+    <div id="statsBar" class="stats-bar"></div>
 
-    <div id="statusMsg" class="status-msg loading">جاري تحميل قاعدة البيانات...</div>
-    <div id="resultBox" class="result-box"></div>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="اكتب رقم الجلوس أو الاسم هنا..." onkeypress="handleKeyPress(event)">
+        
+        <div class="btn-group">
+            <button class="btn-primary" onclick="searchStudent()">عرض النتيجة</button>
+            <button class="btn-secondary" onclick="resetSearch()">مسح</button>
+        </div>
+    </div>
+
+    <div id="statusMsg" class="status loading">⏳ جاري تحميل قاعدة البيانات...</div>
+    
+    <div id="resultCard" class="result-card"></div>
+
+    <!-- أزرار الإجراءات للنتيجة (نسخ وطباعة) -->
+    <div id="actionButtons" class="action-buttons">
+        <button class="btn-action" onclick="copyResult()">📋 نسخ النتيجة</button>
+        <button class="btn-action" onclick="window.print()">🖨️ طباعة / PDF</button>
+    </div>
 </div>
 
 <script>
     let studentsData = [];
 
-    // جلب ملف الإكسل تلقائياً من السيرفر عند فتح الصفحة
+    // تحميل ملف CSV
     window.onload = function() {
         const statusMsg = document.getElementById('statusMsg');
-        
-        // جلب الملف data.xlsx المرفوع مع الصفحة
-        fetch('data.xlsx')
-            .then(response => {
-                if (!response.ok) throw new Error("لم يتم العثور على ملف البيانات data.xlsx");
-                return response.arrayBuffer();
-            })
-            .then(buffer => {
-                const data = new Uint8Array(buffer);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                
-                // تحويل البيانات إلى JSON
-                studentsData = XLSX.utils.sheet_to_json(worksheet);
-                
-                statusMsg.style.display = 'none'; // إخفاء رسالة التحميل بعد الجلب
-            })
-            .catch(err => {
-                statusMsg.className = 'status-msg error';
-                statusMsg.innerText = 'عفواً، تعذر تحميل قاعدة البيانات!';
-                console.error(err);
-            });
+
+        Papa.parse('data.csv', {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                studentsData = results.data;
+                statusMsg.style.display = 'none';
+
+                // إظهار إحصائية سريعة
+                if (studentsData.length > 0) {
+                    const statsBar = document.getElementById('statsBar');
+                    statsBar.innerText = `📊 إجمالي الطلاب المتاحين بالنظام: ${studentsData.length} طالب`;
+                    statsBar.style.display = 'block';
+                }
+            },
+            error: function(err) {
+                statusMsg.className = 'status error';
+                statusMsg.innerText = '❌ تعذر تحميل ملف البيانات (data.csv)';
+            }
+        });
     };
 
-    // دالة البحث
-    function searchStudent() {
-        const query = document.getElementById('searchInput').value.trim().toLowerCase();
-        const statusMsg = document.getElementById('statusMsg');
-        const resultDiv = document.getElementById('resultBox');
+    // معالجة الأخطاء الإملائية والهمزات (Normalization)
+    function normalizeArabicText(text) {
+        if (!text) return '';
+        return String(text)
+            .trim()
+            .toLowerCase()
+            .replace(/[أإآء]/g, 'ا')
+            .replace(/ة/g, 'ه')
+            .replace(/ى/g, 'ي')
+            .replace(/[\u064B-\u0652]/g, ''); // إزالة التشكيل
+    }
 
-        resultDiv.style.display = 'none';
+    function handleKeyPress(e) {
+        if (e.key === 'Enter') searchStudent();
+    }
+
+    function searchStudent() {
+        const rawQuery = document.getElementById('searchInput').value;
+        const query = normalizeArabicText(rawQuery);
+        const statusMsg = document.getElementById('statusMsg');
+        const resultCard = document.getElementById('resultCard');
+        const actionButtons = document.getElementById('actionButtons');
+
+        resultCard.style.display = 'none';
+        actionButtons.style.display = 'none';
         statusMsg.style.display = 'none';
 
         if (studentsData.length === 0) {
-            statusMsg.className = 'status-msg error';
-            statusMsg.innerText = 'البيانات لم تجهز بعد أو تعذر جلبها!';
+            statusMsg.className = 'status error';
+            statusMsg.innerText = '⚠️ البيانات لم تتجهز بعد!';
             statusMsg.style.display = 'block';
             return;
         }
 
         if (!query) {
-            statusMsg.className = 'status-msg error';
-            statusMsg.innerText = 'يرجى إدخال رقم الجلوس أو الاسم!';
+            statusMsg.className = 'status error';
+            statusMsg.innerText = '⚠️ يرجى إدخال رقم الجلوس أو الاسم للبحث!';
             statusMsg.style.display = 'block';
             return;
         }
 
-        // البحث
+        // البحث المرن الذكي
         const student = studentsData.find(s => {
             const seatingNo = s.seating_no ? String(s.seating_no).trim() : '';
-            const arabicName = s.arabic_name ? String(s.arabic_name).trim().toLowerCase() : '';
+            const arabicName = normalizeArabicText(s.arabic_name);
             return seatingNo === query || arabicName.includes(query);
         });
 
@@ -146,13 +305,31 @@
             outputText += `▪️ total_degree: ${student.total_degree}\n\n`;
             outputText += `▪️ student_case_desc: ${student.student_case_desc}`;
 
-            resultDiv.innerText = outputText;
-            resultDiv.style.display = 'block';
+            resultCard.innerText = outputText;
+            resultCard.style.display = 'block';
+            actionButtons.style.display = 'flex';
         } else {
-            statusMsg.className = 'status-msg error';
-            statusMsg.innerText = 'لم يتم العثور على نتائج!';
+            statusMsg.className = 'status error';
+            statusMsg.innerText = '❌ لم يتم العثور على نتيجة تطابق البحث!';
             statusMsg.style.display = 'block';
         }
+    }
+
+    // نسخ النتيجة للحافظة
+    function copyResult() {
+        const resultText = document.getElementById('resultCard').innerText;
+        navigator.clipboard.writeText(resultText).then(() => {
+            alert('تم نسخ النتيجة بنجاح!');
+        });
+    }
+
+    // زر مسح الخانات وإعادة البحث
+    function resetSearch() {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('resultCard').style.display = 'none';
+        document.getElementById('actionButtons').style.display = 'none';
+        document.getElementById('statusMsg').style.display = 'none';
+        document.getElementById('searchInput').focus();
     }
 </script>
 
