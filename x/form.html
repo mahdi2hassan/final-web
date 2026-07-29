@@ -62,6 +62,12 @@ window.MathJax = {
             --base-line-height: 1.7;
             --admin-bg: #ffffff;
             --admin-text: #0f172a;
+            /* هوامش الصفحة — نفس القيم بالظبط تُستخدم في الشاشة والطباعة معًا،
+               فلا يمكن أبدًا يحصل فرق بينهم زي المشكلة اللي كانت قبل كده */
+            --page-margin-top: 15mm;
+            --page-margin-right: 15mm;
+            --page-margin-bottom: 12mm;
+            --page-margin-left: 15mm;
             --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.08), 0 2px 6px -1px rgba(0,0,0,0.04);
             --watermark-opacity: 0.05;
             --watermark-zindex: 1;
@@ -165,14 +171,48 @@ window.MathJax = {
         .phone-nums { display: flex; justify-content: center; gap: 12px; font-weight: 800; font-size: 14px; color: #0f172a; margin-top: 4px; }
         .copy-btn { background: #fee2e2; border: none; color: #991b1b; padding: 2px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; margin-right: 4px; }
 
+        /* ══ لوحة الأدوات كشريط جانبي ثابت (بدل الشريط الأفقي العلوي القديم) ══ */
         .admin-controls-wrapper {
-            width: 100%; max-width: 210mm; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; margin-bottom: 0;
+            position: fixed; top: 0; left: 0; height: 100vh; height: 100dvh;
+            width: min(340px, 90vw); max-width: none;
+            transform: translateX(-102%);
+            transition: transform 0.32s cubic-bezier(.4,0,.2,1);
+            z-index: 950; margin-bottom: 0; overflow: hidden;
         }
-        .admin-controls-wrapper.open { max-height: 4000px; margin-bottom: 15px; }
+        .admin-controls-wrapper.open { transform: translateX(0); margin-bottom: 0; }
         .admin-controls {
-            background: var(--admin-bg); color: var(--admin-text); border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px;
-            box-shadow: var(--shadow-md); display: flex; flex-direction: column; gap: 12px;
+            background: var(--admin-bg); color: var(--admin-text); border: 1px solid #e2e8f0; border-inline-start: none;
+            border-radius: 0 16px 16px 0; padding: 16px 14px 26px; height: 100%; box-sizing: border-box;
+            box-shadow: 10px 0 30px -8px rgba(15,23,42,0.25); display: flex; flex-direction: column; gap: 12px;
+            overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent;
         }
+        .admin-controls::-webkit-scrollbar { width: 7px; }
+        .admin-controls::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .admin-controls::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .tools-panel-header {
+            position: sticky; top: -16px; margin: -16px -14px 6px; padding: 12px 14px;
+            background: var(--admin-bg); z-index: 2; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .tools-panel-header h3 { font-size: 13.5px; font-weight: 900; color: var(--primary-color); display: flex; align-items: center; gap: 6px; }
+        .tools-panel-close {
+            width: 28px; height: 28px; border-radius: 50%; border: none; background: #f1f5f9; color: #475569;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.15s ease;
+        }
+        .tools-panel-close:hover { background: #fee2e2; color: #dc2626; transform: rotate(90deg); }
+
+        /* لما لوحة الأدوات مفتوحة، زرار الترس العائم بيتحرك يمين شوية عشان ميتغطاش بالشريط الجانبي */
+        body.tools-panel-open .settings-gear-btn {
+            transform: translateX(min(340px, 90vw));
+        }
+        body.tools-panel-open .settings-gear-btn:hover { transform: translateX(min(340px, 90vw)) rotate(90deg) scale(1.1); }
+
+        .tools-backdrop {
+            position: fixed; inset: 0; background: rgba(15,23,42,0.45); backdrop-filter: blur(1.5px);
+            z-index: 930; opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
+        }
+        .tools-backdrop.show { opacity: 1; visibility: visible; }
 
         .analytics-bar {
             background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; color: #0f172a;
@@ -361,7 +401,7 @@ window.MathJax = {
                الشاشة) يسمح بمحتوى أكتر بكتير من اللي هيتسع فعليًا في الورقة
                المطبوعة، فكانت المعاينة والمطبوع يطلعوا مختلفين تمامًا. دلوقتي
                الحشوة موحّدة مع حشوة الطباعة بالظبط (لازم تفضل متطابقة). */
-            padding: 15mm 15mm 12mm 15mm;
+            padding: var(--page-margin-top) var(--page-margin-right) var(--page-margin-bottom) var(--page-margin-left);
             box-shadow: var(--shadow-md);
             position: relative;
             overflow: hidden;
@@ -494,7 +534,12 @@ window.MathJax = {
                 color: #000 !important;
             }
             body.screen-mode, body.screen-mode html { width: 297mm; }
-            .settings-gear-btn, .admin-controls-wrapper, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator, .page-settings-btn { display: none !important; }
+            /* إصلاح جذري: أي عنصر واجهة عائم (شارة المستخدم، إشعارات، الشريط الجانبي
+               للصور المصغرة، صندوق البحث...) كان بيظهر في الطباعة لأنه مش جوه
+               #pagesContainer أصلاً. بدل ما نفضل نلاحق كل عنصر جديد بالاسم، بنخفي
+               كل حاجة على مستوى body غير المحتوى القابل للطباعة فعليًا. */
+            body > *:not(#pagesContainer):not(#coverPage) { display: none !important; }
+            .settings-gear-btn, .admin-controls-wrapper, .tools-backdrop, .q-controls, .block-controls, .manual-page-break::after, .modal-overlay, .save-indicator, .page-settings-btn, .exam-user-badge, .exam-welcome-toast, .thumbnails-sidebar, .adv-search-box, .adv-toolbar { display: none !important; }
             .manual-page-break { border: none !important; margin: 0 !important; page-break-before: always !important; break-before: page !important; }
             [contenteditable="true"], .editable-element { border: none !important; background: transparent !important; }
             
@@ -511,7 +556,7 @@ window.MathJax = {
                    مفروض يتملى لحد ارتفاع صفحة A4 بالظبط، فمينفعش نحدد height ثابت ولازم
                    overflow يبقى visible عشان أي فارق بسيط ميضيعش. */
                 overflow: visible !important;
-                padding: 15mm 15mm 12mm 15mm !important; 
+                padding: var(--page-margin-top) var(--page-margin-right) var(--page-margin-bottom) var(--page-margin-left) !important; 
                 margin: 0 !important; 
                 border: none !important; 
                 box-sizing: border-box !important;
@@ -736,9 +781,18 @@ window.MathJax = {
         </div>
     </div>
 
-    <!-- لوحة التحكم الإدارية -->
+    <!-- خلفية شفافة تُغلق لوحة الأدوات عند الضغط عليها (خصوصًا على الموبايل) -->
+    <div class="tools-backdrop no-print" id="toolsBackdrop" onclick="closeControls()"></div>
+
+    <!-- لوحة التحكم الإدارية (شريط جانبي) -->
     <div class="admin-controls-wrapper" id="controlsWrapper">
         <div class="admin-controls">
+            <div class="tools-panel-header">
+                <h3><svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6l-3 3-4.3-4.3C.6 7.1 1 10.1 3 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.4-.4.4-1 0-1.4z"/></svg> لوحة الأدوات</h3>
+                <button class="tools-panel-close" onclick="closeControls()" title="غلق اللوحة">
+                    <svg class="svg-ic" viewBox="0 0 24 24" style="width:15px;height:15px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
             <div class="analytics-bar">
                 <div>الزمن المتوقع: <span id="estTimeCalc">0 دقيقة</span></div>
                 <div>المستوى: <span id="difficultyCalc">متوازن</span></div>
@@ -938,6 +992,7 @@ window.MathJax = {
                         <option value="exam">وضع أسئلة</option>
                         <option value="booklet">وضع ملزمة</option>
                     </select>
+                    <button class="btn" style="background-color:#0f766e;" onclick="toggleMarginPanel()">📐 الهوامش</button>
                     <button class="btn btn-purple" style="background-color:#0d9488;" onclick="toggleCoverPage()">غلاف الامتحان</button>
                     <button class="btn btn-warning" style="background-color:#0284c7;" onclick="toggleOrnamentBorder()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg> إطار زخرفي</button>
                     <button class="btn btn-eco" onclick="toggleEcoMode()">توفير الأحبار</button>
@@ -1060,6 +1115,21 @@ window.MathJax = {
         </div>
     </div>
 
+    <!-- لوحة صغيرة للتحكم في هوامش الصفحة (تنطبق على الشاشة والطباعة معًا بنفس القيم) -->
+    <div class="margin-panel no-print" id="marginPanel" style="display:none;">
+        <h4 style="margin:0 0 8px; font-size:13px; color:#334155;">هوامش الصفحة (بالمليمتر)</h4>
+        <div class="margin-panel-grid">
+            <label>أعلى <input type="number" id="marginTop" min="0" max="60" step="1"></label>
+            <label>أسفل <input type="number" id="marginBottom" min="0" max="60" step="1"></label>
+            <label>يمين <input type="number" id="marginRight" min="0" max="60" step="1"></label>
+            <label>شمال <input type="number" id="marginLeft" min="0" max="60" step="1"></label>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+            <button class="btn btn-success" style="flex:1; font-size:12px;" onclick="applyPageMargins()">تطبيق</button>
+            <button class="btn btn-warning" style="flex:1; font-size:12px;" onclick="resetPageMargins()">استعادة الافتراضي</button>
+        </div>
+    </div>
+
     <!-- صفحة الغلاف -->
     <div class="page cover-page" id="coverPage">
         <h1 style="font-size: 3rem; color: var(--primary-color);" id="coverMainTitle">امتحانك بلس</h1>
@@ -1112,16 +1182,16 @@ window.MathJax = {
                 <table class="grading-summary-table" id="gradingSummaryTable">
                     <thead>
                         <tr id="gradingHeaderRow">
-                            <th id="lblQTable">السؤال</th>
+                            <th>السؤال</th>
                             <th>س1</th>
                             <th>س2</th>
                             <th>س3</th>
-                            <th id="lblTotalTable">المجموع</th>
+                            <th>المجموع</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr id="gradingBodyRow">
-                            <td id="lblScoreTable">الدرجة</td>
+                            <td>الدرجة</td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -1662,8 +1732,7 @@ window.MathJax = {
             document.body.classList.remove('edit-mode-active');
             const editPanelEl = document.getElementById('editPanel');
             if (editPanelEl) editPanelEl.style.display = 'none';
-            const wrap = document.getElementById('controlsWrapper');
-            if (wrap) wrap.classList.remove('open');
+            closeControls();
             syncContentEditableState();
             updateExamUserBadge();
         }
@@ -1700,8 +1769,25 @@ window.MathJax = {
         }
 
         function toggleControls() {
-            document.getElementById('controlsWrapper').classList.toggle('open');
+            const wrap = document.getElementById('controlsWrapper');
+            const isOpen = wrap.classList.toggle('open');
+            document.body.classList.toggle('tools-panel-open', isOpen);
+            const backdrop = document.getElementById('toolsBackdrop');
+            if (backdrop) backdrop.classList.toggle('show', isOpen);
         }
+
+        function closeControls() {
+            const wrap = document.getElementById('controlsWrapper');
+            if (!wrap.classList.contains('open')) return;
+            wrap.classList.remove('open');
+            document.body.classList.remove('tools-panel-open');
+            const backdrop = document.getElementById('toolsBackdrop');
+            if (backdrop) backdrop.classList.remove('show');
+        }
+
+        document.addEventListener('keydown', function(e){
+            if (e.key === 'Escape') closeControls();
+        });
 
         function initThemes() {
             const select = document.getElementById('themeSelector');
@@ -1928,6 +2014,21 @@ window.MathJax = {
             return h;
         }
 
+        // إصلاح مهم: في "وضع العمودين" (column-count:2)، ارتفاع الصفحة الحقيقي
+        // (scrollHeight) بيبقى غير موثوق لقياس الامتلاء — تخطيط الأعمدة المتعددة
+        // بيحسب الارتفاع بطريقة معقدة (موازنة الأعمدة) بتختلف عن التدفق العادي،
+        // وده كان بيخلي كشف الامتلاء يفشل بصمت بمجرد ما وضع العمودين يتفعّل (تحديدًا
+        // بعد الصفحة الأولى). الحل: نلغي تأثير الأعمدة مؤقتًا (سطر واحد) وقت القياس
+        // بس، ونرجّعه فورًا — القياس بيتم في نفس اللحظة قبل أي إعادة رسم فيشوفهاش المستخدم.
+        function measurePageContentHeight(page) {
+            const qc = page.querySelector('.questions-container');
+            const hadColumns = qc && getComputedStyle(qc).columnCount !== 'auto' && getComputedStyle(qc).columnCount !== '1';
+            if (hadColumns) qc.style.columnCount = '1';
+            const h = page.scrollHeight;
+            if (hadColumns) qc.style.columnCount = '';
+            return h;
+        }
+
         function enforcePageOverflow() {
             if (_autoPaginating) return;
             _autoPaginating = true;
@@ -1938,31 +2039,68 @@ window.MathJax = {
                     changed = false;
                     guard++;
                     const pages = Array.from(document.querySelectorAll('#pagesContainer > .page'));
+
+                    // المرحلة أ: دفع أي محتوى زايد عن مقاس الصفحة للصفحة اللي بعدها (تُنشأ لو مش موجودة)
                     for (let i = 0; i < pages.length; i++) {
-                        const page = pages[i];
-                        const qc = page.querySelector('.questions-container');
-                        if (!qc || qc.children.length === 0) continue;
-                        const maxH = getA4HeightPxFor(page);
-                        if (page.scrollHeight > maxH + 3 && qc.children.length > 1) {
-                            const lastChild = qc.lastElementChild;
-                            let nextPage = pages[i + 1];
-                            if (!nextPage) {
-                                nextPage = createNewPage();
-                                pages.push(nextPage);
+                        try {
+                            const page = pages[i];
+                            const qc = page.querySelector('.questions-container');
+                            if (!qc || qc.children.length === 0) continue;
+                            const maxH = getA4HeightPxFor(page);
+                            if (measurePageContentHeight(page) > maxH + 3 && qc.children.length > 1) {
+                                const lastChild = qc.lastElementChild;
+                                let nextPage = pages[i + 1];
+                                if (!nextPage) {
+                                    nextPage = createNewPage();
+                                    pages.push(nextPage);
+                                }
+                                const nextQc = nextPage.querySelector('.questions-container');
+                                if (nextQc) {
+                                    nextQc.insertBefore(lastChild, nextQc.firstChild);
+                                    changed = true;
+                                }
                             }
-                            const nextQc = nextPage.querySelector('.questions-container');
-                            if (nextQc) {
-                                nextQc.insertBefore(lastChild, nextQc.firstChild);
-                                changed = true;
-                            }
-                        }
+                        } catch (err) { /* صفحة واحدة فيها مشكلة متوقفش باقي الصفحات */ }
                     }
+
+                    // المرحلة ب: سحب محتوى الصفحة التالية للخلف لملء أي مساحة فاضية —
+                    // بدون ما نعدي فاصل صفحة يدوي (منتهي الصفحة) اتحط عمدًا من المستخدم
+                    for (let i = 0; i < pages.length - 1; i++) {
+                        try {
+                            const page = pages[i];
+                            const nextPage = pages[i + 1];
+                            const qc = page.querySelector('.questions-container');
+                            const nextQc = nextPage.querySelector('.questions-container');
+                            if (!qc || !nextQc) continue;
+                            const maxH = getA4HeightPxFor(page);
+                            let pullGuard = 0;
+                            while (nextQc.firstElementChild && !nextQc.firstElementChild.classList.contains('manual-page-break') && pullGuard < 200) {
+                                pullGuard++;
+                                const candidate = nextQc.firstElementChild;
+                                qc.appendChild(candidate);
+                                if (measurePageContentHeight(page) <= maxH + 3) {
+                                    changed = true;
+                                } else {
+                                    nextQc.insertBefore(candidate, nextQc.firstChild);
+                                    break;
+                                }
+                            }
+                        } catch (err) { /* صفحة واحدة فيها مشكلة متوقفش باقي الصفحات */ }
+                    }
+
+                    removeAutoEmptyTrailingPages();
                 }
-                removeAutoEmptyTrailingPages();
             } finally {
                 _autoPaginating = false;
             }
         }
+
+        // شبكة أمان: فحص دوري مستقل عن أي حدث معين (إضافة عنصر/تحميل صورة/إلخ)،
+        // عشان أي حالة تأخير أو حدث فايت (زي تحميل صورة متأخر، أو تفاعلات متلاحقة
+        // بتأجل التوقيت المؤجل باستمرار) تتصلح تلقائيًا خلال ثوانٍ قليلة مهما كان السبب
+        setInterval(function () {
+            if (!_autoPaginating) enforcePageOverflow();
+        }, 1500);
 
         // بعد ما محتوى ينتقل بعيد عن صفحة، ممكن تفضل صفحة فاضية في النص أو الآخر —
         // بنشيلها تلقائيًا (ما عدا الصفحة الأولى وآخر صفحة، عشان تفضل مساحة شغل متاحة).
@@ -2779,13 +2917,13 @@ window.MathJax = {
             const headerRow = document.getElementById('gradingHeaderRow');
             const bodyRow = document.getElementById('gradingBodyRow');
             if (headerRow && bodyRow) {
-                let hHtml = `<th id="lblQTable">${isEnglishLTR ? 'Q' : 'السؤال'}</th>`;
-                let bHtml = `<td id="lblScoreTable">${isEnglishLTR ? 'Score' : 'الدرجة'}</td>`;
+                let hHtml = `<th>${isEnglishLTR ? 'Q' : 'السؤال'}</th>`;
+                let bHtml = `<td>${isEnglishLTR ? 'Score' : 'الدرجة'}</td>`;
                 cards.forEach((_, i) => {
                     hHtml += `<th>${isEnglishLTR ? 'Q' + (i + 1) : 'س' + (i + 1)}</th>`;
                     bHtml += `<td></td>`;
                 });
-                hHtml += `<th id="lblTotalTable">${isEnglishLTR ? 'Total' : 'المجموع'}</th>`;
+                hHtml += `<th>${isEnglishLTR ? 'Total' : 'المجموع'}</th>`;
                 bHtml += `<td></td>`;
                 headerRow.innerHTML = hHtml;
                 bodyRow.innerHTML = bHtml;
@@ -2916,6 +3054,63 @@ window.MathJax = {
                 : '';
         }
 
+        // ═══ التحكم في هوامش الصفحة (تنطبق على الشاشة والطباعة بنفس القيمة بالظبط) ═══
+        const MARGIN_KEY = 'examPlusPageMargins';
+        const DEFAULT_MARGINS = { top: 15, right: 15, bottom: 12, left: 15 };
+
+        function toggleMarginPanel() {
+            const panel = document.getElementById('marginPanel');
+            if (!panel) return;
+            const opening = panel.style.display === 'none' || !panel.style.display;
+            if (opening) {
+                const m = loadPageMargins();
+                document.getElementById('marginTop').value = m.top;
+                document.getElementById('marginRight').value = m.right;
+                document.getElementById('marginBottom').value = m.bottom;
+                document.getElementById('marginLeft').value = m.left;
+            }
+            panel.style.display = opening ? 'block' : 'none';
+        }
+
+        function loadPageMargins() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(MARGIN_KEY));
+                if (saved && typeof saved.top === 'number') return saved;
+            } catch (e) { /* تجاهل */ }
+            return { ...DEFAULT_MARGINS };
+        }
+
+        function applyPageMarginsValues(m) {
+            const root = document.documentElement.style;
+            root.setProperty('--page-margin-top', m.top + 'mm');
+            root.setProperty('--page-margin-right', m.right + 'mm');
+            root.setProperty('--page-margin-bottom', m.bottom + 'mm');
+            root.setProperty('--page-margin-left', m.left + 'mm');
+            schedulePageOverflowCheck();
+        }
+
+        function applyPageMargins() {
+            const m = {
+                top: Math.max(0, Math.min(60, parseFloat(document.getElementById('marginTop').value) || 0)),
+                right: Math.max(0, Math.min(60, parseFloat(document.getElementById('marginRight').value) || 0)),
+                bottom: Math.max(0, Math.min(60, parseFloat(document.getElementById('marginBottom').value) || 0)),
+                left: Math.max(0, Math.min(60, parseFloat(document.getElementById('marginLeft').value) || 0)),
+            };
+            localStorage.setItem(MARGIN_KEY, JSON.stringify(m));
+            applyPageMarginsValues(m);
+            showSaveIndicator();
+            toggleMarginPanel();
+        }
+
+        function resetPageMargins() {
+            localStorage.removeItem(MARGIN_KEY);
+            applyPageMarginsValues(DEFAULT_MARGINS);
+            document.getElementById('marginTop').value = DEFAULT_MARGINS.top;
+            document.getElementById('marginRight').value = DEFAULT_MARGINS.right;
+            document.getElementById('marginBottom').value = DEFAULT_MARGINS.bottom;
+            document.getElementById('marginLeft').value = DEFAULT_MARGINS.left;
+        }
+
         /* ===== تنسيق مستقل لكل صفحة ===== */
         let currentPageSettingsTarget = null;
 
@@ -3013,7 +3208,9 @@ window.MathJax = {
             document.querySelectorAll('[contenteditable="true"]').forEach(el => {
                 el.onblur = function() {
                     if (window.MathJax && this.innerText.includes('$')) {
-                        MathJax.typesetPromise([this]);
+                        MathJax.typesetPromise([this]).then(schedulePageOverflowCheck).catch(function(){});
+                    } else {
+                        schedulePageOverflowCheck();
                     }
                     saveExamToLocalStorage();
                 };
@@ -3251,6 +3448,9 @@ window.MathJax = {
             attachMathJaxBlur();
             initAutoPagination();
             schedulePageOverflowCheck();
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(schedulePageOverflowCheck).catch(function(){});
+            }
 
             const savedUsername = localStorage.getItem('examPlusTeacherUsername');
             if (localStorage.getItem('examPlusTeacherAuth') === '1' && savedUsername) {
@@ -3500,6 +3700,14 @@ window.MathJax = {
         .block-image-slot { text-align: center; margin-top: 8px; }
         .lesson-block.lb-file-drop-over { outline: 3px dashed #16a34a; outline-offset: -3px; background: rgba(22,163,74,0.06); }
         .page.lb-file-drop-over { outline: 3px dashed #16a34a; outline-offset: -6px; }
+        .margin-panel {
+            position: fixed; top: 70px; left: 50%; transform: translateX(-50%); z-index: 9997;
+            background: #fff; border: 1px solid var(--card-border); border-radius: 14px; box-shadow: var(--shadow-md);
+            padding: 14px; width: min(320px, 88vw);
+        }
+        .margin-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .margin-panel-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #475569; font-weight: 700; }
+        .margin-panel-grid input { padding: 6px 8px; border: 1px solid var(--card-border); border-radius: 8px; font-size: 13px; text-align: center; }
 
         /* ---------- 13) أزرار التراجع/الإعادة ---------- */
         .undo-redo-bar { display: flex; gap: 8px; }
@@ -4924,6 +5132,7 @@ window.MathJax = {
        تُنشأ عبر أدوات النظام الأصلية دون الحاجة لتعديل تلك الأدوات
     --------------------------------------------------------------- */
     function initAdvancedFeatures() {
+        applyPageMarginsValues(loadPageMargins());
         document.querySelectorAll('.question-card').forEach(applyAdvancedControlsToCard);
         document.querySelectorAll('.lesson-block').forEach(applyAdvancedControlsToLessonBlock);
         document.querySelectorAll('#pagesContainer .page').forEach(applyAdvancedFeaturesToPage);
