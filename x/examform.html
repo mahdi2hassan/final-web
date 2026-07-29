@@ -9,7 +9,7 @@
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&family=El+Messiri:wght@500;600;700;800&family=Almarai:wght@400;700;800&family=Amiri:wght@400;700&family=Markazi+Text:wght@400;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Reem+Kufi:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@500;700;800;900&family=El+Messiri:wght@500;600;700;800&family=Almarai:wght@400;700;800&family=Amiri:wght@400;700&family=Markazi+Text:wght@400;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&family=Reem+Kufi:wght@400;600;700&family=Changa:wght@400;600;700;800&family=Lalezar&family=Rakkas&family=Aref+Ruqaa:wght@400;700&family=Baloo+Bhaijaan+2:wght@400;600;700;800&family=Mada:wght@400;600;700;900&display=swap" rel="stylesheet">
 <!-- MathJax Configuration -->
 <script>
 window.MathJax = {
@@ -98,6 +98,12 @@ window.MathJax = {
         .page.page-theme-4 { --primary-color: #065f46; --accent-color: #10b981; --badge-bg: #047857; --card-border: #a7f3d0; --card-bg: #f0fdf4; }
         .page.page-theme-5 { --primary-color: #9f1239; --accent-color: #f43f5e; --badge-bg: #be123c; --card-border: #fecdd3; --card-bg: #fff1f2; }
         .page.page-theme-6 { --primary-color: #5b21b6; --accent-color: #8b5cf6; --badge-bg: #7c3aed; --card-border: #ddd6fe; --card-bg: #f5f3ff; }
+        .page.page-theme-13 { --primary-color: #0d9488; --accent-color: #2dd4bf; --badge-bg: #0f766e; --card-border: #99f6e4; --card-bg: #f0fdfa; }
+        .page.page-theme-14 { --primary-color: #475569; --accent-color: #94a3b8; --badge-bg: #334155; --card-border: #e2e8f0; --card-bg: #f8fafc; }
+        .page.page-theme-15 { --primary-color: #7c2d12; --accent-color: #c2410c; --badge-bg: #9a3412; --card-border: #fed7aa; --card-bg: #fffbeb; }
+        .page.page-theme-16 { --primary-color: #1e3a8a; --accent-color: #2563eb; --badge-bg: #1d4ed8; --card-border: #bfdbfe; --card-bg: #eff6ff; }
+        .page.page-theme-17 { --primary-color: #3f6212; --accent-color: #65a30d; --badge-bg: #4d7c0f; --card-border: #d9f99d; --card-bg: #f7fee7; }
+        .page.page-theme-18 { --primary-color: #831843; --accent-color: #be185d; --badge-bg: #9d174d; --card-border: #fbcfe8; --card-bg: #fdf2f8; }
         .page.page-eco { --primary-color: #000000; --badge-bg: #000000; --accent-color: #000000; --card-border: #000000; --card-bg: #ffffff; }
 
         /* ============================================================
@@ -215,13 +221,18 @@ window.MathJax = {
         .page.page-dual-column .question-card { break-inside: avoid; display: inline-block; width: 100%; }
 
         .page-settings-btn {
-            position: absolute; top: 10px; left: 10px; z-index: 6; width: 30px; height: 30px; border-radius: 50%;
-            border: 1px solid var(--card-border); background: rgba(255,255,255,0.92); display: none; align-items: center;
-            justify-content: center; cursor: pointer; opacity: 0.45; transition: all 0.2s ease; color: #334155;
+            position: absolute; top: 6px; left: 6px; z-index: 6; width: 25px; height: 25px; border-radius: 50%;
+            border: 1px solid var(--card-border); background: rgba(255,255,255,0.96); display: none; align-items: center;
+            justify-content: center; cursor: pointer; opacity: 0.55; transition: all 0.2s ease; color: #334155;
+            box-shadow: 0 1px 3px rgba(15,23,42,0.12);
         }
         body.edit-mode-active .page-settings-btn { display: flex; }
         .page-settings-btn:hover { opacity: 1; transform: rotate(45deg); border-color: var(--primary-color); color: var(--primary-color); }
-        .page-settings-btn .svg-ic { width: 15px; height: 15px; }
+        .page-settings-btn .svg-ic { width: 13px; height: 13px; }
+        /* الأزرار العائمة الأربعة (ترس/تكرار/حذف/سحب) صف أفقي واحد ضيق أعلى الصفحة،
+           بدل ما كانت تتكدّس فوق بعض رأسيًا وتدخل جوه محتوى الورقة */
+        .page-settings-btn[id^="pageDuplicateBtn-"] { left: 37px; }
+        .page-settings-btn[id^="pageDeleteBtn-"] { left: 68px; }
         .page-settings-note { font-size: 11px; color: #64748b; line-height: 1.6; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px 10px; }
 
         .theme-swatch-btn { width: 34px; height: 34px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; padding: 0; transition: all .15s ease; }
@@ -453,6 +464,8 @@ window.MathJax = {
             position: absolute; bottom: 10px; left: 10px; display: none; flex-direction: column; align-items: center; gap: 3px;
             z-index: 5; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 5px;
         }
+        .page-qr-badge.qr-pos-right { left: auto; right: 10px; }
+        .page-qr-badge.qr-pos-center { left: 50%; transform: translateX(-50%); }
         .page-qr-canvas { width: 74px; height: 74px; }
         .page-qr-canvas img, .page-qr-canvas canvas { display: block; width: 74px !important; height: 74px !important; }
         .page-qr-caption { font-size: 7.5px; color: #64748b; max-width: 84px; text-align: center; line-height: 1.2; }
@@ -976,6 +989,12 @@ window.MathJax = {
                         <button type="button" class="theme-swatch-btn" data-theme="page-theme-10" title="مخطط هندسي (فيزياء)" onclick="selectPageThemeSwatch('page-theme-10', this)" style="background:linear-gradient(135deg,#eaf4fc,#0f3d63);"></button>
                         <button type="button" class="theme-swatch-btn" data-theme="page-theme-11" title="زخرفة عربية/أدبية" onclick="selectPageThemeSwatch('page-theme-11', this)" style="background:linear-gradient(135deg,#fbf6e6,#7a5b1e);"></button>
                         <button type="button" class="theme-swatch-btn" data-theme="page-theme-12" title="جغرافيا وخرائط" onclick="selectPageThemeSwatch('page-theme-12', this)" style="background:linear-gradient(135deg,#eef6f0,#1f5c3e);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-13" title="تركواز" onclick="selectPageThemeSwatch('page-theme-13', this)" style="background:linear-gradient(135deg,#0d9488,#2dd4bf);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-14" title="رمادي أنيق" onclick="selectPageThemeSwatch('page-theme-14', this)" style="background:linear-gradient(135deg,#475569,#94a3b8);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-15" title="بني كافيه" onclick="selectPageThemeSwatch('page-theme-15', this)" style="background:linear-gradient(135deg,#7c2d12,#c2410c);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-16" title="أزرق ملكي" onclick="selectPageThemeSwatch('page-theme-16', this)" style="background:linear-gradient(135deg,#1e3a8a,#2563eb);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-17" title="أخضر زيتوني" onclick="selectPageThemeSwatch('page-theme-17', this)" style="background:linear-gradient(135deg,#3f6212,#65a30d);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-18" title="عنابي" onclick="selectPageThemeSwatch('page-theme-18', this)" style="background:linear-gradient(135deg,#831843,#be185d);"></button>
                     </div>
                     <select id="pageThemeSelect" style="display:none;">
                         <option value="inherit">افتراضي (نفس باقي الورقة)</option>
@@ -991,6 +1010,12 @@ window.MathJax = {
                         <option value="page-theme-10">قالب زخرفي 10 - مخطط هندسي (فيزياء)</option>
                         <option value="page-theme-11">قالب زخرفي 11 - زخرفة عربية/أدبية</option>
                         <option value="page-theme-12">قالب زخرفي 12 - جغرافيا وخرائط</option>
+                        <option value="page-theme-13">قالب مستقل 13 - تركواز</option>
+                        <option value="page-theme-14">قالب مستقل 14 - رمادي أنيق</option>
+                        <option value="page-theme-15">قالب مستقل 15 - بني كافيه</option>
+                        <option value="page-theme-16">قالب مستقل 16 - أزرق ملكي</option>
+                        <option value="page-theme-17">قالب مستقل 17 - أخضر زيتوني</option>
+                        <option value="page-theme-18">قالب مستقل 18 - عنابي</option>
                     </select>
 
                     <label>تقسيم الأعمدة لهذه الصفحة:</label>
@@ -1002,6 +1027,22 @@ window.MathJax = {
                     <label style="margin-top:6px; cursor:pointer; display:flex; align-items:center; gap:6px;">
                         <input type="checkbox" id="pageEcoCheck"> طباعة اقتصادية بالأبيض والأسود لهذه الصفحة فقط
                     </label>
+
+                    <label style="margin-top:10px;">نوع الصفحة:</label>
+                    <div class="btn-group" style="flex-direction:row; gap:6px;">
+                        <button type="button" class="btn" style="background-color:#047857;font-size:11px;" onclick="setPageTypeFromModal('exam')">صفحة امتحان</button>
+                        <button type="button" class="btn" style="background-color:#1d4ed8;font-size:11px;" onclick="setPageTypeFromModal('lesson')">صفحة شرح</button>
+                    </div>
+
+                    <label style="margin-top:10px;">نقل هذه الصفحة لمكان تاني:</label>
+                    <div class="btn-group" style="flex-direction:row; gap:6px; align-items:center;">
+                        <button type="button" class="btn" style="background-color:#64748b;font-size:11px;" onclick="movePageStepFromModal(-1)">▲ لأعلى</button>
+                        <button type="button" class="btn" style="background-color:#64748b;font-size:11px;" onclick="movePageStepFromModal(1)">▼ لأسفل</button>
+                    </div>
+                    <div class="btn-group" style="flex-direction:row; gap:6px; align-items:center; margin-top:6px;">
+                        <input type="number" id="pageMoveToIndexInput" min="1" placeholder="رقم الصفحة الجديد" style="width:100%; padding:6px 8px; border-radius:8px; border:1px solid var(--card-border); text-align:center;">
+                        <button type="button" class="btn" style="background-color:#0ea5e9;font-size:11px; white-space:nowrap;" onclick="movePageToIndexFromModal()">انتقل</button>
+                    </div>
                 </div>
                 <div class="btn-group" style="justify-content:flex-start;">
                     <button class="btn btn-success" onclick="applyPageSettings()">تطبيق على هذه الصفحة</button>
@@ -1063,7 +1104,15 @@ window.MathJax = {
                     <option value="'Markazi Text','Cairo',serif">Markazi Text</option>
                     <option value="'IBM Plex Sans Arabic','Tajawal',sans-serif">IBM Plex Sans Arabic</option>
                     <option value="'Reem Kufi','Cairo',sans-serif">Reem Kufi (عناوين بارزة)</option>
+                    <option value="'Changa','Cairo',sans-serif">Changa</option>
+                    <option value="'Lalezar','Cairo',sans-serif">Lalezar (عناوين ضخمة)</option>
+                    <option value="'Rakkas','Cairo',serif">Rakkas (زخرفي)</option>
+                    <option value="'Aref Ruqaa','Amiri',serif">Aref Ruqaa (رقعة كلاسيكي)</option>
+                    <option value="'Baloo Bhaijaan 2','Tajawal',sans-serif">Baloo Bhaijaan 2</option>
+                    <option value="'Mada','Tajawal',sans-serif">Mada</option>
                 </select>
+                <button type="button" class="btn" style="background-color:#0891b2; font-size:11px; padding:5px 10px;" onclick="triggerCustomFontUpload()" title="ارفع ملف خط (ttf/otf/woff) من جهازك ليضاف لقائمة الخطوط">⬆ رفع خط مخصص</button>
+                <input type="file" id="customFontFileInput" accept=".ttf,.otf,.woff,.woff2" style="display:none;" onchange="handleCustomFontUpload(event)">
 
                 <label>الحجم:</label>
                 <input type="range" id="fontSizeSlider" min="11" max="20" step="0.5" value="14.5" oninput="changeFontSize(this.value)">
@@ -1107,6 +1156,9 @@ window.MathJax = {
                     <option value="'Amiri','Cairo',serif">Amiri (نسخي كلاسيكي)</option>
                     <option value="'Markazi Text','Cairo',serif">Markazi Text</option>
                     <option value="'Reem Kufi','Cairo',sans-serif">Reem Kufi</option>
+                    <option value="'Changa','Cairo',sans-serif">Changa</option>
+                    <option value="'Lalezar','Cairo',sans-serif">Lalezar</option>
+                    <option value="'Rakkas','Cairo',serif">Rakkas</option>
                 </select>
             </div>
 
@@ -1122,6 +1174,12 @@ window.MathJax = {
                     <option value="all">كل الصفحات</option>
                     <option value="lastOnly">آخر صفحة بس</option>
                     <option value="coverOnly">صفحة الغلاف بس</option>
+                </select>
+                <label style="margin-right:10px;">موضعه بالورقة:</label>
+                <select id="qrPositionSelect" onchange="updateQRSettings()" style="font-family: inherit; padding: 3px 6px; border-radius: 6px; border: 1px solid #a5f3fc;">
+                    <option value="left">أسفل اليسار (افتراضي)</option>
+                    <option value="right">أسفل اليمين</option>
+                    <option value="center">أسفل المنتصف</option>
                 </select>
             </div>
 
@@ -2411,6 +2469,58 @@ window.MathJax = {
             saveExamToLocalStorage();
         }
 
+        // ══ رفع خط مخصص (ttf/otf/woff) وتضمينه في الورقة عبر @font-face ══
+        function triggerCustomFontUpload() {
+            document.getElementById('customFontFileInput').click();
+        }
+        function registerCustomFont(fontName, dataUrl, formatHint) {
+            let styleEl = document.getElementById('customFontFaceStyle');
+            if (!styleEl) {
+                styleEl = document.createElement('style');
+                styleEl.id = 'customFontFaceStyle';
+                document.head.appendChild(styleEl);
+            }
+            styleEl.appendChild(document.createTextNode(
+                `@font-face { font-family: '${fontName}'; src: url('${dataUrl}') format('${formatHint}'); font-display: swap; }\n`
+            ));
+            const fontValue = `'${fontName}','Tajawal',sans-serif`;
+            [document.getElementById('examFontSelect'), document.getElementById('watermarkFontSelect')].forEach(sel => {
+                if (!sel) return;
+                if ([...sel.options].some(o => o.value === fontValue)) return;
+                const opt = document.createElement('option');
+                opt.value = fontValue;
+                opt.innerText = `${fontName} (مرفوع)`;
+                sel.appendChild(opt);
+            });
+        }
+        function handleCustomFontUpload(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+            const nameNoExt = file.name.replace(/\.[^.]+$/, '');
+            const fontName = 'custom-' + nameNoExt.replace(/[^a-zA-Z0-9\u0600-\u06FF_-]/g, '').slice(0, 40);
+            const ext = (file.name.split('.').pop() || '').toLowerCase();
+            const formatHint = ext === 'otf' ? 'opentype' : ext === 'woff2' ? 'woff2' : ext === 'woff' ? 'woff' : 'truetype';
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const dataUrl = e.target.result;
+                registerCustomFont(fontName, dataUrl, formatHint);
+                try {
+                    const stored = JSON.parse(localStorage.getItem('examCustomFonts') || '[]');
+                    stored.push({ name: fontName, dataUrl, format: formatHint });
+                    localStorage.setItem('examCustomFonts', JSON.stringify(stored));
+                } catch (err) { /* ignore quota/storage errors */ }
+                showToast(`✅ تم رفع الخط "${nameNoExt}" — اختره من قائمة الخطوط`);
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        }
+        function restoreCustomFonts() {
+            try {
+                const stored = JSON.parse(localStorage.getItem('examCustomFonts') || '[]');
+                stored.forEach(f => registerCustomFont(f.name, f.dataUrl, f.format));
+            } catch (err) { /* ignore */ }
+        }
+
         function changeExamFont(val) {
             document.documentElement.style.setProperty('--exam-font-family', val);
             saveExamToLocalStorage();
@@ -2433,7 +2543,7 @@ window.MathJax = {
         }
 
         // ══ باركود QR لكل صفحة: يودي لصفحة تسليم الإجابة أونلاين أو نموذج الإجابة ══
-        let qrSettings = { url: '', enabled: false, scope: 'all' };
+        let qrSettings = { url: '', enabled: false, scope: 'all', position: 'left' };
 
         function ensurePageHasQRSlot(pageEl) {
             if (!pageEl) return null;
@@ -2458,6 +2568,9 @@ window.MathJax = {
                     (qrSettings.scope === 'coverOnly' && pageEl.id === 'coverPage')
                 );
                 badge.style.display = shouldShow ? 'flex' : 'none';
+                badge.classList.remove('qr-pos-right', 'qr-pos-center');
+                if (qrSettings.position === 'right') badge.classList.add('qr-pos-right');
+                else if (qrSettings.position === 'center') badge.classList.add('qr-pos-center');
                 if (shouldShow && typeof QRCode !== 'undefined') {
                     canvasHolder.innerHTML = '';
                     try {
@@ -2471,6 +2584,8 @@ window.MathJax = {
             qrSettings.url = document.getElementById('qrLinkInput').value.trim();
             qrSettings.enabled = document.getElementById('qrEnableCheck').checked;
             qrSettings.scope = document.getElementById('qrScopeSelect').value;
+            const posSel = document.getElementById('qrPositionSelect');
+            qrSettings.position = posSel ? posSel.value : 'left';
             renderAllPageQRCodes();
             saveExamToLocalStorage();
         }
@@ -3683,7 +3798,9 @@ window.MathJax = {
             'page-theme-4': 'أخضر', 'page-theme-5': 'وردي', 'page-theme-6': 'بنفسجي',
             'page-theme-7': 'دفتر كيمياء (بأسطر)', 'page-theme-8': 'دفتر كيمياء (بدون أسطر)',
             'page-theme-9': 'محاضرة / ورق قديم', 'page-theme-10': 'مخطط هندسي (فيزياء)',
-            'page-theme-11': 'زخرفة عربية/أدبية', 'page-theme-12': 'جغرافيا وخرائط'
+            'page-theme-11': 'زخرفة عربية/أدبية', 'page-theme-12': 'جغرافيا وخرائط',
+            'page-theme-13': 'تركواز', 'page-theme-14': 'رمادي أنيق', 'page-theme-15': 'بني كافيه',
+            'page-theme-16': 'أزرق ملكي', 'page-theme-17': 'أخضر زيتوني', 'page-theme-18': 'عنابي'
         };
         function suggestThemeForSubject(subject) {
             const pref = getSubjectThemeMap()[subject];
@@ -3982,7 +4099,8 @@ window.MathJax = {
                 comfortReading: document.getElementById('comfortReadingCheck') ? document.getElementById('comfortReadingCheck').checked : false,
                 qrEnabled: document.getElementById('qrEnableCheck') ? document.getElementById('qrEnableCheck').checked : false,
                 qrUrl: document.getElementById('qrLinkInput') ? document.getElementById('qrLinkInput').value : '',
-                qrScope: document.getElementById('qrScopeSelect') ? document.getElementById('qrScopeSelect').value : 'all'
+                qrScope: document.getElementById('qrScopeSelect') ? document.getElementById('qrScopeSelect').value : 'all',
+                qrPosition: document.getElementById('qrPositionSelect') ? document.getElementById('qrPositionSelect').value : 'left'
             };
             localStorage.setItem('examPlusAutoSave', JSON.stringify(state));
             showSaveIndicator();
@@ -4012,6 +4130,9 @@ window.MathJax = {
                         document.getElementById('qrEnableCheck').checked = !!state.qrEnabled;
                         document.getElementById('qrLinkInput').value = state.qrUrl || '';
                         document.getElementById('qrScopeSelect').value = state.qrScope || 'all';
+                        if (document.getElementById('qrPositionSelect')) {
+                            document.getElementById('qrPositionSelect').value = state.qrPosition || 'left';
+                        }
                         updateQRSettings();
                     }
                     updateHeaderInfo();
@@ -4303,9 +4424,10 @@ window.MathJax = {
 
         /* ---------- 9) مقبض سحب الصفحات ---------- */
         .page-drag-handle {
-            position: absolute; top: 10px; left: 46px; z-index: 6; width: 30px; height: 30px; border-radius: 50%;
-            border: 1px solid var(--card-border); background: rgba(255,255,255,0.92); display: none; align-items: center;
-            justify-content: center; cursor: grab; opacity: 0.45; transition: all 0.2s ease; color: #334155;
+            position: absolute; top: 6px; left: 99px; z-index: 6; width: 25px; height: 25px; border-radius: 50%;
+            border: 1px solid var(--card-border); background: rgba(255,255,255,0.96); display: none; align-items: center;
+            justify-content: center; cursor: grab; opacity: 0.55; transition: all 0.2s ease; color: #334155;
+            box-shadow: 0 1px 3px rgba(15,23,42,0.12);
         }
         body.edit-mode-active .page-drag-handle { display: flex; }
         .page-drag-handle:hover { opacity: 1; border-color: var(--primary-color); color: var(--primary-color); }
@@ -4313,7 +4435,7 @@ window.MathJax = {
 
         /* ---------- 10) شارة نوع الصفحة ---------- */
         .page-type-badge {
-            position: absolute; top: 10px; right: 46px; z-index: 6; font-size: 9.5px; font-weight: 800;
+            position: absolute; top: 8px; right: 8px; z-index: 6; font-size: 9.5px; font-weight: 800;
             padding: 4px 9px; border-radius: 20px; background: #f1f5f9; color: #475569; border: 1px solid var(--card-border);
             cursor: pointer; user-select: none; pointer-events: none; opacity: 0.6;
         }
@@ -5036,6 +5158,74 @@ window.MathJax = {
         if (badge) { badge.setAttribute('data-page-type', next); badge.innerText = next === 'lesson' ? 'صفحة شرح' : 'صفحة امتحان'; }
         updateThumbnails();
         if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+    }
+
+    // تحديد نوع الصفحة (امتحان/شرح) مباشرة (بدل التبديل) - تُستخدم من لوحة إعدادات الصفحة
+    function setPageTypeFromModal(type) {
+        if (!currentPageSettingsTarget) return;
+        const page = document.getElementById(currentPageSettingsTarget);
+        if (!page) return;
+        page.setAttribute('data-page-type', type);
+        const badge = page.querySelector('.page-type-badge');
+        if (badge) { badge.setAttribute('data-page-type', type); badge.innerText = type === 'lesson' ? 'صفحة شرح' : 'صفحة امتحان'; }
+        updateThumbnails();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        showToast(type === 'lesson' ? '✅ اتحددت كصفحة شرح' : '✅ اتحددت كصفحة امتحان');
+    }
+
+    // نقل الصفحة الحالية (من لوحة إعدادات الصفحة) لمكان تاني بين باقي الصفحات
+    function getOrderedPagesList() {
+        return Array.from(document.querySelectorAll('#pagesContainer > .page'));
+    }
+
+    function movePageStepFromModal(direction) {
+        if (!currentPageSettingsTarget) return;
+        const page = document.getElementById(currentPageSettingsTarget);
+        if (!page) return;
+        const pages = getOrderedPagesList();
+        const idx = pages.indexOf(page);
+        if (idx === -1) return;
+        const targetIdx = idx + direction;
+        if (targetIdx < 0 || targetIdx >= pages.length) {
+            showToast('⚠ الصفحة في طرف الترتيب بالفعل');
+            return;
+        }
+        if (direction < 0) {
+            page.parentNode.insertBefore(page, pages[targetIdx]);
+        } else {
+            page.parentNode.insertBefore(page, pages[targetIdx].nextSibling);
+        }
+        updateThumbnails();
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        showToast('✅ اتنقلت الصفحة');
+    }
+
+    function movePageToIndexFromModal() {
+        if (!currentPageSettingsTarget) return;
+        const page = document.getElementById(currentPageSettingsTarget);
+        if (!page) return;
+        const input = document.getElementById('pageMoveToIndexInput');
+        const wantedPos = parseInt(input.value, 10);
+        const pages = getOrderedPagesList();
+        if (!wantedPos || wantedPos < 1 || wantedPos > pages.length) {
+            showToast(`⚠ اكتب رقم من 1 لـ ${pages.length}`);
+            return;
+        }
+        const currentIdx = pages.indexOf(page);
+        const targetIdx = wantedPos - 1;
+        if (currentIdx === targetIdx) { showToast('الصفحة موجودة في هذا المكان بالفعل'); return; }
+        const referenceNode = pages[targetIdx];
+        if (currentIdx < targetIdx) {
+            page.parentNode.insertBefore(page, referenceNode.nextSibling);
+        } else {
+            page.parentNode.insertBefore(page, referenceNode);
+        }
+        updateThumbnails();
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        input.value = '';
+        showToast(`✅ اتنقلت الصفحة لمكان رقم ${wantedPos}`);
     }
 
     // سحب وإفلات لإعادة ترتيب الأسئلة نفسها (داخل نفس الصفحة أو نقلها لصفحة تانية)
@@ -5763,7 +5953,6 @@ window.MathJax = {
             const dupBtn = document.createElement('button');
             dupBtn.id = 'pageDuplicateBtn-' + (page.id || Date.now());
             dupBtn.className = 'page-settings-btn no-print';
-            dupBtn.style.cssText = 'top:48px;';
             dupBtn.title = 'نسخ هذه الصفحة كاملة';
             dupBtn.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>';
             dupBtn.onclick = () => duplicatePage(page.id);
@@ -5774,7 +5963,7 @@ window.MathJax = {
             const delBtn = document.createElement('button');
             delBtn.id = 'pageDeleteBtn-' + (page.id || Date.now());
             delBtn.className = 'page-settings-btn no-print';
-            delBtn.style.cssText = 'top:86px; color:#b91c1c;';
+            delBtn.style.cssText = 'color:#b91c1c;';
             delBtn.title = 'حذف هذه الصفحة نهائيًا';
             delBtn.innerHTML = '<svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>';
             delBtn.onclick = () => deletePageEl(page.id);
@@ -5787,6 +5976,7 @@ window.MathJax = {
        تُنشأ عبر أدوات النظام الأصلية دون الحاجة لتعديل تلك الأدوات
     --------------------------------------------------------------- */
     function initAdvancedFeatures() {
+        restoreCustomFonts();
         applyPageMarginsValues(loadPageMargins());
         document.querySelectorAll('.question-card').forEach(applyAdvancedControlsToCard);
         document.querySelectorAll('.lesson-block').forEach(applyAdvancedControlsToLessonBlock);
