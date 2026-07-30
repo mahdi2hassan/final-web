@@ -105,6 +105,7 @@ window.MathJax = {
         .page.page-theme-17 { --primary-color: #3f6212; --accent-color: #65a30d; --badge-bg: #4d7c0f; --card-border: #d9f99d; --card-bg: #f7fee7; }
         .page.page-theme-18 { --primary-color: #831843; --accent-color: #be185d; --badge-bg: #9d174d; --card-border: #fbcfe8; --card-bg: #fdf2f8; }
         .page.page-eco { --primary-color: #000000; --badge-bg: #000000; --accent-color: #000000; --card-border: #000000; --card-bg: #ffffff; }
+        .page.page-eco-light { --primary-color: #374151; --badge-bg: #4b5563; --accent-color: #6b7280; --card-border: #9ca3af; --card-bg: #ffffff; }
 
         /* ============================================================
            قوالب زخرفية إضافية (7-12): خلفية + شريط عنوان/فوتر بس،
@@ -144,14 +145,31 @@ window.MathJax = {
             background-image: repeating-linear-gradient(45deg, rgba(76,143,106,.06) 0 10px, transparent 10px 20px) !important;
         }
 
+        /* قالب 19: دفتر تدوين أخضر بأسطر (شبيه بدفاتر المحاضرات المخططة) */
+        .page.page-theme-19 {
+            --primary-color: #234d20; --accent-color: #4c7c3f; --badge-bg: #234d20; --card-border: #cfead0; --card-bg: #ffffff;
+            background-color: #f6fbf3 !important;
+            background-image: repeating-linear-gradient(to bottom, transparent 0 27px, #cfead0 27px 28px) !important;
+            background-position: 0 110px;
+        }
+
+        /* قالب 20: نمط عربي أزرق بخلفية هندسية خفيفة وورقة كريمية للكتابة */
+        .page.page-theme-20 {
+            --primary-color: #1e3a5f; --accent-color: #3f6ea8; --badge-bg: #1e3a5f; --card-border: #bcd2ea; --card-bg: #fffdf6;
+            background-color: #eaf1fa !important;
+            background-image: repeating-linear-gradient(45deg, rgba(30,58,95,.05) 0 10px, transparent 10px 20px) !important;
+        }
+
         /* شريط عنوان زخرفي: بيلوّن header-banner الفاضي الموجود بالفعل ويحط جيب أيقونة المادة فيه */
         .page.page-theme-7 .header-banner, .page.page-theme-8 .header-banner, .page.page-theme-9 .header-banner,
-        .page.page-theme-10 .header-banner, .page.page-theme-11 .header-banner, .page.page-theme-12 .header-banner {
+        .page.page-theme-10 .header-banner, .page.page-theme-11 .header-banner, .page.page-theme-12 .header-banner,
+        .page.page-theme-19 .header-banner, .page.page-theme-20 .header-banner {
             height: 34px; border-radius: 8px; margin-bottom: 16px; position: relative;
             background: var(--primary-color); box-shadow: 0 3px 6px rgba(0,0,0,.15);
         }
         .page.page-theme-7 .header-banner::after, .page.page-theme-8 .header-banner::after, .page.page-theme-9 .header-banner::after,
-        .page.page-theme-10 .header-banner::after, .page.page-theme-11 .header-banner::after, .page.page-theme-12 .header-banner::after {
+        .page.page-theme-10 .header-banner::after, .page.page-theme-11 .header-banner::after, .page.page-theme-12 .header-banner::after,
+        .page.page-theme-19 .header-banner::after, .page.page-theme-20 .header-banner::after {
             content: ''; position: absolute; top: 4px; left: 8px; width: 26px; height: 26px; border-radius: 6px;
             background-color: #fff; background-image: var(--subject-icon-svg); background-repeat: no-repeat;
             background-position: center; background-size: 15px 15px; box-shadow: 0 2px 4px rgba(0,0,0,.12);
@@ -171,52 +189,59 @@ window.MathJax = {
                 linear-gradient(-45deg, transparent 5px, var(--primary-color) 5px) 0 0/14px 100%;
         }
 
-        /* حافة موجية (زخرفة عربية) لقالب 11 بس */
-        .page.page-theme-11 .header-banner::before {
+        /* حافة موجية (زخرفة عربية) لقالب 11 و20 (النمط العربي) */
+        .page.page-theme-11 .header-banner::before, .page.page-theme-20 .header-banner::before {
             content: ''; position: absolute; left: 0; right: 0; bottom: -6px; height: 12px;
             background: radial-gradient(circle at 6px 0, transparent 6px, var(--primary-color) 6px) 0 -6px/12px 12px repeat-x;
         }
-        .page.page-theme-11 .exam-footer::before {
+        .page.page-theme-11 .exam-footer::before, .page.page-theme-20 .exam-footer::before {
             content: ''; position: absolute; left: 0; right: 0; top: -6px; height: 12px;
             background: radial-gradient(circle at 6px 12px, transparent 6px, var(--primary-color) 6px) 0 0/12px 12px repeat-x;
         }
 
         /* شريط الفوتر الزخرفي: بيحول exam-footer الموجود (فيه بيانات المستخدم فعليًا) لشريط ملون */
         .page.page-theme-7 .exam-footer, .page.page-theme-8 .exam-footer, .page.page-theme-9 .exam-footer,
-        .page.page-theme-10 .exam-footer, .page.page-theme-11 .exam-footer, .page.page-theme-12 .exam-footer {
+        .page.page-theme-10 .exam-footer, .page.page-theme-11 .exam-footer, .page.page-theme-12 .exam-footer,
+        .page.page-theme-19 .exam-footer, .page.page-theme-20 .exam-footer {
             background: var(--primary-color); color: #fff; border: none; border-radius: 8px;
             padding: 8px 14px; position: relative; margin-top: 10px;
         }
         .page.page-theme-9 .exam-footer { border-radius: 0; margin-top: 16px; }
         .page.page-theme-7 .exam-footer strong, .page.page-theme-8 .exam-footer strong, .page.page-theme-9 .exam-footer strong,
-        .page.page-theme-10 .exam-footer strong, .page.page-theme-11 .exam-footer strong, .page.page-theme-12 .exam-footer strong { color: #fff; }
+        .page.page-theme-10 .exam-footer strong, .page.page-theme-11 .exam-footer strong, .page.page-theme-12 .exam-footer strong,
+        .page.page-theme-19 .exam-footer strong, .page.page-theme-20 .exam-footer strong { color: #fff; }
         .page.page-theme-7 #footerPhone, .page.page-theme-8 #footerPhone, .page.page-theme-9 #footerPhone,
-        .page.page-theme-10 #footerPhone, .page.page-theme-11 #footerPhone, .page.page-theme-12 #footerPhone { color: #fff; opacity: .85; }
+        .page.page-theme-10 #footerPhone, .page.page-theme-11 #footerPhone, .page.page-theme-12 #footerPhone,
+        .page.page-theme-19 #footerPhone, .page.page-theme-20 #footerPhone { color: #fff; opacity: .85; }
 
-        /* توفير حبر: لو "طباعة اقتصادية" مفعّلة على الصفحة، الشرايط والخلفيات الملونة بتتحول لحدود سادة بس */
-        .page.page-eco.page-theme-7, .page.page-eco.page-theme-8, .page.page-eco.page-theme-9,
-        .page.page-eco.page-theme-10, .page.page-eco.page-theme-11, .page.page-eco.page-theme-12 {
+        /* توفير حبر: لو "طباعة اقتصادية" (أبيض وأسود أو رمادي فاتح) مفعّلة على الصفحة، الشرايط والخلفيات الملونة بتتحول لحدود سادة بس */
+        .page:where(.page-eco, .page-eco-light):where(.page-theme-7, .page-theme-8, .page-theme-9, .page-theme-10, .page-theme-11, .page-theme-12, .page-theme-19, .page-theme-20) {
             background-color: #ffffff !important; background-image: none !important;
         }
-        .page.page-eco.page-theme-7 .header-banner, .page.page-eco.page-theme-8 .header-banner, .page.page-eco.page-theme-9 .header-banner,
-        .page.page-eco.page-theme-10 .header-banner, .page.page-eco.page-theme-11 .header-banner, .page.page-eco.page-theme-12 .header-banner,
-        .page.page-eco.page-theme-7 .exam-footer, .page.page-eco.page-theme-8 .exam-footer, .page.page-eco.page-theme-9 .exam-footer,
-        .page.page-eco.page-theme-10 .exam-footer, .page.page-eco.page-theme-11 .exam-footer, .page.page-eco.page-theme-12 .exam-footer {
+        .page.page-eco:where(.page-theme-7, .page-theme-8, .page-theme-9, .page-theme-10, .page-theme-11, .page-theme-12, .page-theme-19, .page-theme-20) .header-banner,
+        .page.page-eco:where(.page-theme-7, .page-theme-8, .page-theme-9, .page-theme-10, .page-theme-11, .page-theme-12, .page-theme-19, .page-theme-20) .exam-footer {
             background: #ffffff !important; border: 2px solid #000 !important; color: #000 !important;
         }
-        .page.page-eco.page-theme-7 .header-banner::after, .page.page-eco.page-theme-8 .header-banner::after, .page.page-eco.page-theme-9 .header-banner::after,
-        .page.page-eco.page-theme-10 .header-banner::after, .page.page-eco.page-theme-11 .header-banner::after, .page.page-eco.page-theme-12 .header-banner::after {
+        .page.page-eco-light:where(.page-theme-7, .page-theme-8, .page-theme-9, .page-theme-10, .page-theme-11, .page-theme-12, .page-theme-19, .page-theme-20) .header-banner,
+        .page.page-eco-light:where(.page-theme-7, .page-theme-8, .page-theme-9, .page-theme-10, .page-theme-11, .page-theme-12, .page-theme-19, .page-theme-20) .exam-footer {
+            background: #ffffff !important; border: 2px solid #6b7280 !important; color: #374151 !important;
+        }
+        .page.page-eco:where(.page-theme-7, .page-theme-8, .page-theme-9, .page-theme-10, .page-theme-11, .page-theme-12, .page-theme-19, .page-theme-20) .header-banner::after {
             background-color: #fff !important; box-shadow: none !important; border: 1px solid #000;
+        }
+        .page.page-eco-light:where(.page-theme-7, .page-theme-8, .page-theme-9, .page-theme-10, .page-theme-11, .page-theme-12, .page-theme-19, .page-theme-20) .header-banner::after {
+            background-color: #fff !important; box-shadow: none !important; border: 1px solid #6b7280;
         }
 
         /* أيقونة كبيرة شفافة في خلفية الصفحة تتغير أوتوماتيك حسب المادة (مثل العلامة المائية بالظبط) */
         .page.page-theme-7::before, .page.page-theme-8::before, .page.page-theme-9::before,
-        .page.page-theme-10::before, .page.page-theme-11::before, .page.page-theme-12::before {
+        .page.page-theme-10::before, .page.page-theme-11::before, .page.page-theme-12::before,
+        .page.page-theme-19::before, .page.page-theme-20::before {
             content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
             background-image: var(--subject-icon-svg); background-repeat: no-repeat;
             background-position: center 62%; background-size: 220px 220px; opacity: .05;
         }
-        .page.page-eco::before { opacity: .03 !important; }
+        .page:where(.page-eco, .page-eco-light)::before { opacity: .03 !important; }
         .page.page-dual-column .questions-container { column-count: 2; column-gap: 15px; }
         .page.page-dual-column .question-card { break-inside: avoid; display: inline-block; width: 100%; }
 
@@ -234,6 +259,14 @@ window.MathJax = {
         .page-settings-btn[id^="pageDuplicateBtn-"] { left: 37px; }
         .page-settings-btn[id^="pageDeleteBtn-"] { left: 68px; }
         .page-settings-note { font-size: 11px; color: #64748b; line-height: 1.6; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px 10px; }
+
+        /* ══ معاينة مصغّرة حيّة لشكل الصفحة بتتغير فورًا مع اختيار القالب ══ */
+        .page-theme-preview-box { border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; margin-bottom: 10px; background: #fff; transition: all .15s; }
+        .page-theme-preview-box .ptp-header { height: 4px; border-radius: 3px; margin-bottom: 10px; background: linear-gradient(90deg, var(--ptp-primary, #94a3b8), var(--ptp-accent, #cbd5e1)); }
+        .page-theme-preview-box .ptp-card { position: relative; border: 1px solid var(--ptp-border, #e2e8f0); background: var(--ptp-bg, #f8fafc); border-radius: 8px; padding: 14px 10px 10px; }
+        .page-theme-preview-box .ptp-badge { position: absolute; top: -9px; right: 10px; background: var(--ptp-primary, #94a3b8); color: #fff; font-size: 10px; font-weight: 800; padding: 2px 9px; border-radius: 10px; }
+        .page-theme-preview-box .ptp-line { display: block; height: 6px; border-radius: 3px; background: var(--ptp-primary, #94a3b8); opacity: .35; margin-top: 6px; width: 90%; }
+        .page-theme-preview-box .ptp-line.short { width: 55%; }
 
         .theme-swatch-btn { width: 34px; height: 34px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; padding: 0; transition: all .15s ease; }
         .theme-swatch-btn:hover { transform: scale(1.08); }
@@ -404,6 +437,17 @@ window.MathJax = {
         @keyframes shakeError { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
 
         .toolbar-section { display: flex; flex-direction: column; gap: 8px; padding-bottom: 10px; margin-bottom: 4px; border-bottom: 1px dashed #e2e8f0; }
+
+        /* ══ تبويبات أعلى لوحة الأدوات: تقسّم اللوحة الطويلة لـ "الشكل والخطوط" و"الأدوات والمحتوى" ══ */
+        .sidebar-tabs { display: flex; gap: 6px; margin-bottom: 10px; position: sticky; top: 0; z-index: 3; background: var(--admin-bg, #fff); padding-bottom: 4px; }
+        .sidebar-tab-btn {
+            flex: 1; padding: 9px 6px; border-radius: 9px; border: 1px solid var(--card-border, #e2e8f0);
+            background: #f8fafc; color: #475569; font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer; transition: all .15s;
+        }
+        .sidebar-tab-btn.active { background: var(--primary-color, #0284c7); color: #fff; border-color: var(--primary-color, #0284c7); box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+        .sidebar-tab-btn:hover:not(.active) { background: #eef2f7; }
+        .sidebar-tab-pane { display: none; }
+        .sidebar-tab-pane.active { display: block; }
         .toolbar-section:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .toolbar-label { font-size: 11px; font-weight: 800; color: #64748b; display: flex; align-items: center; gap: 6px; }
         .toolbar-label .svg-ic { width: 14px; height: 14px; opacity: 0.7; }
@@ -642,6 +686,15 @@ window.MathJax = {
 
         .page.has-ornament-border { border: 8px double var(--primary-color); padding: 18px 22px; }
 
+        /* ══ شريط تحذير (شاشة فقط، بيختفي وقت الطباعة) لصفحة فيها محتوى أطول من المساحة المتاحة ══ */
+        .page.page-overflow-warning { outline: 3px solid #dc2626; outline-offset: 2px; }
+        .page.page-overflow-warning::after {
+            content: '⚠ المحتوى في هذه الصفحة أطول من مساحة الورقة — قلل حجم الصورة أو انقل جزء منه لصفحة تانية';
+            position: absolute; top: -2px; right: -2px; left: -2px; z-index: 20; background: #dc2626; color: #fff;
+            font-size: 10.5px; font-weight: 800; text-align: center; padding: 4px 8px; border-radius: 0 0 8px 8px;
+        }
+        @media print { .page.page-overflow-warning { outline: none; } .page.page-overflow-warning::after { display: none !important; } }
+
         /* ===== وضع الشاشة: يحوّل الصفحة لمقاس A4 أفقي (Landscape) ===== */
         body.screen-mode .page { width: 297mm; min-height: 210mm; }
         .screen-mode-doctype-select { display: none; }
@@ -660,7 +713,7 @@ window.MathJax = {
             z-index: var(--watermark-zindex); display: none; 
         }
 
-        .header-banner { width: 100%; height: 5px; background: linear-gradient(90deg, var(--primary-color), var(--accent-color)); border-radius: 3px; margin-bottom: 14px; }
+        .header-banner { width: 100%; height: 5px; background: linear-gradient(90deg, var(--primary-color), var(--accent-color)); border-radius: 3px; margin-bottom: 14px; box-shadow: 0 2px 4px -1px rgba(0,0,0,0.12); }
         .content-wrap { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; }
 
         .header-top { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
@@ -685,7 +738,17 @@ window.MathJax = {
         .score-pill { border: 1px solid var(--badge-bg); background: #fef3c7; border-radius: 4px; padding: 1px 6px; color: var(--badge-bg); font-weight: 900; }
 
         .question-card { border: 1px solid var(--card-border); border-radius: var(--card-radius); background: var(--card-bg); padding: 16px 14px 12px 14px; margin-bottom: 14px; position: relative; display: flex; flex-direction: column; justify-content: space-between; page-break-inside: avoid; break-inside: avoid; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+        /* ══ تباين خفيف متبادل بين الأسئلة (Zebra) عشان العين تتبع الأسئلة بسهولة في ورقة طويلة ══ */
+        .questions-container > .question-card:nth-of-type(even) { background-image: linear-gradient(rgba(0,0,0,0.022), rgba(0,0,0,0.022)); }
+        @media print { .questions-container > .question-card:nth-of-type(even) { background-image: linear-gradient(rgba(0,0,0,0.018), rgba(0,0,0,0.018)); } }
         .q-number-badge { position: absolute; top: -10px; right: 12px; background: var(--primary-color); color: #ffffff; padding: 2px 12px; border-radius: 12px; font-weight: 800; font-size: 11px; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+        /* ══ أيقونة صغيرة توضح نوع السؤال جنب رقمه (اختيار من متعدد/مقالي/صح وخطأ...) ══ */
+        .question-card[data-type="essay"] .q-number-badge::before { content: "✍️"; }
+        .question-card[data-type="mcq"] .q-number-badge::before { content: "☑️"; }
+        .question-card[data-type="match"] .q-number-badge::before { content: "🔗"; }
+        .question-card[data-type="tf"] .q-number-badge::before { content: "✔️"; }
+        .question-card[data-type="fill"] .q-number-badge::before { content: "▭"; }
+        .question-card[data-type="stats"] .q-number-badge::before { content: "📊"; }
         .q-bloom-tag { position: absolute; top: -10px; left: 12px; background: #3b82f6; color: #fff; padding: 1px 8px; border-radius: 8px; font-size: 10px; font-weight: 700; cursor: pointer; }
         
         .q-body { margin-top: 6px; font-size: var(--base-font-size); font-weight: 700; color: var(--text-main); line-height: var(--base-line-height); outline: none; }
@@ -694,6 +757,25 @@ window.MathJax = {
         .sub-question-item { background: #ffffff; border: 1px dashed var(--card-border); padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
 
         .q-attached-img { max-width: 100%; max-height: 180px; object-fit: contain; margin-top: 8px; border-radius: 6px; border: 1px solid var(--card-border); display: none; }
+
+        /* ══ إصلاح مهم: أي صورة تتلصق مباشرة (Paste) جوه عنصر قابل للتحرير كانت
+           بتتحط بحجمها الطبيعي من غير أي حد أقصى (الدالتين addLessonImage/
+           addLessonImageFromUrl بس هما اللي بيحطوا max-height:260px يدويًا).
+           صورة أكبر من صفحة A4 كاملة بتخلي "نظام منع التداخل" التلقائي (اللي
+           بينقل آخر عنصر للصفحة التالية) عاجز يصلّحها لأنها العنصر الوحيد في
+           الصفحة، فتطلع الصفحة في الطباعة مقطوعة/فاضية جزئيًا. الحل: حد أقصى
+           عام لأي صورة جوه محتوى الصفحة، بوحدة mm عشان يفضل صامد وقت الطباعة. ══ */
+        .lesson-block img, .q-body img, .editable-element img, .sub-question-item img, .mcq-opt img {
+            max-width: 100% !important; max-height: 90mm !important; width: auto !important; height: auto !important;
+            object-fit: contain; display: block; margin: 8px auto; border-radius: 6px;
+        }
+        @media print {
+            .lesson-block img, .q-body img, .editable-element img, .sub-question-item img, .mcq-opt img,
+            .q-attached-img {
+                max-height: 90mm !important;
+            }
+            .q-geogebra-wrap { max-height: 100mm !important; overflow: hidden !important; }
+        }
 
         .q-canvas-container { margin-top: 8px; text-align: center; }
         .q-canvas { border: 1px solid var(--primary-color); border-radius: 6px; background: #fff; max-width: 100%; }
@@ -734,7 +816,16 @@ window.MathJax = {
         .q-controls { display: none; margin-top: 8px; gap: 6px; border-top: 1px dashed #e2e8f0; padding-top: 8px; flex-wrap: wrap; }
         .edit-mode-active .q-controls { display: flex !important; }
 
-        .exam-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; color: var(--primary-color); margin-top: auto; border-top: 1px dashed var(--card-border); padding-top: 6px; }
+        .exam-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; color: var(--primary-color); margin-top: auto; border-top: 1px dashed var(--card-border); padding-top: 8px; gap: 10px; }
+        .exam-footer > * { display: flex; align-items: center; gap: 4px; }
+
+        /* ══ طابع بصري أهدأ لصفحات "الشرح" مقابل طابع أوضح/أعلى تباين لصفحات "الامتحان" ══
+           (فوق أي قالب ألوان مُختار، بيفرّق حسب نوع الصفحة نفسه) */
+        .page[data-page-type="lesson"] { --card-radius: 14px; }
+        .page[data-page-type="lesson"] .lesson-block { box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+        .page[data-page-type="lesson"] .q-body, .page[data-page-type="lesson"] .lesson-block { letter-spacing: 0.1px; }
+        .page[data-page-type="exam"] .question-card { border-width: 1.5px; }
+        .page[data-page-type="exam"] .q-number-badge { font-size: 11.5px; box-shadow: 0 2px 5px rgba(0,0,0,0.14); }
 
         [contenteditable="true"] { border: 1px dashed var(--accent-color) !important; border-radius: 4px; background: #fffdfa; padding: 1px 4px; }
 
@@ -995,7 +1086,15 @@ window.MathJax = {
                         <button type="button" class="theme-swatch-btn" data-theme="page-theme-16" title="أزرق ملكي" onclick="selectPageThemeSwatch('page-theme-16', this)" style="background:linear-gradient(135deg,#1e3a8a,#2563eb);"></button>
                         <button type="button" class="theme-swatch-btn" data-theme="page-theme-17" title="أخضر زيتوني" onclick="selectPageThemeSwatch('page-theme-17', this)" style="background:linear-gradient(135deg,#3f6212,#65a30d);"></button>
                         <button type="button" class="theme-swatch-btn" data-theme="page-theme-18" title="عنابي" onclick="selectPageThemeSwatch('page-theme-18', this)" style="background:linear-gradient(135deg,#831843,#be185d);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-19" title="دفتر تدوين أخضر" onclick="selectPageThemeSwatch('page-theme-19', this)" style="background:linear-gradient(135deg,#f6fbf3,#234d20);"></button>
+                        <button type="button" class="theme-swatch-btn" data-theme="page-theme-20" title="نمط عربي أزرق" onclick="selectPageThemeSwatch('page-theme-20', this)" style="background:linear-gradient(135deg,#fffdf6,#1e3a5f);"></button>
                     </div>
+
+                    <div id="pageThemePreviewBox" class="page-theme-preview-box">
+                        <div class="ptp-header"></div>
+                        <div class="ptp-card"><span class="ptp-badge">1</span><span class="ptp-line"></span><span class="ptp-line short"></span></div>
+                    </div>
+
                     <select id="pageThemeSelect" style="display:none;">
                         <option value="inherit">افتراضي (نفس باقي الورقة)</option>
                         <option value="page-theme-1">قالب مستقل 1 - سماوي</option>
@@ -1016,6 +1115,8 @@ window.MathJax = {
                         <option value="page-theme-16">قالب مستقل 16 - أزرق ملكي</option>
                         <option value="page-theme-17">قالب مستقل 17 - أخضر زيتوني</option>
                         <option value="page-theme-18">قالب مستقل 18 - عنابي</option>
+                        <option value="page-theme-19">قالب زخرفي 19 - دفتر تدوين أخضر</option>
+                        <option value="page-theme-20">قالب زخرفي 20 - نمط عربي أزرق</option>
                     </select>
 
                     <label>تقسيم الأعمدة لهذه الصفحة:</label>
@@ -1024,9 +1125,12 @@ window.MathJax = {
                         <option value="dual">عمودين (مناسب للأسئلة القصيرة)</option>
                     </select>
 
-                    <label style="margin-top:6px; cursor:pointer; display:flex; align-items:center; gap:6px;">
-                        <input type="checkbox" id="pageEcoCheck"> طباعة اقتصادية بالأبيض والأسود لهذه الصفحة فقط
-                    </label>
+                    <label style="margin-top:6px;">طباعة اقتصادية لهذه الصفحة فقط:</label>
+                    <select id="pageEcoSelect" style="margin-bottom:2px;">
+                        <option value="none">عادية (بالألوان)</option>
+                        <option value="page-eco">أبيض وأسود (أقصى توفير حبر)</option>
+                        <option value="page-eco-light">رمادي فاتح (توفير متوسط)</option>
+                    </select>
 
                     <label style="margin-top:10px;">نوع الصفحة:</label>
                     <div class="btn-group" style="flex-direction:row; gap:6px;">
@@ -1077,6 +1181,12 @@ window.MathJax = {
                     <svg class="svg-ic" viewBox="0 0 24 24" style="width:15px;height:15px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
+            <div class="sidebar-tabs no-print">
+                <button type="button" class="sidebar-tab-btn active" data-tab-btn="design" onclick="switchSidebarTab('design')">🎨 الشكل والخطوط</button>
+                <button type="button" class="sidebar-tab-btn" data-tab-btn="tools" onclick="switchSidebarTab('tools')">🛠️ الأدوات والمحتوى</button>
+            </div>
+
+            <div class="sidebar-tab-pane active" data-tab-pane="design">
             <div class="analytics-bar">
                 <div>الزمن المتوقع: <span id="estTimeCalc">0 دقيقة</span></div>
                 <div>المستوى: <span id="difficultyCalc">متوازن</span></div>
@@ -1183,6 +1293,10 @@ window.MathJax = {
                 </select>
             </div>
 
+            </div>
+            <!-- /sidebar-tab-pane: design -->
+
+            <div class="sidebar-tab-pane" data-tab-pane="tools">
             <div class="math-toolbar">
                 <span style="font-size:11px; font-weight:bold; align-self:center;">أساسيات:</span>
                 <button class="math-btn" onclick="insertSymbol('x^2')">أس $x^2$</button>
@@ -1461,6 +1575,8 @@ window.MathJax = {
                     <button class="btn btn-eco" onclick="addPageBreak()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1L9.64 7.64zM6 8c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm0 12c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm6-7.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zM19 3l-6 6 2 2 7-7V3z"/></svg> إنهاء الصفحة (صفحة جديدة)</button>
                 </div>
             </div>
+            </div>
+            <!-- /sidebar-tab-pane: tools -->
         </div>
     </div>
 
@@ -2138,6 +2254,16 @@ window.MathJax = {
             if (e.key === 'Escape') closeControls();
         });
 
+        // ══ التبديل بين تبويبات لوحة الأدوات (الشكل والخطوط / الأدوات والمحتوى) ══
+        function switchSidebarTab(tabName) {
+            document.querySelectorAll('.sidebar-tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-tab-btn') === tabName);
+            });
+            document.querySelectorAll('.sidebar-tab-pane').forEach(pane => {
+                pane.classList.toggle('active', pane.getAttribute('data-tab-pane') === tabName);
+            });
+        }
+
         function initToolsAccordion() {
             const sections = document.querySelectorAll('.admin-controls .toolbar-section');
             sections.forEach(function(sec, idx) {
@@ -2614,7 +2740,7 @@ window.MathJax = {
 
             // كل صفحة جديدة تبدأ بتنسيق مستقل افتراضي (بدون وراثة أي تخصيص كان مطبقاً على الصفحة الأولى)
             [...newPage.classList].filter(c => c.startsWith('page-theme-')).forEach(c => newPage.classList.remove(c));
-            newPage.classList.remove('page-dual-column', 'page-eco');
+            newPage.classList.remove('page-dual-column', 'page-eco', 'page-eco-light');
 
             const headerTop = newPage.querySelector('.header-top');
             const gradingTable = newPage.querySelector('.grading-summary-table');
@@ -2761,6 +2887,17 @@ window.MathJax = {
 
                     removeAutoEmptyTrailingPages();
                 }
+
+                // ══ تحذير مرئي (على الشاشة بس) لو صفحة لسه فيها محتوى أطول من صفحة A4 كاملة
+                // (زي صورة واحدة كبيرة جدًا) — الحالة اللي نظام النقل التلقائي فوق مش بيقدر
+                // يصلّحها لوحده لأنه مش هيسيب الصفحة فاضية تمامًا. كده المعلم بيشوفها قبل
+                // ما يطبع، بدل ما يكتشفها في الملف النهائي بس. ══
+                document.querySelectorAll('#pagesContainer > .page').forEach(page => {
+                    const qc = page.querySelector('.questions-container');
+                    if (!qc || qc.children.length === 0) { page.classList.remove('page-overflow-warning'); return; }
+                    const maxH = getA4HeightPxFor(page);
+                    page.classList.toggle('page-overflow-warning', measurePageContentHeight(page) > maxH + 3);
+                });
             } finally {
                 _autoPaginating = false;
             }
@@ -3800,7 +3937,8 @@ window.MathJax = {
             'page-theme-9': 'محاضرة / ورق قديم', 'page-theme-10': 'مخطط هندسي (فيزياء)',
             'page-theme-11': 'زخرفة عربية/أدبية', 'page-theme-12': 'جغرافيا وخرائط',
             'page-theme-13': 'تركواز', 'page-theme-14': 'رمادي أنيق', 'page-theme-15': 'بني كافيه',
-            'page-theme-16': 'أزرق ملكي', 'page-theme-17': 'أخضر زيتوني', 'page-theme-18': 'عنابي'
+            'page-theme-16': 'أزرق ملكي', 'page-theme-17': 'أخضر زيتوني', 'page-theme-18': 'عنابي',
+            'page-theme-19': 'دفتر تدوين أخضر', 'page-theme-20': 'نمط عربي أزرق'
         };
         function suggestThemeForSubject(subject) {
             const pref = getSubjectThemeMap()[subject];
@@ -3825,15 +3963,50 @@ window.MathJax = {
                 btn.classList.toggle('active', btn.dataset.theme === activeTheme);
             });
             document.getElementById('pageColumnsSelect').value = page.classList.contains('page-dual-column') ? 'dual' : 'single';
-            document.getElementById('pageEcoCheck').checked = page.classList.contains('page-eco');
+            document.getElementById('pageEcoSelect').value = page.classList.contains('page-eco') ? 'page-eco' : (page.classList.contains('page-eco-light') ? 'page-eco-light' : 'none');
 
             document.getElementById('pageSettingsModal').classList.add('open');
+        }
+
+        /* ألوان تقريبية لكل قالب — تُستخدم فقط لتلوين صندوق المعاينة المصغّرة، مش مصدر الألوان الفعلي للورقة */
+        const PAGE_THEME_PREVIEW_COLORS = {
+            'inherit':      { primary: '#94a3b8', accent: '#cbd5e1', border: '#e2e8f0', bg: '#f8fafc' },
+            'page-theme-1': { primary: '#0891b2', accent: '#06b6d4', border: '#a5f3fc', bg: '#f0fdf4' },
+            'page-theme-2': { primary: '#1e293b', accent: '#d97706', border: '#cbd5e1', bg: '#fffbf5' },
+            'page-theme-3': { primary: '#1e1b4b', accent: '#eab308', border: '#fef08a', bg: '#ffffff' },
+            'page-theme-4': { primary: '#065f46', accent: '#10b981', border: '#a7f3d0', bg: '#f0fdf4' },
+            'page-theme-5': { primary: '#9f1239', accent: '#f43f5e', border: '#fecdd3', bg: '#fff1f2' },
+            'page-theme-6': { primary: '#5b21b6', accent: '#8b5cf6', border: '#ddd6fe', bg: '#f5f3ff' },
+            'page-theme-7': { primary: '#4a221c', accent: '#8a5a3c', border: '#d8cdb0', bg: '#f7f2e7' },
+            'page-theme-8': { primary: '#8a5a3c', accent: '#4a221c', border: '#d8cdb0', bg: '#f7f2e7' },
+            'page-theme-9': { primary: '#7a3b2e', accent: '#e7cba8', border: '#c9a876', bg: '#f3e6d0' },
+            'page-theme-10':{ primary: '#0f3d63', accent: '#bcdcf5', border: '#bcdcf5', bg: '#eaf4fc' },
+            'page-theme-11':{ primary: '#7a5b1e', accent: '#e8d9a8', border: '#e8d9a8', bg: '#fbf6e6' },
+            'page-theme-12':{ primary: '#1f5c3e', accent: '#c8e6d3', border: '#c8e6d3', bg: '#eef6f0' },
+            'page-theme-13':{ primary: '#0d9488', accent: '#2dd4bf', border: '#99f6e4', bg: '#f0fdfa' },
+            'page-theme-14':{ primary: '#475569', accent: '#94a3b8', border: '#e2e8f0', bg: '#f8fafc' },
+            'page-theme-15':{ primary: '#7c2d12', accent: '#c2410c', border: '#fed7aa', bg: '#fffbeb' },
+            'page-theme-16':{ primary: '#1e3a8a', accent: '#2563eb', border: '#bfdbfe', bg: '#eff6ff' },
+            'page-theme-17':{ primary: '#3f6212', accent: '#65a30d', border: '#d9f99d', bg: '#f7fee7' },
+            'page-theme-18':{ primary: '#831843', accent: '#be185d', border: '#fbcfe8', bg: '#fdf2f8' },
+            'page-theme-19':{ primary: '#234d20', accent: '#4c7c3f', border: '#cfead0', bg: '#f6fbf3' },
+            'page-theme-20':{ primary: '#1e3a5f', accent: '#3f6ea8', border: '#bcd2ea', bg: '#fffdf6' }
+        };
+        function updatePageThemePreview(themeValue) {
+            const box = document.getElementById('pageThemePreviewBox');
+            if (!box) return;
+            const c = PAGE_THEME_PREVIEW_COLORS[themeValue] || PAGE_THEME_PREVIEW_COLORS['inherit'];
+            box.style.setProperty('--ptp-primary', c.primary);
+            box.style.setProperty('--ptp-accent', c.accent);
+            box.style.setProperty('--ptp-border', c.border);
+            box.style.setProperty('--ptp-bg', c.bg);
         }
 
         function selectPageThemeSwatch(theme, btnEl) {
             document.getElementById('pageThemeSelect').value = theme;
             document.querySelectorAll('.theme-swatch-btn').forEach(b => b.classList.remove('active'));
             btnEl.classList.add('active');
+            updatePageThemePreview(theme);
         }
 
         function closePageSettingsModal() {
@@ -3852,7 +4025,9 @@ window.MathJax = {
             if (currentSubjectText) saveSubjectThemePref(currentSubjectText.innerText.trim(), theme);
 
             page.classList.toggle('page-dual-column', document.getElementById('pageColumnsSelect').value === 'dual');
-            page.classList.toggle('page-eco', document.getElementById('pageEcoCheck').checked);
+            const ecoMode = document.getElementById('pageEcoSelect').value;
+            page.classList.remove('page-eco', 'page-eco-light');
+            if (ecoMode !== 'none') page.classList.add(ecoMode);
 
             closePageSettingsModal();
             saveExamToLocalStorage();
@@ -3863,7 +4038,7 @@ window.MathJax = {
             if (!page) return;
 
             [...page.classList].filter(c => c.startsWith('page-theme-')).forEach(c => page.classList.remove(c));
-            page.classList.remove('page-dual-column', 'page-eco');
+            page.classList.remove('page-dual-column', 'page-eco', 'page-eco-light');
 
             closePageSettingsModal();
             saveExamToLocalStorage();
@@ -4067,7 +4242,7 @@ window.MathJax = {
         function exportToImages() {
             const pages = document.querySelectorAll('.page');
             pages.forEach((page, idx) => {
-                html2canvas(page, { scale: 2 }).then(canvas => {
+                html2canvas(page, { scale: 3, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
                     const a = document.createElement('a');
                     a.href = canvas.toDataURL('image/png');
                     a.download = `exam-page-${idx+1}.png`;
@@ -4521,7 +4696,7 @@ window.MathJax = {
         body.edit-mode-active .q-img-tools-btn.has-img { display: block; }
 
         /* ---------- 19) GeoGebra ---------- */
-        .q-geogebra-wrap { width: 100%; min-height: 320px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; }
+        .q-geogebra-wrap { width: 100%; min-height: 320px; margin: 8px 0; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; page-break-inside: avoid; break-inside: avoid; }
 
         @media print {
             .page-number-badge { color: #475569; background: transparent; border: none; }
