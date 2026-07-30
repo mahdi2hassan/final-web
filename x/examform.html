@@ -896,6 +896,13 @@ window.MathJax = {
                 page-break-inside: avoid !important; 
                 break-inside: avoid !important; 
             }
+
+            /* ══ إصلاح: جدول إحصائي فيه أعمدة كتير كان بيتقص في الطباعة لأن
+               overflow-x:auto مالوش أي معنى على الورق (مفيش سكرول). دلوقتي
+               الجدول بيتصغّر ليتسع في عرض الصفحة بدل ما يتقص. ══ */
+            .stats-table-wrapper { overflow-x: visible !important; }
+            .stats-table { table-layout: fixed !important; width: 100% !important; }
+            .stats-table th, .stats-table td { word-break: break-word; font-size: 10.5px !important; padding: 4px !important; }
             
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         }
@@ -1782,6 +1789,7 @@ window.MathJax = {
                             <button class="btn btn-success" style="font-size:10px;" onclick="addStatsColumn('q-3')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> إضافة عمود</button>
                             <button class="btn btn-warning" style="font-size:10px;" onclick="removeStatsColumn('q-3')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H5v-2h14v2z"/></svg> حذف عمود</button>
                             <button class="btn btn-purple" style="font-size:10px;" onclick="addStatsRow('q-3')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> إضافة صف بيانات</button>
+                            <button class="btn btn-warning" style="font-size:10px;" onclick="removeStatsRow('q-3')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H5v-2h14v2z"/></svg> حذف صف بيانات</button>
                             <button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('q-3')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('q-3')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button>
                         </div>
                     </div>
@@ -3302,8 +3310,16 @@ window.MathJax = {
                         </tbody>
                     </table>
                 </div>
+                <div class="answer-lines" id="lines-${qId}"><div class="line-item"></div><div class="line-item"></div></div>
                 <div class="q-footer-row"><div class="q-score-tag">الدرجة: <span class="q-score-val editable-element" oninput="calculateAnalytics()">6</span></div></div>
-                <div class="q-controls"><button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button><button class="btn btn-danger" onclick="removeQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button></div>`;
+                <div class="q-controls">
+                    <button class="btn btn-success" style="font-size:10px;" onclick="addStatsColumn('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> إضافة عمود</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="removeStatsColumn('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H5v-2h14v2z"/></svg> حذف عمود</button>
+                    <button class="btn btn-purple" style="font-size:10px;" onclick="addStatsRow('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> إضافة صف بيانات</button>
+                    <button class="btn btn-warning" style="font-size:10px;" onclick="removeStatsRow('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M19 13H5v-2h14v2z"/></svg> حذف صف بيانات</button>
+                    <button class="btn btn-purple" style="background-color:#0d9488;" onclick="duplicateQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> تكرار السؤال</button>
+                    <button class="btn btn-danger" onclick="removeQuestion('${qId}')"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg> حذف السؤال</button>
+                </div>`;
             getActiveQuestionsContainer().appendChild(card);
             reindexQuestions(); calculateAnalytics(); attachMathJaxBlur();
         }
@@ -3350,6 +3366,14 @@ window.MathJax = {
                 newTr.appendChild(td);
             }
             body.appendChild(newTr);
+            saveExamToLocalStorage();
+        }
+
+        function removeStatsRow(qId) {
+            const body = document.getElementById(`stats-body-${qId}`);
+            if (body && body.children.length > 1) {
+                body.removeChild(body.lastElementChild);
+            }
             saveExamToLocalStorage();
         }
 
