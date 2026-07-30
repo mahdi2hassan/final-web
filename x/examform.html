@@ -248,8 +248,8 @@ window.MathJax = {
         .page-settings-btn {
             position: absolute; top: 6px; left: 6px; z-index: 6; width: 25px; height: 25px; border-radius: 50%;
             border: 1px solid var(--card-border); background: rgba(255,255,255,0.96); display: none; align-items: center;
-            justify-content: center; cursor: pointer; opacity: 0.55; transition: all 0.2s ease; color: #334155;
-            box-shadow: 0 1px 3px rgba(15,23,42,0.12);
+            justify-content: center; cursor: pointer; opacity: 0.8; transition: all 0.2s ease; color: #334155;
+            box-shadow: 0 1px 3px rgba(15,23,42,0.18);
         }
         body.edit-mode-active .page-settings-btn { display: flex; }
         .page-settings-btn:hover { opacity: 1; transform: rotate(45deg); border-color: var(--primary-color); color: var(--primary-color); }
@@ -257,7 +257,7 @@ window.MathJax = {
         /* الأزرار العائمة الأربعة (ترس/تكرار/حذف/سحب) صف أفقي واحد ضيق أعلى الصفحة،
            بدل ما كانت تتكدّس فوق بعض رأسيًا وتدخل جوه محتوى الورقة */
         .page-settings-btn[id^="pageDuplicateBtn-"] { left: 37px; }
-        .page-settings-btn[id^="pageDeleteBtn-"] { left: 68px; }
+        .page-settings-btn[id^="pageDeleteBtn-"] { left: 68px; background: #fff5f5; border-color: #fecaca; opacity: .9; }
         .page-settings-note { font-size: 11px; color: #64748b; line-height: 1.6; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 8px 10px; }
 
         /* ══ معاينة مصغّرة حيّة لشكل الصفحة بتتغير فورًا مع اختيار القالب ══ */
@@ -758,6 +758,15 @@ window.MathJax = {
 
         .q-attached-img { max-width: 100%; max-height: 180px; object-fit: contain; margin-top: 8px; border-radius: 6px; border: 1px solid var(--card-border); display: none; }
 
+        /* ══ زرار صغير لحذف صورة واحدة اتحطت جوه فقرة شرح، من غير ما تمسح الفقرة كلها ══ */
+        .img-remove-btn {
+            position: absolute; top: 4px; left: 4px; width: 22px; height: 22px; border-radius: 50%;
+            border: 1px solid #fca5a5; background: #fff; color: #dc2626; font-size: 12px; font-weight: 900;
+            cursor: pointer; display: none; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,.15); opacity: .85;
+        }
+        body.edit-mode-active .img-remove-btn { display: flex; }
+        .img-remove-btn:hover { opacity: 1; background: #dc2626; color: #fff; }
+
         /* ══ إصلاح مهم: أي صورة تتلصق مباشرة (Paste) جوه عنصر قابل للتحرير كانت
            بتتحط بحجمها الطبيعي من غير أي حد أقصى (الدالتين addLessonImage/
            addLessonImageFromUrl بس هما اللي بيحطوا max-height:260px يدويًا).
@@ -1117,6 +1126,12 @@ window.MathJax = {
                         <option value="page-theme-18">قالب مستقل 18 - عنابي</option>
                         <option value="page-theme-19">قالب زخرفي 19 - دفتر تدوين أخضر</option>
                         <option value="page-theme-20">قالب زخرفي 20 - نمط عربي أزرق</option>
+                    </select>
+
+                    <label style="margin-top:8px;">نطاق التطبيق:</label>
+                    <select id="pageThemeScopeSelect">
+                        <option value="current">هذه الصفحة بس</option>
+                        <option value="all">كل صفحات الملزمة</option>
                     </select>
 
                     <label>تقسيم الأعمدة لهذه الصفحة:</label>
@@ -3650,13 +3665,26 @@ window.MathJax = {
 
         function insertLessonImageBlock(src) {
             const id = `lb-${Date.now()}`;
+            const imgId = `${id}-img`;
             const div = document.createElement('div');
             div.className = 'lesson-block'; div.id = id;
             div.innerHTML = `
-                <div style="text-align:center;"><img src="${src}" style="max-width:100%; max-height:260px; border-radius:8px; border:1px solid #cbd5e1;" /></div>
+                <div class="lesson-img-wrap" id="${imgId}-wrap" style="position:relative; text-align:center;">
+                    <img id="${imgId}" src="${src}" style="max-width:100%; max-height:260px; border-radius:8px; border:1px solid #cbd5e1;" />
+                    <button type="button" class="img-remove-btn no-print" onclick="removeInsertedImage('${imgId}-wrap')" title="حذف الصورة">✕</button>
+                </div>
                 ${blockControlsHTML(id)}`;
             getActiveQuestionsContainer().appendChild(div);
             applyAdvancedControlsToLessonBlock(div);
+            calculateAnalytics(); saveExamToLocalStorage();
+        }
+
+        // حذف صورة واحدة اتحطت جوه فقرة شرح، من غير ما نمسح الفقرة كلها
+        function removeInsertedImage(wrapId) {
+            const wrap = document.getElementById(wrapId);
+            if (!wrap) return;
+            if (!confirm('تحذف الصورة دي؟')) return;
+            wrap.remove();
             calculateAnalytics(); saveExamToLocalStorage();
         }
 
@@ -3964,6 +3992,8 @@ window.MathJax = {
             });
             document.getElementById('pageColumnsSelect').value = page.classList.contains('page-dual-column') ? 'dual' : 'single';
             document.getElementById('pageEcoSelect').value = page.classList.contains('page-eco') ? 'page-eco' : (page.classList.contains('page-eco-light') ? 'page-eco-light' : 'none');
+            if (document.getElementById('pageThemeScopeSelect')) document.getElementById('pageThemeScopeSelect').value = 'current';
+            updatePageThemePreview(activeTheme);
 
             document.getElementById('pageSettingsModal').classList.add('open');
         }
@@ -4017,13 +4047,19 @@ window.MathJax = {
             const page = document.getElementById(currentPageSettingsTarget);
             if (!page) return;
 
-            [...page.classList].filter(c => c.startsWith('page-theme-')).forEach(c => page.classList.remove(c));
             const theme = document.getElementById('pageThemeSelect').value;
-            if (theme !== 'inherit') page.classList.add(theme);
+            const scope = document.getElementById('pageThemeScopeSelect') ? document.getElementById('pageThemeScopeSelect').value : 'current';
+            const targetPages = scope === 'all' ? Array.from(document.querySelectorAll('#pagesContainer > .page')) : [page];
+
+            targetPages.forEach(p => {
+                [...p.classList].filter(c => c.startsWith('page-theme-')).forEach(c => p.classList.remove(c));
+                if (theme !== 'inherit') p.classList.add(theme);
+            });
 
             const currentSubjectText = document.getElementById('displaySubjectText');
             if (currentSubjectText) saveSubjectThemePref(currentSubjectText.innerText.trim(), theme);
 
+            // إعدادات الأعمدة والطباعة الاقتصادية بتفضل خاصة بالصفحة الحالية بس حتى لو النطاق "كل الصفحات"
             page.classList.toggle('page-dual-column', document.getElementById('pageColumnsSelect').value === 'dual');
             const ecoMode = document.getElementById('pageEcoSelect').value;
             page.classList.remove('page-eco', 'page-eco-light');
@@ -4031,6 +4067,7 @@ window.MathJax = {
 
             closePageSettingsModal();
             saveExamToLocalStorage();
+            if (scope === 'all') showToast(`✅ اتطبق القالب على كل الصفحات (${targetPages.length})`);
         }
 
         function resetPageSettings() {
@@ -4601,8 +4638,8 @@ window.MathJax = {
         .page-drag-handle {
             position: absolute; top: 6px; left: 99px; z-index: 6; width: 25px; height: 25px; border-radius: 50%;
             border: 1px solid var(--card-border); background: rgba(255,255,255,0.96); display: none; align-items: center;
-            justify-content: center; cursor: grab; opacity: 0.55; transition: all 0.2s ease; color: #334155;
-            box-shadow: 0 1px 3px rgba(15,23,42,0.12);
+            justify-content: center; cursor: grab; opacity: 0.8; transition: all 0.2s ease; color: #334155;
+            box-shadow: 0 1px 3px rgba(15,23,42,0.18);
         }
         body.edit-mode-active .page-drag-handle { display: flex; }
         .page-drag-handle:hover { opacity: 1; border-color: var(--primary-color); color: var(--primary-color); }
