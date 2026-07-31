@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Classroom Board with DOOM</title>
+    <title>سبورة بلس | Plus Board - اللوحة الذكية المتكاملة</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Aref+Ruqaa:wght@700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- jsPDF & PDF.js -->
+    <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
-    <!-- Canvas Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- JS-DOS for DOOM -->
     <script src="https://v8.js-dos.com/latest/js-dos.js"></script>
     <link href="https://v8.js-dos.com/latest/js-dos.css" rel="stylesheet">
 
@@ -22,114 +19,104 @@
             --bg-board: #fdfbf7;
             --wooden-frame: #8d5b4c;
             --wooden-border: #5c3a2e;
-            --primary-accent: #ff6b6b;
-            --text-color: #333;
+            --text-color: #1e293b;
         }
 
         body.dark-mode {
-            --bg-board: #1a1a24;
+            --bg-board: #0f172a;
             --wooden-frame: #2c221e;
             --wooden-border: #181210;
-            --text-color: #f1f5f9;
+            --text-color: #f8fafc;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
         
         body {
-            font-family: 'Fredoka', 'Cairo', sans-serif;
-            background: #2b1d14;
+            font-family: 'Cairo', 'Fredoka', sans-serif;
+            background: #1e110a;
             color: var(--text-color);
             display: flex;
             flex-direction: column;
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
-            transition: background 0.3s;
         }
 
-        /* Top Header */
+        /* Header Bar */
         .header {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 16px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 16px;
+            border-bottom: 2px solid rgba(124, 58, 237, 0.4);
             z-index: 30;
             color: white;
         }
         
         .brand-logo {
-            background: linear-gradient(135deg, #ff9a9e, #fecfef);
-            color: #4a4a4a;
-            font-weight: 700; font-size: 14px;
-            padding: 6px 14px; border-radius: 20px;
+            background: linear-gradient(135deg, #7c3aed, #ec4899);
+            color: #fff;
+            font-weight: 800; font-size: 15px;
+            padding: 4px 12px; border-radius: 12px;
             display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 0 15px rgba(124, 58, 237, 0.5);
         }
 
-        /* Toolbar Styling */
+        /* Main Toolbar */
         .toolbar {
             background: rgba(255, 255, 255, 0.95);
-            padding: 8px;
+            padding: 6px 10px;
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: center;
             overflow-x: auto;
             white-space: nowrap;
             z-index: 20;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
         }
         body.dark-mode .toolbar { background: rgba(30, 41, 59, 0.95); }
 
         .tool-group {
-            display: flex; align-items: center; gap: 6px;
+            display: flex; align-items: center; gap: 4px;
             background: rgba(0, 0, 0, 0.04);
-            padding: 4px 8px; border-radius: 12px;
+            padding: 3px 6px; border-radius: 10px;
             flex-shrink: 0;
         }
         body.dark-mode .tool-group { background: rgba(255, 255, 255, 0.05); }
 
         button, select {
-            padding: 6px 12px; border-radius: 10px;
-            border: 2px solid transparent;
-            background: #f0f4f8; color: #475569;
-            cursor: pointer; font-size: 13px; font-family: inherit;
-            font-weight: 600; display: flex; align-items: center; gap: 6px;
+            padding: 5px 10px; border-radius: 8px;
+            border: 1px solid transparent;
+            background: #f1f5f9; color: #334155;
+            cursor: pointer; font-size: 12px; font-family: inherit;
+            font-weight: 700; display: flex; align-items: center; gap: 4px;
             transition: all 0.2s ease; white-space: nowrap;
         }
         body.dark-mode button, body.dark-mode select {
             background: #334155; color: #cbd5e1;
         }
-        button:hover { transform: translateY(-2px); background: #e2e8f0; }
-        button:active { transform: translateY(0); }
+        button:hover { transform: translateY(-1px); background: #e2e8f0; }
         button.active {
-            background: #4f46e5; color: #fff;
-            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+            background: linear-gradient(135deg, #7c3aed, #ec4899); color: #fff;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
         }
 
-        /* Pen Colors Buttons */
         .color-pen {
-            width: 26px; height: 26px; border-radius: 50%;
+            width: 22px; height: 22px; border-radius: 50%;
             border: 2px solid white; cursor: pointer; flex-shrink: 0;
-            transition: transform 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
         .color-pen:hover { transform: scale(1.2); }
 
-        /* Celebration Buttons */
-        .celeb-btn {
-            font-weight: bold; color: white; border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        /* Frame & Board Canvas Layout */
+        /* Board Frame */
         .wooden-frame {
-            flex: 1; margin: 10px;
+            flex: 1; margin: 8px;
             background: var(--wooden-frame);
-            border: 12px solid var(--wooden-border);
-            border-radius: 24px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 10px 25px rgba(0,0,0,0.5);
+            border: 10px solid var(--wooden-border);
+            border-radius: 20px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6), 0 10px 25px rgba(0,0,0,0.5);
             position: relative; overflow: hidden;
             display: flex;
         }
@@ -141,7 +128,6 @@
             touch-action: none;
         }
 
-        /* Notebook Paper Ruling Lines */
         .notebook-paper {
             background-image: linear-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 100% 32px;
@@ -149,92 +135,100 @@
 
         canvas { display: block; width: 100%; height: 100%; position: absolute; top:0; left:0; }
 
-        /* Stickers Styling */
+        /* Stickers & Overlays */
         .sticker {
-            position: absolute; font-size: 48px; cursor: grab;
+            position: absolute; font-size: 44px; cursor: grab;
             user-select: none; z-index: 15;
             transition: transform 0.1s ease;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
         }
         .sticker:active { cursor: grabbing; }
         .bounce { animation: bounce 0.4s ease; }
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3); }
+        @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+
+        /* Magic Spotlight Overlay */
+        #spotlightOverlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); pointer-events: none; z-index: 18; display: none;
+            clip-path: circle(100px at 50% 50%);
         }
 
-        /* Modals & Overlays */
+        /* Floating Boxes / Tools */
+        .floating-box {
+            position: absolute; background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 12px; padding: 10px; z-index: 25;
+            display: none; flex-direction: column; gap: 6px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        body.dark-mode .floating-box { background: rgba(30, 41, 59, 0.95); color: white; }
+
+        /* Modals */
         .modal {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: white; border-radius: 20px;
-            padding: 20px; z-index: 100; display: none; flex-direction: column; gap: 12px;
-            width: 90%; max-width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            background: white; border-radius: 16px;
+            padding: 16px; z-index: 100; display: none; flex-direction: column; gap: 10px;
+            width: 90%; max-width: 360px; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
         body.dark-mode .modal { background: #1e293b; color: white; }
-
-        .floating-box {
-            position: absolute; background: white;
-            border-radius: 16px; padding: 12px; z-index: 25;
-            display: none; flex-direction: column; gap: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        body.dark-mode .floating-box { background: #1e293b; }
 
         /* Floating Text Effects */
         .float-text {
             position: absolute; font-size: 2rem; font-weight: bold;
-            color: #ff4757; pointer-events: none; z-index: 50;
+            color: #ec4899; pointer-events: none; z-index: 50;
             animation: floatUp 1.5s ease-out forwards;
         }
         @keyframes floatUp {
             0% { opacity: 1; transform: translateY(0) scale(0.8); }
-            50% { transform: translateY(-50px) scale(1.2); }
-            100% { opacity: 0; transform: translateY(-100px) scale(1); }
+            50% { transform: translateY(-40px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-80px) scale(1); }
         }
 
-        /* DOOM Container Modal */
-        #doomContainer {
-            width: 640px; height: 400px;
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 200; display: none;
-            background: #000; border: 4px solid #ff4757;
-            border-radius: 12px; box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            overflow: hidden;
+        /* Ruler / Protractor Elements */
+        .ruler-element {
+            position: absolute; top: 100px; left: 100px; width: 300px; height: 50px;
+            background: rgba(250, 204, 21, 0.6); border: 2px solid #ca8a04;
+            z-index: 16; cursor: move; display: none;
         }
-        #doomContainer header {
-            background: #222; color: #fff; padding: 4px 10px;
-            display: flex; justify-content: space-between; align-items: center;
+
+        /* DOOM Frame */
+        #doomContainer {
+            width: 600px; height: 380px;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 200; display: none; background: #000;
+            border: 4px solid #7c3aed; border-radius: 12px; overflow: hidden;
         }
     </style>
 </head>
 <body>
 
-    <!-- Top Header Bar -->
+    <!-- Header -->
     <div class="header">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <span class="brand-logo"><i data-lucide="sparkles"></i> Smart ClassBoard</span>
-            <span style="font-weight:600; font-size:13px; opacity:0.9;">Interactive Elementary Board</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span class="brand-logo"><i data-lucide="sparkles"></i> سبورة بلس +</span>
+            <span style="font-size:12px; opacity:0.9;">اللوحة التفاعلية الذكية للفصول</span>
         </div>
-        <div style="display:flex; gap:8px;">
-            <button onclick="toggleDarkMode()"><i data-lucide="moon"></i> Dark Mode</button>
-            <button onclick="toggleFullScreen()"><i data-lucide="maximize"></i> Fullscreen</button>
-            <button onclick="toggleDOOM()" style="background:#dc2626; color:white;"><i data-lucide="gamepad-2"></i> Play DOOM</button>
+        <div style="display:flex; gap:6px;">
+            <button onclick="toggleDarkMode()"><i data-lucide="moon"></i> الداكن</button>
+            <button onclick="toggleFullScreen()"><i data-lucide="maximize"></i> شاشة كاملة</button>
+            <button onclick="toggleDOOM()" style="background:#dc2626; color:white;"><i data-lucide="gamepad-2"></i> لعبة DOOM</button>
         </div>
     </div>
 
-    <!-- Main Toolbar -->
+    <!-- Toolbar -->
     <div class="toolbar">
-        <!-- Drawing & Pens -->
+        <!-- أدوات الرسم والإصلاح الذكي -->
         <div class="tool-group">
-            <button id="btnDraw" class="active" onclick="setMode('draw')"><i data-lucide="pen-tool"></i> Pen</button>
-            <button id="btnHighlight" onclick="setMode('highlight')"><i data-lucide="highlighter"></i> Highlighter</button>
-            <button id="btnErase" onclick="setMode('erase')"><i data-lucide="eraser"></i> Eraser</button>
-            <button onclick="undo()"><i data-lucide="undo-2"></i> Undo</button>
-            <button onclick="clearBoard()"><i data-lucide="trash-2"></i> Clear</button>
+            <button id="btnDraw" class="active" onclick="setMode('draw')"><i data-lucide="pen-tool"></i> قلم</button>
+            <button id="btnSmart" onclick="setMode('smart')"><i data-lucide="wand-2"></i> شكل ذكي</button>
+            <button id="btnHighlight" onclick="setMode('highlight')"><i data-lucide="highlighter"></i> تمييز</button>
+            <button id="btnErase" onclick="setMode('erase')"><i data-lucide="eraser"></i> ممحاة</button>
+            <button onclick="undo()"><i data-lucide="undo-2"></i> تراجع</button>
+            <button onclick="clearBoard()"><i data-lucide="trash-2"></i> مسح</button>
         </div>
 
-        <!-- Color Pens -->
+        <!-- الألوان والسُمك -->
         <div class="tool-group">
             <span class="color-pen" style="background: #ef4444;" onclick="setColor('#ef4444')"></span>
             <span class="color-pen" style="background: #3b82f6;" onclick="setColor('#3b82f6')"></span>
@@ -242,21 +236,20 @@
             <span class="color-pen" style="background: #8b5cf6;" onclick="setColor('#8b5cf6')"></span>
             <span class="color-pen" style="background: #000000;" onclick="setColor('#000000')"></span>
             <span class="color-pen" style="background: #facc15;" onclick="setColor('#facc15'); setMode('highlight')"></span>
-            <input type="range" id="lineWidth" min="2" max="30" value="4" style="width:50px;">
+            <input type="range" id="lineWidth" min="2" max="30" value="4" style="width:45px;">
         </div>
 
-        <!-- Celebration Buttons -->
+        <!-- أزرار الاحتفال والتحفيز -->
         <div class="tool-group">
-            <button class="celeb-btn" style="background:#f59e0b;" onclick="triggerCeleb('👏 Applause', 'applause')">👏 Applause</button>
-            <button class="celeb-btn" style="background:#ec4899;" onclick="triggerCeleb('🎉 Celebration!', 'cheer')">🎉 Celebration</button>
-            <button class="celeb-btn" style="background:#8b5cf6;" onclick="triggerCeleb('⭐ Excellent!', 'sparkle')">⭐ Excellent</button>
-            <button class="celeb-btn" style="background:#10b981;" onclick="triggerCeleb('❤️ Great Job!', 'ding')">❤️ Great Job</button>
-            <button class="celeb-btn" style="background:#ef4444;" onclick="triggerCeleb('🔔 Attention!', 'bell')">🔔 Attention</button>
+            <button style="background:#f59e0b; color:#fff;" onclick="triggerCeleb('👏 تصفيق حار!', 'applause')">👏 تصفيق</button>
+            <button style="background:#ec4899; color:#fff;" onclick="triggerCeleb('🎉 احتفال رائع!', 'cheer')">🎉 احتفال</button>
+            <button style="background:#8b5cf6; color:#fff;" onclick="triggerCeleb('⭐ ممتاز جداً!', 'sparkle')">⭐ ممتاز</button>
+            <button style="background:#10b981; color:#fff;" onclick="triggerCeleb('❤️ أحسنت!', 'ding')">❤️ أحسنت</button>
+            <button style="background:#ef4444; color:#fff;" onclick="triggerCeleb('🔔 انتباه!', 'bell')">🔔 انتباه</button>
         </div>
 
-        <!-- Reward Stickers palette -->
+        <!-- الملصقات -->
         <div class="tool-group">
-            <span style="font-size:12px; font-weight:bold; margin-right:4px;">Stickers:</span>
             <button onclick="addSticker('⭐')">⭐</button>
             <button onclick="addSticker('❤️')">❤️</button>
             <button onclick="addSticker('😊')">😊</button>
@@ -264,73 +257,110 @@
             <button onclick="addSticker('🎉')">🎉</button>
             <button onclick="addSticker('🚀')">🚀</button>
             <button onclick="addSticker('🌸')">🌸</button>
-            <button onclick="addSticker('🦋')">🦋</button>
         </div>
 
-        <!-- Interactive Classroom Tools -->
+        <!-- أدوات إدارة الفصل والتفاعل الجديدة -->
         <div class="tool-group">
-            <button onclick="toggleTimer()"><i data-lucide="timer"></i> Timer</button>
-            <button onclick="rollDice()"><i data-lucide="dices"></i> Dice</button>
-            <button onclick="pickStudent()"><i data-lucide="user-check"></i> Picker</button>
-            <button onclick="toggleTrafficLight()"><i data-lucide="traffic-cone"></i> Light</button>
-            <button onclick="toggleNotes()"><i data-lucide="sticky-note"></i> Notes</button>
-            <button onclick="toggleMusic()"><i data-lucide="music"></i> Music</button>
+            <button onclick="toggleNoiseMeter()"><i data-lucide="mic"></i> الضوضاء</button>
+            <button onclick="toggleSpotlight()"><i data-lucide="search"></i> المكبرة</button>
+            <button onclick="toggleRuler()"><i data-lucide="ruler"></i> مسطرة</button>
+            <button onclick="toggleGroups()"><i data-lucide="users"></i> الفرق</button>
+            <button onclick="toggleTasks()"><i data-lucide="check-square"></i> المهام</button>
+            <button onclick="toggleTimer()"><i data-lucide="timer"></i> موقت</button>
+            <button onclick="rollDice()"><i data-lucide="dices"></i> نرد</button>
+            <button onclick="pickStudent()"><i data-lucide="user-check"></i> القرعة</button>
+            <button onclick="toggleTrafficLight()"><i data-lucide="traffic-cone"></i> الإشارة</button>
+            <button onclick="toggleNotes()"><i data-lucide="sticky-note"></i> ملاحظات</button>
+            <button onclick="toggleMusic()"><i data-lucide="music"></i> موسيقى</button>
+            <button onclick="exportPDF()"><i data-lucide="file-text"></i> تصدير PDF</button>
         </div>
     </div>
 
-    <!-- Wooden Main Classroom Board Frame -->
+    <!-- Frame & Canvas -->
     <div class="wooden-frame">
         <div class="canvas-container notebook-paper" id="boardContainer">
             <canvas id="paintBoard"></canvas>
-            
-            <!-- Floating Timer -->
-            <div class="floating-box" id="timerBox" style="top:20px; right:20px;">
-                <div style="font-weight:bold; text-align:center;">⏱ Timer</div>
-                <div id="timerDisplay" style="font-size:24px; text-align:center; font-weight:700;">01:00</div>
-                <div style="display:flex; gap:4px;">
-                    <button onclick="startTimer()">Start</button>
-                    <button onclick="pauseTimer()">Pause</button>
-                    <button onclick="resetTimer()">Reset</button>
+            <div id="spotlightOverlay"></div>
+
+            <!-- Ruler Tool -->
+            <div class="ruler-element" id="rulerTool">📏 مسطرة القياس التفاعلية</div>
+
+            <!-- Noise Meter Box -->
+            <div class="floating-box" id="noiseBox" style="top:20px; left:20px; width:140px; text-align:center;">
+                <div style="font-weight:bold; font-size:12px;">🔊 مستوى الضوضاء</div>
+                <div id="noiseLevelText" style="font-size:18px; font-weight:bold; color:#10b981; margin:4px 0;">هادئ 🟢</div>
+            </div>
+
+            <!-- Group Competition Tracker -->
+            <div class="floating-box" id="groupsBox" style="bottom:20px; left:20px; width:220px;">
+                <div style="font-weight:bold; font-size:12px; text-align:center;">🏆 منافسة المجموعات</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                    <span>الأبطال: <b id="score1">0</b></span>
+                    <button onclick="addPoint(1)" style="padding:2px 6px;">+1</button>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                    <span>الفرسان: <b id="score2">0</b></span>
+                    <button onclick="addPoint(2)" style="padding:2px 6px;">+1</button>
                 </div>
             </div>
 
-            <!-- Floating Traffic Light -->
-            <div class="floating-box" id="trafficBox" style="top:20px; left:20px; align-items:center;">
-                <div id="lightRed" style="width:30px; height:30px; border-radius:50%; background:#555; cursor:pointer;" onclick="setLight('red')"></div>
-                <div id="lightYellow" style="width:30px; height:30px; border-radius:50%; background:#555; cursor:pointer;" onclick="setLight('yellow')"></div>
-                <div id="lightGreen" style="width:30px; height:30px; border-radius:50%; background:#555; cursor:pointer;" onclick="setLight('green')"></div>
+            <!-- Daily Schedule / Tasks Stickies -->
+            <div class="floating-box" id="tasksBox" style="top:80px; right:20px; width:180px;">
+                <div style="font-weight:bold; font-size:12px;">📋 خطة الحصة</div>
+                <label style="font-size:11px; display:block;"><input type="checkbox"> 1. مراجعة الدرس</label>
+                <label style="font-size:11px; display:block;"><input type="checkbox"> 2. شرح المفهوم</label>
+                <label style="font-size:11px; display:block;"><input type="checkbox"> 3. نشاط تفاعلي</label>
+                <label style="font-size:11px; display:block;"><input type="checkbox"> 4. التقييم والختام</label>
+            </div>
+
+            <!-- Floating Timer -->
+            <div class="floating-box" id="timerBox" style="top:20px; right:20px;">
+                <div style="font-weight:bold; text-align:center; font-size:12px;">⏱ المؤقت</div>
+                <div id="timerDisplay" style="font-size:20px; text-align:center; font-weight:700;">01:00</div>
+                <div style="display:flex; gap:2px;">
+                    <button onclick="startTimer()">بدء</button>
+                    <button onclick="pauseTimer()">إيقاف</button>
+                    <button onclick="resetTimer()">إعادة</button>
+                </div>
+            </div>
+
+            <!-- Traffic Light -->
+            <div class="floating-box" id="trafficBox" style="top:180px; left:20px; align-items:center;">
+                <div id="lightRed" style="width:26px; height:26px; border-radius:50%; background:#555; cursor:pointer;" onclick="setLight('red')"></div>
+                <div id="lightYellow" style="width:26px; height:26px; border-radius:50%; background:#555; cursor:pointer;" onclick="setLight('yellow')"></div>
+                <div id="lightGreen" style="width:26px; height:26px; border-radius:50%; background:#555; cursor:pointer;" onclick="setLight('green')"></div>
             </div>
 
             <!-- Teacher Notes -->
-            <div class="floating-box" id="notesBox" style="bottom:20px; right:20px; width:200px;">
-                <div style="font-weight:bold;">📋 Notes</div>
-                <textarea id="teacherNotesText" style="width:100%; height:80px; border:1px solid #ccc; border-radius:8px; padding:4px;" placeholder="Type class notes..."></textarea>
+            <div class="floating-box" id="notesBox" style="bottom:20px; right:20px; width:180px;">
+                <div style="font-weight:bold; font-size:12px;">📝 ملاحظات المعلم</div>
+                <textarea id="teacherNotesText" style="width:100%; height:70px; border:1px solid #ccc; border-radius:6px; padding:4px; font-family:inherit; font-size:11px;" placeholder="اكتب ملاحظاتك..."></textarea>
             </div>
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Student Picker Modal -->
     <div class="modal" id="studentPickerModal">
-        <h3>🎯 Random Student Picker</h3>
-        <textarea id="studentList" rows="4" placeholder="Enter student names separated by commas..." style="width:100%; border-radius:8px; padding:8px;">Alex, Emma, Liam, Olivia, Noah, Sophia</textarea>
-        <button onclick="spinStudentPicker()" style="background:#4f46e5; color:white; justify-content:center;">Pick Student</button>
-        <div id="selectedStudentResult" style="text-align:center; font-size:20px; font-weight:bold; color:#10b981; margin-top:5px;"></div>
-        <button onclick="closeModals()" style="background:#ccc; justify-content:center;">Close</button>
+        <h3>🎯 اختيار الطالب العشوائي</h3>
+        <textarea id="studentList" rows="3" placeholder="أدخل الأسماء تفصل بينها فاصلة..." style="width:100%; border-radius:8px; padding:6px; font-family:inherit;">أحمد, سارة, محمد, فاطمة, عمر, مريم</textarea>
+        <button onclick="spinStudentPicker()" style="background:#7c3aed; color:white; justify-content:center;">اختيار طالم</button>
+        <div id="selectedStudentResult" style="text-align:center; font-size:18px; font-weight:bold; color:#10b981; margin-top:4px;"></div>
+        <button onclick="closeModals()" style="background:#ccc; justify-content:center;">إغلاق</button>
     </div>
 
     <!-- DOOM Container -->
     <div id="doomContainer">
-        <header>
-            <span>👾 DOOM - Classroom Edition</span>
+        <div style="background:#222; color:#fff; padding:4px 8px; display:flex; justify-content:space-between; align-items:center;">
+            <span>👾 لعبة DOOM - سبورة بلس</span>
             <button onclick="toggleDOOM()" style="padding:2px 6px; background:#ef4444; color:white;">X</button>
-        </header>
-        <div id="dos" style="width:100%; height:calc(100% - 30px);"></div>
+        </div>
+        <div id="dos" style="width:100%; height:calc(100% - 28px);"></div>
     </div>
 
     <script>
         lucide.createIcons();
 
-        // Canvas Setup
+        // Canvas setup
         const canvas = document.getElementById('paintBoard');
         const ctx = canvas.getContext('2d');
         const container = document.getElementById('boardContainer');
@@ -340,6 +370,7 @@
         let currentColor = '#ef4444';
         let history = [];
         let historyStep = -1;
+        let startX, startY;
 
         function resizeCanvas() {
             const temp = ctx.getImageData(0,0,canvas.width, canvas.height);
@@ -347,7 +378,6 @@
             canvas.height = container.clientHeight;
             ctx.putImageData(temp,0,0);
         }
-
         window.addEventListener('resize', resizeCanvas);
         canvas.width = container.clientWidth;
         canvas.height = container.clientHeight;
@@ -363,6 +393,7 @@
             mode = newMode;
             document.querySelectorAll('.toolbar button').forEach(b => b.classList.remove('active'));
             if (newMode === 'draw') document.getElementById('btnDraw').classList.add('active');
+            if (newMode === 'smart') document.getElementById('btnSmart').classList.add('active');
             if (newMode === 'highlight') document.getElementById('btnHighlight').classList.add('active');
             if (newMode === 'erase') document.getElementById('btnErase').classList.add('active');
         }
@@ -383,6 +414,7 @@
         function startDrawing(e) {
             isDrawing = true;
             const pos = getPos(e);
+            startX = pos.x; startY = pos.y;
             ctx.beginPath();
             ctx.moveTo(pos.x, pos.y);
         }
@@ -392,28 +424,48 @@
             const pos = getPos(e);
             const size = document.getElementById('lineWidth').value;
 
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round';
 
-            if (mode === 'draw') {
+            if (mode === 'draw' || mode === 'smart') {
                 ctx.globalCompositeOperation = 'source-over';
                 ctx.strokeStyle = currentColor;
                 ctx.lineWidth = size;
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
             } else if (mode === 'highlight') {
                 ctx.globalCompositeOperation = 'source-over';
-                ctx.strokeStyle = currentColor + '55'; // Alpha transparency
+                ctx.strokeStyle = currentColor + '55';
                 ctx.lineWidth = size * 3;
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
             } else if (mode === 'erase') {
                 ctx.globalCompositeOperation = 'destination-out';
                 ctx.lineWidth = size * 4;
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
             }
-
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
         }
 
-        function stopDrawing() {
+        function stopDrawing(e) {
             if (isDrawing) {
+                const pos = getPos(e || {clientX: startX, clientY: startY});
+                if (mode === 'smart') {
+                    // Auto-shape recognition (Rectangle/Circle)
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    if (historyStep >= 0) ctx.putImageData(history[historyStep], 0, 0);
+                    ctx.strokeStyle = currentColor;
+                    ctx.lineWidth = document.getElementById('lineWidth').value;
+                    let width = pos.x - startX;
+                    let height = pos.y - startY;
+                    ctx.beginPath();
+                    if (Math.abs(width - height) < 20) {
+                        let r = Math.sqrt(width*width + height*height) / 2;
+                        ctx.arc(startX, startY, r, 0, 2 * Math.PI);
+                    } else {
+                        ctx.strokeRect(startX, startY, width, height);
+                    }
+                    ctx.stroke();
+                }
                 ctx.closePath();
                 isDrawing = false;
                 saveState();
@@ -439,15 +491,14 @@
             saveState();
         }
 
-        // Draggable Animated Reward Stickers
+        // Draggable Reward Stickers
         function addSticker(symbol) {
             const sticker = document.createElement('div');
             sticker.className = 'sticker bounce';
             sticker.innerText = symbol;
-            sticker.style.left = (container.clientWidth / 2 - 25) + 'px';
-            sticker.style.top = (container.clientHeight / 2 - 25) + 'px';
+            sticker.style.left = (container.clientWidth / 2 - 20) + 'px';
+            sticker.style.top = (container.clientHeight / 2 - 20) + 'px';
 
-            // Click bounce
             sticker.addEventListener('click', () => {
                 sticker.classList.remove('bounce');
                 void sticker.offsetWidth;
@@ -455,99 +506,122 @@
                 playSound('sparkle');
             });
 
-            // Double Click Duplicate
-            sticker.addEventListener('dblclick', (e) => {
-                e.stopPropagation();
-                addSticker(symbol);
-            });
+            sticker.addEventListener('dblclick', (e) => { e.stopPropagation(); addSticker(symbol); });
+            sticker.addEventListener('contextmenu', (e) => { e.preventDefault(); sticker.remove(); });
 
-            // Right Click Delete
-            sticker.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                sticker.remove();
-            });
-
-            // Dragging Logic
             let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
-
             sticker.addEventListener('mousedown', dragStart);
             document.addEventListener('mousemove', drag);
             document.addEventListener('mouseup', dragEnd);
 
-            sticker.addEventListener('touchstart', dragStart, {passive: false});
-            document.addEventListener('touchmove', drag, {passive: false});
-            document.addEventListener('touchend', dragEnd);
-
             function dragStart(e) {
-                initialX = (e.touches ? e.touches[0].clientX : e.clientX) - xOffset;
-                initialY = (e.touches ? e.touches[0].clientY : e.clientY) - yOffset;
+                initialX = e.clientX - xOffset; initialY = e.clientY - yOffset;
                 if (e.target === sticker) active = true;
             }
-
             function drag(e) {
                 if (active) {
                     e.preventDefault();
-                    currentX = (e.touches ? e.touches[0].clientX : e.clientX) - initialX;
-                    currentY = (e.touches ? e.touches[0].clientY : e.clientY) - initialY;
+                    currentX = e.clientX - initialX; currentY = e.clientY - initialY;
                     xOffset = currentX; yOffset = currentY;
                     sticker.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
                 }
             }
-
             function dragEnd() { active = false; }
 
             container.appendChild(sticker);
             playSound('ding');
         }
 
-        // Audio Effects Synthesizer (Web Audio API)
+        // Audio Effects Synthesizer
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(type) {
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
+            osc.connect(gain); gain.connect(audioCtx.destination);
             const now = audioCtx.currentTime;
+
             if (type === 'sparkle') {
                 osc.frequency.setValueAtTime(600, now);
                 osc.frequency.exponentialRampToValueAtTime(1200, now + 0.3);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+                gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
                 osc.start(now); osc.stop(now + 0.3);
             } else if (type === 'ding') {
                 osc.frequency.setValueAtTime(800, now);
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
                 osc.start(now); osc.stop(now + 0.5);
             } else if (type === 'bell') {
                 osc.frequency.setValueAtTime(400, now);
-                gain.gain.setValueAtTime(0.4, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+                gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
                 osc.start(now); osc.stop(now + 0.8);
             } else if (type === 'cheer' || type === 'applause') {
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(300, now);
+                osc.type = 'square'; osc.frequency.setValueAtTime(300, now);
                 osc.frequency.linearRampToValueAtTime(600, now + 0.4);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+                gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
                 osc.start(now); osc.stop(now + 0.5);
             }
         }
 
-        // Celebration Action
         function triggerCeleb(text, sound) {
             playSound(sound);
             confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-
-            // Floating Animated Text
             const ft = document.createElement('div');
-            ft.className = 'float-text';
-            ft.innerText = text;
+            ft.className = 'float-text'; ft.innerText = text;
             ft.style.left = (container.clientWidth / 2 - 80) + 'px';
             ft.style.top = (container.clientHeight / 2) + 'px';
             container.appendChild(ft);
             setTimeout(() => ft.remove(), 1500);
+        }
+
+        // Spotlight Feature
+        let spotlightActive = false;
+        function toggleSpotlight() {
+            spotlightActive = !spotlightActive;
+            const overlay = document.getElementById('spotlightOverlay');
+            overlay.style.display = spotlightActive ? 'block' : 'none';
+        }
+        container.addEventListener('mousemove', (e) => {
+            if (spotlightActive) {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                document.getElementById('spotlightOverlay').style.clipPath = `circle(100px at ${x}px ${y}px)`;
+            }
+        });
+
+        // Noise Meter Simulation
+        let noiseActive = false;
+        function toggleNoiseMeter() {
+            const box = document.getElementById('noiseBox');
+            box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+            if (box.style.display === 'flex') {
+                setInterval(() => {
+                    const levels = ['هادئ 🟢', 'معتدل 🟡', 'مرتفع 🔴'];
+                    const chosen = levels[Math.floor(Math.random() * levels.length)];
+                    document.getElementById('noiseLevelText').innerText = chosen;
+                }, 4000);
+            }
+        }
+
+        // Group Points
+        let p1 = 0, p2 = 0;
+        function toggleGroups() {
+            const box = document.getElementById('groupsBox');
+            box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+        }
+        function addPoint(group) {
+            if (group === 1) { p1++; document.getElementById('score1').innerText = p1; }
+            else { p2++; document.getElementById('score2').innerText = p2; }
+            playSound('ding');
+        }
+
+        // Tasks & Ruler
+        function toggleTasks() {
+            const box = document.getElementById('tasksBox');
+            box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
+        }
+        function toggleRuler() {
+            const r = document.getElementById('rulerTool');
+            r.style.display = r.style.display === 'block' ? 'none' : 'block';
         }
 
         // Timer Logic
@@ -565,24 +639,19 @@
                     let s = String(timerVal % 60).padStart(2, '0');
                     document.getElementById('timerDisplay').innerText = `${m}:${s}`;
                 } else {
-                    pauseTimer();
-                    playSound('bell');
+                    pauseTimer(); playSound('bell');
                 }
             }, 1000);
         }
         function pauseTimer() { clearInterval(timerInterval); timerInterval = null; }
         function resetTimer() { pauseTimer(); timerVal = 60; document.getElementById('timerDisplay').innerText = "01:00"; }
 
-        // Dice
+        // Tools & Pickers
         function rollDice() {
             const diceVal = Math.floor(Math.random() * 6) + 1;
-            triggerCeleb(`🎲 Rolled: ${diceVal}`, 'ding');
+            triggerCeleb(`🎲 النرد: ${diceVal}`, 'ding');
         }
-
-        // Student Picker
-        function pickStudent() {
-            document.getElementById('studentPickerModal').style.display = 'flex';
-        }
+        function pickStudent() { document.getElementById('studentPickerModal').style.display = 'flex'; }
         function spinStudentPicker() {
             const list = document.getElementById('studentList').value.split(',').map(s => s.trim()).filter(Boolean);
             if (list.length > 0) {
@@ -592,7 +661,6 @@
             }
         }
 
-        // Classroom Tools
         function toggleTrafficLight() {
             const box = document.getElementById('trafficBox');
             box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
@@ -607,17 +675,21 @@
             box.style.display = box.style.display === 'flex' ? 'none' : 'flex';
         }
 
-        // Background Music
         let bgAudio = null;
         function toggleMusic() {
             if (!bgAudio) {
                 bgAudio = new Audio('https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=playful-learning-113884.mp3');
-                bgAudio.loop = true;
-                bgAudio.play();
+                bgAudio.loop = true; bgAudio.play();
             } else {
-                if (bgAudio.paused) bgAudio.play();
-                else bgAudio.pause();
+                if (bgAudio.paused) bgAudio.play(); else bgAudio.pause();
             }
+        }
+
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('l', 'px', [canvas.width, canvas.height]);
+            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save(`PlusBoard-Lesson.pdf`);
         }
 
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
@@ -627,7 +699,7 @@
             else document.exitFullscreen();
         }
 
-        // DOOM Integration via JS-DOS
+        // DOOM Integration
         let dosInstance = null;
         function toggleDOOM() {
             const doomBox = document.getElementById('doomContainer');
