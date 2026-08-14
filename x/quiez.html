@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار جدول الضرب</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+        .status {
+            font-size: 16px;
+            color: #7f8c8d;
+            background: #ecf0f1;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .question-box {
+            font-size: 55px;
+            color: #2980b9;
+            margin: 30px 0;
+            font-weight: bold;
+            direction: ltr; /* لضمان ظهور الأرقام بشكل صحيح من اليسار لليمين */
+        }
+        button {
+            font-size: 18px;
+            padding: 12px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .btn-spin {
+            background-color: #f39c12;
+            width: 100%;
+            font-size: 22px;
+            padding: 15px;
+        }
+        .btn-spin:hover { background-color: #e67e22; }
+        
+        .controls-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .btn-correct { background-color: #27ae60; flex: 1; }
+        .btn-correct:hover { background-color: #2ecc71; }
+        
+        .btn-wrong { background-color: #c0392b; flex: 1; }
+        .btn-wrong:hover { background-color: #e74c3c; }
+        
+        .btn-extra { background-color: #3498db; width: 100%; margin-bottom: 10px; }
+        .btn-extra:hover { background-color: #2980b9; }
+        
+        .btn-new { background-color: #8e44ad; width: 100%; }
+        .btn-new:hover { background-color: #9b59b6; }
+        
+        #teacher-controls, #end-controls {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>اختبار جدول الضرب</h1>
+    
+    <div class="status">
+        السؤال: <span id="q-num">1</span> / <span id="max-q">5</span> <br>
+        الإجابات الصحيحة: <span id="score" style="color:#27ae60;">0</span>
+    </div>
+
+    <div class="question-box">
+        <span id="num1">؟</span> × <span id="num2">؟</span> =
+    </div>
+
+    <button id="spin-btn" class="btn-spin" onclick="spin()">لف (سؤال جديد)</button>
+
+    <div id="teacher-controls">
+        <p style="color: #34495e; font-weight: bold; margin-bottom: 5px;">تقييم المعلم للإجابة:</p>
+        <div class="controls-group">
+            <button class="btn-correct" onclick="answer(true)">إجابة صحيحة ✔️</button>
+            <button class="btn-wrong" onclick="answer(false)">إجابة خاطئة ❌</button>
+        </div>
+    </div>
+
+    <div id="end-controls">
+        <button class="btn-extra" onclick="extraQuestions()">أسئلة إضافية لهذا الطالب</button>
+        <button class="btn-new" onclick="newStudent()">اختبار طالب جديد</button>
+    </div>
+</div>
+
+<script>
+    const allowedTables = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    let questionCount = 0;
+    let score = 0;
+    let currentLimit = 5;
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function spin() {
+        // اختيار رقم عشوائي من الجداول المحددة
+        const num1 = allowedTables[Math.floor(Math.random() * allowedTables.length)];
+        // اختيار الرقم المضروب فيه (من 1 إلى 12)
+        const num2 = getRandomInt(1, 12);
+
+        document.getElementById('num1').innerText = num1;
+        document.getElementById('num2').innerText = num2;
+
+        // إخفاء زر اللف وإظهار أزرار المعلم
+        document.getElementById('spin-btn').style.display = 'none';
+        document.getElementById('teacher-controls').style.display = 'block';
+    }
+
+    function answer(isCorrect) {
+        questionCount++;
+        if (isCorrect) {
+            score++;
+        }
+
+        document.getElementById('q-num').innerText = Math.min(questionCount + 1, currentLimit);
+        document.getElementById('score').innerText = score;
+
+        document.getElementById('teacher-controls').style.display = 'none';
+
+        // التحقق مما إذا كان الطالب أنهى الأسئلة المخصصة له
+        if (questionCount >= currentLimit) {
+            document.getElementById('end-controls').style.display = 'block';
+            document.getElementById('q-num').innerText = currentLimit;
+        } else {
+            resetQuestionUI();
+        }
+    }
+
+    function extraQuestions() {
+        currentLimit += 5; // إضافة 5 أسئلة جديدة
+        document.getElementById('max-q').innerText = currentLimit;
+        document.getElementById('end-controls').style.display = 'none';
+        resetQuestionUI();
+    }
+
+    function newStudent() {
+        questionCount = 0;
+        score = 0;
+        currentLimit = 5;
+        
+        document.getElementById('max-q').innerText = currentLimit;
+        document.getElementById('q-num').innerText = 1;
+        document.getElementById('score').innerText = score;
+        
+        document.getElementById('end-controls').style.display = 'none';
+        resetQuestionUI();
+    }
+
+    function resetQuestionUI() {
+        document.getElementById('spin-btn').style.display = 'block';
+        document.getElementById('num1').innerText = '؟';
+        document.getElementById('num2').innerText = '؟';
+    }
+</script>
+
+</body>
+</html>
