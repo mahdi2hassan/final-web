@@ -4,115 +4,164 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>اختبار جدول الضرب</title>
+    <!-- استدعاء خط Cairo من جوجل -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
+            font-family: 'Cairo', sans-serif;
+            /* خلفية متدرجة عصرية */
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .container {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             text-align: center;
-            max-width: 400px;
-            width: 90%;
+            max-width: 450px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
         h1 {
             color: #2c3e50;
-            font-size: 26px;
-            margin-bottom: 20px;
+            font-size: 32px;
+            font-weight: 900;
+            margin-top: 0;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
         }
-        .status {
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
             font-size: 16px;
-            color: #7f8c8d;
-            background: #ecf0f1;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: bold;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-weight: 700;
+            border: 1px solid #e9ecef;
+            color: #495057;
+        }
+        .score-text {
+            color: #27ae60;
         }
         .question-box {
-            font-size: 55px;
-            color: #2980b9;
-            margin: 30px 0;
-            font-weight: bold;
-            direction: ltr; /* لضمان ظهور الأرقام بشكل صحيح من اليسار لليمين */
+            font-size: 60px;
+            color: #2c3e50;
+            margin: 40px 0;
+            font-weight: 900;
+            direction: ltr;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        .number-card {
+            background: #fff;
+            border: 3px dashed #cbd5e1;
+            border-radius: 15px;
+            min-width: 80px;
+            padding: 10px;
+            color: #3b82f6;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+        }
+        .math-sign {
+            color: #94a3b8;
+            font-size: 50px;
         }
         button {
+            font-family: 'Cairo', sans-serif;
             font-size: 18px;
-            padding: 12px 20px;
-            margin: 5px;
+            padding: 15px 20px;
+            margin: 8px 0;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             color: white;
-            font-weight: bold;
-            transition: 0.2s;
+            font-weight: 700;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 0px rgba(0,0,0,0.2);
+        }
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px rgba(0,0,0,0.2);
         }
         .btn-spin {
-            background-color: #f39c12;
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
             width: 100%;
-            font-size: 22px;
-            padding: 15px;
+            font-size: 24px;
+            padding: 18px;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
-        .btn-spin:hover { background-color: #e67e22; }
+        .btn-spin:hover { filter: brightness(1.1); }
         
         .controls-group {
             display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
+            gap: 15px;
+            margin-top: 15px;
         }
-        .btn-correct { background-color: #27ae60; flex: 1; }
-        .btn-correct:hover { background-color: #2ecc71; }
+        .btn-correct { 
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); 
+            flex: 1; 
+            color: #166534;
+        }
+        .btn-wrong { 
+            background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%); 
+            flex: 1; 
+        }
         
-        .btn-wrong { background-color: #c0392b; flex: 1; }
-        .btn-wrong:hover { background-color: #e74c3c; }
+        .btn-extra { background-color: #3b82f6; width: 100%; box-shadow: 0 4px 0px #2563eb;}
+        .btn-new { background-color: #8b5cf6; width: 100%; box-shadow: 0 4px 0px #7c3aed;}
         
-        .btn-extra { background-color: #3498db; width: 100%; margin-bottom: 10px; }
-        .btn-extra:hover { background-color: #2980b9; }
+        #teacher-controls, #end-controls { display: none; }
         
-        .btn-new { background-color: #8e44ad; width: 100%; }
-        .btn-new:hover { background-color: #9b59b6; }
-        
-        #teacher-controls, #end-controls {
-            display: none;
+        .teacher-title {
+            color: #64748b;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>اختبار جدول الضرب</h1>
+    <h1>🎯 تحدي جدول الضرب</h1>
     
-    <div class="status">
-        السؤال: <span id="q-num">1</span> / <span id="max-q">5</span> <br>
-        الإجابات الصحيحة: <span id="score" style="color:#27ae60;">0</span>
+    <div class="status-bar">
+        <div>السؤال: <span id="q-num">1</span> / <span id="max-q">5</span></div>
+        <div class="score-text">الإجابات الصحيحة: <span id="score">0</span></div>
     </div>
 
     <div class="question-box">
-        <span id="num1">؟</span> × <span id="num2">؟</span> =
+        <div class="number-card" id="num1">؟</div>
+        <div class="math-sign">×</div>
+        <div class="number-card" id="num2">؟</div>
     </div>
 
-    <button id="spin-btn" class="btn-spin" onclick="spin()">لف (سؤال جديد)</button>
+    <button id="spin-btn" class="btn-spin" onclick="startSpin()">🎲 لف العجلة!</button>
 
     <div id="teacher-controls">
-        <p style="color: #34495e; font-weight: bold; margin-bottom: 5px;">تقييم المعلم للإجابة:</p>
+        <div class="teacher-title">تقييم المعلم:</div>
         <div class="controls-group">
-            <button class="btn-correct" onclick="answer(true)">إجابة صحيحة ✔️</button>
-            <button class="btn-wrong" onclick="answer(false)">إجابة خاطئة ❌</button>
+            <button class="btn-correct" onclick="answer(true)">✔️ صحيحة</button>
+            <button class="btn-wrong" onclick="answer(false)">❌ خاطئة</button>
         </div>
     </div>
 
     <div id="end-controls">
-        <button class="btn-extra" onclick="extraQuestions()">أسئلة إضافية لهذا الطالب</button>
-        <button class="btn-new" onclick="newStudent()">اختبار طالب جديد</button>
+        <button class="btn-extra" onclick="extraQuestions()">➕ أسئلة إضافية للطالب</button>
+        <button class="btn-new" onclick="newStudent()">👤 اختبار طالب جديد</button>
     </div>
 </div>
 
@@ -121,23 +170,42 @@
     let questionCount = 0;
     let score = 0;
     let currentLimit = 5;
+    let isSpinning = false;
 
     function getRandomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    function spin() {
-        // اختيار رقم عشوائي من الجداول المحددة
+    // تأثير الدوران العشوائي السريع للأرقام
+    function startSpin() {
+        if(isSpinning) return;
+        isSpinning = true;
+        
+        document.getElementById('spin-btn').style.display = 'none';
+        
+        let spinCount = 0;
+        const spinInterval = setInterval(() => {
+            document.getElementById('num1').innerText = allowedTables[Math.floor(Math.random() * allowedTables.length)];
+            document.getElementById('num2').innerText = getRandomInt(1, 12);
+            spinCount++;
+            
+            // التوقف بعد 15 حركة سريعة وإظهار النتيجة النهائية
+            if(spinCount > 15) {
+                clearInterval(spinInterval);
+                setFinalNumbers();
+            }
+        }, 50); // سرعة التبديل بين الأرقام
+    }
+
+    function setFinalNumbers() {
         const num1 = allowedTables[Math.floor(Math.random() * allowedTables.length)];
-        // اختيار الرقم المضروب فيه (من 1 إلى 12)
         const num2 = getRandomInt(1, 12);
 
         document.getElementById('num1').innerText = num1;
         document.getElementById('num2').innerText = num2;
-
-        // إخفاء زر اللف وإظهار أزرار المعلم
-        document.getElementById('spin-btn').style.display = 'none';
+        
         document.getElementById('teacher-controls').style.display = 'block';
+        isSpinning = false;
     }
 
     function answer(isCorrect) {
@@ -148,10 +216,8 @@
 
         document.getElementById('q-num').innerText = Math.min(questionCount + 1, currentLimit);
         document.getElementById('score').innerText = score;
-
         document.getElementById('teacher-controls').style.display = 'none';
 
-        // التحقق مما إذا كان الطالب أنهى الأسئلة المخصصة له
         if (questionCount >= currentLimit) {
             document.getElementById('end-controls').style.display = 'block';
             document.getElementById('q-num').innerText = currentLimit;
@@ -161,7 +227,7 @@
     }
 
     function extraQuestions() {
-        currentLimit += 5; // إضافة 5 أسئلة جديدة
+        currentLimit += 5;
         document.getElementById('max-q').innerText = currentLimit;
         document.getElementById('end-controls').style.display = 'none';
         resetQuestionUI();
