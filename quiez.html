@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> بلس - مهدي حسن</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .main-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 650px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        h1 { color: #2c3e50; font-size: 28px; font-weight: 900; margin-top: 0; margin-bottom: 20px; }
+        
+        /* نظام التبويبات */
+        .tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background-color: #e2e8f0; color: #475569; padding: 10px 15px; border-radius: 10px; font-size: 15px; box-shadow: none; flex: 1; min-width: 100px; font-weight: bold; border: none; cursor: pointer; transition: 0.2s;}
+        .tab-btn.active { background: #3b82f6; color: white; box-shadow: 0 4px 0px #2563eb; }
+        .tab-content { display: none; animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* العناصر المشتركة */
+        button { font-family: 'Cairo', sans-serif; font-size: 16px; padding: 12px 18px; margin: 5px 0; border: none; border-radius: 12px; cursor: pointer; color: white; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 0px rgba(0,0,0,0.2); }
+        button:active { transform: translateY(4px); box-shadow: 0 0px 0px rgba(0,0,0,0.2); }
+        .btn-spin { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); width: 100%; font-size: 20px; color: #fff; margin-top: 10px;}
+        
+        .display-box { font-size: 40px; color: #2c3e50; margin: 20px 0; font-weight: 900; min-height: 120px; display: flex; justify-content: center; align-items: center; background: #f8fafc; border: 3px dashed #cbd5e1; border-radius: 15px; padding: 20px; position: relative; overflow: hidden; }
+        
+        /* شريط الوقت */
+        .timer-container { width: 100%; background: #e2e8f0; border-radius: 10px; height: 10px; margin-bottom: 15px; overflow: hidden; display: none;}
+        .timer-bar { height: 100%; background: #ef4444; width: 100%; transition: width 0.1s linear; }
+
+        /* لعبة الضرب */
+        .status-bar { display: flex; justify-content: space-between; font-size: 15px; background: #f8f9fa; padding: 12px; border-radius: 10px; margin-bottom: 15px; font-weight: 700; border: 1px solid #e9ecef; }
+        .question-box-math { font-size: 50px; color: #2c3e50; margin: 20px 0; font-weight: 900; direction: ltr; display: flex; justify-content: center; align-items: center; gap: 15px; }
+        .number-card { background: #fff; border: 3px dashed #cbd5e1; border-radius: 15px; min-width: 60px; padding: 10px; color: #3b82f6; }
+        .controls-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-correct { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); flex: 1; color: #166534; }
+        .btn-wrong { background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%); flex: 1; }
+        #teacher-controls, #end-controls { display: none; }
+
+        /* العوامل الأولية */
+        .prime-bubbles { display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
+        .prime-btn { background: #8b5cf6; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; display: flex; justify-content: center; align-items: center; box-shadow: 0 5px 0px #7c3aed; }
+        .fact-target { font-size: 20px; color: #64748b; margin-bottom: -15px;}
+
+        /* السبورة التفاعلية */
+        canvas { position: absolute; top: 0; left: 0; z-index: 10; cursor: crosshair; display: none; }
+        .tools-bar { display: none; gap: 10px; justify-content: center; margin-top: 10px; }
+        
+        /* لوحة الشرف */
+        .leaderboard-list { text-align: right; margin-top: 20px; max-height: 250px; overflow-y: auto; }
+        .leaderboard-item { background: #f1f5f9; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; font-weight: bold; border-right: 5px solid #f59e0b; }
+        
+        input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #cbd5e1; font-family: inherit; font-size: 15px; box-sizing: border-box; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <h1>مستر مهدي</h1>
+    
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('tab-math', this)">✖️ الضرب</button>
+        <button class="tab-btn" onclick="openTab('tab-factors', this)">🔢 العوامل</button>
+        <button class="tab-btn" onclick="openTab('tab-random', this)">❓ عشوائي</button>
+        <button class="tab-btn" onclick="openTab('tab-names', this)">🎡 العجلة</button>
+        <button class="tab-btn" onclick="openTab('tab-leaderboard', this)">🏆 لوحة الشرف</button>
+    </div>
+
+    <!-- 1. جدول الضرب -->
+    <div id="tab-math" class="tab-content active">
+        <div class="timer-container" id="timer-math-container"><div class="timer-bar" id="timer-math"></div></div>
+        <div class="status-bar">
+            <div>السؤال: <span id="q-num">1</span> / <span id="max-q">5</span></div>
+            <div style="color: #27ae60;">صح: <span id="score">0</span></div>
+        </div>
+        <div class="question-box-math">
+            <div class="number-card" id="num1">؟</div><div style="color: #94a3b8;">×</div><div class="number-card" id="num2">؟</div>
+        </div>
+        <button id="spin-btn-math" class="btn-spin" onclick="startSpinMath()">🎲 سؤال جديد!</button>
+        
+        <div id="teacher-controls">
+            <div class="controls-group">
+                <button class="btn-correct" onclick="answer(true)">✔️ صح</button>
+                <button class="btn-wrong" onclick="answer(false)">❌ خطأ</button>
+            </div>
+        </div>
+        <div id="end-controls">
+            <button style="background: #3b82f6; width:100%" onclick="extraQuestions()">➕ إضافي</button>
+            <button style="background: #8b5cf6; width:100%" onclick="newStudent()">👤 طالب جديد</button>
+        </div>
+    </div>
+
+    <!-- 2. العوامل الأولية -->
+    <div id="tab-factors" class="tab-content">
+        <div class="timer-container" id="timer-fact-container"><div class="timer-bar" id="timer-fact"></div></div>
+        <p class="fact-target">حلل الرقم التالي لعوامله الأولية:</p>
+        <div class="display-box" id="fact-display">؟</div>
+        <button id="btn-start-fact" class="btn-spin" onclick="startFactorGame()">🚀 ابدأ التحدي</button>
+        
+        <div id="prime-controls" style="display: none;">
+            <p style="margin-bottom: 5px; color:#64748b; font-weight:bold;">اقسم على:</p>
+            <div class="prime-bubbles">
+                <button class="prime-btn" onclick="divideBy(2)">2</button>
+                <button class="prime-btn" onclick="divideBy(3)">3</button>
+                <button class="prime-btn" onclick="divideBy(5)">5</button>
+                <button class="prime-btn" onclick="divideBy(7)">7</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. الأسئلة العشوائية (مع السبورة) -->
+    <div id="tab-random" class="tab-content">
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="qText" placeholder="اكتب سؤالاً..." style="flex:1;">
+            <button style="background:#10b981; margin:0;" onclick="addTextQuestion()">إضافة</button>
+        </div>
+        <input type="file" id="qImage" accept="image/*" multiple onchange="addImageQuestions(event)">
+        
+        <div id="randomDisplay" class="display-box" style="font-size: 24px;">
+            سيظهر السؤال هنا
+            <canvas id="whiteboard"></canvas>
+        </div>
+        
+        <div class="tools-bar" id="draw-tools">
+            <button style="background: #ef4444;" onclick="clearCanvas()">🗑️ مسح السبورة</button>
+            <button style="background: #3b82f6;" onclick="toggleDraw()">✏️ إغلاق القلم</button>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn-spin" onclick="showRandomQuestion()" style="flex:2">🎯 سحب عشوائي</button>
+            <button style="background: #8b5cf6; margin-top:10px; flex:1;" onclick="toggleDraw()">🖍️ تفعيل القلم</button>
+        </div>
+    </div>
+
+    <!-- 4. عجلة الأسماء -->
+    <div id="tab-names" class="tab-content">
+        <textarea id="namesList" placeholder="أدخل الأسماء (اسم في كل سطر)..."></textarea>
+        <div id="nameDisplay" class="display-box" style="font-size: 30px;">الاسم هنا</div>
+        <button class="btn-spin" onclick="spinName()">🎡 سحب اسم!</button>
+    </div>
+
+    <!-- 5. لوحة الشرف -->
+    <div id="tab-leaderboard" class="tab-content">
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="studentName" placeholder="اسم الطالب" style="flex:2;">
+            <input type="number" id="studentScore" placeholder="النقاط" style="flex:1;">
+        </div>
+        <button style="background: #f59e0b; width:100%; box-shadow: 0 4px 0px #d97706;" onclick="addScore()">🌟 إضافة للقائمة</button>
+        <div class="leaderboard-list" id="leaderList">
+            <!-- سيتم إضافة الأسماء هنا -->
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- 1. إعدادات الصوت (Web Audio API) ---
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+        if(!audioCtx) audioCtx = new AudioContext();
+        if(audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function playTone(freq, type, duration) {
+        if(!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.type = type; osc.frequency.value = freq;
+        osc.connect(gainNode); gainNode.connect(audioCtx.destination);
+        osc.start();
+        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+        osc.stop(audioCtx.currentTime + duration);
+    }
+    const soundTick = () => playTone(600, 'sine', 0.05);
+    const soundSuccess = () => { playTone(523.25, 'sine', 0.1); setTimeout(()=>playTone(659.25, 'sine', 0.2), 100); };
+    const soundWrong = () => playTone(150, 'sawtooth', 0.3);
+
+    // --- التنقل بين التبويبات ---
+    function openTab(tabId, btn) {
+        initAudio(); // تهيئة الصوت عند التفاعل الأول
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+        if(tabId === 'tab-random' && isDrawingEnabled) resizeCanvas();
+    }
+
+    // --- المؤقت الزمني ---
+    let timerInterval;
+    function startTimer(durationSeconds, barElementId, onTimeout) {
+        clearInterval(timerInterval);
+        document.getElementById(barElementId + '-container').style.display = 'block';
+        const bar = document.getElementById(barElementId);
+        let timeLeft = durationSeconds;
+        bar.style.width = '100%';
+        
+        timerInterval = setInterval(() => {
+            timeLeft -= 0.1;
+            bar.style.width = (timeLeft / durationSeconds * 100) + '%';
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                soundWrong();
+                onTimeout();
+            }
+        }, 100);
+    }
+    function stopTimer(barElementId) {
+        clearInterval(timerInterval);
+        document.getElementById(barElementId + '-container').style.display = 'none';
+    }
+
+    // --- اللعبة 1: جدول الضرب ---
+    const allowedTables = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    let qCount = 0, score = 0, currentLimit = 5;
+
+    function startSpinMath() {
+        initAudio();
+        document.getElementById('spin-btn-math').style.display = 'none';
+        let spins = 0;
+        const interval = setInterval(() => {
+            document.getElementById('num1').innerText = allowedTables[Math.floor(Math.random() * allowedTables.length)];
+            document.getElementById('num2').innerText = Math.floor(Math.random() * 12) + 1;
+            soundTick();
+            spins++;
+            if(spins > 10) {
+                clearInterval(interval);
+                document.getElementById('teacher-controls').style.display = 'block';
+                startTimer(10, 'timer-math', () => answer(false)); // 10 ثواني للحل
+            }
+        }, 80);
+    }
+
+    function answer(isCorrect) {
+        stopTimer('timer-math');
+        qCount++;
+        if (isCorrect) { score++; soundSuccess(); } else { soundWrong(); }
+        
+        document.getElementById('q-num').innerText = Math.min(qCount + 1, currentLimit);
+        document.getElementById('score').innerText = score;
+        document.getElementById('teacher-controls').style.display = 'none';
+
+        if (qCount >= currentLimit) {
+            document.getElementById('end-controls').style.display = 'block';
+            document.getElementById('q-num').innerText = currentLimit;
+        } else { resetMathUI(); }
+    }
+    function extraQuestions() { currentLimit += 5; document.getElementById('max-q').innerText = currentLimit; resetMathUI(true); }
+    function newStudent() { qCount = score = 0; currentLimit = 5; document.getElementById('max-q').innerText = currentLimit; document.getElementById('q-num').innerText = 1; document.getElementById('score').innerText = 0; resetMathUI(true); }
+    function resetMathUI(hideEnd = false) { document.getElementById('spin-btn-math').style.display = 'block'; document.getElementById('num1').innerText = '؟'; document.getElementById('num2').innerText = '؟'; if(hideEnd) document.getElementById('end-controls').style.display = 'none'; }
+
+    // --- اللعبة 2: العوامل الأولية ---
+    let currentFactorNum = 0;
+    const compositeNumbers = [12, 18, 20, 24, 28, 30, 36, 40, 42, 45, 48, 50, 56, 60, 72];
+    
+    function startFactorGame() {
+        initAudio();
+        currentFactorNum = compositeNumbers[Math.floor(Math.random() * compositeNumbers.length)];
+        document.getElementById('fact-display').innerText = currentFactorNum;
+        document.getElementById('btn-start-fact').style.display = 'none';
+        document.getElementById('prime-controls').style.display = 'block';
+        startTimer(30, 'timer-fact', () => {
+            document.getElementById('fact-display').innerText = 'انتهى الوقت!';
+            setTimeout(resetFactorGame, 2000);
+        }); // 30 ثانية
+    }
+
+    function divideBy(prime) {
+        if(currentFactorNum % prime === 0) {
+            currentFactorNum /= prime;
+            document.getElementById('fact-display').innerText = currentFactorNum;
+            soundTick();
+            if(currentFactorNum === 1) {
+                stopTimer('timer-fact');
+                soundSuccess();
+                document.getElementById('fact-display').innerText = '🎉 ممتاز!';
+                setTimeout(resetFactorGame, 2000);
+            }
+        } else {
+            soundWrong(); // اختار رقم غلط
+            document.getElementById('fact-display').style.color = '#ef4444';
+            setTimeout(()=> document.getElementById('fact-display').style.color = '#2c3e50', 500);
+        }
+    }
+    function resetFactorGame() {
+        document.getElementById('fact-display').innerText = '؟';
+        document.getElementById('btn-start-fact').style.display = 'block';
+        document.getElementById('prime-controls').style.display = 'none';
+    }
+
+    // --- اللعبة 3: الأسئلة والسبورة ---
+    let questionsPool = [];
+    function addTextQuestion() {
+        const txt = document.getElementById('qText').value;
+        if(txt) { questionsPool.push({type: 'text', content: txt}); document.getElementById('qText').value=''; }
+    }
+    function addImageQuestions(e) {
+        const files = e.target.files;
+        for(let f of files) {
+            const r = new FileReader();
+            r.onload = ev => questionsPool.push({type: 'image', content: ev.target.result});
+            r.readAsDataURL(f);
+        }
+    }
+    function showRandomQuestion() {
+        if(!questionsPool.length) return alert('أضف أسئلة أولاً!');
+        initAudio();
+        const display = document.getElementById('randomDisplay');
+        let spins = 0;
+        const interval = setInterval(() => {
+            display.innerText = '⏳...'; soundTick(); spins++;
+            if(spins > 8) {
+                clearInterval(interval);
+                const q = questionsPool[Math.floor(Math.random() * questionsPool.length)];
+                if(q.type === 'text') display.innerHTML = q.content + '<canvas id="whiteboard"></canvas>';
+                else display.innerHTML = `<img src="${q.content}" style="max-height:200px; border-radius:10px;"><canvas id="whiteboard"></canvas>`;
+                setupCanvas(); // إعادة ربط الكانفاس بعد تغيير المحتوى
+                if(isDrawingEnabled) resizeCanvas();
+            }
+        }, 100);
+    }
+
+    // --- السبورة (Canvas) ---
+    let canvas, ctx;
+    let isDrawing = false;
+    let isDrawingEnabled = false;
+
+    function setupCanvas() {
+        canvas = document.getElementById('whiteboard');
+        if(!canvas) return;
+        ctx = canvas.getContext('2d');
+        
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+        
+        // لدعم اللمس في الموبايل
+        canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); startPosition(e.touches[0]); });
+        canvas.addEventListener('touchend', endPosition);
+        canvas.addEventListener('touchmove', (e)=>{ e.preventDefault(); draw(e.touches[0]); });
+    }
+
+    function toggleDraw() {
+        if(!canvas) setupCanvas();
+        isDrawingEnabled = !isDrawingEnabled;
+        if(isDrawingEnabled) {
+            resizeCanvas();
+            canvas.style.display = 'block';
+            document.getElementById('draw-tools').style.display = 'flex';
+        } else {
+            canvas.style.display = 'none';
+            document.getElementById('draw-tools').style.display = 'none';
+        }
+    }
+    function resizeCanvas() {
+        const box = document.getElementById('randomDisplay');
+        canvas.width = box.offsetWidth;
+        canvas.height = box.offsetHeight;
+        ctx.strokeStyle = '#ef4444'; // لون القلم أحمر
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+    }
+    function startPosition(e) { isDrawing = true; draw(e); }
+    function endPosition() { isDrawing = false; ctx.beginPath(); }
+    function draw(e) {
+        if (!isDrawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX || e.pageX) - rect.left;
+        const y = (e.clientY || e.pageY) - rect.top;
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+    }
+    function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+    // --- اللعبة 4: عجلة الأسماء ---
+    function spinName() {
+        const names = document.getElementById('namesList').value.split('\n').filter(n=>n.trim());
+        if(!names.length) return alert('أدخل الأسماء أولاً!');
+        initAudio();
+        let spins = 0;
+        const display = document.getElementById('nameDisplay');
+        const interval = setInterval(() => {
+            display.innerText = names[Math.floor(Math.random() * names.length)];
+            soundTick(); spins++;
+            if(spins > 15) {
+                clearInterval(interval); soundSuccess();
+                display.style.color = '#e11d48';
+                setTimeout(()=> display.style.color = '#2c3e50', 1500);
+            }
+        }, 80);
+    }
+
+    // --- اللعبة 5: لوحة الشرف ---
+    let leaderboard = [];
+    function addScore() {
+        const name = document.getElementById('studentName').value.trim();
+        const score = parseInt(document.getElementById('studentScore').value);
+        if(name && !isNaN(score)) {
+            leaderboard.push({name, score});
+            leaderboard.sort((a, b) => b.score - a.score); // ترتيب تنازلي
+            renderLeaderboard();
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentScore').value = '';
+            soundSuccess();
+        }
+    }
+    function renderLeaderboard() {
+        const list = document.getElementById('leaderList');
+        list.innerHTML = '';
+        const medals = ['🥇', '🥈', '🥉'];
+        leaderboard.forEach((student, index) => {
+            const medal = index < 3 ? medals[index] : (index + 1) + '- ';
+            list.innerHTML += `<div class="leaderboard-item">
+                <span>${medal} ${student.name}</span>
+                <span style="color: #2563eb;">${student.score} نقطة</span>
+            </div>`;
+        });
+    }
+
+    // تشغيل مبدئي للكانفاس
+    setupCanvas();
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>امتحانك بلس - المنصة الشاملة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .main-container { background-color: rgba(255, 255, 255, 0.95); padding: 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); text-align: center; max-width: 650px; width: 100%; border: 1px solid rgba(255, 255, 255, 0.5); }
+        h1 { color: #2c3e50; font-size: 28px; font-weight: 900; margin-top: 0; margin-bottom: 20px; }
+        
+        /* نظام التبويبات */
+        .tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background-color: #e2e8f0; color: #475569; padding: 10px 15px; border-radius: 10px; font-size: 15px; box-shadow: none; flex: 1; min-width: 100px; font-weight: bold; border: none; cursor: pointer; transition: 0.2s;}
+        .tab-btn.active { background: #3b82f6; color: white; box-shadow: 0 4px 0px #2563eb; }
+        .tab-content { display: none; animation: fadeIn 0.4s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* العناصر المشتركة */
+        button { font-family: 'Cairo', sans-serif; font-size: 16px; padding: 12px 18px; margin: 5px 0; border: none; border-radius: 12px; cursor: pointer; color: white; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 0px rgba(0,0,0,0.2); }
+        button:active { transform: translateY(4px); box-shadow: 0 0px 0px rgba(0,0,0,0.2); }
+        .btn-spin { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); width: 100%; font-size: 20px; color: #fff; margin-top: 10px;}
+        .display-box { font-size: 40px; color: #2c3e50; margin: 20px 0; font-weight: 900; min-height: 120px; display: flex; justify-content: center; align-items: center; background: #f8fafc; border: 3px dashed #cbd5e1; border-radius: 15px; padding: 20px; position: relative; overflow: hidden; }
+        
+        .timer-container { width: 100%; background: #e2e8f0; border-radius: 10px; height: 10px; margin-bottom: 15px; overflow: hidden; display: none;}
+        .timer-bar { height: 100%; background: #ef4444; width: 100%; transition: width 0.1s linear; }
+
+        /* لعبة الضرب */
+        .status-bar { display: flex; justify-content: space-between; font-size: 15px; background: #f8f9fa; padding: 12px; border-radius: 10px; margin-bottom: 15px; font-weight: 700; border: 1px solid #e9ecef; }
+        .question-box-math { font-size: 50px; color: #2c3e50; margin: 20px 0; font-weight: 900; direction: ltr; display: flex; justify-content: center; align-items: center; gap: 15px; }
+        .number-card { background: #fff; border: 3px dashed #cbd5e1; border-radius: 15px; min-width: 60px; padding: 10px; color: #3b82f6; }
+        .controls-group { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-correct { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); flex: 1; color: #166534; }
+        .btn-wrong { background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%); flex: 1; }
+        #teacher-controls, #end-controls { display: none; }
+
+        /* العوامل الأولية */
+        .prime-bubbles { display: flex; justify-content: center; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
+        .prime-btn { background: #8b5cf6; border-radius: 50%; width: 60px; height: 60px; font-size: 24px; display: flex; justify-content: center; align-items: center; box-shadow: 0 5px 0px #7c3aed; }
+        
+        /* السبورة */
+        canvas#whiteboard { position: absolute; top: 0; left: 0; z-index: 10; cursor: crosshair; display: none; }
+        .tools-bar { display: none; gap: 10px; justify-content: center; margin-top: 10px; }
+        
+        /* عجلة الأسماء الحقيقية */
+        .wheel-wrapper { position: relative; width: 320px; height: 320px; margin: 20px auto; }
+        .wheel-pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #ef4444; z-index: 10; filter: drop-shadow(0 3px 2px rgba(0,0,0,0.3)); }
+        #wheelCanvas { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .center-dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: white; border-radius: 50%; z-index: 5; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 4px solid #333;}
+        
+        /* لوحة الشرف */
+        .leaderboard-list { text-align: right; margin-top: 20px; max-height: 250px; overflow-y: auto; }
+        .leaderboard-item { background: #f1f5f9; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; font-weight: bold; border-right: 5px solid #f59e0b; }
+        
+        input, textarea { width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #cbd5e1; font-family: inherit; font-size: 15px; box-sizing: border-box; margin-bottom: 10px; }
+    </style>
+</head>
+<body onload="drawWheelStatic()">
+
+<div class="main-container">
+    <h1>امتحانك بلس ➕</h1>
+    
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab('tab-math', this)">✖️ الضرب</button>
+        <button class="tab-btn" onclick="openTab('tab-factors', this)">🔢 العوامل</button>
+        <button class="tab-btn" onclick="openTab('tab-random', this)">❓ عشوائي</button>
+        <button class="tab-btn" onclick="openTab('tab-names', this)">🎡 العجلة</button>
+        <button class="tab-btn" onclick="openTab('tab-leaderboard', this)">🏆 لوحة الشرف</button>
+    </div>
+
+    <!-- 1. جدول الضرب -->
+    <div id="tab-math" class="tab-content active">
+        <div class="timer-container" id="timer-math-container"><div class="timer-bar" id="timer-math"></div></div>
+        <div class="status-bar"><div>السؤال: <span id="q-num">1</span> / <span id="max-q">5</span></div><div style="color: #27ae60;">صح: <span id="score">0</span></div></div>
+        <div class="question-box-math"><div class="number-card" id="num1">؟</div><div style="color: #94a3b8;">×</div><div class="number-card" id="num2">؟</div></div>
+        <button id="spin-btn-math" class="btn-spin" onclick="startSpinMath()">🎲 سؤال جديد!</button>
+        <div id="teacher-controls"><div class="controls-group"><button class="btn-correct" onclick="answer(true)">✔️ صح</button><button class="btn-wrong" onclick="answer(false)">❌ خطأ</button></div></div>
+        <div id="end-controls"><button style="background: #3b82f6; width:100%" onclick="extraQuestions()">➕ إضافي</button><button style="background: #8b5cf6; width:100%" onclick="newStudent()">👤 طالب جديد</button></div>
+    </div>
+
+    <!-- 2. العوامل الأولية -->
+    <div id="tab-factors" class="tab-content">
+        <div class="timer-container" id="timer-fact-container"><div class="timer-bar" id="timer-fact"></div></div>
+        <p style="color: #64748b;">حلل الرقم التالي لعوامله الأولية:</p>
+        <div class="display-box" id="fact-display">؟</div>
+        <button id="btn-start-fact" class="btn-spin" onclick="startFactorGame()">🚀 ابدأ التحدي</button>
+        <div id="prime-controls" style="display: none;">
+            <div class="prime-bubbles">
+                <button class="prime-btn" onclick="divideBy(2)">2</button><button class="prime-btn" onclick="divideBy(3)">3</button>
+                <button class="prime-btn" onclick="divideBy(5)">5</button><button class="prime-btn" onclick="divideBy(7)">7</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. الأسئلة العشوائية (مع السبورة) -->
+    <div id="tab-random" class="tab-content">
+        <div style="display:flex; gap:5px;"><input type="text" id="qText" placeholder="اكتب سؤالاً..."><button style="background:#10b981; margin:0;" onclick="addTextQuestion()">إضافة</button></div>
+        <input type="file" id="qImage" accept="image/*" multiple onchange="addImageQuestions(event)">
+        <div id="randomDisplay" class="display-box" style="font-size: 24px;">سيظهر السؤال هنا<canvas id="whiteboard"></canvas></div>
+        <div class="tools-bar" id="draw-tools"><button style="background: #ef4444;" onclick="clearCanvas()">🗑️ مسح</button><button style="background: #3b82f6;" onclick="toggleDraw()">✏️ إغلاق</button></div>
+        <div style="display:flex; gap:10px;"><button class="btn-spin" onclick="showRandomQuestion()" style="flex:2">🎯 سحب سؤال</button><button style="background: #8b5cf6; margin-top:10px; flex:1;" onclick="toggleDraw()">🖍️ القلم</button></div>
+    </div>
+
+    <!-- 4. عجلة الأسماء (المطورة) -->
+    <div id="tab-names" class="tab-content">
+        <textarea id="namesList" placeholder="أدخل الأسماء (كل اسم في سطر) وستُرسم العجلة فوراً..." oninput="drawWheelStatic()"></textarea>
+        
+        <div class="wheel-wrapper">
+            <div class="wheel-pointer"></div>
+            <div class="center-dot"></div>
+            <!-- دقة أعلى للكانفاس -->
+            <canvas id="wheelCanvas" width="600" height="600"></canvas>
+        </div>
+        
+        <div id="nameDisplay" class="display-box" style="font-size: 30px; display: none;"></div>
+        <button class="btn-spin" onclick="spinRealWheel()">🎡 ابدأ السحب!</button>
+    </div>
+
+    <!-- 5. لوحة الشرف -->
+    <div id="tab-leaderboard" class="tab-content">
+        <div style="display:flex; gap:10px;"><input type="text" id="studentName" placeholder="الاسم" style="flex:2;"><input type="number" id="studentScore" placeholder="النقاط" style="flex:1;"></div>
+        <button style="background: #f59e0b; width:100%; box-shadow: 0 4px 0px #d97706;" onclick="addScore()">🌟 إضافة</button>
+        <div class="leaderboard-list" id="leaderList"></div>
+    </div>
+
+</div>
+
+<script>
+    // --- 1. إعدادات الصوت ---
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+    function initAudio() { if(!audioCtx) audioCtx = new AudioContext(); if(audioCtx.state === 'suspended') audioCtx.resume(); }
+    function playTone(freq, type, duration) { if(!audioCtx) return; const osc = audioCtx.createOscillator(), gainNode = audioCtx.createGain(); osc.type = type; osc.frequency.value = freq; osc.connect(gainNode); gainNode.connect(audioCtx.destination); osc.start(); gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration); osc.stop(audioCtx.currentTime + duration); }
+    const soundTick = () => playTone(800, 'sine', 0.03);
+    const soundSuccess = () => { playTone(523.25, 'sine', 0.1); setTimeout(()=>playTone(659.25, 'sine', 0.2), 100); };
+    const soundWrong = () => playTone(150, 'sawtooth', 0.3);
+
+    function openTab(tabId, btn) {
+        initAudio(); 
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+        if(tabId === 'tab-random' && isDrawingEnabled) resizeCanvas();
+        if(tabId === 'tab-names') drawWheelStatic();
+    }
+
+    // --- العجلة الدوارة الحقيقية (جديد) ---
+    const wheelColors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#06b6d4", "#3b82f6", "#a855f7", "#ec4899"];
+    let currentRotation = 0;
+    let wheelNamesArray = [];
+    let isSpinningWheel = false;
+
+    function drawWheelStatic() {
+        const text = document.getElementById('namesList').value;
+        wheelNamesArray = text.split('\n').filter(n => n.trim() !== '');
+        
+        // رسم عجلة افتراضية إذا كانت فارغة
+        let dataToDraw = wheelNamesArray;
+        if(dataToDraw.length === 0) dataToDraw = ["أضف", "أسماء", "هنا", "لتبدأ"];
+        if(dataToDraw.length === 1) dataToDraw = [dataToDraw[0], dataToDraw[0]]; // منع الانهيار لاسم واحد
+
+        const canvas = document.getElementById("wheelCanvas");
+        if(!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const w = canvas.width; const h = canvas.height;
+        const centerX = w / 2; const centerY = h / 2; const radius = w / 2;
+
+        ctx.clearRect(0, 0, w, h);
+        const sliceAngle = (2 * Math.PI) / dataToDraw.length;
+
+        for(let i = 0; i < dataToDraw.length; i++) {
+            const angle = i * sliceAngle;
+            // رسم الشريحة
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, angle, angle + sliceAngle);
+            ctx.closePath();
+            ctx.fillStyle = wheelColors[i % wheelColors.length];
+            ctx.fill();
+            
+            // حدود الشرائح
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "rgba(255,255,255,0.5)";
+            ctx.stroke();
+
+            // كتابة النص
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            ctx.rotate(angle + sliceAngle / 2);
+            ctx.textAlign = "right";
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 35px Cairo, sans-serif";
+            ctx.shadowColor = "rgba(0,0,0,0.5)";
+            ctx.shadowBlur = 4;
+            ctx.fillText(dataToDraw[i], radius - 30, 10);
+            ctx.restore();
+        }
+    }
+
+    function spinRealWheel() {
+        if(wheelNamesArray.length < 2) return alert('أدخل اسمين على الأقل لتبدأ العجلة!');
+        if(isSpinningWheel) return;
+        
+        isSpinningWheel = true;
+        initAudio();
+        document.getElementById('nameDisplay').style.display = 'none';
+
+        // إضافة دورات عشوائية (بين 5 و 10 لفات كاملة + كسر)
+        const extraDegrees = Math.floor(2000 + Math.random() * 2000);
+        currentRotation += extraDegrees;
+
+        const canvas = document.getElementById("wheelCanvas");
+        canvas.style.transition = 'transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)';
+        canvas.style.transform = `rotate(${currentRotation}deg)`;
+
+        // محاكاة صوت تكات العجلة
+        let tickTime = 50;
+        let tickInterval = setInterval(() => { soundTick(); }, tickTime);
+        setTimeout(() => { clearInterval(tickInterval); tickInterval = setInterval(()=>soundTick(), 150); }, 1500);
+        setTimeout(() => { clearInterval(tickInterval); tickInterval = setInterval(()=>soundTick(), 350); }, 2800);
+        setTimeout(() => { clearInterval(tickInterval); }, 3800);
+
+        // بعد انتهاء الحركة
+        setTimeout(() => {
+            isSpinningWheel = false;
+            soundSuccess();
+
+            // حساب الفائز رياضياً
+            const actualDeg = currentRotation % 360;
+            const n = wheelNamesArray.length;
+            const sliceSize = 360 / n;
+            // السهم يشير للأعلى (زاوية 270)
+            const winningAngle = (270 - actualDeg + 360) % 360;
+            const winnerIndex = Math.floor(winningAngle / sliceSize);
+
+            const display = document.getElementById('nameDisplay');
+            display.innerText = "🎉 " + wheelNamesArray[winnerIndex] + " 🎉";
+            display.style.display = 'flex';
+            display.style.color = '#e11d48';
+        }, 4000);
+    }
+
+    // --- باقي أكواد الألعاب (الضرب، العوامل، السبورة، لوحة الشرف) بقيت كما هي لتعمل بكفاءة ---
+    let timerInterval;
+    function startTimer(durationSeconds, barElementId, onTimeout) { clearInterval(timerInterval); document.getElementById(barElementId + '-container').style.display = 'block'; const bar = document.getElementById(barElementId); let timeLeft = durationSeconds; bar.style.width = '100%'; timerInterval = setInterval(() => { timeLeft -= 0.1; bar.style.width = (timeLeft / durationSeconds * 100) + '%'; if (timeLeft <= 0) { clearInterval(timerInterval); soundWrong(); onTimeout(); } }, 100); }
+    function stopTimer(barElementId) { clearInterval(timerInterval); document.getElementById(barElementId + '-container').style.display = 'none'; }
+
+    const allowedTables = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]; let qCount = 0, score = 0, currentLimit = 5;
+    function startSpinMath() { initAudio(); document.getElementById('spin-btn-math').style.display = 'none'; let spins = 0; const interval = setInterval(() => { document.getElementById('num1').innerText = allowedTables[Math.floor(Math.random() * allowedTables.length)]; document.getElementById('num2').innerText = Math.floor(Math.random() * 12) + 1; soundTick(); spins++; if(spins > 10) { clearInterval(interval); document.getElementById('teacher-controls').style.display = 'block'; startTimer(10, 'timer-math', () => answer(false)); } }, 80); }
+    function answer(isCorrect) { stopTimer('timer-math'); qCount++; if (isCorrect) { score++; soundSuccess(); } else { soundWrong(); } document.getElementById('q-num').innerText = Math.min(qCount + 1, currentLimit); document.getElementById('score').innerText = score; document.getElementById('teacher-controls').style.display = 'none'; if (qCount >= currentLimit) { document.getElementById('end-controls').style.display = 'block'; document.getElementById('q-num').innerText = currentLimit; } else { resetMathUI(); } }
+    function extraQuestions() { currentLimit += 5; document.getElementById('max-q').innerText = currentLimit; resetMathUI(true); }
+    function newStudent() { qCount = score = 0; currentLimit = 5; document.getElementById('max-q').innerText = currentLimit; document.getElementById('q-num').innerText = 1; document.getElementById('score').innerText = 0; resetMathUI(true); }
+    function resetMathUI(hideEnd = false) { document.getElementById('spin-btn-math').style.display = 'block'; document.getElementById('num1').innerText = '؟'; document.getElementById('num2').innerText = '؟'; if(hideEnd) document.getElementById('end-controls').style.display = 'none'; }
+
+    let currentFactorNum = 0; const compositeNumbers = [12, 18, 20, 24, 28, 30, 36, 40, 42, 45, 48, 50, 56, 60, 72];
+    function startFactorGame() { initAudio(); currentFactorNum = compositeNumbers[Math.floor(Math.random() * compositeNumbers.length)]; document.getElementById('fact-display').innerText = currentFactorNum; document.getElementById('btn-start-fact').style.display = 'none'; document.getElementById('prime-controls').style.display = 'block'; startTimer(30, 'timer-fact', () => { document.getElementById('fact-display').innerText = 'انتهى الوقت!'; setTimeout(resetFactorGame, 2000); }); }
+    function divideBy(prime) { if(currentFactorNum % prime === 0) { currentFactorNum /= prime; document.getElementById('fact-display').innerText = currentFactorNum; soundTick(); if(currentFactorNum === 1) { stopTimer('timer-fact'); soundSuccess(); document.getElementById('fact-display').innerText = '🎉 ممتاز!'; setTimeout(resetFactorGame, 2000); } } else { soundWrong(); document.getElementById('fact-display').style.color = '#ef4444'; setTimeout(()=> document.getElementById('fact-display').style.color = '#2c3e50', 500); } }
+    function resetFactorGame() { document.getElementById('fact-display').innerText = '؟'; document.getElementById('btn-start-fact').style.display = 'block'; document.getElementById('prime-controls').style.display = 'none'; }
+
+    let questionsPool = [];
+    function addTextQuestion() { const txt = document.getElementById('qText').value; if(txt) { questionsPool.push({type: 'text', content: txt}); document.getElementById('qText').value=''; } }
+    function addImageQuestions(e) { const files = e.target.files; for(let f of files) { const r = new FileReader(); r.onload = ev => questionsPool.push({type: 'image', content: ev.target.result}); r.readAsDataURL(f); } }
+    function showRandomQuestion() { if(!questionsPool.length) return alert('أضف أسئلة أولاً!'); initAudio(); const display = document.getElementById('randomDisplay'); let spins = 0; const interval = setInterval(() => { display.innerText = '⏳...'; soundTick(); spins++; if(spins > 8) { clearInterval(interval); const q = questionsPool[Math.floor(Math.random() * questionsPool.length)]; if(q.type === 'text') display.innerHTML = q.content + '<canvas id="whiteboard"></canvas>'; else display.innerHTML = `<img src="${q.content}" style="max-height:200px; border-radius:10px;"><canvas id="whiteboard"></canvas>`; setupCanvas(); if(isDrawingEnabled) resizeCanvas(); } }, 100); }
+
+    let canvas, ctx, isDrawing = false, isDrawingEnabled = false;
+    function setupCanvas() { canvas = document.getElementById('whiteboard'); if(!canvas) return; ctx = canvas.getContext('2d'); canvas.addEventListener('mousedown', startPosition); canvas.addEventListener('mouseup', endPosition); canvas.addEventListener('mousemove', draw); canvas.addEventListener('touchstart', (e)=>{ e.preventDefault(); startPosition(e.touches[0]); }); canvas.addEventListener('touchend', endPosition); canvas.addEventListener('touchmove', (e)=>{ e.preventDefault(); draw(e.touches[0]); }); }
+    function toggleDraw() { if(!canvas) setupCanvas(); isDrawingEnabled = !isDrawingEnabled; if(isDrawingEnabled) { resizeCanvas(); canvas.style.display = 'block'; document.getElementById('draw-tools').style.display = 'flex'; } else { canvas.style.display = 'none'; document.getElementById('draw-tools').style.display = 'none'; } }
+    function resizeCanvas() { const box = document.getElementById('randomDisplay'); canvas.width = box.offsetWidth; canvas.height = box.offsetHeight; ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 4; ctx.lineCap = 'round'; }
+    function startPosition(e) { isDrawing = true; draw(e); } function endPosition() { isDrawing = false; ctx.beginPath(); }
+    function draw(e) { if (!isDrawing) return; const rect = canvas.getBoundingClientRect(); const x = (e.clientX || e.pageX) - rect.left; const y = (e.clientY || e.pageY) - rect.top; ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y); }
+    function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+    let leaderboard = [];
+    function addScore() { const name = document.getElementById('studentName').value.trim(); const score = parseInt(document.getElementById('studentScore').value); if(name && !isNaN(score)) { leaderboard.push({name, score}); leaderboard.sort((a, b) => b.score - a.score); renderLeaderboard(); document.getElementById('studentName').value = ''; document.getElementById('studentScore').value = ''; soundSuccess(); } }
+    function renderLeaderboard() { const list = document.getElementById('leaderList'); list.innerHTML = ''; const medals = ['🥇', '🥈', '🥉']; leaderboard.forEach((student, index) => { const medal = index < 3 ? medals[index] : (index + 1) + '- '; list.innerHTML += `<div class="leaderboard-item"><span>${medal} ${student.name}</span><span style="color: #2563eb;">${student.score} نقطة</span></div>`; }); }
+    
+    setupCanvas();
+</script>
+
+</body>
+</html>
