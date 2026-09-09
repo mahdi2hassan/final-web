@@ -363,6 +363,21 @@ select { appearance: none; }
 .btn-wa:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(37,211,102,0.3); }
 .btn-wa svg { width: 18px; height: 18px; }
 
+/* Ghost (secondary/outline) button */
+.btn.ghost {
+  background: rgba(255,255,255,0.05) !important;
+  box-shadow: none !important;
+  border: 1.5px solid var(--border2) !important;
+  color: var(--muted) !important;
+  animation: none !important;
+}
+.btn.ghost:hover {
+  background: rgba(255,255,255,0.09) !important;
+  border-color: var(--border) !important;
+  color: var(--text) !important;
+  transform: translateY(-1px);
+}
+
 /* ===== DIVIDER ===== */
 .divider {
   display: flex; align-items: center; gap: 8px;
@@ -609,13 +624,14 @@ select { appearance: none; }
 
     <!-- ══ STEP: AUTH ══ -->
     <div class="step active" id="step-auth">
-      <div class="tabs">
+      <div class="tabs" id="authMainTabs">
         <button class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</button>
         <button class="tab-btn" onclick="switchTab('register')">حساب جديد</button>
       </div>
 
       <!-- Login Tab -->
       <div id="tab-login">
+        <div id="password-login-block">
         <div class="field">
           <label>رقم الهاتف أو الإيميل</label>
           <div style="position:relative">
@@ -642,6 +658,79 @@ select { appearance: none; }
           <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>دخول</span>
           <div class="spin"></div>
         </button>
+
+        <div style="text-align:center;margin-top:12px">
+          <a href="#" onclick="event.preventDefault();showQuickLogin()" style="font-size:12.5px;color:var(--gold2);text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:6px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+            دخول سريع بدون كلمة مرور (رمز OTP)
+          </a>
+        </div>
+        </div>
+
+        <!-- ══ QUICK LOGIN (OTP) PANEL ══ -->
+        <div id="quick-login-panel" style="display:none">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+            <a href="#" onclick="event.preventDefault();hideQuickLogin()" style="display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:rgba(74,127,212,0.08);border:1px solid var(--border2);color:var(--text);flex-shrink:0">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></svg>
+            </a>
+            <span style="font-size:13px;font-weight:800;color:var(--text)">دخول سريع برمز التحقق</span>
+          </div>
+
+          <div class="tabs" style="margin-bottom:14px">
+            <button class="tab-btn active" id="quick-method-phone" onclick="switchQuickMethod('phone')">رقم الهاتف</button>
+            <button class="tab-btn" id="quick-method-email" onclick="switchQuickMethod('email')">الإيميل</button>
+          </div>
+
+          <!-- Phone: enter number -->
+          <div id="quick-phone-block">
+            <div class="field">
+              <label>رقم الهاتف</label>
+              <div class="phone-row">
+                <div class="phone-prefix">
+                  <svg viewBox="0 0 20 14"><rect width="20" height="4.67" y="0" fill="#CE1126"/><rect width="20" height="4.67" y="4.67" fill="#FFF"/><rect width="20" height="4.67" y="9.33" fill="#000"/><g transform="translate(10,7)"><ellipse cx="0" cy="0" rx="1.8" ry="1.4" fill="none" stroke="#C09300" stroke-width=".5"/><rect x="-.4" y="-.3" width=".8" height="1.7" fill="#C09300"/><rect x="-1" y="1.3" width="2" height=".3" fill="#C09300"/></g></svg>
+                  <span class="code">+20</span>
+                </div>
+                <input type="tel" class="phone-input" id="quick-phone" placeholder="01x xxxx xxxx" maxlength="11" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'');clearQuickMsg()"/>
+              </div>
+            </div>
+            <button class="btn" id="quick-send-btn" onclick="sendPhoneOtp()">
+              <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>إرسال رمز التحقق</span>
+              <div class="spin"></div>
+            </button>
+          </div>
+
+          <!-- Phone: enter OTP -->
+          <div id="quick-otp-block" style="display:none">
+            <p style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:10px">تم إرسال رمز مكوّن من 6 أرقام إلى <span id="quick-otp-target" style="color:var(--gold2);font-weight:700;direction:ltr;display:inline-block"></span></p>
+            <div class="field">
+              <label>رمز التحقق</label>
+              <input type="text" class="code-input" id="quick-otp" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" oninput="this.value=this.value.replace(/\D/g,'');clearQuickMsg()"/>
+            </div>
+            <button class="btn" id="quick-confirm-btn" onclick="confirmPhoneOtp()">
+              <span class="btn-text"><svg><use href="#i-check"/></svg>تأكيد الدخول</span>
+              <div class="spin"></div>
+            </button>
+            <div style="text-align:center;margin-top:10px">
+              <button id="quick-resend" onclick="resendPhoneOtp()" disabled style="background:none;border:none;color:var(--muted);font-family:'Tajawal',sans-serif;font-size:12px;cursor:pointer;font-weight:700">إعادة الإرسال (60)</button>
+            </div>
+          </div>
+
+          <!-- Email: magic link -->
+          <div id="quick-email-block" style="display:none">
+            <div class="field">
+              <label>الإيميل</label>
+              <input type="email" id="quick-email" placeholder="example@gmail.com" oninput="clearQuickMsg()"/>
+            </div>
+            <button class="btn" id="quick-email-btn" onclick="sendEmailOtpLink()">
+              <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>إرسال رابط الدخول</span>
+              <div class="spin"></div>
+            </button>
+            <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.7">هنبعتلك رابط دخول آمن على إيميلك — افتحه من نفس الجهاز لتسجيل الدخول تلقائياً</p>
+          </div>
+
+          <div class="msg" id="quick-msg"></div>
+          <div id="recaptcha-container"></div>
+        </div>
 
         <div class="divider">أو</div>
 
@@ -1118,7 +1207,7 @@ select { appearance: none; }
   </div><!-- auth-body -->
 
   <div class="card-footer">
-    <a href="index.html">الصفحة الرئيسية</a> ·
+    <a href="../index.html">الصفحة الرئيسية</a> ·
     بالاستمرار توافق على <a href="terms.html">شروط الاستخدام</a>
   </div>
 </div><!-- auth-card -->
@@ -1140,6 +1229,13 @@ firebase.initializeApp({
 });
 const auth = firebase.auth();
 const db   = firebase.firestore();
+
+// ── Intended grade coming from a locked-course click on the homepage (index.html → goToAuth) ──
+var _intendedGradeKey = '';
+try{
+  _intendedGradeKey = sessionStorage.getItem('intended_grade') || new URLSearchParams(window.location.search).get('grade') || '';
+}catch(e){}
+var _intendedGradeApplied = false;
 
 const GRADE_LABELS = {
   'primary-4':'الصف الرابع الابتدائي','primary-5':'الصف الخامس الابتدائي','primary-6':'الصف السادس الابتدائي',
@@ -1171,6 +1267,7 @@ function showStep(id){
   // Hide progress on success/onboard/blocked
   const prog = document.getElementById('stepsProgress');
   if(prog) prog.style.display = (id==='step-onboard'||id==='step-blocked') ? 'none' : 'flex';
+  if(id === 'step-grade') prefillIntendedGrade();
 }
 
 // Remember me — save/load login ID
@@ -1233,10 +1330,11 @@ var _activeTab = 'login'; // 'login' or 'register'
 
 function switchTab(t){
   _activeTab = t;
-  document.querySelectorAll('.tab-btn').forEach((b,i)=>
+  document.querySelectorAll('#authMainTabs .tab-btn').forEach((b,i)=>
     b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
   document.getElementById('tab-login').style.display   = t==='login'?'block':'none';
   document.getElementById('tab-register').style.display= t==='register'?'block':'none';
+  if(t!=='login') hideQuickLogin();
 }
 function showMsg(id,txt,type){
   var el=document.getElementById(id); if(!el)return;
@@ -2020,6 +2118,190 @@ auth.getRedirectResult().then(function(result){
   }
 });
 
+// ══════════════════════════════════════════════
+// ── QUICK LOGIN (OTP) — Firebase Phone Auth + Email Link ──
+// ══════════════════════════════════════════════
+var _recaptchaVerifier = null;
+var _confirmationResult = null;
+var _otpTimerInterval = null;
+
+function initRecaptcha(){
+  if(_recaptchaVerifier) return _recaptchaVerifier;
+  _recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+    size: 'invisible'
+  });
+  return _recaptchaVerifier;
+}
+
+function showQuickLogin(){
+  document.getElementById('password-login-block').style.display = 'none';
+  document.getElementById('quick-login-panel').style.display = 'block';
+  switchQuickMethod('phone');
+  clearQuickMsg();
+}
+function hideQuickLogin(){
+  document.getElementById('quick-login-panel').style.display = 'none';
+  document.getElementById('password-login-block').style.display = 'block';
+  clearInterval(_otpTimerInterval);
+  document.getElementById('quick-phone-block').style.display = 'block';
+  document.getElementById('quick-otp-block').style.display = 'none';
+  clearQuickMsg();
+}
+function switchQuickMethod(m){
+  document.getElementById('quick-method-phone').classList.toggle('active', m === 'phone');
+  document.getElementById('quick-method-email').classList.toggle('active', m === 'email');
+  document.getElementById('quick-phone-block').style.display = m === 'phone' ? 'block' : 'none';
+  document.getElementById('quick-email-block').style.display = m === 'email' ? 'block' : 'none';
+  document.getElementById('quick-otp-block').style.display = 'none';
+  clearInterval(_otpTimerInterval);
+  clearQuickMsg();
+}
+function clearQuickMsg(){
+  var el = document.getElementById('quick-msg');
+  if(el) el.className = 'msg';
+}
+
+// ── Send SMS OTP via Firebase Phone Auth ──
+function sendPhoneOtp(){
+  var raw = document.getElementById('quick-phone').value.trim().replace(/\D/g,'');
+  if(raw.length < 10){ showMsg('quick-msg','ادخل رقم هاتف مصري صحيح','error'); return; }
+  var full = '+20' + raw.replace(/^0/,'');
+  var btn = document.getElementById('quick-send-btn');
+  setLoad(btn,true);
+  try{
+    var verifier = initRecaptcha();
+    auth.signInWithPhoneNumber(full, verifier).then(function(result){
+      _confirmationResult = result;
+      setLoad(btn,false);
+      document.getElementById('quick-phone-block').style.display = 'none';
+      document.getElementById('quick-otp-block').style.display = 'block';
+      document.getElementById('quick-otp-target').textContent = full;
+      document.getElementById('quick-otp').value = '';
+      startOtpResendTimer();
+      showMsg('quick-msg','تم إرسال رمز التحقق برسالة SMS 📩','success');
+    }).catch(function(e){
+      setLoad(btn,false);
+      var msgs = {
+        'auth/invalid-phone-number':'رقم الهاتف غير صحيح',
+        'auth/too-many-requests':'محاولات كتير جداً — حاول لاحقاً',
+        'auth/captcha-check-failed':'فشل التحقق الأمني — أعد المحاولة',
+        'auth/quota-exceeded':'تم تجاوز الحد المسموح للرسائل — حاول لاحقاً',
+        'auth/network-request-failed':'مشكلة في الإنترنت — تحقق من اتصالك'
+      };
+      showMsg('quick-msg', msgs[e.code] || (e.message||'حدث خطأ — حاول مرة أخرى'), 'error');
+      if(_recaptchaVerifier){
+        _recaptchaVerifier.render().then(function(id){
+          if(window.grecaptcha) grecaptcha.reset(id);
+        }).catch(function(){});
+      }
+    });
+  }catch(e){
+    setLoad(btn,false);
+    showMsg('quick-msg','تعذر تجهيز التحقق الأمني — أعد تحميل الصفحة','error');
+  }
+}
+
+// ── Confirm SMS OTP ──
+function confirmPhoneOtp(){
+  var code = document.getElementById('quick-otp').value.trim();
+  if(code.length < 6){ showMsg('quick-msg','ادخل الرمز المكوّن من 6 أرقام','error'); return; }
+  if(!_confirmationResult){ showMsg('quick-msg','انتهت صلاحية الجلسة — اطلب رمز جديد','error'); return; }
+  var btn = document.getElementById('quick-confirm-btn');
+  setLoad(btn,true);
+  _confirmationResult.confirm(code).then(function(result){
+    return handleQuickAuthUser(result.user, 'phone-otp');
+  }).catch(function(e){
+    setLoad(btn,false);
+    var msgs = {
+      'auth/invalid-verification-code':'الرمز غير صحيح',
+      'auth/code-expired':'انتهت صلاحية الرمز — اطلب رمز جديد'
+    };
+    showMsg('quick-msg', msgs[e.code] || (e.message||'حدث خطأ — حاول مرة أخرى'), 'error');
+  });
+}
+
+function resendPhoneOtp(){
+  document.getElementById('quick-otp-block').style.display = 'none';
+  document.getElementById('quick-phone-block').style.display = 'block';
+  clearQuickMsg();
+}
+
+function startOtpResendTimer(){
+  var seconds = 60;
+  var el = document.getElementById('quick-resend');
+  el.disabled = true;
+  el.textContent = 'إعادة الإرسال (' + seconds + ')';
+  clearInterval(_otpTimerInterval);
+  _otpTimerInterval = setInterval(function(){
+    seconds--;
+    if(seconds <= 0){
+      clearInterval(_otpTimerInterval);
+      el.disabled = false;
+      el.textContent = 'إعادة إرسال الرمز';
+    } else {
+      el.textContent = 'إعادة الإرسال (' + seconds + ')';
+    }
+  }, 1000);
+}
+
+// ── Email quick sign-in (passwordless link — Firebase has no code-based email OTP client-side) ──
+function sendEmailOtpLink(){
+  var email = document.getElementById('quick-email').value.trim();
+  if(!email.includes('@')){ showMsg('quick-msg','ادخل إيميل صحيح','error'); return; }
+  var btn = document.getElementById('quick-email-btn');
+  setLoad(btn,true);
+  var actionCodeSettings = {
+    url: window.location.href.split('?')[0].split('#')[0],
+    handleCodeInApp: true
+  };
+  auth.sendSignInLinkToEmail(email, actionCodeSettings).then(function(){
+    window.localStorage.setItem('emailForSignIn', email);
+    setLoad(btn,false);
+    showMsg('quick-msg','تم إرسال رابط الدخول لإيميلك 📧 — افتحه من نفس الجهاز والمتصفح','success');
+  }).catch(function(e){
+    setLoad(btn,false);
+    var msgs = {
+      'auth/invalid-email':'الإيميل غير صحيح',
+      'auth/network-request-failed':'مشكلة في الإنترنت — تحقق من اتصالك'
+    };
+    showMsg('quick-msg', msgs[e.code] || (e.message||'حدث خطأ — حاول مرة أخرى'), 'error');
+  });
+}
+
+// ── Create/route Firestore user doc for phone-OTP or email-link sign-ins ──
+function handleQuickAuthUser(user, method){
+  return db.collection('users').doc(user.uid).get().then(function(ud){
+    if(!ud.exists){
+      return db.collection('users').doc(user.uid).set({
+        name: user.displayName || '',
+        email: user.email || '',
+        phone: (user.phoneNumber || '').replace('+20','').replace(/^0*/,'0'),
+        subscriptionActive: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        signInMethod: method
+      }).then(function(){
+        showStep('step-grade');
+      });
+    }
+    // مستخدم موجود — الـ onAuthStateChanged هيتولى التوجيه
+  });
+}
+
+// ── Complete email-link sign-in if the user opened the link ──
+(function handleEmailLinkSignIn(){
+  if(!auth.isSignInWithEmailLink(window.location.href)) return;
+  var email = window.localStorage.getItem('emailForSignIn');
+  if(!email){ email = window.prompt('أدخل نفس الإيميل اللي استلمت عليه الرابط لتأكيد الدخول'); }
+  if(!email) return;
+  auth.signInWithEmailLink(email, window.location.href).then(function(result){
+    window.localStorage.removeItem('emailForSignIn');
+    window.history.replaceState(null, '', window.location.pathname);
+    return handleQuickAuthUser(result.user, 'email-link');
+  }).catch(function(){
+    showMsg('login-msg','رابط الدخول غير صالح أو منتهي — اطلب رابط جديد','error');
+  });
+})();
+
 // ── FORGOT PASSWORD ──
 function forgotPass(e){
   if(e) e.preventDefault();
@@ -2051,6 +2333,24 @@ var DYNAMIC_GRADE_OPTS = {
 
 // أسعار الصفوف — تُستخدم لو التسعير المنفصل (perGrade) مفعّل من الأدمن
 var GRADE_PRICES = {};
+
+// لو الطالب جه من كارت "كورس مقفول" في الصفحة الرئيسية، اختار له صفه تلقائياً في خطوة اختيار الصف
+function prefillIntendedGrade(){
+  if(_intendedGradeApplied || !_intendedGradeKey) return;
+  var stageSel = document.getElementById('grade-stage');
+  var levelSel = document.getElementById('grade-level');
+  if(!stageSel || !levelSel) return;
+  var stage = _intendedGradeKey.split('-')[0];
+  if(!DYNAMIC_GRADE_OPTS[stage]) return;
+  stageSel.value = stage;
+  updateGradeOptions();
+  levelSel.value = _intendedGradeKey;
+  _intendedGradeApplied = true;
+  try{
+    sessionStorage.removeItem('intended_grade');
+    sessionStorage.removeItem('intended_label');
+  }catch(e){}
+}
 
 // تحميل المراحل الإضافية من Firestore
 (function loadAuthGrades(){
