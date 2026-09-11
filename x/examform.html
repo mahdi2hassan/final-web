@@ -4991,26 +4991,24 @@ window.MathJax = {
 
     <!-- نافذة: مقطّع أسئلة PDF -->
     <div class="modal-overlay" id="pdfImporterModal">
-        <div class="modal-card" style="max-width: 680px;">
+        <div class="modal-card" style="max-width: 760px;">
             <div class="modal-header">
-                <h3>📄 مقطّع أسئلة PDF</h3>
+                <h3>📄 مقطّع أسئلة PDF (صور)</h3>
                 <button class="modal-close" onclick="closePdfImporterModal()">✕</button>
             </div>
             <div class="modal-body">
-                <p style="font-size:11px;color:#64748b;margin-bottom:8px;">ارفع ملف PDF فيه أسئلة (كل سؤال يبدأ برقم زي 1- أو 1) أو س1)، أو الصق نص الأسئلة مباشرة تحت. هيتقطّع كل سؤال لوحده وتقدر تضيفهم للنموذج الحالي أو تحملهم PDF.</p>
+                <p style="font-size:11px;color:#64748b;margin-bottom:8px;">ارفع ملف PDF وهيتحول كل صفحة لصورة. اسحب بالماوس (أو بإصبعك على الموبايل) حوالين كل سؤال في الصورة، واضغط "✂️ قص كسؤال" — كرر العملية لكل سؤال في كل صفحة. كل سؤال هيتحفظ كصورة مستقلة تحت.</p>
                 <div class="input-group" style="margin-bottom:8px;">
                     <button class="btn" style="background-color:#0284c7;" onclick="document.getElementById('pdfImporterFileInput').click()">⬆ ارفع ملف PDF</button>
                     <input type="file" id="pdfImporterFileInput" accept="application/pdf" style="display:none;" onchange="handlePdfImporterFile(event)">
                     <span id="pdfImporterFileName" style="font-size:11px;color:#0f766e;"></span>
                 </div>
-                <textarea id="pdfImporterTextarea" placeholder="أو الصق نص الأسئلة هنا مباشرة..." style="width:100%; min-height:90px; font-family:inherit; padding:8px; border-radius:8px; border:1px solid #cbd5e1; resize:vertical;"></textarea>
-                <div class="input-group" style="margin-top:8px;">
-                    <button class="btn btn-success" onclick="runQuestionSplitter()">✂️ قطّع الأسئلة</button>
-                    <span id="pdfImporterStatus" style="font-size:11px;color:#64748b;"></span>
-                </div>
-                <div id="pdfImporterResults" style="display:flex; flex-direction:column; gap:8px; max-height:38vh; overflow-y:auto; margin-top:10px;"></div>
+                <div id="pdfImporterStatus" style="font-size:11px;color:#64748b;margin-bottom:6px;"></div>
+                <div id="pdfImporterPages" style="display:flex; flex-direction:column; gap:16px; max-height:44vh; overflow-y:auto; border:1px solid #e2e8f0; border-radius:8px; padding:10px; background:#f8fafc;"></div>
+                <div style="font-size:11px;color:#334155;font-weight:800;margin-top:12px;">✅ الأسئلة المقصوصة:</div>
+                <div id="pdfImporterResults" style="display:flex; flex-wrap:wrap; gap:8px; max-height:24vh; overflow-y:auto; margin-top:6px;"></div>
                 <div class="input-group" id="pdfImporterActions" style="display:none; margin-top:10px; border-top:1px solid #e2e8f0; padding-top:10px;">
-                    <button class="btn btn-success" onclick="addSplitQuestionsToExam()">➕ إضافة المحدد للنموذج الحالي</button>
+                    <button class="btn btn-success" onclick="addSplitQuestionsToExam()">➕ إضافة الأسئلة (بالصور) للنموذج الحالي</button>
                     <button class="btn btn-purple" style="background-color:#0d9488;" onclick="downloadSplitQuestionsPDF()">⬇️ تحميل PDF (كل سؤال في صفحة)</button>
                 </div>
             </div>
@@ -6186,10 +6184,12 @@ window.MathJax = {
     }
 
     /* ---------------------------------------------------------------
-       سادسًا (ب): مقطّع أسئلة PDF — رفع PDF أو لصق نص، تقطيع كل سؤال
-       لوحده، ثم إضافته للنموذج الحالي أو تحميله PDF منفصل لكل سؤال
+       سادسًا (ب): مقطّع أسئلة PDF — كل صفحة بتتحول لصورة، وبتحدد
+       بالسحب مكان كل سؤال وتقصه كصورة مستقلة، ثم تضيفه كسؤال (بالصورة)
+       للنموذج الحالي أو تحمّل كل الأسئلة المقصوصة في ملف PDF واحد
     --------------------------------------------------------------- */
-    let splitQuestionsList = [];
+    let pdfRenderedPages = [];   // الصفحات المُحوَّلة لكانفس (أصل الدقة) لكل صفحة PDF
+    let splitQuestionImages = []; // مصفوفة data URLs للأسئلة المقصوصة
 
     function openPdfImporterModal() {
         document.getElementById('pdfImporterModal').classList.add('open');
@@ -6203,124 +6203,207 @@ window.MathJax = {
         if (!file) return;
         const nameLbl = document.getElementById('pdfImporterFileName');
         const statusLbl = document.getElementById('pdfImporterStatus');
+        const pagesBox = document.getElementById('pdfImporterPages');
         nameLbl.textContent = file.name;
+        pagesBox.innerHTML = '';
+        pdfRenderedPages = [];
         if (!window['pdfjsLib']) {
-            statusLbl.textContent = 'تعذّر تحميل مكتبة قراءة PDF، جرّب تلصق النص يدويًا بدل رفع الملف.';
+            statusLbl.textContent = 'تعذّر تحميل مكتبة قراءة PDF، جرّب تحدّث الصفحة وتاني.';
             return;
         }
-        statusLbl.textContent = 'بيتم قراءة الملف...';
+        statusLbl.textContent = 'بيتم تحويل صفحات الملف لصور...';
         try {
             const buf = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-            let fullText = '';
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
-                const content = await page.getTextContent();
-                const pageText = content.items.map(it => it.str).join(' ');
-                fullText += pageText + '\n';
+                const viewport = page.getViewport({ scale: 2 });
+                const canvas = document.createElement('canvas');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+                pdfRenderedPages.push(canvas);
+                renderPdfImporterPageCard(canvas, i - 1);
             }
-            document.getElementById('pdfImporterTextarea').value = fullText.trim();
-            statusLbl.textContent = `تم استخراج نص ${pdf.numPages} صفحة. راجع النص واضغط "قطّع الأسئلة".`;
+            statusLbl.textContent = `تم تحويل ${pdf.numPages} صفحة. اسحب حوالين كل سؤال واقطعه.`;
         } catch (err) {
-            statusLbl.textContent = 'حصل خطأ أثناء قراءة الملف. جرّب ملف PDF فيه نص حقيقي (مش صورة ممسوحة ضوئيًا).';
+            statusLbl.textContent = 'حصل خطأ أثناء قراءة الملف، جرّب ملف PDF تاني.';
         }
     }
 
-    // تقطيع النص لأسئلة منفصلة حسب أرقام بداية كل سؤال (1- أو 1) أو 1. أو س1 أو السؤال 1)
-    function runQuestionSplitter() {
-        const text = document.getElementById('pdfImporterTextarea').value.trim();
-        const statusLbl = document.getElementById('pdfImporterStatus');
+    function renderPdfImporterPageCard(canvas, pageIdx) {
+        const pagesBox = document.getElementById('pdfImporterPages');
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `
+            <div style="font-size:10.5px;color:#64748b;margin-bottom:4px;">صفحة ${pageIdx + 1} — اسحب لتحديد سؤال</div>
+            <div class="pdf-crop-page" style="position:relative; display:inline-block; max-width:100%; line-height:0;">
+                <img src="${canvas.toDataURL('image/png')}" draggable="false" style="display:block; max-width:100%; user-select:none;">
+                <div class="pdf-crop-overlay" style="position:absolute; inset:0; cursor:crosshair;"></div>
+            </div>`;
+        pagesBox.appendChild(wrap);
+        const overlay = wrap.querySelector('.pdf-crop-overlay');
+        setupPdfCropOverlay(overlay, pageIdx);
+    }
+
+    // أداة السحب لتحديد مربع السؤال فوق صورة الصفحة، ثم قصّه من الكانفس الأصلي
+    function setupPdfCropOverlay(overlayEl, pageIdx) {
+        let startX = 0, startY = 0, dragging = false, rectDiv = null;
+
+        function getPos(e) {
+            const rect = overlayEl.getBoundingClientRect();
+            const cx = e.touches ? e.touches[0].clientX : e.clientX;
+            const cy = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: Math.max(0, Math.min(cx - rect.left, rect.width)), y: Math.max(0, Math.min(cy - rect.top, rect.height)) };
+        }
+        function clearHandles() {
+            overlayEl.querySelectorAll('.pdf-crop-confirm, .pdf-crop-cancel').forEach(el => el.remove());
+        }
+        function onDown(e) {
+            e.preventDefault();
+            clearHandles();
+            if (rectDiv) rectDiv.remove();
+            const p = getPos(e);
+            startX = p.x; startY = p.y; dragging = true;
+            rectDiv = document.createElement('div');
+            rectDiv.style.cssText = 'position:absolute; border:2px dashed #dc2626; background:rgba(220,38,38,0.14); pointer-events:none;';
+            overlayEl.appendChild(rectDiv);
+            updateRect(p);
+        }
+        function onMove(e) {
+            if (!dragging) return;
+            e.preventDefault();
+            updateRect(getPos(e));
+        }
+        function updateRect(p) {
+            const x = Math.min(startX, p.x), y = Math.min(startY, p.y);
+            const w = Math.abs(p.x - startX), h = Math.abs(p.y - startY);
+            rectDiv.style.left = x + 'px'; rectDiv.style.top = y + 'px';
+            rectDiv.style.width = w + 'px'; rectDiv.style.height = h + 'px';
+            rectDiv.dataset.box = JSON.stringify({ x, y, w, h });
+        }
+        function onUp() {
+            if (!dragging) return;
+            dragging = false;
+            const box = JSON.parse(rectDiv.dataset.box || '{}');
+            if (!box.w || !box.h || box.w < 15 || box.h < 15) { rectDiv.remove(); rectDiv = null; return; }
+            rectDiv.style.pointerEvents = 'auto';
+            const confirmBtn = document.createElement('button');
+            confirmBtn.type = 'button';
+            confirmBtn.className = 'btn btn-success pdf-crop-confirm';
+            confirmBtn.textContent = '✂️ قص كسؤال';
+            confirmBtn.style.cssText = `position:absolute; font-size:10px; padding:3px 8px; left:${box.x}px; top:${box.y + box.h + 4}px; z-index:5;`;
+            const cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'btn btn-danger pdf-crop-cancel';
+            cancelBtn.textContent = '✕';
+            cancelBtn.style.cssText = `position:absolute; font-size:10px; padding:3px 7px; left:${box.x + 82}px; top:${box.y + box.h + 4}px; z-index:5;`;
+            confirmBtn.onclick = function(ev) {
+                ev.stopPropagation();
+                cropPdfSelection(pageIdx, overlayEl, box);
+                clearHandles();
+                if (rectDiv) { rectDiv.remove(); rectDiv = null; }
+            };
+            cancelBtn.onclick = function(ev) {
+                ev.stopPropagation();
+                clearHandles();
+                if (rectDiv) { rectDiv.remove(); rectDiv = null; }
+            };
+            overlayEl.appendChild(confirmBtn);
+            overlayEl.appendChild(cancelBtn);
+        }
+        overlayEl.addEventListener('mousedown', onDown);
+        overlayEl.addEventListener('mousemove', onMove);
+        window.addEventListener('mouseup', onUp);
+        overlayEl.addEventListener('touchstart', onDown, { passive: false });
+        overlayEl.addEventListener('touchmove', onMove, { passive: false });
+        overlayEl.addEventListener('touchend', onUp);
+    }
+
+    function cropPdfSelection(pageIdx, overlayEl, box) {
+        const srcCanvas = pdfRenderedPages[pageIdx];
+        if (!srcCanvas) return;
+        const scale = srcCanvas.width / overlayEl.getBoundingClientRect().width;
+        const out = document.createElement('canvas');
+        out.width = Math.round(box.w * scale);
+        out.height = Math.round(box.h * scale);
+        out.getContext('2d').drawImage(
+            srcCanvas,
+            Math.round(box.x * scale), Math.round(box.y * scale), out.width, out.height,
+            0, 0, out.width, out.height
+        );
+        const dataUrl = out.toDataURL('image/png');
+        splitQuestionImages.push(dataUrl);
+        renderSplitQuestionThumb(dataUrl, splitQuestionImages.length - 1);
+        document.getElementById('pdfImporterActions').style.display = 'flex';
+        document.getElementById('pdfImporterStatus').textContent = `تم قص ${splitQuestionImages.length} سؤال لحد دلوقتي.`;
+    }
+
+    function renderSplitQuestionThumb(dataUrl, idx) {
         const resultsBox = document.getElementById('pdfImporterResults');
-        const actionsBox = document.getElementById('pdfImporterActions');
-        resultsBox.innerHTML = '';
-        splitQuestionsList = [];
-        if (!text) {
-            statusLbl.textContent = 'محتاج نص أو ملف PDF الأول.';
-            actionsBox.style.display = 'none';
-            return;
-        }
-        const markerRegex = /(?:^|\n)\s*(?:السؤال\s*|س)?(\d{1,3})[\.\)\-:]\s+/g;
-        const matches = [...text.matchAll(markerRegex)];
-        let parts = [];
-        if (matches.length >= 2) {
-            for (let i = 0; i < matches.length; i++) {
-                const start = matches[i].index + matches[i][0].length;
-                const end = (i + 1 < matches.length) ? matches[i + 1].index : text.length;
-                const chunk = text.slice(start, end).trim();
-                if (chunk) parts.push(chunk);
-            }
-        } else {
-            // مفيش أرقام واضحة: نقسّم على الأسطر الفارغة كحل بديل
-            parts = text.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
-        }
-        if (!parts.length) {
-            statusLbl.textContent = 'مقدرتش ألاقي أسئلة منفصلة في النص ده.';
-            actionsBox.style.display = 'none';
-            return;
-        }
-        splitQuestionsList = parts;
-        parts.forEach((qText, idx) => {
-            const row = document.createElement('div');
-            row.style.cssText = 'display:flex; gap:8px; align-items:flex-start; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px;';
-            row.innerHTML = `
-                <input type="checkbox" class="split-q-check" data-idx="${idx}" checked style="margin-top:6px;">
-                <div style="flex:1;">
-                    <div style="font-size:10.5px;color:#64748b;margin-bottom:3px;">سؤال ${idx + 1}</div>
-                    <textarea class="split-q-text" data-idx="${idx}" style="width:100%; min-height:50px; font-family:inherit; padding:6px; border-radius:6px; border:1px solid #cbd5e1; resize:vertical;">${qText}</textarea>
-                </div>`;
-            resultsBox.appendChild(row);
-        });
-        statusLbl.textContent = `تم تقطيع ${parts.length} سؤال. راجعهم واختار اللي تحتاجه.`;
-        actionsBox.style.display = 'flex';
+        const card = document.createElement('div');
+        card.className = 'split-q-thumb';
+        card.dataset.idx = idx;
+        card.style.cssText = 'position:relative; width:130px; border:1px solid #e2e8f0; border-radius:8px; padding:4px; background:#fff;';
+        card.innerHTML = `
+            <img src="${dataUrl}" style="width:100%; display:block; border-radius:5px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:4px;">
+                <label style="font-size:10px; display:flex; align-items:center; gap:3px;"><input type="checkbox" class="split-q-check" data-idx="${idx}" checked> سؤال ${idx + 1}</label>
+                <button type="button" style="border:none; background:none; color:#dc2626; cursor:pointer; font-size:12px;" onclick="removeSplitQuestion(${idx})" title="حذف">🗑️</button>
+            </div>`;
+        resultsBox.appendChild(card);
     }
 
-    function getSelectedSplitQuestions() {
-        const rows = [...document.querySelectorAll('#pdfImporterResults .split-q-check')];
-        return rows.filter(c => c.checked).map(c => {
-            const idx = c.getAttribute('data-idx');
-            const ta = document.querySelector(`#pdfImporterResults .split-q-text[data-idx="${idx}"]`);
-            return ta ? ta.value.trim() : '';
-        }).filter(Boolean);
+    function removeSplitQuestion(idx) {
+        splitQuestionImages[idx] = null; // نسيب مكانه فاضي عشان الـ idx بتوع الباقي يفضلوا زي ما هم
+        const card = document.querySelector(`.split-q-thumb[data-idx="${idx}"]`);
+        if (card) card.remove();
+        if (!splitQuestionImages.some(Boolean)) {
+            document.getElementById('pdfImporterActions').style.display = 'none';
+        }
+    }
+
+    function getSelectedSplitQuestionImages() {
+        const checks = [...document.querySelectorAll('#pdfImporterResults .split-q-check')];
+        return checks.filter(c => c.checked).map(c => splitQuestionImages[parseInt(c.getAttribute('data-idx'), 10)]).filter(Boolean);
     }
 
     function addSplitQuestionsToExam() {
-        const selected = getSelectedSplitQuestions();
-        if (!selected.length) { alert('اختار سؤال واحد على الأقل.'); return; }
-        selected.forEach(qText => {
+        const selected = getSelectedSplitQuestionImages();
+        if (!selected.length) { alert('اقصص سؤال واحد على الأقل الأول.'); return; }
+        selected.forEach(dataUrl => {
             addQuestion();
             const container = getActiveQuestionsContainer();
             const newCard = container.lastElementChild;
+            const img = newCard ? newCard.querySelector('.q-attached-img') : null;
             const body = newCard ? newCard.querySelector('.q-body') : null;
-            if (body) body.innerText = qText;
+            if (img) { img.src = dataUrl; img.style.display = 'block'; }
+            if (body) body.innerText = '';
         });
         if (typeof reindexQuestions === 'function') reindexQuestions();
         if (typeof calculateAnalytics === 'function') calculateAnalytics();
         if (typeof attachMathJaxBlur === 'function') attachMathJaxBlur();
         if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
-        alert(`تمت إضافة ${selected.length} سؤال للنموذج الحالي.`);
+        alert(`تمت إضافة ${selected.length} سؤال (بالصورة) للنموذج الحالي.`);
         closePdfImporterModal();
     }
 
     async function downloadSplitQuestionsPDF() {
-        const selected = getSelectedSplitQuestions();
-        if (!selected.length) { alert('اختار سؤال واحد على الأقل.'); return; }
-        if (!window['jspdf'] || !window['html2canvas']) { alert('مكتبات التصدير لسه بتحمّل، جرّب تاني بعد ثانية.'); return; }
+        const selected = getSelectedSplitQuestionImages();
+        if (!selected.length) { alert('اقصص سؤال واحد على الأقل الأول.'); return; }
+        if (!window['jspdf']) { alert('مكتبة تصدير الـ PDF لسه بتحمّل، جرّب تاني بعد ثانية.'); return; }
         const statusLbl = document.getElementById('pdfImporterStatus');
         statusLbl.textContent = 'بيتم تجهيز الملف...';
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+        const pageW = 210, pageH = 297, margin = 15;
+        const maxW = pageW - margin * 2, maxH = pageH - margin * 2;
         for (let i = 0; i < selected.length; i++) {
-            const holder = document.createElement('div');
-            holder.style.cssText = 'position:fixed; top:-9999px; right:-9999px; width:180mm; padding:18mm; background:#fff; font-family:inherit; direction:rtl; font-size:15px; line-height:1.9; color:#0f172a; box-sizing:border-box;';
-            holder.innerHTML = `<div style="font-weight:900; font-size:13px; color:#64748b; margin-bottom:10px;">سؤال ${i + 1}</div><div>${selected[i].replace(/\n/g, '<br>')}</div>`;
-            document.body.appendChild(holder);
-            const canvas = await html2canvas(holder, { scale: 2.5, useCORS: true, backgroundColor: '#ffffff' });
-            document.body.removeChild(holder);
-            const imgData = canvas.toDataURL('image/png');
-            const imgW = 210;
-            const imgH = canvas.height * imgW / canvas.width;
+            const img = new Image();
+            await new Promise(resolve => { img.onload = resolve; img.src = selected[i]; });
+            let w = maxW, h = img.height * w / img.width;
+            if (h > maxH) { h = maxH; w = img.width * h / img.height; }
             if (i > 0) pdf.addPage();
-            pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
+            pdf.addImage(selected[i], 'PNG', margin, margin, w, h);
         }
         pdf.save('اسئلة-مقطعة.pdf');
         statusLbl.textContent = `تم تحميل ملف فيه ${selected.length} سؤال، كل سؤال في صفحة مستقلة.`;
