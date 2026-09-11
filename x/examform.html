@@ -22,6 +22,14 @@ window.MathJax = {
 <!-- html2canvas & QR Code -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- pdf.js (لقراءة واستخراج نص ملفات PDF) & jsPDF (لتصدير PDF مباشر لكل سؤال) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  if (window['pdfjsLib']) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+</script>
 
 <!-- ═══ ربط تسجيل الدخول بنظام أكواد امتحانك بلس المستقل (Firebase) ═══ -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -700,6 +708,10 @@ window.MathJax = {
         body.screen-mode .page { width: 297mm; min-height: 210mm; }
         .screen-mode-doctype-select { display: none; }
         body.screen-mode .screen-mode-doctype-select { display: inline-block; }
+
+        /* ===== وضع البوستر: يحوّل الصفحة لمقاس A3 أفقي (بوستر كبير) ===== */
+        body.poster-mode .page { width: 420mm; min-height: 297mm; }
+        body.poster-mode.screen-mode .page { width: 420mm; min-height: 297mm; } /* احتياطي لو الاتنين اتفعّلوا مع بعض بالغلط */
         .cover-page { display: none; flex-direction: column; justify-content: center; align-items: center; border: 4px double var(--primary-color); padding: 40px; text-align: center; gap: 20px; }
         body.show-cover .cover-page { display: flex; }
 
@@ -857,6 +869,7 @@ window.MathJax = {
                 color: #000 !important;
             }
             body.screen-mode, body.screen-mode html { width: 297mm; }
+            body.poster-mode, body.poster-mode html { width: 420mm; }
             /* إصلاح جذري: أي عنصر واجهة عائم (شارة المستخدم، إشعارات، الشريط الجانبي
                للصور المصغرة، صندوق البحث...) كان بيظهر في الطباعة لأنه مش جوه
                #pagesContainer أصلاً. بدل ما نفضل نلاحق كل عنصر جديد بالاسم، بنخفي
@@ -887,6 +900,10 @@ window.MathJax = {
             body.screen-mode .page {
                 width: 297mm !important;
                 min-height: 210mm !important;
+            }
+            body.poster-mode .page {
+                width: 420mm !important;
+                min-height: 297mm !important;
             }
             .page:not(:last-child) {
                 page-break-after: always !important;
@@ -1223,7 +1240,8 @@ window.MathJax = {
             </div>
             <div class="sidebar-tabs no-print">
                 <button type="button" class="sidebar-tab-btn active" data-tab-btn="design" onclick="switchSidebarTab('design')">🎨 الشكل والخطوط</button>
-                <button type="button" class="sidebar-tab-btn" data-tab-btn="tools" onclick="switchSidebarTab('tools')">🛠️ الأدوات والمحتوى</button>
+                <button type="button" class="sidebar-tab-btn" data-tab-btn="tools" onclick="switchSidebarTab('tools')">🛠️ الرموز والتحرير</button>
+                <button type="button" class="sidebar-tab-btn" data-tab-btn="addons" onclick="switchSidebarTab('addons')">✨ الإضافات والتصدير</button>
             </div>
 
             <div class="sidebar-tab-pane active" data-tab-pane="design">
@@ -1420,54 +1438,66 @@ window.MathJax = {
                 </div>
             </div>
 
+            </div>
+            <!-- /sidebar-tab-pane: tools (جزء أول) -->
+
+            <div class="sidebar-tab-pane" data-tab-pane="addons">
             <div class="toolbar-section">
-                <div class="toolbar-label"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg> أدوات إضافية</div>
+                <div class="toolbar-label"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg> ✨ الإضافات الذكية</div>
                 <div class="adv-toolbar no-print">
                     <div class="adv-fab" onclick="toggleThumbnailsSidebar()" title="عرض / إخفاء الصور المصغرة للصفحات">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z"/></svg>
-                        صور مصغرة للصفحات
+                        🗺️ خريطة الصفحات
                     </div>
                     <div class="adv-fab" onclick="openReviewModal()" title="الأسئلة المطلوب مراجعتها">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-                        أسئلة تحتاج مراجعة
+                        🚩 قائمة المراجعة
                         <span class="adv-fab-badge" id="advReviewBadgeCount" style="display:none;">0</span>
                     </div>
                     <div class="adv-fab" onclick="generateTOC()" title="توليد جدول المحتويات تلقائيًا">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M3 9h14V7H3v2zm0 4h14v-2H3v2zm0 4h14v-2H3v2zm16 0h2v-2h-2v2zm0-10v2h2V7h-2zm0 6h2v-2h-2v2z"/></svg>
-                        جدول المحتويات
+                        📑 الفهرس التلقائي
                     </div>
                     <div class="adv-fab" onclick="openQuestionBankModal()" title="بنك الأسئلة">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>
-                        بنك الأسئلة
+                        🏦 بنك أسئلتي
                     </div>
                     <div class="adv-fab" onclick="exportDirectPDF()" title="تصدير مباشر إلى PDF">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                        تصدير PDF مباشر
+                        ⚡ تصدير فوري PDF
                     </div>
                     <div class="adv-fab" onclick="toggleCustomHeaderFooter()" title="تفعيل/إيقاف رأس وتذييل الطباعة المخصص">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M3 5h18v2H3V5zm0 12h18v2H3v-2zm4-4h10v2H7v-2z"/></svg>
-                        رأس وتذييل الطباعة
+                        🏷️ الرأس والتذييل
                     </div>
                     <div class="adv-fab" onclick="openCoverCustomizeModal()" title="تخصيص غلاف الملزمة بالكامل">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M4 4h16v4H4V4zm0 6h16v10H4V10zm4 2v6h8v-6H8z"/></svg>
-                        تخصيص الغلاف
+                        🎨 صمم الغلاف
                     </div>
                     <div class="adv-fab" onclick="openReusablesModal()" title="عناصر وصور محفوظة لإعادة الاستخدام">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                        العناصر المحفوظة
+                        ⭐ مفضلاتي
                         <span class="adv-fab-badge" id="reusablesBadgeCount" style="display:none;">0</span>
                     </div>
                     <div class="adv-fab" onclick="openShapeLibraryModal()" title="مكتبة أشكال ورسومات جاهزة">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M12 2L2 22h20L12 2zm6 4a2 2 0 110 4 2 2 0 010-4z"/></svg>
-                        مكتبة الأشكال
+                        🔷 مكتبة الأشكال
                     </div>
                     <div class="adv-fab" onclick="openFunctionGrapherModal()" title="رسم دالة رياضية تلقائيًا">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M3 21h18v-2H5V3H3v18zm4-6l3-4 3 3 5-7 1.5 1L14 15l-3-3-3.5 5H7v-2z"/></svg>
-                        رسم دالة
+                        📈 راسم الدوال
                     </div>
                     <div class="adv-fab" onclick="insertGeoGebra()" title="إدراج أداة هندسية تفاعلية (GeoGebra)">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm12.5 0a3.5 3.5 0 110 7 3.5 3.5 0 010-7z"/></svg>
-                        شكل هندسي تفاعلي
+                        📐 جيوجبرا التفاعلي
+                    </div>
+                    <div class="adv-fab" onclick="openPdfImporterModal()" title="ارفع ملف أسئلة PDF (أو الصق نص) وتقطيعه لأسئلة منفصلة قابلة للإضافة أو التحميل">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M6 2c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6H6zm7 7V3.5L18.5 9H13zM8 12h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
+                        📄 مقطّع أسئلة PDF
+                    </div>
+                    <div class="adv-fab" onclick="openVariantGeneratorModal()" title="توليد نسخ مبعثرة من نفس الورقة بترتيب أسئلة مختلف لمنع الغش">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M17 3H7c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 6h6v2H9V6zm3 13c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm3-4H9v-2h6v2z"/></svg>
+                        🎲 نسخ مبعثرة (A/B/C)
                     </div>
                 </div>
                 <div class="undo-redo-bar" style="margin-top:8px;">
@@ -1495,6 +1525,7 @@ window.MathJax = {
                         <option value="exam">وضع أسئلة</option>
                         <option value="booklet">وضع ملزمة</option>
                     </select>
+                    <button id="posterModeBtn" class="btn btn-purple" style="background-color:#9333ea;" onclick="togglePosterMode()" title="يحوّل مقاس الصفحة لبوستر A3 أفقي (لعرضه على الحائط أو الطباعة الكبيرة)">🖼️ وضع البوستر A3</button>
                     <button class="btn" style="background-color:#0f766e;" onclick="toggleMarginPanel()">📐 الهوامش</button>
                     <button class="btn btn-purple" style="background-color:#0d9488;" onclick="toggleCoverPage()">غلاف الامتحان</button>
                     <button class="btn btn-warning" style="background-color:#0284c7;" onclick="toggleOrnamentBorder()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg> إطار زخرفي</button>
@@ -1533,6 +1564,10 @@ window.MathJax = {
                 </div>
             </div>
             
+            </div>
+            <!-- /sidebar-tab-pane: addons -->
+
+            <div class="sidebar-tab-pane" data-tab-pane="tools">
             <div id="editPanel" class="edit-panel">
                 <div class="input-group">
                     <label>اسم المعلم:</label>
@@ -3925,8 +3960,15 @@ window.MathJax = {
 
         // ═══ وضع الشاشة: يحوّل الصفحة لمقاس A4 أفقي (Landscape)، مع اختيار نوع المستند ═══
         let isScreenMode = false;
+        let isPosterMode = false;
         function toggleScreenMode() {
             isScreenMode = !isScreenMode;
+            if (isScreenMode && isPosterMode) {
+                isPosterMode = false;
+                document.body.classList.remove('poster-mode');
+                const posterBtn = document.getElementById('posterModeBtn');
+                if (posterBtn) posterBtn.classList.remove('active');
+            }
             document.body.classList.toggle('screen-mode', isScreenMode);
             const btn = document.getElementById('screenModeBtn');
             if (btn) btn.classList.toggle('active', isScreenMode);
@@ -3941,7 +3983,26 @@ window.MathJax = {
             if (wantsBooklet !== isBookletMode) toggleBookletMode();
         }
 
-        // تحديث حجم صفحة الطباعة (@page) ديناميكيًا حسب وضع الشاشة، لأن حجم @page
+        // ===== وضع البوستر: يحوّل الصفحة لمقاس A3 أفقي (للطباعة الكبيرة أو العرض على الحائط) =====
+        // وضع البوستر ووضع الشاشة (A4 أفقي) بيستبعدوا بعض، مينفعش الاتنين مفعلين مع بعض
+        function togglePosterMode() {
+            isPosterMode = !isPosterMode;
+            if (isPosterMode && isScreenMode) {
+                // اقفل وضع الشاشة الأول عشان منقعش على مقاسين مختلفين مع بعض
+                isScreenMode = false;
+                document.body.classList.remove('screen-mode');
+                const screenBtn = document.getElementById('screenModeBtn');
+                if (screenBtn) screenBtn.classList.remove('active');
+            }
+            document.body.classList.toggle('poster-mode', isPosterMode);
+            const btn = document.getElementById('posterModeBtn');
+            if (btn) btn.classList.toggle('active', isPosterMode);
+            updatePrintPageSize();
+            schedulePageOverflowCheck();
+            saveExamToLocalStorage();
+        }
+
+        // تحديث حجم صفحة الطباعة (@page) ديناميكيًا حسب وضع الشاشة/البوستر، لأن حجم @page
         // لا يمكن ربطه بـ class على body مباشرة، فبنكتب/نمسح ستايل مخصص لحظة الطباعة
         function updatePrintPageSize() {
             let styleTag = document.getElementById('dynamicPrintSizeStyle');
@@ -3950,9 +4011,13 @@ window.MathJax = {
                 styleTag.id = 'dynamicPrintSizeStyle';
                 document.head.appendChild(styleTag);
             }
-            styleTag.textContent = isScreenMode
-                ? '@media print { @page { size: A4 landscape; margin: 0; } }'
-                : '';
+            if (isPosterMode) {
+                styleTag.textContent = '@media print { @page { size: A3 landscape; margin: 0; } }';
+            } else if (isScreenMode) {
+                styleTag.textContent = '@media print { @page { size: A4 landscape; margin: 0; } }';
+            } else {
+                styleTag.textContent = '';
+            }
         }
 
         // ═══ التحكم في هوامش الصفحة (تنطبق على الشاشة والطباعة بنفس القيمة بالظبط) ═══
@@ -4920,6 +4985,59 @@ window.MathJax = {
             <div class="modal-body">
                 <p style="font-size:11px;color:#64748b;margin-bottom:10px;">من زر "💾 حفظ للاستخدام لاحقًا" اللي تحت أي سؤال، تقدر تحفظ أي عنصر (سؤال، فقرة، صورة داخله...) وتلاقيه هنا جاهز تدرجه في أي صفحة تانية أو أي ملزمة تانية.</p>
                 <div id="reusablesListContainer" style="display:flex; flex-direction:column; gap:8px; max-height:55vh; overflow-y:auto;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: مقطّع أسئلة PDF -->
+    <div class="modal-overlay" id="pdfImporterModal">
+        <div class="modal-card" style="max-width: 680px;">
+            <div class="modal-header">
+                <h3>📄 مقطّع أسئلة PDF</h3>
+                <button class="modal-close" onclick="closePdfImporterModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:11px;color:#64748b;margin-bottom:8px;">ارفع ملف PDF فيه أسئلة (كل سؤال يبدأ برقم زي 1- أو 1) أو س1)، أو الصق نص الأسئلة مباشرة تحت. هيتقطّع كل سؤال لوحده وتقدر تضيفهم للنموذج الحالي أو تحملهم PDF.</p>
+                <div class="input-group" style="margin-bottom:8px;">
+                    <button class="btn" style="background-color:#0284c7;" onclick="document.getElementById('pdfImporterFileInput').click()">⬆ ارفع ملف PDF</button>
+                    <input type="file" id="pdfImporterFileInput" accept="application/pdf" style="display:none;" onchange="handlePdfImporterFile(event)">
+                    <span id="pdfImporterFileName" style="font-size:11px;color:#0f766e;"></span>
+                </div>
+                <textarea id="pdfImporterTextarea" placeholder="أو الصق نص الأسئلة هنا مباشرة..." style="width:100%; min-height:90px; font-family:inherit; padding:8px; border-radius:8px; border:1px solid #cbd5e1; resize:vertical;"></textarea>
+                <div class="input-group" style="margin-top:8px;">
+                    <button class="btn btn-success" onclick="runQuestionSplitter()">✂️ قطّع الأسئلة</button>
+                    <span id="pdfImporterStatus" style="font-size:11px;color:#64748b;"></span>
+                </div>
+                <div id="pdfImporterResults" style="display:flex; flex-direction:column; gap:8px; max-height:38vh; overflow-y:auto; margin-top:10px;"></div>
+                <div class="input-group" id="pdfImporterActions" style="display:none; margin-top:10px; border-top:1px solid #e2e8f0; padding-top:10px;">
+                    <button class="btn btn-success" onclick="addSplitQuestionsToExam()">➕ إضافة المحدد للنموذج الحالي</button>
+                    <button class="btn btn-purple" style="background-color:#0d9488;" onclick="downloadSplitQuestionsPDF()">⬇️ تحميل PDF (كل سؤال في صفحة)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: توليد نسخ مبعثرة (A/B/C) -->
+    <div class="modal-overlay" id="variantGeneratorModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3>🎲 توليد نسخ مبعثرة (A/B/C)</h3>
+                <button class="modal-close" onclick="closeVariantGeneratorModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:11px;color:#64748b;margin-bottom:10px;">بيولّد نسخة جديدة من نفس الورقة بترتيب عشوائي للأسئلة (لمنع الغش)، وبيحطلها اسم/كود مختلف تلقائيًا. النسخة الحالية مش بتتغيّر — التوليد بيفتح تبويب/نسخة جديدة.</p>
+                <div class="input-group">
+                    <label>عدد النسخ المطلوبة:</label>
+                    <select id="variantCountSelect">
+                        <option value="1">نسخة واحدة (B)</option>
+                        <option value="2" selected>نسختين (B, C)</option>
+                        <option value="3">3 نسخ (B, C, D)</option>
+                    </select>
+                </div>
+                <div class="input-group" style="margin-top:8px;">
+                    <button class="btn btn-success" onclick="generateShuffledVariants()">🎲 توليد الآن</button>
+                </div>
+                <div id="variantGeneratorStatus" style="font-size:11px;color:#0f766e;margin-top:8px;"></div>
             </div>
         </div>
     </div>
@@ -6066,6 +6184,217 @@ window.MathJax = {
             footer.innerHTML = `<span>صفحة ${idx + 1}</span><span>العام الدراسي ${year}</span>`;
         });
     }
+
+    /* ---------------------------------------------------------------
+       سادسًا (ب): مقطّع أسئلة PDF — رفع PDF أو لصق نص، تقطيع كل سؤال
+       لوحده، ثم إضافته للنموذج الحالي أو تحميله PDF منفصل لكل سؤال
+    --------------------------------------------------------------- */
+    let splitQuestionsList = [];
+
+    function openPdfImporterModal() {
+        document.getElementById('pdfImporterModal').classList.add('open');
+    }
+    function closePdfImporterModal() {
+        document.getElementById('pdfImporterModal').classList.remove('open');
+    }
+
+    async function handlePdfImporterFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const nameLbl = document.getElementById('pdfImporterFileName');
+        const statusLbl = document.getElementById('pdfImporterStatus');
+        nameLbl.textContent = file.name;
+        if (!window['pdfjsLib']) {
+            statusLbl.textContent = 'تعذّر تحميل مكتبة قراءة PDF، جرّب تلصق النص يدويًا بدل رفع الملف.';
+            return;
+        }
+        statusLbl.textContent = 'بيتم قراءة الملف...';
+        try {
+            const buf = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+            let fullText = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                const pageText = content.items.map(it => it.str).join(' ');
+                fullText += pageText + '\n';
+            }
+            document.getElementById('pdfImporterTextarea').value = fullText.trim();
+            statusLbl.textContent = `تم استخراج نص ${pdf.numPages} صفحة. راجع النص واضغط "قطّع الأسئلة".`;
+        } catch (err) {
+            statusLbl.textContent = 'حصل خطأ أثناء قراءة الملف. جرّب ملف PDF فيه نص حقيقي (مش صورة ممسوحة ضوئيًا).';
+        }
+    }
+
+    // تقطيع النص لأسئلة منفصلة حسب أرقام بداية كل سؤال (1- أو 1) أو 1. أو س1 أو السؤال 1)
+    function runQuestionSplitter() {
+        const text = document.getElementById('pdfImporterTextarea').value.trim();
+        const statusLbl = document.getElementById('pdfImporterStatus');
+        const resultsBox = document.getElementById('pdfImporterResults');
+        const actionsBox = document.getElementById('pdfImporterActions');
+        resultsBox.innerHTML = '';
+        splitQuestionsList = [];
+        if (!text) {
+            statusLbl.textContent = 'محتاج نص أو ملف PDF الأول.';
+            actionsBox.style.display = 'none';
+            return;
+        }
+        const markerRegex = /(?:^|\n)\s*(?:السؤال\s*|س)?(\d{1,3})[\.\)\-:]\s+/g;
+        const matches = [...text.matchAll(markerRegex)];
+        let parts = [];
+        if (matches.length >= 2) {
+            for (let i = 0; i < matches.length; i++) {
+                const start = matches[i].index + matches[i][0].length;
+                const end = (i + 1 < matches.length) ? matches[i + 1].index : text.length;
+                const chunk = text.slice(start, end).trim();
+                if (chunk) parts.push(chunk);
+            }
+        } else {
+            // مفيش أرقام واضحة: نقسّم على الأسطر الفارغة كحل بديل
+            parts = text.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+        }
+        if (!parts.length) {
+            statusLbl.textContent = 'مقدرتش ألاقي أسئلة منفصلة في النص ده.';
+            actionsBox.style.display = 'none';
+            return;
+        }
+        splitQuestionsList = parts;
+        parts.forEach((qText, idx) => {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex; gap:8px; align-items:flex-start; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px;';
+            row.innerHTML = `
+                <input type="checkbox" class="split-q-check" data-idx="${idx}" checked style="margin-top:6px;">
+                <div style="flex:1;">
+                    <div style="font-size:10.5px;color:#64748b;margin-bottom:3px;">سؤال ${idx + 1}</div>
+                    <textarea class="split-q-text" data-idx="${idx}" style="width:100%; min-height:50px; font-family:inherit; padding:6px; border-radius:6px; border:1px solid #cbd5e1; resize:vertical;">${qText}</textarea>
+                </div>`;
+            resultsBox.appendChild(row);
+        });
+        statusLbl.textContent = `تم تقطيع ${parts.length} سؤال. راجعهم واختار اللي تحتاجه.`;
+        actionsBox.style.display = 'flex';
+    }
+
+    function getSelectedSplitQuestions() {
+        const rows = [...document.querySelectorAll('#pdfImporterResults .split-q-check')];
+        return rows.filter(c => c.checked).map(c => {
+            const idx = c.getAttribute('data-idx');
+            const ta = document.querySelector(`#pdfImporterResults .split-q-text[data-idx="${idx}"]`);
+            return ta ? ta.value.trim() : '';
+        }).filter(Boolean);
+    }
+
+    function addSplitQuestionsToExam() {
+        const selected = getSelectedSplitQuestions();
+        if (!selected.length) { alert('اختار سؤال واحد على الأقل.'); return; }
+        selected.forEach(qText => {
+            addQuestion();
+            const container = getActiveQuestionsContainer();
+            const newCard = container.lastElementChild;
+            const body = newCard ? newCard.querySelector('.q-body') : null;
+            if (body) body.innerText = qText;
+        });
+        if (typeof reindexQuestions === 'function') reindexQuestions();
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof attachMathJaxBlur === 'function') attachMathJaxBlur();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        alert(`تمت إضافة ${selected.length} سؤال للنموذج الحالي.`);
+        closePdfImporterModal();
+    }
+
+    async function downloadSplitQuestionsPDF() {
+        const selected = getSelectedSplitQuestions();
+        if (!selected.length) { alert('اختار سؤال واحد على الأقل.'); return; }
+        if (!window['jspdf'] || !window['html2canvas']) { alert('مكتبات التصدير لسه بتحمّل، جرّب تاني بعد ثانية.'); return; }
+        const statusLbl = document.getElementById('pdfImporterStatus');
+        statusLbl.textContent = 'بيتم تجهيز الملف...';
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+        for (let i = 0; i < selected.length; i++) {
+            const holder = document.createElement('div');
+            holder.style.cssText = 'position:fixed; top:-9999px; right:-9999px; width:180mm; padding:18mm; background:#fff; font-family:inherit; direction:rtl; font-size:15px; line-height:1.9; color:#0f172a; box-sizing:border-box;';
+            holder.innerHTML = `<div style="font-weight:900; font-size:13px; color:#64748b; margin-bottom:10px;">سؤال ${i + 1}</div><div>${selected[i].replace(/\n/g, '<br>')}</div>`;
+            document.body.appendChild(holder);
+            const canvas = await html2canvas(holder, { scale: 2.5, useCORS: true, backgroundColor: '#ffffff' });
+            document.body.removeChild(holder);
+            const imgData = canvas.toDataURL('image/png');
+            const imgW = 210;
+            const imgH = canvas.height * imgW / canvas.width;
+            if (i > 0) pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
+        }
+        pdf.save('اسئلة-مقطعة.pdf');
+        statusLbl.textContent = `تم تحميل ملف فيه ${selected.length} سؤال، كل سؤال في صفحة مستقلة.`;
+    }
+
+    /* ---------------------------------------------------------------
+       سادسًا (ج): توليد نسخ مبعثرة (A/B/C) — بيرتب الأسئلة عشوائيًا
+       في نسخة جديدة من الصفحة الحالية (نفس المتصفح) لمنع الغش
+    --------------------------------------------------------------- */
+    function openVariantGeneratorModal() {
+        document.getElementById('variantGeneratorModal').classList.add('open');
+    }
+    function closeVariantGeneratorModal() {
+        document.getElementById('variantGeneratorModal').classList.remove('open');
+    }
+
+    function shuffleArray(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    function generateShuffledVariants() {
+        const count = parseInt(document.getElementById('variantCountSelect').value, 10) || 1;
+        const statusLbl = document.getElementById('variantGeneratorStatus');
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        const baseState = localStorage.getItem('examPlusAutoSave');
+        if (!baseState) { statusLbl.textContent = 'محتاج تحفظ النموذج الأول.'; return; }
+        const letters = ['B', 'C', 'D'];
+        let created = 0;
+        for (let v = 0; v < count && v < 3; v++) {
+            try {
+                const state = JSON.parse(baseState);
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = state.pagesHtml;
+                const containers = wrapper.querySelectorAll('.questions-container, #questionsContainer');
+                containers.forEach(cont => {
+                    const cards = [...cont.querySelectorAll(':scope > .question-card')];
+                    if (cards.length > 1) {
+                        const shuffled = shuffleArray(cards);
+                        shuffled.forEach(card => cont.appendChild(card));
+                    }
+                });
+                state.pagesHtml = wrapper.innerHTML;
+                const key = `examPlusVariant_${letters[v]}_${Date.now()}`;
+                localStorage.setItem(key, JSON.stringify(state));
+                localStorage.setItem('examPlusLoadVariantKey', key);
+                window.open(window.location.pathname + '?loadVariant=' + encodeURIComponent(key), '_blank');
+                created++;
+            } catch (e) { /* تجاهل نسخة فشلت وكمل الباقي */ }
+        }
+        statusLbl.textContent = created ? `تم فتح ${created} نسخة مبعثرة جديدة في تبويبات منفصلة.` : 'حصلت مشكلة أثناء التوليد.';
+    }
+
+    // عند فتح الصفحة بلينك فيه ?loadVariant=... حمّل النسخة المبعثرة المحفوظة بدل النسخة العادية
+    (function loadVariantIfRequested() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const key = params.get('loadVariant');
+            if (!key) return;
+            const saved = localStorage.getItem(key);
+            if (!saved) return;
+            window.addEventListener('DOMContentLoaded', function() {
+                try {
+                    const state = JSON.parse(saved);
+                    const container = document.getElementById('pagesContainer');
+                    if (container && state.pagesHtml) container.innerHTML = state.pagesHtml;
+                } catch (e) { /* تجاهل */ }
+            });
+        } catch (e) { /* تجاهل */ }
+    })();
 
     /* ---------------------------------------------------------------
        سابعًا: دعم المواد باللغة الإنجليزية (LTR)
