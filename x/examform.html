@@ -6,6 +6,17 @@
 <meta name="description" content="امتحانك بلس">
 <meta name="theme-color" content="#0284c7">
 <title>امتحانك بلس - EXAM PLUS</title>
+<!-- ═══ إعدادات PWA (تطبيق ويب قابل للتثبيت) ═══
+     ملاحظة مهمة: التثبيت الحقيقي على الشاشة الرئيسية بيحتاج إن الملف يكون
+     شغّال من سيرفر حقيقي (https://...) مش ملف مفتوح من الجهاز مباشرة (file://).
+     لو رفعت الملف ده على أي استضافة (Netlify, Vercel, GitHub Pages...) هيظهر
+     خيار "إضافة للشاشة الرئيسية" تلقائيًا في المتصفح. -->
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%D8%A7%D9%85%D8%AA%D8%AD%D8%A7%D9%86%D9%83%20%D8%A8%D9%84%D8%B3%22%2C%22short_name%22%3A%22%D8%A7%D9%85%D8%AA%D8%AD%D8%A7%D9%86%D9%83%20%D8%A8%D9%84%D8%B3%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f8fafc%22%2C%22theme_color%22%3A%22%230284c7%22%2C%22dir%22%3A%22rtl%22%2C%22lang%22%3A%22ar%22%7D">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="امتحانك بلس">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%230284c7'/%3E%3Ctext x='50' y='64' font-size='46' text-anchor='middle' fill='white' font-family='Arial'%3E%D8%A7%3C/text%3E%3C/svg%3E">
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,6 +41,20 @@ window.MathJax = {
 <script>
   if (window['pdfjsLib']) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+  // تسجيل Service Worker بسيط (يشتغل بس لو الملف مستضاف على سيرفر حقيقي http/https،
+  // مش هيشتغل لو فاتح الملف مباشرة من الجهاز file://) — يخلي الصفحة تفتح حتى بدون نت لاحقًا
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    window.addEventListener('load', function () {
+      try {
+        const swCode = "self.addEventListener('install', e => self.skipWaiting()); " +
+          "self.addEventListener('activate', e => self.clients.claim()); " +
+          "self.addEventListener('fetch', e => { e.respondWith(fetch(e.request).catch(() => caches.match(e.request))); " +
+          "if (e.request.mode === 'navigate') { e.waitUntil((async () => { const r = await fetch(e.request); const c = await caches.open('examplus-v1'); c.put(e.request, r.clone()); })().catch(()=>{})); } });";
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(function () { /* تجاهل بهدوء لو فشل */ });
+      } catch (e) { /* تجاهل */ }
+    });
   }
 </script>
 
@@ -524,6 +549,33 @@ window.MathJax = {
         .page-qr-canvas { width: 74px; height: 74px; }
         .page-qr-canvas img, .page-qr-canvas canvas { display: block; width: 74px !important; height: 74px !important; }
         .page-qr-caption { font-size: 7.5px; color: #64748b; max-width: 84px; text-align: center; line-height: 1.2; }
+
+        /* ══ ختم/توقيع المدرسة في زاوية كل صفحة (أعلى، عكس مكان QR) ══ */
+        .page-stamp-badge {
+            position: absolute; top: 10px; right: 10px; display: none; z-index: 5;
+        }
+        .page-stamp-badge.stamp-pos-left { right: auto; left: 10px; }
+        .page-stamp-badge.stamp-pos-center { right: auto; left: 50%; transform: translateX(-50%); }
+        .page-stamp-badge img { display: block; max-width: 90px; max-height: 90px; object-fit: contain; }
+
+        /* ══ نسخة المعلم: شريط تنبيه واضح فوق كل صفحة وقت التصدير بالإجابات ══ */
+        body.teacher-copy-mode .page::before {
+            content: '🔑 نسخة المعلم — سرية (فيها الإجابات النموذجية)';
+            position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
+            background: #fee2e2; color: #b91c1c; font-weight: 900; font-size: 10.5px;
+            padding: 3px 16px; border-radius: 20px; z-index: 30; white-space: nowrap;
+        }
+
+        /* ══ علامة تتبع فريدة (شبه مرئية) في زاوية كل صفحة لتتبع مصدر أي تسريب ══ */
+        .page-tracking-code {
+            position: absolute; bottom: 4px; right: 6px; font-size: 6.5px; color: #cbd5e1;
+            z-index: 4; display: none; letter-spacing: 0.5px; pointer-events: none;
+        }
+        body.tracking-code-on .page-tracking-code { display: block; }
+
+        /* ══ وضع توفير الحبر: تحويل كل الألوان لتدرج رمادي عند العرض/الطباعة ══ */
+        body.ink-saving-mode { filter: grayscale(1); }
+        @media print { body.ink-saving-mode { filter: grayscale(1) !important; } }
 
         /* ══ وضع الخط المريح: تباعد أوسع بين الحروف والكلمات لصعوبات القراءة ══ */
         body.comfort-reading-mode .page { letter-spacing: 0.4px; word-spacing: 1.5px; }
@@ -1355,6 +1407,27 @@ window.MathJax = {
                 </select>
             </div>
 
+            <div class="font-controls" style="background: #fdf4ff; color: #86198f; flex-wrap: wrap;">
+                <span><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> ختم/توقيع المدرسة:</span>
+                <label style="cursor:pointer;">
+                    <input type="checkbox" id="stampEnableCheck" onchange="updateStampSettings()"> إظهار الختم في الورقة
+                </label>
+                <button type="button" class="btn" style="font-size:10px; padding:4px 8px; background-color:#a21caf;" onclick="document.getElementById('stampFileInput').click()">⬆ ارفع صورة الختم</button>
+                <input type="file" id="stampFileInput" accept="image/*" style="display:none;" onchange="handleStampUpload(event)">
+                <label style="margin-right:10px;">مكانه:</label>
+                <select id="stampScopeSelect" onchange="updateStampSettings()" style="font-family: inherit; padding: 3px 6px; border-radius: 6px; border: 1px solid #f0abfc;">
+                    <option value="all">كل الصفحات</option>
+                    <option value="lastOnly">آخر صفحة بس</option>
+                    <option value="coverOnly">صفحة الغلاف بس</option>
+                </select>
+                <label style="margin-right:10px;">موضعه بالورقة:</label>
+                <select id="stampPositionSelect" onchange="updateStampSettings()" style="font-family: inherit; padding: 3px 6px; border-radius: 6px; border: 1px solid #f0abfc;">
+                    <option value="right">أعلى اليمين (افتراضي)</option>
+                    <option value="left">أعلى اليسار</option>
+                    <option value="center">أعلى المنتصف</option>
+                </select>
+            </div>
+
             </div>
             <!-- /sidebar-tab-pane: design -->
 
@@ -1502,6 +1575,38 @@ window.MathJax = {
                     <div class="adv-fab" onclick="openVariantGeneratorModal()" title="توليد نسخ مبعثرة من نفس الورقة بترتيب أسئلة مختلف لمنع الغش">
                         <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M17 3H7c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 6h6v2H9V6zm3 13c-.83 0-1.5-.67-1.5-1.5S11.17 16 12 16s1.5.67 1.5 1.5S12.83 19 12 19zm3-4H9v-2h6v2z"/></svg>
                         🎲 نسخ مبعثرة (A/B/C)
+                    </div>
+                    <div class="adv-fab" onclick="openVersionHistoryModal()" title="سجل نسخ سابقة محفوظة من النموذج، مع إمكانية الاسترجاع">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M13 3a9 9 0 100 18 9 9 0 000-18zm.5 4.75V12l3.5 2.1-.75 1.23-4.25-2.58V7.75h1.5zM4 9L1 6l3-3v2.05A9.97 9.97 0 0111 3v2A7.97 7.97 0 004 9z"/></svg>
+                        🕘 سجل النسخ
+                    </div>
+                    <div class="adv-fab" onclick="openTemplatesModal()" title="ابدأ من قالب امتحان جاهز حسب المادة">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M3 3h8v8H3V3zm10 0h8v5h-8V3zm0 7h8v11h-8V10zM3 13h8v8H3v-8z"/></svg>
+                        🧩 قوالب جاهزة
+                    </div>
+                    <div class="adv-fab" onclick="openRandomExamModal()" title="اسحب أسئلة عشوائية من بنك الأسئلة وكوّن امتحان تلقائيًا">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M6 3h12a1 1 0 011 1v16a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1zm2.5 4a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm-7 7a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm7 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>
+                        🎲 امتحان عشوائي من البنك
+                    </div>
+                    <div class="adv-fab" onclick="exportTeacherCopyPDF()" title="يظهر الإجابات النموذجية ويحط علامة نسخة المعلم، ثم يفتح الطباعة/الحفظ PDF">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M12 17a2 2 0 100-4 2 2 0 000 4zm6-9h-1V6a5 5 0 00-10 0v2H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V10a2 2 0 00-2-2zm-9-2a3 3 0 016 0v2H9V6z"/></svg>
+                        🔑 نسخة المعلم (بالإجابات)
+                    </div>
+                    <div class="adv-fab" onclick="openPasswordPdfModal()" title="تصدير PDF محمي بكلمة سر عشان يمنع تسريب الامتحان قبل معاده">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M12 1a5 5 0 00-5 5v3H6a2 2 0 00-2 2v9a2 2 0 002 2h12a2 2 0 002-2v-9a2 2 0 00-2-2h-1V6a5 5 0 00-5-5zm0 2a3 3 0 013 3v3H9V6a3 3 0 013-3zm0 10a2 2 0 110 4 2 2 0 010-4z"/></svg>
+                        🔒 تصدير PDF بكلمة سر
+                    </div>
+                    <div class="adv-fab" onclick="openTrackingWatermarkModal()" title="علامة صغيرة شبه مرئية فريدة لكل نسخة، تساعدك تعرف مصدر أي تسريب">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2V7zm0 8h2v2h-2v-2z"/></svg>
+                        🫥 علامة تتبع فريدة
+                    </div>
+                    <div class="adv-fab" onclick="toggleInkSavingMode()" id="inkSavingFab" title="يحوّل كل الألوان لتدرج رمادي وقت العرض/الطباعة لتوفير حبر الطابعة">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M12 2a10 10 0 000 20V2z"/></svg>
+                        ⚫⚪ وضع توفير الحبر
+                    </div>
+                    <div class="adv-fab" onclick="triggerManualCloudBackup()" title="حفظ نسخة سحابية يدويًا الآن (متاح لحسابات المعلمين المسجّلة)">
+                        <svg class="svg-ic" viewBox="0 0 24 24" style="width:16px;height:16px;"><path d="M19.35 10.04A7.49 7.49 0 0012 4a7.5 7.5 0 00-7.35 6.04A5.5 5.5 0 005.5 20H18a4.5 4.5 0 00.85-9.96z"/></svg>
+                        ☁️ نسخة سحابية الآن
                     </div>
                 </div>
                 <div class="undo-redo-bar" style="margin-top:8px;">
@@ -2755,6 +2860,7 @@ window.MathJax = {
 
         // ══ باركود QR لكل صفحة: يودي لصفحة تسليم الإجابة أونلاين أو نموذج الإجابة ══
         let qrSettings = { url: '', enabled: false, scope: 'all', position: 'left' };
+        let stampSettings = { dataUrl: '', enabled: false, scope: 'all', position: 'right' };
 
         function ensurePageHasQRSlot(pageEl) {
             if (!pageEl) return null;
@@ -2801,6 +2907,63 @@ window.MathJax = {
             saveExamToLocalStorage();
         }
 
+        // ══ ختم/توقيع المدرسة في زاوية كل صفحة (نفس فكرة الـ QR بالظبط، بس صورة مرفوعة بدل باركود) ══
+        function ensurePageHasStampSlot(pageEl) {
+            if (!pageEl) return null;
+            let badge = pageEl.querySelector(':scope > .page-stamp-badge');
+            if (badge) return badge;
+            badge = document.createElement('div');
+            badge.className = 'page-stamp-badge';
+            badge.innerHTML = '<img alt="ختم المدرسة">';
+            pageEl.appendChild(badge);
+            return badge;
+        }
+
+        function renderAllPageStamps() {
+            const pages = Array.from(document.querySelectorAll('#pagesContainer .page'));
+            pages.forEach(function(pageEl, idx) {
+                const badge = ensurePageHasStampSlot(pageEl);
+                if (!badge) return;
+                const img = badge.querySelector('img');
+                const shouldShow = stampSettings.enabled && !!stampSettings.dataUrl && (
+                    stampSettings.scope === 'all' ||
+                    (stampSettings.scope === 'lastOnly' && idx === pages.length - 1) ||
+                    (stampSettings.scope === 'coverOnly' && pageEl.id === 'coverPage')
+                );
+                badge.style.display = shouldShow ? 'block' : 'none';
+                badge.classList.remove('stamp-pos-left', 'stamp-pos-center');
+                if (stampSettings.position === 'left') badge.classList.add('stamp-pos-left');
+                else if (stampSettings.position === 'center') badge.classList.add('stamp-pos-center');
+                if (shouldShow && img) img.src = stampSettings.dataUrl;
+            });
+        }
+
+        function handleStampUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                let dataUrl = e.target.result;
+                if (typeof compressImageDataUrl === 'function') {
+                    try { dataUrl = await compressImageDataUrl(dataUrl, 600, 0.85); } catch (err) { /* استخدم الأصلية لو الضغط فشل */ }
+                }
+                stampSettings.dataUrl = dataUrl;
+                const check = document.getElementById('stampEnableCheck');
+                if (check) check.checked = true;
+                updateStampSettings();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateStampSettings() {
+            stampSettings.enabled = document.getElementById('stampEnableCheck').checked;
+            stampSettings.scope = document.getElementById('stampScopeSelect').value;
+            const posSel = document.getElementById('stampPositionSelect');
+            stampSettings.position = posSel ? posSel.value : 'right';
+            renderAllPageStamps();
+            saveExamToLocalStorage();
+        }
+
         const _pagesQRObserver = new MutationObserver(function(mutations) {
             let changed = false;
             mutations.forEach(function(m) {
@@ -2808,7 +2971,7 @@ window.MathJax = {
                     if (n.nodeType === 1 && n.classList && n.classList.contains('page')) changed = true;
                 });
             });
-            if (changed) renderAllPageQRCodes();
+            if (changed) { renderAllPageQRCodes(); renderAllPageStamps(); }
         });
         document.addEventListener('DOMContentLoaded', function() {
             const container = document.getElementById('pagesContainer');
@@ -4256,9 +4419,14 @@ window.MathJax = {
         function uploadQuestionImage(input, qId) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = async function(e) {
+                    let dataUrl = e.target.result;
+                    if (typeof compressImageDataUrl === 'function') {
+                        try { dataUrl = await compressImageDataUrl(dataUrl); } catch (err) { /* استخدم الأصلية لو الضغط فشل */ }
+                    }
                     const img = document.getElementById(`img-${qId}`);
-                    if(img) { img.src = e.target.result; img.style.display = 'block'; }
+                    if(img) { img.src = dataUrl; img.style.display = 'block'; }
+                    if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
                 };
                 reader.readAsDataURL(input.files[0]);
             }
@@ -4474,7 +4642,11 @@ window.MathJax = {
                 qrEnabled: document.getElementById('qrEnableCheck') ? document.getElementById('qrEnableCheck').checked : false,
                 qrUrl: document.getElementById('qrLinkInput') ? document.getElementById('qrLinkInput').value : '',
                 qrScope: document.getElementById('qrScopeSelect') ? document.getElementById('qrScopeSelect').value : 'all',
-                qrPosition: document.getElementById('qrPositionSelect') ? document.getElementById('qrPositionSelect').value : 'left'
+                qrPosition: document.getElementById('qrPositionSelect') ? document.getElementById('qrPositionSelect').value : 'left',
+                stampEnabled: document.getElementById('stampEnableCheck') ? document.getElementById('stampEnableCheck').checked : false,
+                stampDataUrl: stampSettings.dataUrl || '',
+                stampScope: document.getElementById('stampScopeSelect') ? document.getElementById('stampScopeSelect').value : 'all',
+                stampPosition: document.getElementById('stampPositionSelect') ? document.getElementById('stampPositionSelect').value : 'right'
             };
             localStorage.setItem('examPlusAutoSave', JSON.stringify(state));
             showSaveIndicator();
@@ -4508,6 +4680,15 @@ window.MathJax = {
                             document.getElementById('qrPositionSelect').value = state.qrPosition || 'left';
                         }
                         updateQRSettings();
+                    }
+                    if (document.getElementById('stampEnableCheck')) {
+                        document.getElementById('stampEnableCheck').checked = !!state.stampEnabled;
+                        stampSettings.dataUrl = state.stampDataUrl || '';
+                        document.getElementById('stampScopeSelect').value = state.stampScope || 'all';
+                        if (document.getElementById('stampPositionSelect')) {
+                            document.getElementById('stampPositionSelect').value = state.stampPosition || 'right';
+                        }
+                        updateStampSettings();
                     }
                     updateHeaderInfo();
                 } catch(e) {}
@@ -4977,7 +5158,8 @@ window.MathJax = {
                 <div class="bank-toolbar">
                     <select id="bankFilterStage"><option value="">كل المراحل</option><option>ابتدائي</option><option>إعدادي</option><option>ثانوي</option></select>
                     <select id="bankFilterSubject"><option value="">كل المواد</option></select>
-                    <input type="text" id="bankFilterKeyword" placeholder="بحث بكلمة أو وحدة أو درس...">
+                    <select id="bankFilterDifficulty"><option value="">كل المستويات</option><option value="سهل">سهل</option><option value="متوسط">متوسط</option><option value="صعب">صعب</option></select>
+                    <input type="text" id="bankFilterKeyword" placeholder="بحث بكلمة أو وحدة أو درس أو وسم...">
                 </div>
                 <div class="bank-toolbar" style="margin-top:-4px;">
                     <input type="text" id="bankNewStage" placeholder="المرحلة الدراسية">
@@ -4985,6 +5167,8 @@ window.MathJax = {
                     <input type="text" id="bankNewSubject" placeholder="المادة">
                     <input type="text" id="bankNewUnit" placeholder="الوحدة">
                     <input type="text" id="bankNewLesson" placeholder="الدرس">
+                    <input type="text" id="bankNewTags" placeholder="وسوم (افصل بفاصلة)">
+                    <select id="bankNewDifficulty"><option value="">المستوى</option><option value="سهل">سهل</option><option value="متوسط">متوسط</option><option value="صعب">صعب</option></select>
                 </div>
                 <div class="bank-grid" id="bankGridContainer"></div>
             </div>
@@ -5072,6 +5256,112 @@ window.MathJax = {
                     <button class="btn btn-purple" style="background-color:#0d9488;" onclick="exportAllVariantsSinglePDF()">⬇️ تصدير كل النسخ في ملف PDF واحد</button>
                 </div>
                 <div id="variantGeneratorStatus" style="font-size:11px;color:#0f766e;margin-top:8px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: سجل النسخ السابقة -->
+    <div class="modal-overlay" id="versionHistoryModal">
+        <div class="modal-card" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3>🕘 سجل النسخ السابقة</h3>
+                <button class="modal-close" onclick="closeVersionHistoryModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:11px;color:#64748b;margin-bottom:8px;">بيتحفظ نسخة تلقائيًا كل شوية أثناء شغلك، وتقدر كمان تحفظ نسخة يدوي أي وقت. لو حصل أي تعديل غلط تقدر ترجع لأي نسخة قديمة.</p>
+                <div class="input-group" style="margin-bottom:8px;">
+                    <button class="btn btn-success" onclick="saveVersionSnapshot('يدوي')">💾 احفظ نسخة الآن</button>
+                </div>
+                <div id="versionHistoryList" style="display:flex; flex-direction:column; gap:6px; max-height:42vh; overflow-y:auto;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: قوالب امتحانات جاهزة -->
+    <div class="modal-overlay" id="templatesModal">
+        <div class="modal-card" style="max-width: 560px;">
+            <div class="modal-header">
+                <h3>🧩 قوالب امتحانات جاهزة</h3>
+                <button class="modal-close" onclick="closeTemplatesModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:11px;color:#64748b;margin-bottom:10px;">اختر مادة عشان تبدأ بأسئلة نموذجية جاهزة تقدر تعدّل عليها بحرية. تنبيه: هيستبدل أسئلة الصفحة الحالية بأسئلة القالب.</p>
+                <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px;">
+                    <button class="btn" style="background-color:#0284c7;" onclick="applyExamTemplate('math')">🔢 رياضيات</button>
+                    <button class="btn" style="background-color:#16a34a;" onclick="applyExamTemplate('science')">🔬 علوم</button>
+                    <button class="btn" style="background-color:#ca8a04;" onclick="applyExamTemplate('arabic')">📖 لغة عربية</button>
+                    <button class="btn" style="background-color:#7c3aed;" onclick="applyExamTemplate('english')">🔤 English</button>
+                    <button class="btn" style="background-color:#dc2626;" onclick="applyExamTemplate('social')">🌍 دراسات اجتماعية</button>
+                    <button class="btn" style="background-color:#0d9488;" onclick="applyExamTemplate('general')">📝 عام (أسئلة متنوعة)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: امتحان عشوائي من بنك الأسئلة -->
+    <div class="modal-overlay" id="randomExamModal">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <h3>🎲 امتحان عشوائي من بنك الأسئلة</h3>
+                <button class="modal-close" onclick="closeRandomExamModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:11px;color:#64748b;margin-bottom:8px;">بيسحب أسئلة عشوائية من بنك الأسئلة المحفوظ عندك ويضيفها للنموذج الحالي.</p>
+                <div class="input-group">
+                    <label>المادة:</label>
+                    <select id="randomExamSubjectSelect"><option value="">الكل</option></select>
+                </div>
+                <div class="input-group" style="margin-top:6px;">
+                    <label>عدد الأسئلة:</label>
+                    <input type="number" id="randomExamCountInput" value="10" min="1" max="100" style="width:70px;">
+                </div>
+                <div class="input-group" style="margin-top:8px;">
+                    <button class="btn btn-success" onclick="generateRandomExam()">🎲 كوّن الامتحان الآن</button>
+                </div>
+                <div id="randomExamStatus" style="font-size:11px;color:#0f766e;margin-top:8px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: تصدير PDF محمي بكلمة سر -->
+    <div class="modal-overlay" id="passwordPdfModal">
+        <div class="modal-card" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3>🔒 تصدير PDF محمي بكلمة سر</h3>
+                <button class="modal-close" onclick="closePasswordPdfModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:11px;color:#64748b;margin-bottom:8px;">هيولّد ملف PDF كامل للامتحان محتاج كلمة السر دي عشان يتفتح. مفيد إنك تبعته قبل الامتحان من غير خوف من تسريب مبكر.</p>
+                <div class="input-group">
+                    <label>كلمة السر:</label>
+                    <input type="password" id="pdfPasswordInput" placeholder="اكتب كلمة سر" style="flex:1;">
+                </div>
+                <div class="input-group" style="margin-top:8px;">
+                    <button class="btn btn-success" onclick="exportPasswordProtectedPDF()">🔒 تصدير الملف المحمي</button>
+                </div>
+                <div id="passwordPdfStatus" style="font-size:11px;color:#0f766e;margin-top:8px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة: علامة تتبع فريدة لكل نسخة -->
+    <div class="modal-overlay" id="trackingWatermarkModal">
+        <div class="modal-card" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3>🫥 علامة تتبع فريدة</h3>
+                <button class="modal-close" onclick="closeTrackingWatermarkModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:11px;color:#64748b;margin-bottom:8px;">اكتب اسم الطالب أو أي كود مميز — هيتولد منه كود قصير شبه مرئي يتحط في زاوية كل صفحة. لو الامتحان اتسرب تقدر تعرف طلعت من عند مين بمقارنة الكود.</p>
+                <div class="input-group">
+                    <label>اسم الطالب / الكود:</label>
+                    <input type="text" id="trackingCodeInput" placeholder="مثلاً: أحمد محمد - 3ث1" style="flex:1;">
+                </div>
+                <div class="input-group" style="margin-top:8px;">
+                    <button class="btn btn-success" onclick="applyTrackingWatermark()">🎯 ضع العلامة على هذه النسخة</button>
+                    <button class="btn btn-danger" onclick="removeTrackingWatermark()">🗑️ إزالة العلامة</button>
+                </div>
+                <div id="trackingWatermarkStatus" style="font-size:11px;color:#0f766e;margin-top:8px;"></div>
             </div>
         </div>
     </div>
@@ -6081,12 +6371,15 @@ window.MathJax = {
         const subject = (document.getElementById('bankNewSubject') || {}).value || (typeof currentMainSubject !== 'undefined' ? currentMainSubject : '');
         const unit = (document.getElementById('bankNewUnit') || {}).value || '';
         const lesson = (document.getElementById('bankNewLesson') || {}).value || '';
+        const tagsRaw = (document.getElementById('bankNewTags') || {}).value || '';
+        const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+        const difficulty = (document.getElementById('bankNewDifficulty') || {}).value || '';
         const bank = getQuestionBank();
         bank.push({
             id: 'bank-' + Date.now(),
             html: q.outerHTML,
             text: (q.querySelector('.q-body') ? q.querySelector('.q-body').innerText : '').slice(0, 300),
-            stage, grade, subject, unit, lesson,
+            stage, grade, subject, unit, lesson, tags, difficulty,
             savedAt: Date.now()
         });
         saveQuestionBank(bank);
@@ -6116,12 +6409,14 @@ window.MathJax = {
         const bank = getQuestionBank();
         const stageF = document.getElementById('bankFilterStage').value;
         const subjectF = document.getElementById('bankFilterSubject').value;
+        const difficultyF = (document.getElementById('bankFilterDifficulty') || {}).value || '';
         const kwF = document.getElementById('bankFilterKeyword').value.trim().toLowerCase();
         const filtered = bank.filter(item => {
             if (stageF && item.stage !== stageF) return false;
             if (subjectF && item.subject !== subjectF) return false;
+            if (difficultyF && item.difficulty !== difficultyF) return false;
             if (kwF) {
-                const hay = [item.text, item.unit, item.lesson, item.subject, item.grade].join(' ').toLowerCase();
+                const hay = [item.text, item.unit, item.lesson, item.subject, item.grade, (item.tags || []).join(' ')].join(' ').toLowerCase();
                 if (!hay.includes(kwF)) return false;
             }
             return true;
@@ -6134,10 +6429,11 @@ window.MathJax = {
         filtered.slice().reverse().forEach(item => {
             const el = document.createElement('div');
             el.className = 'bank-item';
-            const tags = [item.stage, item.grade, item.subject, item.unit, item.lesson].filter(Boolean).map(t => `<span>${t}</span>`).join('');
+            const metaTags = [item.stage, item.grade, item.subject, item.unit, item.lesson, item.difficulty].filter(Boolean).map(t => `<span>${t}</span>`).join('');
+            const userTags = (item.tags || []).map(t => `<span style="background:#ede9fe;color:#6d28d9;">#${t}</span>`).join('');
             el.innerHTML = `
                 <div class="bank-item-text">${item.text || '(بدون نص)'}</div>
-                <div class="bank-item-tags">${tags}</div>
+                <div class="bank-item-tags">${metaTags}${userTags}</div>
                 <div class="bank-item-actions">
                     <button class="btn" style="background:#475569;" onclick="previewBankItem('${item.id}')">معاينة</button>
                     <button class="btn btn-success" onclick="insertBankItem('${item.id}')">إدراج بالامتحان</button>
@@ -6535,22 +6831,25 @@ window.MathJax = {
         if (!indices.length) { alert('اقصص سؤال واحد على الأقل الأول.'); return; }
         if (!window['jspdf']) { alert('مكتبة تصدير الـ PDF لسه بتحمّل، جرّب تاني بعد ثانية.'); return; }
         const statusLbl = document.getElementById('pdfImporterStatus');
-        statusLbl.textContent = 'بيتم تجهيز الملف...';
+        statusLbl.textContent = 'بيتم ضغط الصور وتجهيز الملف...';
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
         const pageW = 210, pageH = 297, margin = 15;
         const maxW = pageW - margin * 2, maxH = pageH - margin * 2;
         for (let i = 0; i < indices.length; i++) {
-            const src = splitQuestionImages[indices[i]];
+            let src = splitQuestionImages[indices[i]];
+            if (typeof compressImageDataUrl === 'function') {
+                try { src = await compressImageDataUrl(src, 1400, 0.82); } catch (e) { /* استخدم الأصلية */ }
+            }
             const img = new Image();
             await new Promise(resolve => { img.onload = resolve; img.src = src; });
             let w = maxW, h = img.height * w / img.width;
             if (h > maxH) { h = maxH; w = img.width * h / img.height; }
             if (i > 0) pdf.addPage();
-            pdf.addImage(src, 'PNG', margin, margin, w, h);
+            pdf.addImage(src, 'JPEG', margin, margin, w, h);
         }
         pdf.save('اسئلة-مقطعة.pdf');
-        statusLbl.textContent = `تم تحميل ملف فيه ${indices.length} سؤال، كل سؤال في صفحة مستقلة.`;
+        statusLbl.textContent = `تم تحميل ملف فيه ${indices.length} سؤال (بعد ضغط الصور)، كل سؤال في صفحة مستقلة.`;
     }
 
     /* ---------------------------------------------------------------
@@ -6635,13 +6934,14 @@ window.MathJax = {
                 await new Promise(r => setTimeout(r, 500)); // وقت كافي لاستقرار العرض قبل التصوير
                 const pageEls = [...pagesContainer.querySelectorAll('.page')];
                 for (let p = 0; p < pageEls.length; p++) {
-                    const canvas = await html2canvas(pageEls[p], { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
-                    const imgData = canvas.toDataURL('image/png');
+                    let canvas = await html2canvas(pageEls[p], { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                    if (typeof isInkSavingMode !== 'undefined' && isInkSavingMode) canvas = toGrayscaleCanvas(canvas);
+                    const imgData = canvas.toDataURL('image/jpeg', 0.85); // JPEG بدل PNG: نفس الوضوح تقريبًا بحجم أصغر بكتير
                     const imgW = 210;
                     const imgH = canvas.height * imgW / canvas.width;
                     if (addedAny) pdf.addPage();
                     addedAny = true;
-                    pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgW, imgH);
                 }
             }
             pdf.save('نسخ-الامتحان-كاملة.pdf');
@@ -6654,7 +6954,383 @@ window.MathJax = {
         }
     }
 
-    // عند فتح الصفحة بلينك فيه ?loadVariant=... حمّل النسخة المبعثرة المحفوظة بدل النسخة العادية
+    /* ---------------------------------------------------------------
+       ثامنًا: سجل النسخ السابقة (Version History) — حفظ لقطات دورية
+       من النموذج وإمكانية الاسترجاع لأي نسخة قديمة
+    --------------------------------------------------------------- */
+    const VERSION_HISTORY_KEY = 'examPlusVersionHistoryV1';
+    const MAX_VERSIONS = 20;
+    let _lastAutoVersionAt = 0;
+    const AUTO_VERSION_INTERVAL_MS = 10 * 60 * 1000; // كل 10 دقايق تلقائيًا لو في تعديل
+
+    function getVersionHistory() {
+        try { return JSON.parse(localStorage.getItem(VERSION_HISTORY_KEY)) || []; } catch (e) { return []; }
+    }
+    function saveVersionHistoryList(list) {
+        try { localStorage.setItem(VERSION_HISTORY_KEY, JSON.stringify(list)); } catch (e) { /* المساحة خلصت غالبًا: نتجاهل بهدوء */ }
+    }
+
+    function saveVersionSnapshot(label) {
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        const currentState = localStorage.getItem('examPlusAutoSave');
+        if (!currentState) return;
+        const list = getVersionHistory();
+        list.unshift({ id: 'v-' + Date.now(), label: label || 'تلقائي', savedAt: Date.now(), state: currentState });
+        while (list.length > MAX_VERSIONS) list.pop();
+        saveVersionHistoryList(list);
+        if (label === 'يدوي') { renderVersionHistoryList(); }
+    }
+
+    // نداء تلقائي مُهذَّب (throttled) — يتنادى من نفس مكان الحفظ التلقائي العادي
+    function maybeAutoSnapshotVersion() {
+        const now = Date.now();
+        if (now - _lastAutoVersionAt < AUTO_VERSION_INTERVAL_MS) return;
+        _lastAutoVersionAt = now;
+        saveVersionSnapshot('تلقائي');
+    }
+    setInterval(maybeAutoSnapshotVersion, 60 * 1000);
+
+    function openVersionHistoryModal() {
+        renderVersionHistoryList();
+        document.getElementById('versionHistoryModal').classList.add('open');
+    }
+    function closeVersionHistoryModal() {
+        document.getElementById('versionHistoryModal').classList.remove('open');
+    }
+
+    function renderVersionHistoryList() {
+        const box = document.getElementById('versionHistoryList');
+        if (!box) return;
+        const list = getVersionHistory();
+        if (!list.length) {
+            box.innerHTML = '<div style="font-size:11px;color:#94a3b8;text-align:center;padding:14px;">مفيش نسخ محفوظة لسه.</div>';
+            return;
+        }
+        box.innerHTML = list.map(v => {
+            const d = new Date(v.savedAt);
+            const dateStr = d.toLocaleDateString('ar-EG') + ' — ' + d.toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            return `<div style="display:flex; align-items:center; justify-content:space-between; gap:8px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px;">
+                <div style="font-size:11px;">
+                    <div style="font-weight:800;color:#334155;">${v.label === 'يدوي' ? '💾 نسخة يدوية' : '⏱️ نسخة تلقائية'}</div>
+                    <div style="color:#64748b;">${dateStr}</div>
+                </div>
+                <div style="display:flex; gap:4px;">
+                    <button class="btn btn-success" style="font-size:10px;padding:4px 8px;" onclick="restoreVersionSnapshot('${v.id}')">↩️ استرجاع</button>
+                    <button class="btn btn-danger" style="font-size:10px;padding:4px 8px;" onclick="deleteVersionSnapshot('${v.id}')">🗑️</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function restoreVersionSnapshot(id) {
+        const list = getVersionHistory();
+        const entry = list.find(v => v.id === id);
+        if (!entry) return;
+        if (!confirm('هيرجّع النموذج لهذه النسخة القديمة ويستبدل أي تعديلات لسه محفوظتش. متأكد؟')) return;
+        localStorage.setItem('examPlusAutoSave', entry.state);
+        if (typeof loadAutoSavedState === 'function') loadAutoSavedState();
+        if (typeof reindexQuestions === 'function') reindexQuestions();
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof attachMathJaxBlur === 'function') attachMathJaxBlur();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        closeVersionHistoryModal();
+        alert('تم استرجاع النسخة بنجاح.');
+    }
+
+    function deleteVersionSnapshot(id) {
+        const list = getVersionHistory().filter(v => v.id !== id);
+        saveVersionHistoryList(list);
+        renderVersionHistoryList();
+    }
+
+    /* ---------------------------------------------------------------
+       تاسعًا: قوالب امتحانات جاهزة حسب المادة
+    --------------------------------------------------------------- */
+    const EXAM_TEMPLATES = {
+        math: { subjectLabel: 'الرياضيات', questions: ['احسب ناتج: 24 × 15', 'أوجد قيمة x في المعادلة: 2x + 5 = 17', 'ارسم المثلث الذي أضلاعه 3سم، 4سم، 5سم وبيّن نوعه'] },
+        science: { subjectLabel: 'العلوم', questions: ['عرّف عملية البناء الضوئي', 'اذكر ثلاثة أمثلة على مصادر الطاقة المتجددة', 'وضّح الفرق بين التغير الفيزيائي والتغير الكيميائي'] },
+        arabic: { subjectLabel: 'اللغة العربية', questions: ['اكتب مرادف كلمة "سعيد" وضدها', 'أعرب الجملة التالية: "الطالبُ مجتهدٌ"', 'اكتب فقرة قصيرة عن أهمية القراءة'] },
+        english: { subjectLabel: 'English', questions: ['Write the past tense of the verb "go".', 'Use the word "beautiful" in a sentence.', 'Write a short paragraph about your favorite hobby.'] },
+        social: { subjectLabel: 'الدراسات الاجتماعية', questions: ['اذكر عاصمة جمهورية مصر العربية وموقعها الجغرافي', 'ما هي أهم الأنهار في قارة أفريقيا؟', 'اشرح بإيجاز أهمية نهر النيل للحضارة المصرية القديمة'] },
+        general: { subjectLabel: 'عام', questions: ['اكتب إجابة مختصرة عن هذا السؤال', 'اختر الإجابة الصحيحة من بين الخيارات', 'وضّح إجابتك بمثال عملي'] }
+    };
+
+    function openTemplatesModal() {
+        document.getElementById('templatesModal').classList.add('open');
+    }
+    function closeTemplatesModal() {
+        document.getElementById('templatesModal').classList.remove('open');
+    }
+
+    function applyExamTemplate(key) {
+        const tpl = EXAM_TEMPLATES[key];
+        if (!tpl) return;
+        const container = getActiveQuestionsContainer();
+        if (!container) return;
+        if (container.querySelector('.question-card') && !confirm('هيستبدل أسئلة الصفحة الحالية بأسئلة القالب. متأكد؟')) return;
+        container.innerHTML = '';
+        tpl.questions.forEach(qText => {
+            addQuestion();
+            const newCard = container.lastElementChild;
+            const body = newCard ? newCard.querySelector('.q-body') : null;
+            if (body) body.innerText = qText;
+        });
+        if (typeof reindexQuestions === 'function') reindexQuestions();
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof attachMathJaxBlur === 'function') attachMathJaxBlur();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        document.getElementById('templatesModal').classList.remove('open');
+    }
+
+    /* ---------------------------------------------------------------
+       عاشرًا: تكوين امتحان عشوائي من بنك الأسئلة المحفوظ
+    --------------------------------------------------------------- */
+    function openRandomExamModal() {
+        const bank = getQuestionBank();
+        const subjects = [...new Set(bank.map(q => q.subject).filter(Boolean))];
+        const sel = document.getElementById('randomExamSubjectSelect');
+        sel.innerHTML = '<option value="">الكل</option>' + subjects.map(s => `<option value="${s}">${s}</option>`).join('');
+        document.getElementById('randomExamStatus').textContent = `بنك الأسئلة فيه ${bank.length} سؤال محفوظ.`;
+        document.getElementById('randomExamModal').classList.add('open');
+    }
+    function closeRandomExamModal() {
+        document.getElementById('randomExamModal').classList.remove('open');
+    }
+
+    function generateRandomExam() {
+        const subjectFilter = document.getElementById('randomExamSubjectSelect').value;
+        const count = parseInt(document.getElementById('randomExamCountInput').value, 10) || 10;
+        const statusLbl = document.getElementById('randomExamStatus');
+        let bank = getQuestionBank();
+        if (subjectFilter) bank = bank.filter(q => q.subject === subjectFilter);
+        if (!bank.length) { statusLbl.textContent = 'مفيش أسئلة مطابقة في البنك.'; return; }
+        const shuffled = shuffleArray(bank).slice(0, count);
+        const container = getActiveQuestionsContainer();
+        shuffled.forEach(entry => {
+            const temp = document.createElement('div');
+            temp.innerHTML = entry.html;
+            const cardEl = temp.firstElementChild;
+            if (!cardEl) return;
+            cardEl.id = 'q-' + Date.now() + '-' + Math.floor(Math.random() * 10000);
+            container.appendChild(cardEl);
+        });
+        if (typeof reindexQuestions === 'function') reindexQuestions();
+        if (typeof calculateAnalytics === 'function') calculateAnalytics();
+        if (typeof attachMathJaxBlur === 'function') attachMathJaxBlur();
+        container.querySelectorAll('.question-card').forEach(c => { if (typeof applyAdvancedControlsToCard === 'function') applyAdvancedControlsToCard(c); });
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        statusLbl.textContent = `تمت إضافة ${shuffled.length} سؤال عشوائي للنموذج الحالي.`;
+        closeRandomExamModal();
+    }
+
+    /* ---------------------------------------------------------------
+       حادي عشر: نسخة المعلم التلقائية — تظهر الإجابات النموذجية وتحط
+       علامة "نسخة المعلم" وتفتح الطباعة/الحفظ PDF، وترجع الوضع الطبيعي بعدها
+    --------------------------------------------------------------- */
+    function exportTeacherCopyPDF() {
+        const wasAnswerKeyVisible = isAnswerKeyVisible;
+        if (!isAnswerKeyVisible) toggleAnswerKey();
+        document.body.classList.add('teacher-copy-mode');
+        if (typeof applyCustomHeaderFooterContent === 'function') applyCustomHeaderFooterContent();
+        function restoreNormalCopy() {
+            document.body.classList.remove('teacher-copy-mode');
+            if (!wasAnswerKeyVisible && isAnswerKeyVisible) toggleAnswerKey();
+            window.removeEventListener('afterprint', restoreNormalCopy);
+        }
+        window.addEventListener('afterprint', restoreNormalCopy);
+        // خط أمان لو المتصفح ميدعمش afterprint: نرجّع الوضع تلقائيًا بعد دقيقتين لأي سبب
+        setTimeout(restoreNormalCopy, 120000);
+        printExamPlus();
+    }
+
+    /* ---------------------------------------------------------------
+       ثاني عشر: تصدير PDF محمي بكلمة سر (باستخدام تشفير jsPDF المدمج)
+    --------------------------------------------------------------- */
+    function openPasswordPdfModal() {
+        document.getElementById('passwordPdfModal').classList.add('open');
+    }
+    function closePasswordPdfModal() {
+        document.getElementById('passwordPdfModal').classList.remove('open');
+    }
+
+    async function exportPasswordProtectedPDF() {
+        const pass = document.getElementById('pdfPasswordInput').value;
+        const statusLbl = document.getElementById('passwordPdfStatus');
+        if (!pass || pass.length < 3) { statusLbl.textContent = 'اكتب كلمة سر 3 حروف/أرقام على الأقل.'; return; }
+        if (!window['jspdf'] || !window['html2canvas']) { statusLbl.textContent = 'مكتبات التصدير لسه بتحمّل، جرّب تاني بعد ثانية.'; return; }
+        statusLbl.textContent = 'بيتم تجهيز الملف المحمي...';
+        const { jsPDF } = window.jspdf;
+        let pdf;
+        try {
+            // خاصية التشفير المدمجة في jsPDF (RC4) — لو النسخة المحمّلة مش بتدعمها هيرمي خطأ ونعمل fallback
+            pdf = new jsPDF({
+                orientation: 'p', unit: 'mm', format: 'a4',
+                encryption: { userPassword: pass, ownerPassword: pass + '_owner', userPermissions: ['print'] }
+            });
+        } catch (e) {
+            statusLbl.textContent = 'تعذّر تفعيل التشفير في المتصفح ده، هيتم التصدير بدون حماية بكلمة سر.';
+            pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+        }
+        try {
+            const pageEls = [...document.querySelectorAll('#pagesContainer .page')];
+            for (let p = 0; p < pageEls.length; p++) {
+                let canvas = await html2canvas(pageEls[p], { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                if (typeof isInkSavingMode !== 'undefined' && isInkSavingMode) canvas = toGrayscaleCanvas(canvas);
+                const imgData = canvas.toDataURL('image/jpeg', 0.9);
+                const imgW = 210;
+                const imgH = canvas.height * imgW / canvas.width;
+                if (p > 0) pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, 0, imgW, imgH);
+            }
+            pdf.save('امتحان-محمي.pdf');
+            statusLbl.textContent = 'تم تصدير الملف. محتاج نفس كلمة السر دي عشان يتفتح.';
+        } catch (e) {
+            statusLbl.textContent = 'حصلت مشكلة أثناء التصدير، جرّب تاني.';
+        }
+    }
+
+    /* ---------------------------------------------------------------
+       ثالث عشر: علامة تتبع فريدة شبه مرئية لكل نسخة/طالب
+    --------------------------------------------------------------- */
+    function openTrackingWatermarkModal() {
+        document.getElementById('trackingWatermarkModal').classList.add('open');
+    }
+    function closeTrackingWatermarkModal() {
+        document.getElementById('trackingWatermarkModal').classList.remove('open');
+    }
+
+    // كود قصير مشتق من النص المُدخل + الوقت، مش هاش تشفيري قوي، بس كفاية لتمييز نسخة عن التانية
+    function shortTrackingCode(input) {
+        let h = 0;
+        const str = input + '|' + Date.now();
+        for (let i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) >>> 0; }
+        return h.toString(36).toUpperCase().slice(0, 7);
+    }
+
+    function ensurePageHasTrackingSlot(pageEl) {
+        if (!pageEl) return null;
+        let el = pageEl.querySelector(':scope > .page-tracking-code');
+        if (el) return el;
+        el = document.createElement('div');
+        el.className = 'page-tracking-code';
+        pageEl.appendChild(el);
+        return el;
+    }
+
+    function applyTrackingWatermark() {
+        const name = document.getElementById('trackingCodeInput').value.trim();
+        if (!name) { document.getElementById('trackingWatermarkStatus').textContent = 'اكتب اسم الطالب أو كود الأول.'; return; }
+        const code = shortTrackingCode(name);
+        document.querySelectorAll('#pagesContainer .page').forEach(pageEl => {
+            const el = ensurePageHasTrackingSlot(pageEl);
+            el.textContent = code;
+        });
+        document.body.classList.add('tracking-code-on');
+        document.getElementById('trackingWatermarkStatus').textContent = `تم وضع الكود "${code}" على كل الصفحات — احتفظ بربطه باسم "${name}" عندك عشان ترجعله لو احتجت.`;
+    }
+
+    function removeTrackingWatermark() {
+        document.body.classList.remove('tracking-code-on');
+        document.querySelectorAll('.page-tracking-code').forEach(el => el.textContent = '');
+        document.getElementById('trackingWatermarkStatus').textContent = 'تمت إزالة العلامة من هذه النسخة.';
+    }
+
+    /* ---------------------------------------------------------------
+       رابع عشر: وضع توفير الحبر (تدرج رمادي وقت العرض/الطباعة/التصدير)
+    --------------------------------------------------------------- */
+    let isInkSavingMode = false;
+    function toggleInkSavingMode() {
+        isInkSavingMode = !isInkSavingMode;
+        document.body.classList.toggle('ink-saving-mode', isInkSavingMode);
+        const fab = document.getElementById('inkSavingFab');
+        if (fab) fab.classList.toggle('active', isInkSavingMode);
+    }
+    // تحويل كانفس ملوّن لتدرج رمادي فعليًا (احتياطي لو الـ CSS filter مش بينلقط في html2canvas)
+    function toGrayscaleCanvas(srcCanvas) {
+        const out = document.createElement('canvas');
+        out.width = srcCanvas.width; out.height = srcCanvas.height;
+        const ctx = out.getContext('2d');
+        ctx.drawImage(srcCanvas, 0, 0);
+        const imgData = ctx.getImageData(0, 0, out.width, out.height);
+        const d = imgData.data;
+        for (let i = 0; i < d.length; i += 4) {
+            const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+            d[i] = d[i + 1] = d[i + 2] = gray;
+        }
+        ctx.putImageData(imgData, 0, 0);
+        return out;
+    }
+
+    /* ---------------------------------------------------------------
+       خامس عشر: ضغط الصور تلقائيًا (تصغير الأبعاد + إعادة ترميز JPEG)
+       بيتطبق على أي صورة بتتحفظ في النموذج: صور الأسئلة، الختم، أسئلة المقطّع
+    --------------------------------------------------------------- */
+    function compressImageDataUrl(dataUrl, maxDim, quality) {
+        maxDim = maxDim || 1400; quality = quality || 0.78;
+        return new Promise(resolve => {
+            const img = new Image();
+            img.onload = function() {
+                let w = img.width, h = img.height;
+                if (w > maxDim || h > maxDim) {
+                    if (w >= h) { h = Math.round(h * maxDim / w); w = maxDim; }
+                    else { w = Math.round(w * maxDim / h); h = maxDim; }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                try { resolve(canvas.toDataURL('image/jpeg', quality)); }
+                catch (e) { resolve(dataUrl); } // لو حصل خطأ (نادر) نرجّع الأصلية بدل ما نكسر الرفع
+            };
+            img.onerror = function() { resolve(dataUrl); };
+            img.src = dataUrl;
+        });
+    }
+
+    /* ---------------------------------------------------------------
+       سادس عشر: اختصارات لوحة المفاتيح لتسريع الشغل
+       Ctrl/Cmd+S: حفظ | Ctrl/Cmd+Enter: سؤال جديد | Ctrl/Cmd+P: تصدير PDF مباشر
+       Ctrl/Cmd+↓ / ↑: تنقل بين الأسئلة
+    --------------------------------------------------------------- */
+    document.addEventListener('keydown', function(e) {
+        const mod = e.ctrlKey || e.metaKey;
+        if (!mod) return;
+        if (e.key === 's' || e.key === 'S') {
+            e.preventDefault();
+            if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+            if (typeof saveVersionSnapshot === 'function') saveVersionSnapshot('يدوي');
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (typeof addQuestion === 'function') addQuestion();
+        } else if (e.key === 'p' || e.key === 'P') {
+            e.preventDefault();
+            if (typeof exportDirectPDF === 'function') exportDirectPDF();
+        } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            const cards = [...document.querySelectorAll('.question-card')];
+            if (!cards.length) return;
+            const active = document.activeElement ? document.activeElement.closest('.question-card') : null;
+            let idx = active ? cards.indexOf(active) : -1;
+            idx = e.key === 'ArrowDown' ? Math.min(cards.length - 1, idx + 1) : Math.max(0, idx - 1);
+            cards[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            const body = cards[idx].querySelector('.q-body');
+            if (body) body.focus();
+        }
+    });
+
+    /* ---------------------------------------------------------------
+       سابع عشر: زر نسخة سحابية يدوية — بيستخدم نظام النسخ الاحتياطي
+       السحابي الموجود بالفعل (Firebase) لحسابات المعلمين المسجّلة فقط
+    --------------------------------------------------------------- */
+    function triggerManualCloudBackup() {
+        if (typeof currentVipBackupKey !== 'function' || !currentVipBackupKey()) {
+            alert('النسخ الاحتياطي السحابي متاح لحسابات المعلمين المسجّلة فقط. النسخة المحلية (localStorage) شغالة عندك عادي.');
+            return;
+        }
+        if (typeof runCloudBackup === 'function') {
+            runCloudBackup(true).then(() => alert('تم حفظ نسخة سحابية الآن بنجاح.')).catch(() => alert('حصلت مشكلة أثناء الحفظ السحابي، جرّب تاني.'));
+        }
+    }
+
     (function loadVariantIfRequested() {
         try {
             const params = new URLSearchParams(window.location.search);
@@ -6710,11 +7386,16 @@ window.MathJax = {
         const text = body ? body.innerText.trim() : '';
         if (!text) { alert('مفيش نص في السؤال ده للقراءة.'); return; }
         window.speechSynthesis.cancel(); // وقف أي قراءة شغالة قبل كده
+        // كشف تلقائي: لو أغلب النص عربي هنقراه بالعربي، ولو أغلبه لاتيني (إنجليزي مثلًا) هنقراه بالإنجليزي
+        const arabicChars = (text.match(/[\u0600-\u06FF]/g) || []).length;
+        const latinChars = (text.match(/[a-zA-Z]/g) || []).length;
+        const isEnglish = latinChars > arabicChars;
         const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'ar-EG';
+        utter.lang = isEnglish ? 'en-US' : 'ar-EG';
         utter.rate = 0.95;
-        const arVoice = window.speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith('ar'));
-        if (arVoice) utter.voice = arVoice;
+        const voices = window.speechSynthesis.getVoices();
+        const matchVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith(isEnglish ? 'en' : 'ar'));
+        if (matchVoice) utter.voice = matchVoice;
         window.speechSynthesis.speak(utter);
     }
 
@@ -6906,6 +7587,8 @@ window.MathJax = {
         if (bankFilterStage) bankFilterStage.addEventListener('change', renderQuestionBank);
         if (bankFilterSubject) bankFilterSubject.addEventListener('change', renderQuestionBank);
         if (bankFilterKeyword) bankFilterKeyword.addEventListener('input', renderQuestionBank);
+        const bankFilterDifficulty = document.getElementById('bankFilterDifficulty');
+        if (bankFilterDifficulty) bankFilterDifficulty.addEventListener('change', renderQuestionBank);
 
         const observer = new MutationObserver(mutations => {
             let pagesChanged = false;
