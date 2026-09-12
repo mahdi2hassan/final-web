@@ -25,6 +25,8 @@ window.MathJax = {
 <!-- pdf.js (لقراءة واستخراج نص ملفات PDF) & jsPDF (لتصدير PDF مباشر لكل سؤال) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Tesseract.js (OCR اختياري لاستخراج نص من الأسئلة المقصوصة كصور) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js"></script>
 <script>
   if (window['pdfjsLib']) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -712,6 +714,8 @@ window.MathJax = {
         /* ===== وضع البوستر: يحوّل الصفحة لمقاس A3 أفقي (بوستر كبير) ===== */
         body.poster-mode .page { width: 420mm; min-height: 297mm; }
         body.poster-mode.screen-mode .page { width: 420mm; min-height: 297mm; } /* احتياطي لو الاتنين اتفعّلوا مع بعض بالغلط */
+        .poster-size-select { display: none; }
+        body.poster-mode .poster-size-select { display: inline-block; }
         .cover-page { display: none; flex-direction: column; justify-content: center; align-items: center; border: 4px double var(--primary-color); padding: 40px; text-align: center; gap: 20px; }
         body.show-cover .cover-page { display: flex; }
 
@@ -1525,7 +1529,12 @@ window.MathJax = {
                         <option value="exam">وضع أسئلة</option>
                         <option value="booklet">وضع ملزمة</option>
                     </select>
-                    <button id="posterModeBtn" class="btn btn-purple" style="background-color:#9333ea;" onclick="togglePosterMode()" title="يحوّل مقاس الصفحة لبوستر A3 أفقي (لعرضه على الحائط أو الطباعة الكبيرة)">🖼️ وضع البوستر A3</button>
+                    <button id="posterModeBtn" class="btn btn-purple" style="background-color:#9333ea;" onclick="togglePosterMode()" title="يحوّل مقاس الصفحة لبوستر أفقي كبير (لعرضه على الحائط أو الطباعة الكبيرة)">🖼️ وضع البوستر</button>
+                    <select id="posterSizeSelect" class="poster-size-select" onchange="handlePosterSizeChange(this)" title="مقاس البوستر">
+                        <option value="A3">A3 أفقي (420×297مم)</option>
+                        <option value="A2">A2 أفقي (594×420مم)</option>
+                        <option value="A1">A1 أفقي (841×594مم)</option>
+                    </select>
                     <button class="btn" style="background-color:#0f766e;" onclick="toggleMarginPanel()">📐 الهوامش</button>
                     <button class="btn btn-purple" style="background-color:#0d9488;" onclick="toggleCoverPage()">غلاف الامتحان</button>
                     <button class="btn btn-warning" style="background-color:#0284c7;" onclick="toggleOrnamentBorder()"><svg class="svg-ic" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg> إطار زخرفي</button>
@@ -3961,6 +3970,8 @@ window.MathJax = {
         // ═══ وضع الشاشة: يحوّل الصفحة لمقاس A4 أفقي (Landscape)، مع اختيار نوع المستند ═══
         let isScreenMode = false;
         let isPosterMode = false;
+        const POSTER_SIZES_MM = { A3: { w: 420, h: 297 }, A2: { w: 594, h: 420 }, A1: { w: 841, h: 594 } };
+        let currentPosterSize = 'A3';
         function toggleScreenMode() {
             isScreenMode = !isScreenMode;
             if (isScreenMode && isPosterMode) {
@@ -3983,7 +3994,7 @@ window.MathJax = {
             if (wantsBooklet !== isBookletMode) toggleBookletMode();
         }
 
-        // ===== وضع البوستر: يحوّل الصفحة لمقاس A3 أفقي (للطباعة الكبيرة أو العرض على الحائط) =====
+        // ===== وضع البوستر: يحوّل الصفحة لمقاس أفقي كبير (A3/A2/A1) للطباعة الكبيرة أو العرض على الحائط =====
         // وضع البوستر ووضع الشاشة (A4 أفقي) بيستبعدوا بعض، مينفعش الاتنين مفعلين مع بعض
         function togglePosterMode() {
             isPosterMode = !isPosterMode;
@@ -3997,9 +4008,29 @@ window.MathJax = {
             document.body.classList.toggle('poster-mode', isPosterMode);
             const btn = document.getElementById('posterModeBtn');
             if (btn) btn.classList.toggle('active', isPosterMode);
+            applyPosterSizeStyle();
             updatePrintPageSize();
             schedulePageOverflowCheck();
             saveExamToLocalStorage();
+        }
+
+        // عند اختيار مقاس البوستر (A3/A2/A1)
+        function handlePosterSizeChange(select) {
+            currentPosterSize = select.value;
+            if (isPosterMode) { applyPosterSizeStyle(); updatePrintPageSize(); schedulePageOverflowCheck(); }
+        }
+
+        // كتابة مقاس البوستر الحالي كستايل ديناميكي (عشان يتغير حسب A3/A2/A1 من غير ما نكرر CSS ثابت)
+        function applyPosterSizeStyle() {
+            let styleTag = document.getElementById('dynamicPosterSizeStyle');
+            if (!styleTag) {
+                styleTag = document.createElement('style');
+                styleTag.id = 'dynamicPosterSizeStyle';
+                document.head.appendChild(styleTag);
+            }
+            if (!isPosterMode) { styleTag.textContent = ''; return; }
+            const size = POSTER_SIZES_MM[currentPosterSize] || POSTER_SIZES_MM.A3;
+            styleTag.textContent = `body.poster-mode .page { width: ${size.w}mm !important; min-height: ${size.h}mm !important; }`;
         }
 
         // تحديث حجم صفحة الطباعة (@page) ديناميكيًا حسب وضع الشاشة/البوستر، لأن حجم @page
@@ -4012,7 +4043,8 @@ window.MathJax = {
                 document.head.appendChild(styleTag);
             }
             if (isPosterMode) {
-                styleTag.textContent = '@media print { @page { size: A3 landscape; margin: 0; } }';
+                const size = POSTER_SIZES_MM[currentPosterSize] || POSTER_SIZES_MM.A3;
+                styleTag.textContent = `@media print { @page { size: ${size.w}mm ${size.h}mm; margin: 0; } body.poster-mode, body.poster-mode html { width: ${size.w}mm; } }`;
             } else if (isScreenMode) {
                 styleTag.textContent = '@media print { @page { size: A4 landscape; margin: 0; } }';
             } else {
@@ -5009,6 +5041,7 @@ window.MathJax = {
                 <div id="pdfImporterResults" style="display:flex; flex-wrap:wrap; gap:8px; max-height:24vh; overflow-y:auto; margin-top:6px;"></div>
                 <div class="input-group" id="pdfImporterActions" style="display:none; margin-top:10px; border-top:1px solid #e2e8f0; padding-top:10px;">
                     <button class="btn btn-success" onclick="addSplitQuestionsToExam()">➕ إضافة الأسئلة (بالصور) للنموذج الحالي</button>
+                    <button class="btn" style="background-color:#0891b2;" onclick="saveSplitQuestionsToBank()">🏦 حفظ الكل في بنك الأسئلة</button>
                     <button class="btn btn-purple" style="background-color:#0d9488;" onclick="downloadSplitQuestionsPDF()">⬇️ تحميل PDF (كل سؤال في صفحة)</button>
                 </div>
             </div>
@@ -5033,7 +5066,10 @@ window.MathJax = {
                     </select>
                 </div>
                 <div class="input-group" style="margin-top:8px;">
-                    <button class="btn btn-success" onclick="generateShuffledVariants()">🎲 توليد الآن</button>
+                    <button class="btn btn-success" onclick="generateShuffledVariants()">🎲 توليد الآن (تبويبات منفصلة)</button>
+                </div>
+                <div class="input-group" style="margin-top:6px;">
+                    <button class="btn btn-purple" style="background-color:#0d9488;" onclick="exportAllVariantsSinglePDF()">⬇️ تصدير كل النسخ في ملف PDF واحد</button>
                 </div>
                 <div id="variantGeneratorStatus" style="font-size:11px;color:#0f766e;margin-top:8px;"></div>
             </div>
@@ -6190,6 +6226,7 @@ window.MathJax = {
     --------------------------------------------------------------- */
     let pdfRenderedPages = [];   // الصفحات المُحوَّلة لكانفس (أصل الدقة) لكل صفحة PDF
     let splitQuestionImages = []; // مصفوفة data URLs للأسئلة المقصوصة
+    let splitQuestionTexts = [];  // النص المستخرج بالـ OCR لكل سؤال مقصوص (اختياري)
 
     function openPdfImporterModal() {
         document.getElementById('pdfImporterModal').classList.add('open');
@@ -6235,8 +6272,11 @@ window.MathJax = {
         const pagesBox = document.getElementById('pdfImporterPages');
         const wrap = document.createElement('div');
         wrap.innerHTML = `
-            <div style="font-size:10.5px;color:#64748b;margin-bottom:4px;">صفحة ${pageIdx + 1} — اسحب لتحديد سؤال</div>
-            <div class="pdf-crop-page" style="position:relative; display:inline-block; max-width:100%; line-height:0;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+                <div style="font-size:10.5px;color:#64748b;">صفحة ${pageIdx + 1} — اسحب لتحديد سؤال يدويًا</div>
+                <button type="button" class="btn" style="font-size:10px; padding:3px 8px; background-color:#7c3aed;" onclick="autoSuggestCrops(${pageIdx})">🪄 تقطيع تلقائي للصفحة</button>
+            </div>
+            <div class="pdf-crop-page" data-page-idx="${pageIdx}" style="position:relative; display:inline-block; max-width:100%; line-height:0;">
                 <img src="${canvas.toDataURL('image/png')}" draggable="false" style="display:block; max-width:100%; user-select:none;">
                 <div class="pdf-crop-overlay" style="position:absolute; inset:0; cursor:crosshair;"></div>
             </div>`;
@@ -6259,6 +6299,9 @@ window.MathJax = {
             overlayEl.querySelectorAll('.pdf-crop-confirm, .pdf-crop-cancel').forEach(el => el.remove());
         }
         function onDown(e) {
+            // مهم: من غير الشرط ده، الضغط على زر "قص كسؤال" أو "✕" كان بيتفسر كبداية
+            // سحب جديد (لأن الزرارين بيبقوا جوه نفس الـ overlay) فالقص ميحصلش خالص
+            if (e.target.closest && e.target.closest('.pdf-crop-confirm, .pdf-crop-cancel')) return;
             e.preventDefault();
             clearHandles();
             if (rectDiv) rectDiv.remove();
@@ -6319,6 +6362,61 @@ window.MathJax = {
         overlayEl.addEventListener('touchend', onUp);
     }
 
+    // تحليل تلقائي: يدور على صفوف بيضاء (فراغات) بين الأسئلة في الصفحة ويقص كل قطعة لوحدها
+    function autoSuggestCrops(pageIdx) {
+        const canvas = pdfRenderedPages[pageIdx];
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width, h = canvas.height;
+        const data = ctx.getImageData(0, 0, w, h).data;
+        const rowIsWhite = new Array(h);
+        for (let y = 0; y < h; y++) {
+            let darkCount = 0;
+            // نفحص كل بكسل خامس توفيرًا للأداء
+            for (let x = 0; x < w; x += 5) {
+                const i = (y * w + x) * 4;
+                const lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+                if (lum < 235) darkCount++;
+            }
+            rowIsWhite[y] = darkCount < 2;
+        }
+        // نلاقي أشرطة الفراغ (سطور بيضاء متتالية بطول كافي) عشان نقسم عليها
+        const minGap = Math.max(10, Math.round(h * 0.012));
+        const segments = [];
+        let contentStart = null, gapLen = 0;
+        for (let y = 0; y <= h; y++) {
+            const white = y < h ? rowIsWhite[y] : true;
+            if (white) {
+                gapLen++;
+                if (gapLen >= minGap && contentStart !== null) {
+                    segments.push([contentStart, y - gapLen + 1]);
+                    contentStart = null;
+                }
+            } else {
+                if (contentStart === null) contentStart = y - Math.min(gapLen, minGap - 1);
+                gapLen = 0;
+            }
+        }
+        if (contentStart !== null) segments.push([contentStart, h]);
+        const cleaned = segments.filter(([a, b]) => (b - a) > h * 0.02);
+        if (!cleaned.length) {
+            document.getElementById('pdfImporterStatus').textContent = 'مقدرتش ألاقي فواصل واضحة في الصفحة دي، جرّب تقص يدويًا.';
+            return;
+        }
+        cleaned.forEach(([y0, y1]) => {
+            const margin = Math.round(h * 0.006);
+            const sy = Math.max(0, y0 - margin), sh = Math.min(h, y1 + margin) - sy;
+            const out = document.createElement('canvas');
+            out.width = w; out.height = sh;
+            out.getContext('2d').drawImage(canvas, 0, sy, w, sh, 0, 0, w, sh);
+            const dataUrl = out.toDataURL('image/png');
+            splitQuestionImages.push(dataUrl);
+            renderSplitQuestionThumb(dataUrl, splitQuestionImages.length - 1);
+        });
+        document.getElementById('pdfImporterActions').style.display = 'flex';
+        document.getElementById('pdfImporterStatus').textContent = `التقطيع التلقائي اقترح ${cleaned.length} سؤال من الصفحة ${pageIdx + 1} — راجعهم واحذف أي تقسيم غلط.`;
+    }
+
     function cropPdfSelection(pageIdx, overlayEl, box) {
         const srcCanvas = pdfRenderedPages[pageIdx];
         if (!srcCanvas) return;
@@ -6343,14 +6441,34 @@ window.MathJax = {
         const card = document.createElement('div');
         card.className = 'split-q-thumb';
         card.dataset.idx = idx;
-        card.style.cssText = 'position:relative; width:130px; border:1px solid #e2e8f0; border-radius:8px; padding:4px; background:#fff;';
+        card.style.cssText = 'position:relative; width:150px; border:1px solid #e2e8f0; border-radius:8px; padding:4px; background:#fff;';
         card.innerHTML = `
             <img src="${dataUrl}" style="width:100%; display:block; border-radius:5px;">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-top:4px;">
                 <label style="font-size:10px; display:flex; align-items:center; gap:3px;"><input type="checkbox" class="split-q-check" data-idx="${idx}" checked> سؤال ${idx + 1}</label>
                 <button type="button" style="border:none; background:none; color:#dc2626; cursor:pointer; font-size:12px;" onclick="removeSplitQuestion(${idx})" title="حذف">🗑️</button>
-            </div>`;
+            </div>
+            <button type="button" class="split-q-ocr-btn" style="width:100%; font-size:9.5px; padding:3px; margin-top:2px; border:1px solid #cbd5e1; border-radius:5px; background:#f1f5f9; cursor:pointer;" onclick="runOcrOnSplitQuestion(${idx})">🔍 استخراج النص (OCR)</button>
+            <textarea class="split-q-ocr-text" data-idx="${idx}" placeholder="النص هيظهر هنا بعد الاستخراج، وتقدر تعدّله" style="display:none; width:100%; min-height:40px; font-size:9.5px; margin-top:3px; padding:3px; border-radius:5px; border:1px solid #cbd5e1; resize:vertical;"></textarea>`;
         resultsBox.appendChild(card);
+    }
+
+    async function runOcrOnSplitQuestion(idx) {
+        if (!window['Tesseract']) { alert('مكتبة استخراج النص (OCR) لسه بتحمّل، جرّب تاني بعد شوية.'); return; }
+        const card = document.querySelector(`.split-q-thumb[data-idx="${idx}"]`);
+        const btn = card ? card.querySelector('.split-q-ocr-btn') : null;
+        const ta = card ? card.querySelector('.split-q-ocr-text') : null;
+        if (btn) { btn.textContent = '⏳ جاري الاستخراج...'; btn.disabled = true; }
+        try {
+            const result = await Tesseract.recognize(splitQuestionImages[idx], 'ara+eng');
+            const text = (result && result.data && result.data.text || '').trim();
+            splitQuestionTexts[idx] = text;
+            if (ta) { ta.value = text; ta.style.display = 'block'; ta.oninput = () => { splitQuestionTexts[idx] = ta.value; }; }
+            if (btn) btn.textContent = '✅ تم الاستخراج (اضغط لإعادة المحاولة)';
+        } catch (err) {
+            if (btn) btn.textContent = '⚠️ فشل الاستخراج، جرّب تاني';
+        }
+        if (btn) btn.disabled = false;
     }
 
     function removeSplitQuestion(idx) {
@@ -6362,34 +6480,59 @@ window.MathJax = {
         }
     }
 
-    function getSelectedSplitQuestionImages() {
+    function getSelectedSplitIndices() {
         const checks = [...document.querySelectorAll('#pdfImporterResults .split-q-check')];
-        return checks.filter(c => c.checked).map(c => splitQuestionImages[parseInt(c.getAttribute('data-idx'), 10)]).filter(Boolean);
+        return checks.filter(c => c.checked).map(c => parseInt(c.getAttribute('data-idx'), 10)).filter(idx => splitQuestionImages[idx]);
+    }
+
+    function getSelectedSplitQuestionImages() {
+        return getSelectedSplitIndices().map(idx => splitQuestionImages[idx]);
     }
 
     function addSplitQuestionsToExam() {
-        const selected = getSelectedSplitQuestionImages();
-        if (!selected.length) { alert('اقصص سؤال واحد على الأقل الأول.'); return; }
-        selected.forEach(dataUrl => {
+        const indices = getSelectedSplitIndices();
+        if (!indices.length) { alert('اقصص سؤال واحد على الأقل الأول.'); return; }
+        indices.forEach(idx => {
             addQuestion();
             const container = getActiveQuestionsContainer();
             const newCard = container.lastElementChild;
             const img = newCard ? newCard.querySelector('.q-attached-img') : null;
             const body = newCard ? newCard.querySelector('.q-body') : null;
-            if (img) { img.src = dataUrl; img.style.display = 'block'; }
-            if (body) body.innerText = '';
+            if (img) { img.src = splitQuestionImages[idx]; img.style.display = 'block'; }
+            if (body) body.innerText = splitQuestionTexts[idx] || '';
         });
         if (typeof reindexQuestions === 'function') reindexQuestions();
         if (typeof calculateAnalytics === 'function') calculateAnalytics();
         if (typeof attachMathJaxBlur === 'function') attachMathJaxBlur();
         if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
-        alert(`تمت إضافة ${selected.length} سؤال (بالصورة) للنموذج الحالي.`);
+        alert(`تمت إضافة ${indices.length} سؤال (بالصورة) للنموذج الحالي.`);
         closePdfImporterModal();
     }
 
+    // حفظ الأسئلة المقصوصة مباشرة في بنك الأسئلة (من غير ما تتضاف للنموذج الحالي)
+    function saveSplitQuestionsToBank() {
+        const indices = getSelectedSplitIndices();
+        if (!indices.length) { alert('اقصص سؤال واحد على الأقل الأول.'); return; }
+        indices.forEach(idx => {
+            addQuestion();
+            const container = getActiveQuestionsContainer();
+            const newCard = container.lastElementChild;
+            if (!newCard) return;
+            const img = newCard.querySelector('.q-attached-img');
+            const body = newCard.querySelector('.q-body');
+            if (img) { img.src = splitQuestionImages[idx]; img.style.display = 'block'; }
+            if (body) body.innerText = splitQuestionTexts[idx] || '';
+            addQuestionToBank(newCard.id);
+            newCard.remove();
+        });
+        if (typeof reindexQuestions === 'function') reindexQuestions();
+        if (typeof saveExamToLocalStorage === 'function') saveExamToLocalStorage();
+        alert(`تم حفظ ${indices.length} سؤال في بنك الأسئلة (النموذج الحالي متأثرش).`);
+    }
+
     async function downloadSplitQuestionsPDF() {
-        const selected = getSelectedSplitQuestionImages();
-        if (!selected.length) { alert('اقصص سؤال واحد على الأقل الأول.'); return; }
+        const indices = getSelectedSplitIndices();
+        if (!indices.length) { alert('اقصص سؤال واحد على الأقل الأول.'); return; }
         if (!window['jspdf']) { alert('مكتبة تصدير الـ PDF لسه بتحمّل، جرّب تاني بعد ثانية.'); return; }
         const statusLbl = document.getElementById('pdfImporterStatus');
         statusLbl.textContent = 'بيتم تجهيز الملف...';
@@ -6397,16 +6540,17 @@ window.MathJax = {
         const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
         const pageW = 210, pageH = 297, margin = 15;
         const maxW = pageW - margin * 2, maxH = pageH - margin * 2;
-        for (let i = 0; i < selected.length; i++) {
+        for (let i = 0; i < indices.length; i++) {
+            const src = splitQuestionImages[indices[i]];
             const img = new Image();
-            await new Promise(resolve => { img.onload = resolve; img.src = selected[i]; });
+            await new Promise(resolve => { img.onload = resolve; img.src = src; });
             let w = maxW, h = img.height * w / img.width;
             if (h > maxH) { h = maxH; w = img.width * h / img.height; }
             if (i > 0) pdf.addPage();
-            pdf.addImage(selected[i], 'PNG', margin, margin, w, h);
+            pdf.addImage(src, 'PNG', margin, margin, w, h);
         }
         pdf.save('اسئلة-مقطعة.pdf');
-        statusLbl.textContent = `تم تحميل ملف فيه ${selected.length} سؤال، كل سؤال في صفحة مستقلة.`;
+        statusLbl.textContent = `تم تحميل ملف فيه ${indices.length} سؤال، كل سؤال في صفحة مستقلة.`;
     }
 
     /* ---------------------------------------------------------------
@@ -6461,6 +6605,55 @@ window.MathJax = {
         statusLbl.textContent = created ? `تم فتح ${created} نسخة مبعثرة جديدة في تبويبات منفصلة.` : 'حصلت مشكلة أثناء التوليد.';
     }
 
+    // تصدير النسخة الأصلية + كل النسخ المبعثرة المطلوبة في ملف PDF واحد (كل نسخة صفحاتها متتالية)
+    async function exportAllVariantsSinglePDF() {
+        const count = parseInt(document.getElementById('variantCountSelect').value, 10) || 1;
+        const statusLbl = document.getElementById('variantGeneratorStatus');
+        if (!window['jspdf'] || !window['html2canvas']) { statusLbl.textContent = 'مكتبات التصدير لسه بتحمّل، جرّب تاني بعد ثانية.'; return; }
+        const pagesContainer = document.getElementById('pagesContainer');
+        if (!pagesContainer) { statusLbl.textContent = 'تعذّر الوصول لحاوية الصفحات.'; return; }
+        const originalHtml = pagesContainer.innerHTML;
+        const letters = ['الأصلية', 'B', 'C', 'D'];
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+        let addedAny = false;
+        try {
+            for (let v = 0; v <= count && v <= 3; v++) {
+                if (v > 0) {
+                    const wrapper = document.createElement('div');
+                    wrapper.innerHTML = originalHtml;
+                    const containers = wrapper.querySelectorAll('.questions-container, #questionsContainer');
+                    containers.forEach(cont => {
+                        const cards = [...cont.querySelectorAll(':scope > .question-card')];
+                        if (cards.length > 1) shuffleArray(cards).forEach(card => cont.appendChild(card));
+                    });
+                    pagesContainer.innerHTML = wrapper.innerHTML;
+                } else {
+                    pagesContainer.innerHTML = originalHtml;
+                }
+                statusLbl.textContent = `بيتم تجهيز نسخة ${letters[v]}...`;
+                await new Promise(r => setTimeout(r, 500)); // وقت كافي لاستقرار العرض قبل التصوير
+                const pageEls = [...pagesContainer.querySelectorAll('.page')];
+                for (let p = 0; p < pageEls.length; p++) {
+                    const canvas = await html2canvas(pageEls[p], { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgW = 210;
+                    const imgH = canvas.height * imgW / canvas.width;
+                    if (addedAny) pdf.addPage();
+                    addedAny = true;
+                    pdf.addImage(imgData, 'PNG', 0, 0, imgW, imgH);
+                }
+            }
+            pdf.save('نسخ-الامتحان-كاملة.pdf');
+            statusLbl.textContent = `تم تصدير النسخة الأصلية + ${count} نسخة مبعثرة (${count + 1} نسخة بالكامل) في ملف PDF واحد.`;
+        } catch (e) {
+            statusLbl.textContent = 'حصلت مشكلة أثناء التصدير، جرّب تاني.';
+        } finally {
+            pagesContainer.innerHTML = originalHtml; // رجّع النسخة الأصلية زي ما كانت بالظبط
+            pagesContainer.querySelectorAll('.question-card').forEach(c => { if (typeof applyAdvancedControlsToCard === 'function') applyAdvancedControlsToCard(c); });
+        }
+    }
+
     // عند فتح الصفحة بلينك فيه ?loadVariant=... حمّل النسخة المبعثرة المحفوظة بدل النسخة العادية
     (function loadVariantIfRequested() {
         try {
@@ -6506,6 +6699,25 @@ window.MathJax = {
        دمج أزرار التحكم الجديدة داخل بطاقات الأسئلة الحالية والجديدة
        (بدون تعديل دوال إنشاء الأسئلة الأصلية - عبر المراقبة الحية فقط)
     --------------------------------------------------------------- */
+    /* ---------------------------------------------------------------
+       قراءة صوتية لنص السؤال (Text-to-Speech) عبر متصفح المستخدم مباشرة
+    --------------------------------------------------------------- */
+    function speakQuestionText(qId) {
+        if (!('speechSynthesis' in window)) { alert('المتصفح ده مش بيدعم القراءة الصوتية.'); return; }
+        const qCard = document.getElementById(qId);
+        if (!qCard) return;
+        const body = qCard.querySelector('.q-body');
+        const text = body ? body.innerText.trim() : '';
+        if (!text) { alert('مفيش نص في السؤال ده للقراءة.'); return; }
+        window.speechSynthesis.cancel(); // وقف أي قراءة شغالة قبل كده
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'ar-EG';
+        utter.rate = 0.95;
+        const arVoice = window.speechSynthesis.getVoices().find(v => v.lang && v.lang.startsWith('ar'));
+        if (arVoice) utter.voice = arVoice;
+        window.speechSynthesis.speak(utter);
+    }
+
     function applyAdvancedControlsToCard(qCard) {
         if (!qCard || qCard.dataset.advEnhanced === '1') return;
         qCard.dataset.advEnhanced = '1';
@@ -6563,6 +6775,13 @@ window.MathJax = {
             graphPaperBtn.title = 'أدرج شبكة تربيعات/ورق رسم بياني داخل هذا السؤال';
             graphPaperBtn.onclick = () => insertGraphPaper(qCard.id);
 
+            const speakBtn = document.createElement('button');
+            speakBtn.className = 'btn no-print'; speakBtn.style.cssText = 'font-size:10px;background:#ea580c;';
+            speakBtn.innerText = '🔊 قراءة صوتية';
+            speakBtn.title = 'اقرأ نص السؤال بصوت عالي';
+            speakBtn.onclick = () => speakQuestionText(qCard.id);
+
+            btnContainer.prepend(speakBtn);
             btnContainer.prepend(graphPaperBtn);
             btnContainer.prepend(bilingualBtn);
             btnContainer.prepend(reuseBtn);
