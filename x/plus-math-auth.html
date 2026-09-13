@@ -2229,10 +2229,12 @@ function sendRegistrationOtp(email, name, uid){
   }).then(function(){
     startRegOtpTimer();
   }).catch(function(e){
+    console.error('EmailJS OTP error:', e);
+    var detail = (e && (e.text || e.message)) ? (' ('+(e.text||e.message)+')') : '';
     if(EMAILJS_SERVICE_ID==='YOUR_EMAILJS_SERVICE_ID'){
       showMsg('verify-email-msg','لازم تضبط إعدادات EmailJS الأول (شوف تعليقات الكود)','error');
     } else {
-      showMsg('verify-email-msg','تعذّر إرسال الإيميل — اضغط إعادة الإرسال','error');
+      showMsg('verify-email-msg','تعذّر إرسال الإيميل'+detail+' — اضغط إعادة الإرسال','error');
     }
   });
 }
