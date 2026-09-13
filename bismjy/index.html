@@ -58,14 +58,24 @@
   .role-card button{background:var(--role-color, var(--brick)); color:var(--white); padding:10px 18px; border-radius:4px; font-weight:800; font-size:14px; width:100%;}
   .role-card.student{ --role-color:var(--sage); }
 
-  /* ---------- SIGNUP & PLANS SCREENS ---------- */
-  #screen-signup, #screen-plans{
+  /* ---------- LOADING SCREEN (session check) ---------- */
+  #screen-loading{
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+    background:var(--paper);
+  }
+  #screen-loading .spinner{width:32px; height:32px; border:3px solid var(--line); border-top-color:var(--brick); border-radius:50%; animation:spin .8s linear infinite;}
+  #screen-loading p{font-size:13px; color:var(--ink-soft);}
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* ---------- LOGIN & SIGNUP & PLANS SCREENS ---------- */
+  #screen-signup, #screen-login, #screen-plans{
     min-height:100vh; display:none; align-items:center; justify-content:center; padding:32px 20px;
     background:
       radial-gradient(circle at 15% 20%, rgba(184,83,46,0.07), transparent 40%),
       radial-gradient(circle at 85% 80%, rgba(92,131,104,0.09), transparent 45%),
       var(--paper);
   }
+  .text-link{background:none; color:var(--brick); text-decoration:underline; font-weight:800; font-size:13.5px;}
   .auth-panel{background:var(--white); border:1px solid var(--line); border-radius:6px; padding:32px 30px; width:100%; max-width:400px;}
   .auth-panel .brand-mark{font-size:22px; margin-bottom:4px;}
   .auth-panel .step-tag{font-size:12.5px; color:var(--ink-soft); margin-bottom:22px; border-bottom:1px dashed var(--line); padding-bottom:14px;}
@@ -192,8 +202,15 @@
 </head>
 <body>
 
+<!-- ========== LOADING (checking for an existing session) ========== -->
+<div id="screen-loading">
+  <div class="brand-mark">نُدرس <span>معًا</span></div>
+  <div class="spinner"></div>
+  <p>جاري التحقق من حسابك...</p>
+</div>
+
 <!-- ========== ROLE SELECT ========== -->
-<div id="screen-role">
+<div id="screen-role" style="display:none;">
   <div class="brand">
     <div class="brand-mark">نُدرس <span>معًا</span></div>
     <div class="brand-tag">نتعلم… نتطور… ونُدرس معًا</div>
@@ -212,6 +229,9 @@
       <button onclick="startSignup('student')">ابدأ كطالب معلم</button>
     </div>
   </div>
+  <div style="margin-top:26px; font-size:13.5px; color:var(--ink-soft);">
+    عندك حساب بالفعل؟ <button class="text-link" onclick="showLogin()">سجّل الدخول</button>
+  </div>
 </div>
 
 <!-- ========== SIGNUP SCREEN ========== -->
@@ -223,9 +243,29 @@
     <div class="field"><label>البريد الإلكتروني</label><input type="email" id="su-email" placeholder="name@example.com"></div>
     <div class="field"><label>رقم الموبايل</label><input type="tel" id="su-phone" placeholder="01xxxxxxxxx"></div>
     <div class="field"><label>كلمة المرور</label><input type="password" id="su-pass" placeholder="6 أحرف على الأقل"></div>
+    <div class="field"><label>تأكيد كلمة المرور</label><input type="password" id="su-pass2" placeholder="أعد كتابة كلمة المرور" onkeydown="if(event.key==='Enter') goToPlans();"></div>
     <button class="btn-primary btn-block" onclick="goToPlans()" id="su-submit-btn">متابعة لاختيار الخطة</button>
     <div class="auth-status" id="signup-status"></div>
+    <div style="text-align:center; font-size:12.5px; color:var(--ink-soft); margin-top:14px;">
+      عندك حساب بالفعل؟ <button class="text-link" onclick="switchToLoginFromSignup()">سجّل الدخول</button>
+    </div>
     <button class="back-link" onclick="backToRole('screen-signup')">رجوع</button>
+  </div>
+</div>
+
+<!-- ========== LOGIN SCREEN ========== -->
+<div id="screen-login">
+  <div class="auth-panel">
+    <div class="brand-mark">نُدرس <span>معًا</span></div>
+    <div class="step-tag">تسجيل الدخول</div>
+    <div class="field"><label>البريد الإلكتروني</label><input type="email" id="li-email" placeholder="name@example.com"></div>
+    <div class="field"><label>كلمة المرور</label><input type="password" id="li-pass" placeholder="كلمة المرور" onkeydown="if(event.key==='Enter') doLogin();"></div>
+    <button class="btn-primary btn-block" onclick="doLogin()" id="li-submit-btn">تسجيل الدخول</button>
+    <div class="auth-status" id="login-status"></div>
+    <button class="back-link" onclick="forgotPassword()">نسيت كلمة المرور؟</button>
+    <div style="text-align:center; font-size:12.5px; color:var(--ink-soft); margin-top:6px;">
+      مفيش حساب لسه؟ <button class="text-link" onclick="backToRole('screen-login')">إنشاء حساب جديد</button>
+    </div>
   </div>
 </div>
 
@@ -302,7 +342,10 @@
         <button class="nav-item" onclick="showView('t-community', this)">🤝 المجتمع</button>
       </div>
 
-      <div class="sidebar-foot">نموذج أولي — نُدرس معًا</div>
+      <div class="sidebar-foot">
+        <button class="nav-item" style="opacity:1; margin-bottom:10px;" onclick="logout()">🚪 تسجيل الخروج</button>
+        <div>نموذج أولي — نُدرس معًا</div>
+      </div>
     </div>
 
     <div class="main">
@@ -513,14 +556,18 @@ async function goToPlans(){
   const email = document.getElementById('su-email').value.trim();
   const phone = document.getElementById('su-phone').value.trim();
   const pass = document.getElementById('su-pass').value;
+  const pass2 = document.getElementById('su-pass2').value;
   const status = document.getElementById('signup-status');
   const btn = document.getElementById('su-submit-btn');
 
-  if(!name || !email || !phone || !pass){
+  if(!name || !email || !phone || !pass || !pass2){
     status.className = 'auth-status err'; status.textContent = 'من فضلك املأ كل الحقول.'; return;
   }
   if(pass.length < 6){
     status.className = 'auth-status err'; status.textContent = 'كلمة المرور لازم تكون 6 أحرف على الأقل.'; return;
+  }
+  if(pass !== pass2){
+    status.className = 'auth-status err'; status.textContent = 'كلمة المرور وتأكيدها مش متطابقين.'; return;
   }
 
   btn.disabled = true;
@@ -541,11 +588,122 @@ async function goToPlans(){
     document.getElementById('screen-plans').style.display = 'flex';
   }catch(err){
     status.className = 'auth-status err';
-    status.textContent = 'حصل خطأ: ' + (err.message || err.code);
+    status.textContent = translateAuthError(err);
   }finally{
     btn.disabled = false;
   }
 }
+
+/* ---------- LOGIN / SESSION ---------- */
+function showLogin(){
+  document.getElementById('screen-role').style.display = 'none';
+  document.getElementById('screen-login').style.display = 'flex';
+}
+function switchToLoginFromSignup(){
+  document.getElementById('screen-signup').style.display = 'none';
+  document.getElementById('screen-login').style.display = 'flex';
+}
+
+function translateAuthError(err){
+  const code = err && err.code;
+  const map = {
+    'auth/email-already-in-use': 'البريد الإلكتروني ده مستخدم بالفعل — جرّب تسجيل الدخول بدل إنشاء حساب جديد.',
+    'auth/invalid-email': 'صيغة البريد الإلكتروني غير صحيحة.',
+    'auth/weak-password': 'كلمة المرور ضعيفة، لازم تكون 6 أحرف على الأقل.',
+    'auth/user-not-found': 'مفيش حساب مسجّل بهذا البريد الإلكتروني.',
+    'auth/wrong-password': 'كلمة المرور غير صحيحة.',
+    'auth/invalid-credential': 'البريد الإلكتروني أو كلمة المرور غير صحيحة.',
+    'auth/too-many-requests': 'محاولات كتير غلط، حاول تاني بعد شوية.',
+    'auth/network-request-failed': 'حصلت مشكلة في الاتصال بالإنترنت.',
+  };
+  return map[code] || ('حصل خطأ: ' + (err && err.message ? err.message : 'غير معروف'));
+}
+
+async function doLogin(){
+  const email = document.getElementById('li-email').value.trim();
+  const pass = document.getElementById('li-pass').value;
+  const status = document.getElementById('login-status');
+  const btn = document.getElementById('li-submit-btn');
+
+  if(!email || !pass){
+    status.className = 'auth-status err'; status.textContent = 'من فضلك اكتب البريد الإلكتروني وكلمة المرور.'; return;
+  }
+
+  btn.disabled = true;
+  status.className = 'auth-status pending'; status.textContent = 'جاري تسجيل الدخول...';
+
+  try{
+    const cred = await auth.signInWithEmailAndPassword(email, pass);
+    await loadUserAndEnter(cred.user.uid);
+  }catch(err){
+    status.className = 'auth-status err';
+    status.textContent = translateAuthError(err);
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+async function forgotPassword(){
+  const email = document.getElementById('li-email').value.trim();
+  const status = document.getElementById('login-status');
+  if(!email){
+    status.className = 'auth-status err'; status.textContent = 'اكتب بريدك الإلكتروني الأول عشان نبعتلك رابط إعادة التعيين.'; return;
+  }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    status.className = 'auth-status ok'; status.textContent = '✓ تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.';
+  }catch(err){
+    status.className = 'auth-status err'; status.textContent = translateAuthError(err);
+  }
+}
+
+/* يُستخدم بعد تسجيل الدخول العادي، وبعد استرجاع الجلسة تلقائيًا لو المستخدم مسجّل دخول بالفعل */
+async function loadUserAndEnter(uid){
+  const doc = await db.collection('users').doc(uid).get();
+  if(!doc.exists){
+    await auth.signOut();
+    throw { code:'auth/user-not-found' };
+  }
+  const data = doc.data();
+  currentUid = uid;
+  pendingUser = { name: data.name || '', email: data.email || '', phone: data.phone || '' };
+  pendingRole = data.role || 'student';
+
+  document.getElementById('screen-loading').style.display = 'none';
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-signup').style.display = 'none';
+  document.getElementById('screen-plans').style.display = 'none';
+
+  enterApp(pendingRole);
+  refreshUpgradeView(data.plan || 'free');
+}
+
+function logout(){
+  auth.signOut();
+  currentUid = null;
+  pendingUser = { name:'', email:'', phone:'' };
+  pendingRole = null;
+  document.getElementById('screen-app').style.display = 'none';
+  document.getElementById('screen-role').style.display = 'flex';
+}
+
+/* عند فتح الصفحة: لو فيه جلسة محفوظة (Firebase بيحتفظ بيها تلقائيًا) بيدخل المستخدم على طول من غير ما يسجّل تاني */
+function initAuth(){
+  auth.onAuthStateChanged(async (user) => {
+    if(user){
+      try{
+        await loadUserAndEnter(user.uid);
+      }catch(err){
+        document.getElementById('screen-loading').style.display = 'none';
+        document.getElementById('screen-role').style.display = 'flex';
+      }
+    }else{
+      document.getElementById('screen-loading').style.display = 'none';
+      document.getElementById('screen-role').style.display = 'flex';
+    }
+  });
+}
+initAuth();
 
 async function sendEmailJS(templateId, extraParams){
   const body = {
