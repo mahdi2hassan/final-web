@@ -1286,20 +1286,14 @@ const db   = firebase.firestore();
 // ── EMAILJS CONFIG — لازم تستبدل القيم دي ببياناتك من https://dashboard.emailjs.com ──
 // ١) اعمل حساب EmailJS واربطه بإيميلك (Gmail/Outlook..) → هتاخد Service ID
 // ٢) من Account → General هتلاقي الـ Public Key
-// ٣) قالب الفاتورة (EMAILJS_TEMPLATE_INVOICE) مش موجود لسه — خطة EmailJS المجانية
-//    بتسمح بـ 2 قالب بس (وإنت مستخدمهم في OTP والترحيب)، فطلوع الفاتورة متوقف مؤقتاً
-//    (الكود بيتجاهله بأمان من غير أخطاء) لحد ما تعمل واحد من الاتنين:
-//    أ) ترقية لخطة Personal ($9/شهر) → بتديك 6 قوالب + 2000 إيميل/شهر بدل 200،
-//       وده هيفيدك على المدى الطويل لأن 200 إيميل/شهر هتخلص بسرعة مع كل الطلاب
-//    ب) لو عايز حل مؤقت مجاني: احذف قالب مش مستخدم (لو عندك) واعمل بدله قالب فاتورة،
-//       أو خلي رسالة الترحيب نفسها تتضمن جملة عن تفعيل الاشتراك بدل فاتورة منفصلة
-//    لما تعمل القالب، حطّ الـ ID بتاعه في EMAILJS_TEMPLATE_INVOICE وهيشتغل تلقائي
+// ٣) قالب الترحيب اتشال، ومكانه بقى قالب فاتورة/تأكيد الاشتراك (Order Verify)
+//    — يعني بعد ما الطالب يفعّل كود اشتراك، بيوصله الفاتورة بدل رسالة الترحيب
 // ══════════════════════════════════════════════
 const EMAILJS_PUBLIC_KEY      = 'oxTulRj_SvhD_-rHR';
 const EMAILJS_SERVICE_ID      = 'service_h61jmbn';
 const EMAILJS_TEMPLATE_OTP    = 'template_kt4qi3e';
-const EMAILJS_TEMPLATE_WELCOME= 'template_4vzab36';
-const EMAILJS_TEMPLATE_INVOICE= 'YOUR_INVOICE_TEMPLATE_ID';
+const EMAILJS_TEMPLATE_WELCOME= 'YOUR_WELCOME_TEMPLATE_ID'; // اتشال — مفيش قالب ترحيب دلوقتي
+const EMAILJS_TEMPLATE_INVOICE= 'template_n26245k';
 try{ emailjs.init({publicKey: EMAILJS_PUBLIC_KEY}); }catch(e){ console.warn('EmailJS init failed', e); }
 
 function formatDateAr(d){
@@ -1307,18 +1301,18 @@ function formatDateAr(d){
   catch(e){ return ''; }
 }
 
-// رسالة الانضمام (بعد تأكيد الإيميل مباشرة)
+// رسالة الانضمام — متوقفة حالياً (القالب اتشال)، سايبها هنا لو حبيت ترجعها تاني
 function sendWelcomeEmail(email, name){
-  if(!email || EMAILJS_SERVICE_ID==='YOUR_EMAILJS_SERVICE_ID') return;
+  if(!email || EMAILJS_SERVICE_ID==='YOUR_EMAILJS_SERVICE_ID' || EMAILJS_TEMPLATE_WELCOME==='YOUR_WELCOME_TEMPLATE_ID') return;
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_WELCOME, {
     to_email: email, to_name: name || 'طالب'
   }).catch(function(e){ console.warn('welcome email failed', e); });
 }
 
-// فاتورة عند تفعيل/تجديد الاشتراك
+// فاتورة/تأكيد الطلب عند تفعيل أو تجديد الاشتراك
 function sendInvoiceEmail(opts){
   if(!opts || !opts.email) return;
-  if(EMAILJS_SERVICE_ID==='YOUR_EMAILJS_SERVICE_ID' || EMAILJS_TEMPLATE_INVOICE==='YOUR_INVOICE_TEMPLATE_ID') return; // لسه محتاج قالب فاتورة
+  if(EMAILJS_SERVICE_ID==='YOUR_EMAILJS_SERVICE_ID' || EMAILJS_TEMPLATE_INVOICE==='YOUR_INVOICE_TEMPLATE_ID') return;
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_INVOICE, {
     to_email: opts.email,
     to_name: opts.name || 'طالب',
