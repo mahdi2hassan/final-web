@@ -129,6 +129,7 @@
   .stat .lbl{font-size:12.5px; color:var(--ink-soft); margin-top:4px;}
 
   .section-title{font-size:16px; margin-bottom:14px; padding-bottom:8px; border-bottom:1px dashed var(--line); display:flex; justify-content:space-between; align-items:center;}
+  .section-title button.linklike{font-size:12.5px; color:var(--brick); background:none; text-decoration:underline; font-weight:700;}
 
   .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:16px; margin-bottom:32px;}
   .course-card{background:var(--white); border:1px solid var(--line); border-radius:6px; overflow:hidden;}
@@ -158,9 +159,17 @@
   .post-head .mini-avatar{width:32px; height:32px; border-radius:50%; background:var(--brick); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Cairo'; font-weight:800; font-size:13px;}
   .post-head .who{font-size:13.5px; font-weight:800;}
   .post-head .tag{font-size:11px; background:var(--paper-dim); color:var(--ink-soft); padding:2px 9px; border-radius:10px; margin-right:auto;}
-  .post p{font-size:14px; line-height:1.8; margin-bottom:10px;}
+  .post p{font-size:14px; line-height:1.8; margin-bottom:10px; white-space:pre-wrap;}
   .post-actions{display:flex; gap:16px; font-size:12.5px; color:var(--ink-soft);}
-  .post-actions span{cursor:pointer;}
+  .post-actions button{background:none; color:var(--ink-soft); font-size:12.5px; font-weight:700; cursor:pointer;}
+  .post-actions button.liked{color:var(--brick);}
+  .comments-box{margin-top:14px; padding-top:12px; border-top:1px dashed var(--line); display:none;}
+  .comments-box.open{display:block;}
+  .comment-item{font-size:12.5px; background:var(--paper); border-radius:5px; padding:8px 10px; margin-bottom:6px;}
+  .comment-item b{font-weight:800;}
+  .comment-add{display:flex; gap:8px; margin-top:8px;}
+  .comment-add input{flex:1; padding:8px 10px; border:1px solid var(--line); border-radius:4px; font-family:inherit; font-size:12.5px;}
+  .comment-add button{background:var(--ink); color:#fff; padding:8px 14px; border-radius:4px; font-size:12px; font-weight:700;}
 
   .content-list{display:flex; flex-direction:column; gap:12px; max-width:640px;}
   .content-item{background:var(--white); border:1px solid var(--line); border-radius:6px; padding:16px 18px; display:flex; justify-content:space-between; align-items:center; gap:12px;}
@@ -296,6 +305,10 @@
       <h2 id="pay-plan-title">تأكيد الاشتراك</h2>
       <div class="pay-sub" id="pay-plan-sub"></div>
 
+      <button class="btn-primary btn-block" onclick="payOnline()" id="pay-online-btn">💳 ادفع أونلاين فورًا (فيزا / ماستركارد)</button>
+      <div class="auth-status" id="online-pay-status"></div>
+      <div class="divider">أو حوّل يدويًا</div>
+
       <div class="pay-method">
         <div class="pm-title">💵 كاش / فودافون كاش</div>
         <div class="pm-num">01153652279</div>
@@ -307,7 +320,7 @@
 
       <a class="wa-btn" id="wa-confirm-link" href="#" target="_blank">تأكيد الدفع عبر واتساب</a>
 
-      <button class="btn-primary btn-block pay-confirm-btn" onclick="finalizePaidPlan()">لقد حوّلت المبلغ — فعّل حسابي</button>
+      <button class="btn-secondary btn-block pay-confirm-btn" onclick="finalizePaidPlan()">لقد حوّلت المبلغ يدويًا — فعّل حسابي</button>
       <div class="auth-status" id="payment-status"></div>
       <button class="back-link" onclick="backToPlansFromPayment()">رجوع لاختيار خطة تانية</button>
     </div>
@@ -356,25 +369,11 @@
       <!-- TEACHER HOME -->
       <div class="view active" id="t-dash">
         <div class="topbar">
-          <div><h1 id="dash-greeting">أهلًا 👋</h1><div class="sub">نظرة سريعة على تطورك ونشاطك</div></div>
+          <div><h1 id="dash-greeting">أهلًا 👋</h1><div class="sub">نظرة سريعة</div></div>
           <div class="avatar" id="dash-avatar">م ح</div>
         </div>
-        <div class="grid">
-          <div class="course-card">
-            <div class="course-cover" style="--cover:#1B2A41;"><span>مسار تدريبي</span></div>
-            <div class="course-body"><h4>تطوير مهارات الشرح</h4><div class="meta">5 دروس · اختبار ختامي</div>
-              <div class="progress-track"><div class="progress-fill" style="width:35%;"></div></div><div class="progress-txt">35٪ — استمر</div>
-            </div>
-          </div>
-          <div class="course-card">
-            <div class="course-cover" style="--cover:#5C8368;"><span>مسار تدريبي</span></div>
-            <div class="course-body"><h4>التكنولوجيا في التعليم</h4><div class="meta">4 دروس · اختبار ختامي</div>
-              <div class="progress-track"><div class="progress-fill" style="width:0%;"></div></div><div class="progress-txt">لم يبدأ بعد</div>
-            </div>
-          </div>
-        </div>
-        <div class="section-title">آخر نشاط المجتمع</div>
-        <div class="post"><div class="post-head"><div class="mini-avatar">س ع</div><div class="who">سارة علي</div><span class="tag">فكرة شرح</span></div><p>حصلت على تفاعل كبير على فكرتها لشرح المتتاليات، شوفها في المجتمع.</p></div>
+        <div class="section-title">آخر منشورات المجتمع<button class="linklike" onclick="showView('t-community', document.querySelector('.nav-item[onclick*=t-community]'))">عرض الكل</button></div>
+        <div id="home-community-preview" class="content-list"><div class="empty-state">جاري التحميل...</div></div>
       </div>
 
       <!-- STUDENT-TEACHER HOME -->
@@ -383,20 +382,8 @@
           <div><h1 id="dash-greeting-s">أهلًا 👋</h1><div class="sub">رحلتك: طالب معلم → متدرب → معلم مبتدئ → معلم محترف</div></div>
           <div class="avatar" id="dash-avatar-s">ط م</div>
         </div>
-        <div class="grid">
-          <div class="course-card">
-            <div class="course-cover" style="--cover:#1B2A41;"><span>مسار تدريبي</span></div>
-            <div class="course-body"><h4>معلم مبتدئ — الأساسيات</h4><div class="meta">6 كورسات · اختبار ختامي</div>
-              <div class="progress-track"><div class="progress-fill" style="width:40%;"></div></div><div class="progress-txt">40٪ — استمر في المسار</div>
-            </div>
-          </div>
-          <div class="course-card">
-            <div class="course-cover" style="--cover:#5C8368;"><span>مسار تدريبي</span></div>
-            <div class="course-body"><h4>إدارة الفصل الدراسي</h4><div class="meta">4 كورسات · اختبار ختامي</div>
-              <div class="progress-track"><div class="progress-fill" style="width:0%;"></div></div><div class="progress-txt">لم يبدأ بعد</div>
-            </div>
-          </div>
-        </div>
+        <div class="section-title">آخر منشورات المجتمع<button class="linklike" onclick="showView('t-community', document.querySelector('.nav-item[onclick*=t-community]'))">عرض الكل</button></div>
+        <div id="home-community-preview-s" class="content-list"><div class="empty-state">جاري التحميل...</div></div>
       </div>
 
       <!-- SHARED: تعلم كيف -->
@@ -458,10 +445,24 @@
         <div id="myres-list" class="content-list"></div>
       </div>
 
+      <!-- ========== COMMUNITY (حقيقي — Firestore) ========== -->
       <div class="view" id="t-community">
-        <div class="topbar"><div><h1>مجتمع المعلمين</h1><div class="sub">قسم: رياضيات</div></div></div>
-        <div class="post"><div class="post-head"><div class="mini-avatar">ن ك</div><div class="who">نور كامل</div><span class="tag">فكرة شرح</span></div><p>بستخدم قصة قصيرة عشان أشرح المتتاليات الحسابية للطلاب — بتفرق معاهم جدًا في الفهم.</p><div class="post-actions"><span>👍 24</span><span>💬 6 تعليقات</span><span>🔗 مشاركة</span></div></div>
-        <div class="post"><div class="post-head"><div class="mini-avatar">ط ح</div><div class="who">طارق حلمي</div><span class="tag">سؤال</span></div><p>حد عنده نموذج تحضير درس جاهز لدرس "التفاضل والتكامل"؟ محتاجه للأسبوع الجاي.</p><div class="post-actions"><span>👍 11</span><span>💬 3 تعليقات</span><span>🔗 مشاركة</span></div></div>
+        <div class="topbar"><div><h1>مجتمع المعلمين</h1><div class="sub">اسأل، شارك فكرة، أو ناقش زملاءك</div></div></div>
+
+        <div class="card-panel" style="margin-bottom:24px;">
+          <div class="field">
+            <label>القسم</label>
+            <select id="post-tag">
+              <option>رياضيات</option><option>عربي</option><option>إنجليزي</option><option>علوم</option>
+              <option>دراسات</option><option>لغات</option><option>تربية خاصة</option><option>عام</option>
+            </select>
+          </div>
+          <div class="field"><label>منشورك</label><textarea rows="3" id="post-content" placeholder="اسأل سؤال، شارك فكرة شرح، أو ابدأ نقاش..."></textarea></div>
+          <button class="btn-primary" onclick="createPost()">نشر</button>
+          <div class="auth-status" id="post-status"></div>
+        </div>
+
+        <div id="community-list"><div class="empty-state">جاري تحميل المنشورات...</div></div>
       </div>
 
     </div>
@@ -471,6 +472,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -485,6 +487,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const functions = firebase.functions();
 
 const EMAILJS_PUBLIC_KEY = 'oxTulRj_SvhD_-rHR';
 const EMAILJS_SERVICE_ID = 'service_h61jmbn';
@@ -765,6 +768,33 @@ function backToPlansFromPayment(){
   document.getElementById('screen-payment').style.display = 'none';
   document.getElementById('screen-plans').style.display = 'flex';
 }
+async function payOnline(){
+  const plan = PLANS[selectedPlanKey];
+  const status = document.getElementById('online-pay-status');
+  const btn = document.getElementById('pay-online-btn');
+  btn.disabled = true;
+  status.className = 'auth-status pending'; status.textContent = 'جاري تجهيز صفحة الدفع...';
+  try{
+    const createOrder = functions.httpsCallable('createPaymobOrder');
+    const res = await createOrder({
+      planKey: selectedPlanKey,
+      amountEGP: plan.price,
+      planName: plan.name,
+      customerName: pendingUser.name,
+      customerEmail: pendingUser.email,
+      customerPhone: pendingUser.phone
+    });
+    if(res.data && res.data.iframeUrl){
+      // نحفظ الخطة المطلوبة عشان لما يرجع بعد الدفع نقدر نأكدها (لو عندك Webhook هيتفعل تلقائي أفضل)
+      window.location.href = res.data.iframeUrl;
+    }else{
+      throw new Error('لم يتم استلام رابط الدفع.');
+    }
+  }catch(err){
+    status.className = 'auth-status err';
+    status.textContent = 'الدفع الأونلاين مش متاح دلوقتي (' + (err.message||'') + '). استخدم التحويل اليدوي تحت.';
+  }finally{ btn.disabled = false; }
+}
 
 async function finalizeFreePlan(){
   const status = document.getElementById('plans-status');
@@ -880,7 +910,7 @@ function enterApp(role){
   }
   loadUserStatus();
   showView(role === 'teacher' ? 't-dash' : 's-home', document.querySelector((role === 'teacher' ? '#nav-teacher' : '#nav-student') + ' .nav-item'));
-  loadLessons(); loadPracticalTips(); loadResearchVideos(); loadMyResearch();
+  loadLessons(); loadPracticalTips(); loadResearchVideos(); loadMyResearch(); loadCommunity();
 }
 function showView(id, btn){
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -979,6 +1009,110 @@ async function sendContactMessage(){
   }catch(err){ status.className='auth-status err'; status.textContent='حصل خطأ: '+err.message; }
 }
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---------- مجتمع حقيقي (Firestore) ---------- */
+const likedPosts = new Set();
+
+async function createPost(){
+  const tag = document.getElementById('post-tag').value;
+  const content = document.getElementById('post-content').value.trim();
+  const status = document.getElementById('post-status');
+  if(!content){ status.className='auth-status err'; status.textContent='اكتب محتوى المنشور.'; return; }
+  status.className='auth-status pending'; status.textContent='جاري النشر...';
+  try{
+    await db.collection('communityPosts').add({
+      authorUid: currentUid, authorName: pendingUser.name || 'مستخدم', tag, content,
+      likesCount: 0, commentsCount: 0,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('post-content').value = '';
+    status.className='auth-status ok'; status.textContent='✓ تم النشر.';
+    loadCommunity();
+  }catch(err){ status.className='auth-status err'; status.textContent='حصل خطأ: '+err.message; }
+}
+
+function initials(name){ return (name||'؟').trim().split(' ').slice(0,2).map(w=>w[0]).join(' '); }
+
+async function loadCommunity(){
+  const el = document.getElementById('community-list');
+  const prevT = document.getElementById('home-community-preview');
+  const prevS = document.getElementById('home-community-preview-s');
+  try{
+    const snap = await db.collection('communityPosts').orderBy('createdAt','desc').limit(30).get();
+    if(snap.empty){
+      if(el) el.innerHTML = '<div class="empty-state">لسه مفيش منشورات — كن أول من ينشر في المجتمع!</div>';
+      if(prevT) prevT.innerHTML = '<div class="empty-state">لسه مفيش منشورات.</div>';
+      if(prevS) prevS.innerHTML = '<div class="empty-state">لسه مفيش منشورات.</div>';
+      return;
+    }
+    const renderPost = (id, p) => `
+      <div class="post" id="post-${id}">
+        <div class="post-head"><div class="mini-avatar">${escapeHtml(initials(p.authorName))}</div><div class="who">${escapeHtml(p.authorName||'مستخدم')}</div><span class="tag">${escapeHtml(p.tag||'عام')}</span></div>
+        <p>${escapeHtml(p.content||'')}</p>
+        <div class="post-actions">
+          <button class="${likedPosts.has(id)?'liked':''}" id="like-${id}" onclick="likePost('${id}')">👍 <span id="likecount-${id}">${p.likesCount||0}</span></button>
+          <button onclick="toggleComments('${id}')">💬 <span id="commentcount-${id}">${p.commentsCount||0}</span> تعليقات</button>
+        </div>
+        <div class="comments-box" id="comments-${id}">
+          <div id="commentslist-${id}"></div>
+          <div class="comment-add">
+            <input type="text" id="commentinput-${id}" placeholder="اكتب تعليق...">
+            <button onclick="addComment('${id}')">إرسال</button>
+          </div>
+        </div>
+      </div>`;
+    const full = snap.docs.map(d => renderPost(d.id, d.data())).join('');
+    if(el) el.innerHTML = full;
+    const previewHtml = snap.docs.slice(0,3).map(d => renderPost(d.id, d.data())).join('') || '<div class="empty-state">لسه مفيش منشورات.</div>';
+    if(prevT) prevT.innerHTML = previewHtml;
+    if(prevS) prevS.innerHTML = previewHtml;
+  }catch(err){
+    if(el) el.innerHTML = '<div class="empty-state">تعذّر تحميل المجتمع الآن.</div>';
+    console.warn(err);
+  }
+}
+async function likePost(id){
+  if(likedPosts.has(id)) return;
+  likedPosts.add(id);
+  const btn = document.getElementById('like-'+id); if(btn) btn.classList.add('liked');
+  try{
+    await db.collection('communityPosts').doc(id).update({ likesCount: firebase.firestore.FieldValue.increment(1) });
+    const el = document.getElementById('likecount-'+id);
+    if(el) el.textContent = String(Number(el.textContent||0) + 1);
+  }catch(err){ console.warn(err); }
+}
+function toggleComments(id){
+  const box = document.getElementById('comments-'+id);
+  box.classList.toggle('open');
+  if(box.classList.contains('open')) loadComments(id);
+}
+async function loadComments(id){
+  const el = document.getElementById('commentslist-'+id);
+  el.innerHTML = 'جاري التحميل...';
+  try{
+    const snap = await db.collection('communityPosts').doc(id).collection('comments').orderBy('createdAt','asc').limit(50).get();
+    if(snap.empty){ el.innerHTML = '<div style="font-size:12px; color:var(--ink-soft);">لسه مفيش تعليقات.</div>'; return; }
+    el.innerHTML = snap.docs.map(d => { const c = d.data();
+      return `<div class="comment-item"><b>${escapeHtml(c.authorName||'مستخدم')}:</b> ${escapeHtml(c.content||'')}</div>`;
+    }).join('');
+  }catch(err){ el.innerHTML = '<div style="font-size:12px; color:var(--brick);">تعذّر تحميل التعليقات.</div>'; }
+}
+async function addComment(id){
+  const input = document.getElementById('commentinput-'+id);
+  const content = input.value.trim();
+  if(!content) return;
+  try{
+    await db.collection('communityPosts').doc(id).collection('comments').add({
+      authorUid: currentUid, authorName: pendingUser.name || 'مستخدم', content,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection('communityPosts').doc(id).update({ commentsCount: firebase.firestore.FieldValue.increment(1) });
+    input.value = '';
+    const cc = document.getElementById('commentcount-'+id);
+    if(cc) cc.textContent = String(Number(cc.textContent||0) + 1);
+    loadComments(id);
+  }catch(err){ console.warn(err); }
+}
 function escapeAttr(s){ return String(s).replace(/"/g,'&quot;'); }
 </script>
 </body>
