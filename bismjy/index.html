@@ -34,25 +34,38 @@
   .role-card button{background:var(--role-color, var(--brick)); color:var(--white); padding:10px 18px; border-radius:4px; font-weight:800; font-size:14px; width:100%;}
   .role-card.student{ --role-color:var(--sage); }
 
-  #screen-signup, #screen-plans, #screen-verify, #screen-payment, #screen-login{
+  #screen-signup, #screen-plans, #screen-verify, #screen-payment, #screen-login, #screen-google-complete{
     min-height:100vh; display:none; align-items:center; justify-content:center; padding:32px 20px;
     background: radial-gradient(circle at 15% 20%, rgba(184,83,46,0.07), transparent 40%), radial-gradient(circle at 85% 80%, rgba(92,131,104,0.09), transparent 45%), var(--paper);}
-  .auth-panel{background:var(--white); border:1px solid var(--line); border-radius:6px; padding:32px 30px; width:100%; max-width:400px;}
-  .auth-panel .brand-mark{font-size:22px; margin-bottom:4px;}
+  .auth-panel{background:var(--white); border:1px solid var(--line); border-radius:10px; padding:34px 30px; width:100%; max-width:400px; box-shadow:0 20px 45px rgba(27,42,65,0.08);}
+  .auth-logo{width:52px; height:52px; border-radius:50%; background:var(--paper-dim); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:24px; margin:0 auto 14px;}
+  .auth-panel .brand-mark{font-size:21px; margin-bottom:4px;}
   .auth-panel .step-tag{font-size:12.5px; color:var(--ink-soft); margin-bottom:22px; border-bottom:1px dashed var(--line); padding-bottom:14px;}
   .field{margin-bottom:14px;}
   .field label{display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--ink-soft);}
-  .field input, .field select, .field textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:4px; font-family:inherit; font-size:14px; background:var(--paper);}
+  .field input, .field select, .field textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:5px; font-family:inherit; font-size:14px; background:var(--paper); transition:border-color .15s ease, box-shadow .15s ease;}
+  .field input:focus, .field select:focus, .field textarea:focus{outline:none; border-color:var(--brick); box-shadow:0 0 0 3px rgba(184,83,46,0.1); background:var(--white);}
   .field-row{display:flex; gap:14px;}
   .field-row .field{flex:1;}
+  .pw-wrap{position:relative;}
+  .pw-wrap input{padding-left:64px;}
+  .pw-toggle{position:absolute; left:6px; top:50%; transform:translateY(-50%); background:none; font-size:11.5px; font-weight:700; color:var(--brick); padding:6px 8px;}
+  .divider{display:flex; align-items:center; gap:10px; margin:16px 0; font-size:11.5px; color:var(--ink-soft);}
+  .divider::before, .divider::after{content:''; flex:1; height:1px; background:var(--line);}
+  .btn-google{width:100%; background:var(--white); border:1px solid var(--line); color:var(--ink); padding:11px; border-radius:5px; font-weight:800; font-size:13.5px; display:flex; align-items:center; justify-content:center; gap:10px; transition:background .15s ease, border-color .15s ease;}
+  .btn-google:hover{background:var(--paper-dim); border-color:var(--ink-soft);}
+  .btn-google:disabled{opacity:.6;}
+  .g-circle{width:20px; height:20px; border-radius:50%; background:var(--ink); color:var(--white); font-family:'Cairo'; font-weight:900; font-size:12px; display:flex; align-items:center; justify-content:center;}
   .auth-status{font-size:12.5px; margin-top:12px; min-height:16px;}
   .auth-status.ok{color:var(--sage); font-weight:700;}
   .auth-status.err{color:var(--brick); font-weight:700;}
   .auth-status.pending{color:var(--ink-soft);}
-  .btn-primary{background:var(--brick); color:var(--white); padding:11px 24px; border-radius:4px; font-weight:800; font-size:14.5px;}
+  .btn-primary{background:var(--brick); color:var(--white); padding:11px 24px; border-radius:5px; font-weight:800; font-size:14.5px; transition:background .15s ease, transform .1s ease;}
   .btn-primary:hover{background:var(--brick-dark);}
+  .btn-primary:active{transform:scale(.98);}
+  .btn-primary:disabled{opacity:.65;}
   .btn-block{width:100%;}
-  .btn-secondary{background:var(--paper-dim); color:var(--ink); padding:11px 24px; border-radius:4px; font-weight:800; font-size:14px;}
+  .btn-secondary{background:var(--paper-dim); color:var(--ink); padding:11px 24px; border-radius:5px; font-weight:800; font-size:14px;}
   .back-link{background:transparent; color:var(--ink-soft); font-size:12.5px; text-decoration:underline; margin-top:14px; display:block; text-align:center; width:100%;}
   .code-input{letter-spacing:8px; text-align:center; font-size:22px; font-family:'Cairo'; font-weight:800;}
 
@@ -198,12 +211,19 @@
 <!-- ========== SIGNUP SCREEN ========== -->
 <div id="screen-signup">
   <div class="auth-panel">
-    <div class="brand-mark">نُدرس <span>معًا</span></div>
-    <div class="step-tag" id="signup-step-tag">إنشاء حساب — معلم</div>
+    <div class="auth-logo">🎓</div>
+    <div class="brand-mark" style="text-align:center;">نُدرس <span>معًا</span></div>
+    <div class="step-tag" id="signup-step-tag" style="text-align:center;">إنشاء حساب — معلم</div>
+
+    <button class="btn-google" onclick="googleAuth()" id="su-google-btn"><span class="g-circle">G</span> تسجيل سريع بحساب جوجل</button>
+    <div class="divider">أو بالإيميل</div>
+
     <div class="field"><label>الاسم الكامل</label><input type="text" id="su-name" placeholder="مثال: مهدي حسن"></div>
     <div class="field"><label>البريد الإلكتروني</label><input type="email" id="su-email" placeholder="name@example.com"></div>
     <div class="field"><label>رقم الموبايل</label><input type="tel" id="su-phone" placeholder="01xxxxxxxxx"></div>
-    <div class="field"><label>كلمة المرور</label><input type="password" id="su-pass" placeholder="6 أحرف على الأقل"></div>
+    <div class="field"><label>كلمة المرور</label>
+      <div class="pw-wrap"><input type="password" id="su-pass" placeholder="6 أحرف على الأقل"><button type="button" class="pw-toggle" onclick="togglePw('su-pass', this)">إظهار</button></div>
+    </div>
     <button class="btn-primary btn-block" onclick="createAccountAndSendCode()" id="su-submit-btn">متابعة</button>
     <div class="auth-status" id="signup-status"></div>
     <button class="back-link" onclick="backToRole('screen-signup')">رجوع</button>
@@ -213,13 +233,33 @@
 <!-- ========== LOGIN SCREEN ========== -->
 <div id="screen-login">
   <div class="auth-panel">
-    <div class="brand-mark">نُدرس <span>معًا</span></div>
-    <div class="step-tag">تسجيل الدخول</div>
+    <div class="auth-logo">👋</div>
+    <div class="brand-mark" style="text-align:center;">نُدرس <span>معًا</span></div>
+    <div class="step-tag" style="text-align:center;">تسجيل الدخول</div>
+
+    <button class="btn-google" onclick="googleAuth()" id="li-google-btn"><span class="g-circle">G</span> الدخول بحساب جوجل</button>
+    <div class="divider">أو بالإيميل</div>
+
     <div class="field"><label>البريد الإلكتروني</label><input type="email" id="li-email" placeholder="name@example.com"></div>
-    <div class="field"><label>كلمة المرور</label><input type="password" id="li-pass" placeholder="كلمة المرور"></div>
+    <div class="field"><label>كلمة المرور</label>
+      <div class="pw-wrap"><input type="password" id="li-pass" placeholder="كلمة المرور"><button type="button" class="pw-toggle" onclick="togglePw('li-pass', this)">إظهار</button></div>
+    </div>
     <button class="btn-primary btn-block" onclick="loginUser()" id="li-submit-btn">دخول</button>
     <div class="auth-status" id="login-status"></div>
+    <button class="back-link" onclick="forgotPassword()" style="margin-top:6px;">نسيت كلمة المرور؟</button>
     <button class="back-link" onclick="backToRole('screen-login')">رجوع</button>
+  </div>
+</div>
+
+<!-- ========== GOOGLE: COMPLETE PROFILE (لو حساب جديد) ========== -->
+<div id="screen-google-complete">
+  <div class="auth-panel">
+    <div class="auth-logo">✨</div>
+    <div class="brand-mark" style="text-align:center;">نُدرس <span>معًا</span></div>
+    <div class="step-tag" style="text-align:center;">خطوة أخيرة — أكمل بياناتك</div>
+    <div class="field"><label>رقم الموبايل</label><input type="tel" id="gc-phone" placeholder="01xxxxxxxxx"></div>
+    <button class="btn-primary btn-block" onclick="completeGoogleSignup()" id="gc-submit-btn">متابعة</button>
+    <div class="auth-status" id="gc-status"></div>
   </div>
 </div>
 
@@ -486,6 +526,26 @@ function renderPlansGrid(){
 }
 renderPlansGrid();
 
+function friendlyAuthError(err){
+  const code = err && err.code;
+  const map = {
+    'auth/invalid-credential': 'الإيميل أو كلمة المرور غلط.',
+    'auth/wrong-password': 'الإيميل أو كلمة المرور غلط.',
+    'auth/user-not-found': 'مفيش حساب مسجّل بالإيميل ده — جرب تعمل حساب جديد.',
+    'auth/too-many-requests': 'محاولات كتير غلط، استنى شوية وجرب تاني.',
+    'auth/email-already-in-use': 'الإيميل ده مسجّل قبل كده — جرب تسجّل الدخول بدل ما تعمل حساب جديد.',
+    'auth/weak-password': 'كلمة المرور ضعيفة، اختار كلمة مرور أقوى.',
+    'auth/invalid-email': 'صيغة الإيميل مش صحيحة.',
+    'auth/popup-closed-by-user': 'اتقفلت نافذة جوجل قبل ما تكمل الدخول.',
+    'auth/network-request-failed': 'فيه مشكلة في الاتصال بالإنترنت.',
+  };
+  return map[code] || (err && err.message) || 'حصل خطأ غير متوقع.';
+}
+function togglePw(id, btn){
+  const el = document.getElementById(id);
+  if(el.type === 'password'){ el.type = 'text'; btn.textContent = 'إخفاء'; }
+  else{ el.type = 'password'; btn.textContent = 'إظهار'; }
+}
 function startSignup(role){
   pendingRole = role;
   document.getElementById('screen-role').style.display = 'none';
@@ -495,6 +555,75 @@ function startSignup(role){
 function showLogin(){
   document.getElementById('screen-role').style.display = 'none';
   document.getElementById('screen-login').style.display = 'flex';
+}
+async function forgotPassword(){
+  const email = document.getElementById('li-email').value.trim();
+  const status = document.getElementById('login-status');
+  if(!email){ status.className='auth-status err'; status.textContent='اكتب إيميلك الأول في الحقل فوق، وبعدين دوس "نسيت كلمة المرور؟"'; return; }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    status.className='auth-status ok'; status.textContent='✓ بعتنالك رابط إعادة تعيين كلمة المرور على إيميلك.';
+  }catch(err){ status.className='auth-status err'; status.textContent=friendlyAuthError(err); }
+}
+
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+async function googleAuth(){
+  // لو المستخدم مختارش دور لسه (جاي من شاشة الدخول)، هيتحدد بعد ما نشوف لو الحساب موجود
+  const isSignupFlow = document.getElementById('screen-signup').style.display === 'flex';
+  const btn = isSignupFlow ? document.getElementById('su-google-btn') : document.getElementById('li-google-btn');
+  const status = isSignupFlow ? document.getElementById('signup-status') : document.getElementById('login-status');
+  btn.disabled = true;
+  status.className = 'auth-status pending'; status.textContent = 'جاري الاتصال بجوجل...';
+  try{
+    const result = await auth.signInWithPopup(googleProvider);
+    const user = result.user;
+    currentUid = user.uid;
+    const doc = await db.collection('users').doc(currentUid).get();
+
+    if(doc.exists){
+      const d = doc.data();
+      pendingUser = { name: d.name, email: d.email, phone: d.phone };
+      pendingRole = d.role;
+      status.textContent = '';
+      document.getElementById('screen-signup').style.display = 'none';
+      document.getElementById('screen-login').style.display = 'none';
+      enterApp(pendingRole);
+    }else if(isSignupFlow){
+      pendingUser = { name: user.displayName || '', email: user.email || '', phone: '' };
+      status.textContent = '';
+      document.getElementById('screen-signup').style.display = 'none';
+      document.getElementById('screen-google-complete').style.display = 'flex';
+    }else{
+      status.className = 'auth-status err';
+      status.textContent = 'مفيش حساب مسجّل بالإيميل ده. ارجع لصفحة البداية واعمل حساب جديد الأول.';
+      await auth.signOut();
+    }
+  }catch(err){
+    status.className = 'auth-status err'; status.textContent = friendlyAuthError(err);
+  }finally{ btn.disabled = false; }
+}
+async function completeGoogleSignup(){
+  const phone = document.getElementById('gc-phone').value.trim();
+  const status = document.getElementById('gc-status');
+  const btn = document.getElementById('gc-submit-btn');
+  if(!phone){ status.className='auth-status err'; status.textContent='اكتب رقم موبايلك.'; return; }
+  btn.disabled = true;
+  status.className='auth-status pending'; status.textContent='جاري الحفظ...';
+  try{
+    pendingUser.phone = phone;
+    await db.collection('users').doc(currentUid).set({
+      name: pendingUser.name, email: pendingUser.email, phone, role: pendingRole,
+      plan:'free', status:'active', emailVerified:true,
+      trialEndsAt: Date.now() + 20*24*60*60*1000,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    status.textContent = '';
+    plansMode = 'signup';
+    document.getElementById('plans-back-btn').style.display = 'block';
+    document.getElementById('screen-google-complete').style.display = 'none';
+    document.getElementById('screen-plans').style.display = 'flex';
+  }catch(err){ status.className='auth-status err'; status.textContent='حصل خطأ: '+err.message; }
+  finally{ btn.disabled = false; }
 }
 async function loginUser(){
   const email = document.getElementById('li-email').value.trim();
@@ -519,7 +648,7 @@ async function loginUser(){
     document.getElementById('screen-login').style.display = 'none';
     enterApp(pendingRole);
   }catch(err){
-    status.className='auth-status err'; status.textContent='دخول فشل: ' + (err.message || err.code);
+    status.className='auth-status err'; status.textContent = friendlyAuthError(err);
   }finally{ btn.disabled = false; }
 }
 function backToRole(fromId){
@@ -566,7 +695,7 @@ async function createAccountAndSendCode(){
     document.getElementById('screen-signup').style.display = 'none';
     document.getElementById('screen-verify').style.display = 'flex';
   }catch(err){
-    status.className = 'auth-status err'; status.textContent = 'حصل خطأ: ' + (err.message || err.code);
+    status.className = 'auth-status err'; status.textContent = friendlyAuthError(err);
   }finally{ btn.disabled = false; }
 }
 
@@ -735,6 +864,7 @@ function enterApp(role){
   document.getElementById('screen-signup').style.display = 'none';
   document.getElementById('screen-verify').style.display = 'none';
   document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-google-complete').style.display = 'none';
   document.getElementById('screen-app').style.display = 'block';
   document.getElementById('nav-teacher').style.display = role === 'teacher' ? 'block' : 'none';
   document.getElementById('nav-student').style.display = role === 'student' ? 'block' : 'none';
