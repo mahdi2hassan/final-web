@@ -34,7 +34,7 @@
   .role-card button{background:var(--role-color, var(--brick)); color:var(--white); padding:10px 18px; border-radius:4px; font-weight:800; font-size:14px; width:100%;}
   .role-card.student{ --role-color:var(--sage); }
 
-  #screen-signup, #screen-plans, #screen-verify, #screen-payment{
+  #screen-signup, #screen-plans, #screen-verify, #screen-payment, #screen-login{
     min-height:100vh; display:none; align-items:center; justify-content:center; padding:32px 20px;
     background: radial-gradient(circle at 15% 20%, rgba(184,83,46,0.07), transparent 40%), radial-gradient(circle at 85% 80%, rgba(92,131,104,0.09), transparent 45%), var(--paper);}
   .auth-panel{background:var(--white); border:1px solid var(--line); border-radius:6px; padding:32px 30px; width:100%; max-width:400px;}
@@ -192,6 +192,7 @@
       <button onclick="startSignup('student')">ابدأ كطالب معلم</button>
     </div>
   </div>
+  <button class="back-link" style="margin-top:26px;" onclick="showLogin()">عندك حساب بالفعل؟ سجّل دخول</button>
 </div>
 
 <!-- ========== SIGNUP SCREEN ========== -->
@@ -206,6 +207,19 @@
     <button class="btn-primary btn-block" onclick="createAccountAndSendCode()" id="su-submit-btn">متابعة</button>
     <div class="auth-status" id="signup-status"></div>
     <button class="back-link" onclick="backToRole('screen-signup')">رجوع</button>
+  </div>
+</div>
+
+<!-- ========== LOGIN SCREEN ========== -->
+<div id="screen-login">
+  <div class="auth-panel">
+    <div class="brand-mark">نُدرس <span>معًا</span></div>
+    <div class="step-tag">تسجيل الدخول</div>
+    <div class="field"><label>البريد الإلكتروني</label><input type="email" id="li-email" placeholder="name@example.com"></div>
+    <div class="field"><label>كلمة المرور</label><input type="password" id="li-pass" placeholder="كلمة المرور"></div>
+    <button class="btn-primary btn-block" onclick="loginUser()" id="li-submit-btn">دخول</button>
+    <div class="auth-status" id="login-status"></div>
+    <button class="back-link" onclick="backToRole('screen-login')">رجوع</button>
   </div>
 </div>
 
@@ -292,6 +306,7 @@
       </div>
 
       <div class="sidebar-foot" id="sidebar-status">نموذج أولي — نُدرس معًا</div>
+      <button class="nav-item" style="opacity:.6; margin-top:8px;" onclick="logoutUser()">🚪 تسجيل خروج</button>
     </div>
 
     <div class="main">
@@ -476,6 +491,36 @@ function startSignup(role){
   document.getElementById('screen-role').style.display = 'none';
   document.getElementById('screen-signup').style.display = 'flex';
   document.getElementById('signup-step-tag').textContent = 'إنشاء حساب — ' + (role === 'teacher' ? 'معلم' : 'طالب معلم');
+}
+function showLogin(){
+  document.getElementById('screen-role').style.display = 'none';
+  document.getElementById('screen-login').style.display = 'flex';
+}
+async function loginUser(){
+  const email = document.getElementById('li-email').value.trim();
+  const pass = document.getElementById('li-pass').value;
+  const status = document.getElementById('login-status');
+  const btn = document.getElementById('li-submit-btn');
+  if(!email || !pass){ status.className='auth-status err'; status.textContent='اكتب الإيميل وكلمة المرور.'; return; }
+
+  btn.disabled = true;
+  status.className='auth-status pending'; status.textContent='جاري الدخول...';
+  try{
+    const cred = await auth.signInWithEmailAndPassword(email, pass);
+    currentUid = cred.user.uid;
+    const doc = await db.collection('users').doc(currentUid).get();
+    if(!doc.exists){
+      status.className='auth-status err'; status.textContent='الحساب ده مش موجود في قاعدة بياناتنا.'; return;
+    }
+    const d = doc.data();
+    pendingUser = { name: d.name, email: d.email, phone: d.phone };
+    pendingRole = d.role;
+    status.textContent = '';
+    document.getElementById('screen-login').style.display = 'none';
+    enterApp(pendingRole);
+  }catch(err){
+    status.className='auth-status err'; status.textContent='دخول فشل: ' + (err.message || err.code);
+  }finally{ btn.disabled = false; }
 }
 function backToRole(fromId){
   document.getElementById(fromId).style.display = 'none';
@@ -689,6 +734,7 @@ function enterApp(role){
   document.getElementById('screen-role').style.display = 'none';
   document.getElementById('screen-signup').style.display = 'none';
   document.getElementById('screen-verify').style.display = 'none';
+  document.getElementById('screen-login').style.display = 'none';
   document.getElementById('screen-app').style.display = 'block';
   document.getElementById('nav-teacher').style.display = role === 'teacher' ? 'block' : 'none';
   document.getElementById('nav-student').style.display = role === 'student' ? 'block' : 'none';
@@ -713,7 +759,20 @@ function showView(id, btn){
   if(parent){ parent.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); }
   btn.classList.add('active');
 }
-function switchRole(){
+async function switchRole(){
+  if(!currentUid){ document.getElementById('screen-app').style.display = 'none'; document.getElementById('screen-role').style.display = 'flex'; return; }
+  const newRole = pendingRole === 'teacher' ? 'student' : 'teacher';
+  const label = newRole === 'teacher' ? 'معلم' : 'طالب معلم';
+  if(!confirm('تأكيد التحويل إلى مسار "' + label + '"؟')) return;
+  try{
+    await db.collection('users').doc(currentUid).update({ role: newRole });
+    pendingRole = newRole;
+    enterApp(newRole);
+  }catch(err){ alert('حصل خطأ: ' + err.message); }
+}
+function logoutUser(){
+  auth.signOut();
+  currentUid = null; pendingUser = { name:'', email:'', phone:'' }; pendingRole = null;
   document.getElementById('screen-app').style.display = 'none';
   document.getElementById('screen-role').style.display = 'flex';
 }
