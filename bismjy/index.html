@@ -182,6 +182,19 @@
   .upgrade-card .cur-plan{font-family:'Cairo'; font-weight:800; font-size:19px; margin-bottom:4px;}
   .upgrade-card .cur-note{font-size:12.5px; color:var(--ink-soft); margin-bottom:18px;}
 
+  .quick-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:14px; margin-bottom:30px;}
+  .quick-card{background:var(--white); border:1px solid var(--line); border-radius:16px; padding:22px 10px 18px; text-align:center; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;}
+  .quick-card:hover{transform:translateY(-3px); box-shadow:0 12px 26px rgba(27,42,65,0.09); border-color:transparent;}
+  .quick-card .qc-icon{width:56px; height:56px; border-radius:50%; background:var(--paper-dim); display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 12px;}
+  .quick-card .qc-label{display:block; font-weight:800; font-size:13px; color:var(--ink);}
+
+  .stepper{display:flex; align-items:flex-start; justify-content:space-between; gap:4px; margin-bottom:28px; overflow-x:auto; padding:8px 2px;}
+  .step{display:flex; flex-direction:column; align-items:center; gap:8px; flex-shrink:0; min-width:76px;}
+  .step-circle{width:54px; height:54px; border-radius:50%; border:2px solid var(--sage); display:flex; align-items:center; justify-content:center; font-size:22px; background:var(--white); position:relative;}
+  .step-circle .step-num{position:absolute; top:-6px; left:-6px; background:var(--brick); color:#fff; width:19px; height:19px; border-radius:50%; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center;}
+  .step-label{font-size:11px; font-weight:700; text-align:center; color:var(--ink-soft); max-width:80px;}
+  .step-arrow{color:var(--line); font-size:20px; flex-shrink:0; margin-top:14px;}
+
   @media (max-width:760px){
     .shell{flex-direction:column;}
     .sidebar{width:100%; flex-direction:row; overflow-x:auto; align-items:center; padding:14px;}
@@ -305,10 +318,6 @@
       <h2 id="pay-plan-title">تأكيد الاشتراك</h2>
       <div class="pay-sub" id="pay-plan-sub"></div>
 
-      <button class="btn-primary btn-block" onclick="payOnline()" id="pay-online-btn">💳 ادفع أونلاين فورًا (فيزا / ماستركارد)</button>
-      <div class="auth-status" id="online-pay-status"></div>
-      <div class="divider">أو حوّل يدويًا</div>
-
       <div class="pay-method">
         <div class="pm-title">💵 كاش / فودافون كاش</div>
         <div class="pm-num">01153652279</div>
@@ -320,7 +329,7 @@
 
       <a class="wa-btn" id="wa-confirm-link" href="#" target="_blank">تأكيد الدفع عبر واتساب</a>
 
-      <button class="btn-secondary btn-block pay-confirm-btn" onclick="finalizePaidPlan()">لقد حوّلت المبلغ يدويًا — فعّل حسابي</button>
+      <button class="btn-primary btn-block pay-confirm-btn" onclick="finalizePaidPlan()">لقد حوّلت المبلغ — فعّل حسابي</button>
       <div class="auth-status" id="payment-status"></div>
       <button class="back-link" onclick="backToPlansFromPayment()">رجوع لاختيار خطة تانية</button>
     </div>
@@ -338,6 +347,7 @@
         <button class="nav-item active" onclick="showView('t-dash', this)">🏠 الصفحة الرئيسية</button>
         <button class="nav-item" onclick="switchRole()">🔁 تغيير المسار</button>
         <button class="nav-item" onclick="showView('v-learn', this)">📖 تعلم كيف</button>
+        <button class="nav-item" onclick="showView('v-notebooks', this)">📒 دفاتر تحضير</button>
         <button class="nav-item" onclick="openExamform(this)">📝 امتحانك بسهولة</button>
         <button class="nav-item" onclick="window.open('https://plusinmath.vercel.app/x/boardplus','_blank')">🖊️ سبورة إلكترونية</button>
         <button class="nav-item" onclick="showView('v-upgrade', this)">⭐ طوّر خطتك</button>
@@ -348,6 +358,7 @@
         <button class="nav-item active" onclick="showView('s-home', this)">🏠 الصفحة الرئيسية</button>
         <button class="nav-item" onclick="switchRole()">🔁 تغيير المسار</button>
         <button class="nav-item" onclick="showView('v-learn', this)">📖 تعلم كيف</button>
+        <button class="nav-item" onclick="showView('v-notebooks', this)">📒 دفاتر تحضير</button>
         <button class="nav-item" onclick="openExamform(this)">📝 امتحانك بسهولة</button>
         <button class="nav-item" onclick="window.open('https://plusinmath.vercel.app/x/boardplus','_blank')">🖊️ سبورة إلكترونية</button>
         <button class="nav-item" onclick="showView('v-upgrade', this)">⭐ طوّر خطتك</button>
@@ -372,6 +383,16 @@
           <div><h1 id="dash-greeting">أهلًا 👋</h1><div class="sub">نظرة سريعة</div></div>
           <div class="avatar" id="dash-avatar">م ح</div>
         </div>
+
+        <div class="quick-grid">
+          <button class="quick-card" onclick="showView('v-learn', document.querySelector('#nav-teacher .nav-item:nth-child(3)'))"><span class="qc-icon">📖</span><span class="qc-label">تعلم كيف</span></button>
+          <button class="quick-card" onclick="showView('v-notebooks', document.querySelector('#nav-teacher .nav-item:nth-child(4)'))"><span class="qc-icon">📒</span><span class="qc-label">دفاتر تحضير</span></button>
+          <button class="quick-card" onclick="openExamform(document.querySelector('#nav-teacher .nav-item:nth-child(5)'))"><span class="qc-icon">📝</span><span class="qc-label">امتحانك بسهولة</span></button>
+          <button class="quick-card" onclick="window.open('https://plusinmath.vercel.app/x/boardplus','_blank')"><span class="qc-icon">🖊️</span><span class="qc-label">سبورة إلكترونية</span></button>
+          <button class="quick-card" onclick="showView('v-upgrade', document.querySelector('#nav-teacher .nav-item:nth-child(7)'))"><span class="qc-icon">⭐</span><span class="qc-label">طوّر خطتك</span></button>
+          <button class="quick-card" onclick="showView('t-community', document.querySelector('#nav-teacher .nav-item:nth-child(8)'))"><span class="qc-icon">🤝</span><span class="qc-label">المجتمع</span></button>
+        </div>
+
         <div class="section-title">آخر منشورات المجتمع<button class="linklike" onclick="showView('t-community', document.querySelector('.nav-item[onclick*=t-community]'))">عرض الكل</button></div>
         <div id="home-community-preview" class="content-list"><div class="empty-state">جاري التحميل...</div></div>
       </div>
@@ -379,11 +400,47 @@
       <!-- STUDENT-TEACHER HOME -->
       <div class="view" id="s-home">
         <div class="topbar">
-          <div><h1 id="dash-greeting-s">أهلًا 👋</h1><div class="sub">رحلتك: طالب معلم → متدرب → معلم مبتدئ → معلم محترف</div></div>
+          <div><h1 id="dash-greeting-s">أهلًا 👋</h1><div class="sub">رحلتك في التدريس</div></div>
           <div class="avatar" id="dash-avatar-s">ط م</div>
         </div>
+
+        <div class="stepper">
+          <div class="step"><div class="step-circle"><span class="step-num">1</span>🎓</div><div class="step-label">طالب معلم</div></div>
+          <div class="step-arrow">←</div>
+          <div class="step"><div class="step-circle"><span class="step-num">2</span>🧑‍🎓</div><div class="step-label">متدرب</div></div>
+          <div class="step-arrow">←</div>
+          <div class="step"><div class="step-circle"><span class="step-num">3</span>👨‍🏫</div><div class="step-label">معلم مبتدئ</div></div>
+          <div class="step-arrow">←</div>
+          <div class="step"><div class="step-circle"><span class="step-num">4</span>🏆</div><div class="step-label">معلم محترف</div></div>
+        </div>
+
+        <div class="quick-grid">
+          <button class="quick-card" onclick="showView('v-learn', document.querySelector('#nav-student .nav-item:nth-child(3)'))"><span class="qc-icon">📖</span><span class="qc-label">تعلم كيف</span></button>
+          <button class="quick-card" onclick="showView('v-notebooks', document.querySelector('#nav-student .nav-item:nth-child(4)'))"><span class="qc-icon">📒</span><span class="qc-label">دفاتر تحضير</span></button>
+          <button class="quick-card" onclick="showView('s-practical', document.querySelector('#nav-student .nav-item:nth-child(9)'))"><span class="qc-icon">🧑‍🏫</span><span class="qc-label">التربية العملية</span></button>
+          <button class="quick-card" onclick="showView('s-research', document.querySelector('#nav-student .nav-item:nth-child(10)'))"><span class="qc-icon">🎥</span><span class="qc-label">بحوث الفعل</span></button>
+          <button class="quick-card" onclick="showView('s-myresearch', document.querySelector('#nav-student .nav-item:nth-child(11)'))"><span class="qc-icon">📁</span><span class="qc-label">أبحاثي</span></button>
+          <button class="quick-card" onclick="showView('t-community', document.querySelector('#nav-student .nav-item:nth-child(12)'))"><span class="qc-icon">🤝</span><span class="qc-label">المجتمع</span></button>
+        </div>
+
         <div class="section-title">آخر منشورات المجتمع<button class="linklike" onclick="showView('t-community', document.querySelector('.nav-item[onclick*=t-community]'))">عرض الكل</button></div>
         <div id="home-community-preview-s" class="content-list"><div class="empty-state">جاري التحميل...</div></div>
+      </div>
+
+      <!-- SHARED: دفاتر تحضير (مكتبة تعاونية) -->
+      <div class="view" id="v-notebooks">
+        <div class="topbar"><div><h1>دفاتر تحضير</h1><div class="sub">شارك دفتر تحضيرك أو استفد من دفاتر زملائك — رابط من Google Drive</div></div></div>
+        <div class="card-panel" style="margin-bottom:24px;">
+          <div class="field"><label>عنوان الدفتر</label><input type="text" id="nb-title" placeholder="مثال: تحضير وحدة الكسور — الصف الخامس"></div>
+          <div class="field"><label>المادة</label>
+            <select id="nb-subject"><option>رياضيات</option><option>عربي</option><option>إنجليزي</option><option>علوم</option><option>دراسات</option><option>لغات</option><option>عام</option></select>
+          </div>
+          <div class="field"><label>رابط الدفتر (Google Drive)</label><input type="text" id="nb-link" placeholder="الصق رابط المشاركة من درايف"></div>
+          <button class="btn-primary" onclick="addNotebook()">إضافة الدفتر</button>
+          <div class="auth-status" id="nb-status"></div>
+          <div class="hint">تأكد إن إعدادات المشاركة في درايف بتسمح لـ "أي شخص لديه الرابط" بالعرض.</div>
+        </div>
+        <div id="notebooks-list" class="content-list"><div class="empty-state">جاري تحميل الدفاتر...</div></div>
       </div>
 
       <!-- SHARED: تعلم كيف -->
@@ -458,6 +515,7 @@
             </select>
           </div>
           <div class="field"><label>منشورك</label><textarea rows="3" id="post-content" placeholder="اسأل سؤال، شارك فكرة شرح، أو ابدأ نقاش..."></textarea></div>
+          <div class="field"><label>رابط ملف (اختياري — من Google Drive)</label><input type="text" id="post-drive-link" placeholder="الصق رابط المشاركة من درايف هنا"></div>
           <button class="btn-primary" onclick="createPost()">نشر</button>
           <div class="auth-status" id="post-status"></div>
         </div>
@@ -472,7 +530,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -487,7 +544,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-const functions = firebase.functions();
 
 const EMAILJS_PUBLIC_KEY = 'oxTulRj_SvhD_-rHR';
 const EMAILJS_SERVICE_ID = 'service_h61jmbn';
@@ -768,33 +824,6 @@ function backToPlansFromPayment(){
   document.getElementById('screen-payment').style.display = 'none';
   document.getElementById('screen-plans').style.display = 'flex';
 }
-async function payOnline(){
-  const plan = PLANS[selectedPlanKey];
-  const status = document.getElementById('online-pay-status');
-  const btn = document.getElementById('pay-online-btn');
-  btn.disabled = true;
-  status.className = 'auth-status pending'; status.textContent = 'جاري تجهيز صفحة الدفع...';
-  try{
-    const createOrder = functions.httpsCallable('createPaymobOrder');
-    const res = await createOrder({
-      planKey: selectedPlanKey,
-      amountEGP: plan.price,
-      planName: plan.name,
-      customerName: pendingUser.name,
-      customerEmail: pendingUser.email,
-      customerPhone: pendingUser.phone
-    });
-    if(res.data && res.data.iframeUrl){
-      // نحفظ الخطة المطلوبة عشان لما يرجع بعد الدفع نقدر نأكدها (لو عندك Webhook هيتفعل تلقائي أفضل)
-      window.location.href = res.data.iframeUrl;
-    }else{
-      throw new Error('لم يتم استلام رابط الدفع.');
-    }
-  }catch(err){
-    status.className = 'auth-status err';
-    status.textContent = 'الدفع الأونلاين مش متاح دلوقتي (' + (err.message||'') + '). استخدم التحويل اليدوي تحت.';
-  }finally{ btn.disabled = false; }
-}
 
 async function finalizeFreePlan(){
   const status = document.getElementById('plans-status');
@@ -910,7 +939,7 @@ function enterApp(role){
   }
   loadUserStatus();
   showView(role === 'teacher' ? 't-dash' : 's-home', document.querySelector((role === 'teacher' ? '#nav-teacher' : '#nav-student') + ' .nav-item'));
-  loadLessons(); loadPracticalTips(); loadResearchVideos(); loadMyResearch(); loadCommunity();
+  loadLessons(); loadPracticalTips(); loadResearchVideos(); loadMyResearch(); loadCommunity(); loadNotebooks();
 }
 function showView(id, btn){
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1016,16 +1045,19 @@ const likedPosts = new Set();
 async function createPost(){
   const tag = document.getElementById('post-tag').value;
   const content = document.getElementById('post-content').value.trim();
+  const driveLink = document.getElementById('post-drive-link').value.trim();
   const status = document.getElementById('post-status');
   if(!content){ status.className='auth-status err'; status.textContent='اكتب محتوى المنشور.'; return; }
   status.className='auth-status pending'; status.textContent='جاري النشر...';
   try{
     await db.collection('communityPosts').add({
       authorUid: currentUid, authorName: pendingUser.name || 'مستخدم', tag, content,
+      driveLink: driveLink || null,
       likesCount: 0, commentsCount: 0,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     document.getElementById('post-content').value = '';
+    document.getElementById('post-drive-link').value = '';
     status.className='auth-status ok'; status.textContent='✓ تم النشر.';
     loadCommunity();
   }catch(err){ status.className='auth-status err'; status.textContent='حصل خطأ: '+err.message; }
@@ -1049,14 +1081,17 @@ async function loadCommunity(){
       <div class="post" id="post-${id}">
         <div class="post-head"><div class="mini-avatar">${escapeHtml(initials(p.authorName))}</div><div class="who">${escapeHtml(p.authorName||'مستخدم')}</div><span class="tag">${escapeHtml(p.tag||'عام')}</span></div>
         <p>${escapeHtml(p.content||'')}</p>
+        ${p.driveLink ? `<a class="ci-link" style="display:inline-block; margin-bottom:10px;" href="${escapeAttr(p.driveLink)}" target="_blank">📎 فتح الملف المرفق</a>` : ''}
         <div class="post-actions">
           <button class="${likedPosts.has(id)?'liked':''}" id="like-${id}" onclick="likePost('${id}')">👍 <span id="likecount-${id}">${p.likesCount||0}</span></button>
           <button onclick="toggleComments('${id}')">💬 <span id="commentcount-${id}">${p.commentsCount||0}</span> تعليقات</button>
+          <button onclick="sharePost('${id}')">🔗 مشاركة</button>
+          ${p.authorUid === currentUid ? `<button onclick="deletePost('${id}')" style="color:var(--brick);">🗑️ حذف</button>` : ''}
         </div>
         <div class="comments-box" id="comments-${id}">
           <div id="commentslist-${id}"></div>
           <div class="comment-add">
-            <input type="text" id="commentinput-${id}" placeholder="اكتب تعليق...">
+            <input type="text" id="commentinput-${id}" placeholder="اكتب تعليق..." onkeydown="if(event.key==='Enter'){event.preventDefault(); addComment('${id}');}">
             <button onclick="addComment('${id}')">إرسال</button>
           </div>
         </div>
@@ -1091,16 +1126,17 @@ async function loadComments(id){
   el.innerHTML = 'جاري التحميل...';
   try{
     const snap = await db.collection('communityPosts').doc(id).collection('comments').orderBy('createdAt','asc').limit(50).get();
-    if(snap.empty){ el.innerHTML = '<div style="font-size:12px; color:var(--ink-soft);">لسه مفيش تعليقات.</div>'; return; }
+    if(snap.empty){ el.innerHTML = '<div style="font-size:12px; color:var(--ink-soft);">لسه مفيش تعليقات — اكتب أول تعليق.</div>'; return; }
     el.innerHTML = snap.docs.map(d => { const c = d.data();
       return `<div class="comment-item"><b>${escapeHtml(c.authorName||'مستخدم')}:</b> ${escapeHtml(c.content||'')}</div>`;
     }).join('');
-  }catch(err){ el.innerHTML = '<div style="font-size:12px; color:var(--brick);">تعذّر تحميل التعليقات.</div>'; }
+  }catch(err){ el.innerHTML = '<div style="font-size:12px; color:var(--brick);">تعذّر تحميل التعليقات.</div>'; console.warn(err); }
 }
 async function addComment(id){
   const input = document.getElementById('commentinput-'+id);
   const content = input.value.trim();
   if(!content) return;
+  input.disabled = true;
   try{
     await db.collection('communityPosts').doc(id).collection('comments').add({
       authorUid: currentUid, authorName: pendingUser.name || 'مستخدم', content,
@@ -1111,7 +1147,69 @@ async function addComment(id){
     const cc = document.getElementById('commentcount-'+id);
     if(cc) cc.textContent = String(Number(cc.textContent||0) + 1);
     loadComments(id);
-  }catch(err){ console.warn(err); }
+  }catch(err){ console.warn(err); alert('تعذّر إرسال التعليق: ' + err.message); }
+  finally{ input.disabled = false; input.focus(); }
+}
+async function sharePost(id){
+  const url = window.location.href.split('#')[0] + '#post-' + id;
+  const postEl = document.getElementById('post-'+id);
+  const text = postEl ? postEl.querySelector('p').textContent : '';
+  try{
+    if(navigator.share){
+      await navigator.share({ title: 'منشور من نُدرس معًا', text, url });
+    }else{
+      await navigator.clipboard.writeText(url);
+      alert('✓ اتنسخ رابط المنشور.');
+    }
+  }catch(err){ /* المستخدم لغى المشاركة - تجاهل */ }
+}
+async function deletePost(id){
+  if(!confirm('متأكد إنك عايز تحذف المنشور ده؟')) return;
+  try{
+    await db.collection('communityPosts').doc(id).delete();
+    loadCommunity();
+  }catch(err){ alert('تعذّر الحذف: ' + err.message); }
+}
+
+/* ---------- دفاتر تحضير (مكتبة تعاونية) ---------- */
+async function addNotebook(){
+  const title = document.getElementById('nb-title').value.trim();
+  const subject = document.getElementById('nb-subject').value;
+  const link = document.getElementById('nb-link').value.trim();
+  const status = document.getElementById('nb-status');
+  if(!title || !link){ status.className='auth-status err'; status.textContent='اكتب العنوان والرابط.'; return; }
+  status.className='auth-status pending'; status.textContent='جاري الإضافة...';
+  try{
+    await db.collection('prepNotebooks').add({
+      title, subject, link, ownerUid: currentUid, ownerName: pendingUser.name || 'مستخدم',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('nb-title').value=''; document.getElementById('nb-link').value='';
+    status.className='auth-status ok'; status.textContent='✓ تمت الإضافة.';
+    loadNotebooks();
+  }catch(err){ status.className='auth-status err'; status.textContent='حصل خطأ: '+err.message; }
+}
+async function loadNotebooks(){
+  const el = document.getElementById('notebooks-list'); if(!el) return;
+  try{
+    const snap = await db.collection('prepNotebooks').orderBy('createdAt','desc').limit(50).get();
+    if(snap.empty){ el.innerHTML = '<div class="empty-state">لسه مفيش دفاتر — كن أول من يضيف دفتر تحضير!</div>'; return; }
+    el.innerHTML = snap.docs.map(d => { const n = d.data();
+      const mine = n.ownerUid === currentUid;
+      return `<div class="content-item">
+        <div><div class="ci-title">${escapeHtml(n.title||'')}</div><div class="ci-desc">${escapeHtml(n.subject||'')} — بواسطة ${escapeHtml(n.ownerName||'مستخدم')}</div></div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <a class="ci-link" href="${escapeAttr(n.link)}" target="_blank">فتح الدفتر</a>
+          ${mine ? `<button class="ci-link" style="background:none; border:1px solid var(--line); color:var(--brick);" onclick="deleteNotebook('${d.id}')">حذف</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(err){ el.innerHTML = '<div class="empty-state">تعذّر تحميل الدفاتر الآن.</div>'; console.warn(err); }
+}
+async function deleteNotebook(id){
+  if(!confirm('متأكد من حذف الدفتر ده؟')) return;
+  try{ await db.collection('prepNotebooks').doc(id).delete(); loadNotebooks(); }
+  catch(err){ alert('تعذّر الحذف: ' + err.message); }
 }
 function escapeAttr(s){ return String(s).replace(/"/g,'&quot;'); }
 </script>

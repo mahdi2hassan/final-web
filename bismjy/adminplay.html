@@ -89,7 +89,12 @@
     <div class="card">
       <div class="field"><label>عنوان الدرس</label><input type="text" id="l-title"></div>
       <div class="field"><label>وصف مختصر</label><textarea rows="2" id="l-desc"></textarea></div>
-      <div class="field"><label>رابط الفيديو</label><input type="text" id="l-video" placeholder="يوتيوب / درايف..."></div>
+      <div class="field"><label>رابط الفيديو</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="l-video" placeholder="يوتيوب / درايف...">
+          <button type="button" class="btn" style="background:var(--ink); white-space:nowrap;" onclick="openDrivePicker('l-video')">📂 من Drive</button>
+        </div>
+      </div>
       <button class="btn" onclick="addItem('lessons', ['title:l-title','description:l-desc','videoUrl:l-video'])">إضافة درس</button>
       <div class="status" id="lessons-status"></div>
     </div>
@@ -109,7 +114,12 @@
   <div class="panel" id="panel-videos">
     <div class="card">
       <div class="field"><label>عنوان الفيديو</label><input type="text" id="v-title"></div>
-      <div class="field"><label>رابط الفيديو</label><input type="text" id="v-video"></div>
+      <div class="field"><label>رابط الفيديو</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="v-video">
+          <button type="button" class="btn" style="background:var(--ink); white-space:nowrap;" onclick="openDrivePicker('v-video')">📂 من Drive</button>
+        </div>
+      </div>
       <button class="btn" onclick="addItem('actionResearchVideos', ['title:v-title','videoUrl:v-video'])">إضافة فيديو</button>
       <div class="status" id="videos-status"></div>
     </div>
@@ -125,6 +135,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyCM4lbv83xStvHDB31CqPTpb40ss9q04so",
@@ -207,6 +219,58 @@ async function deleteItem(collection, id, listId, fields){
     loadList(collection, listId, fields);
   }catch(err){ alert('حصل خطأ: '+err.message); }
 }
+/* ---------- Google Drive Picker ----------
+   لازم تحط بياناتك من Google Cloud Console (Credentials) قبل ما الزرار يشتغل:
+   1) فعّل Google Picker API و Google Drive API في مشروعك على Google Cloud.
+   2) اعمل OAuth 2.0 Client ID (نوعه Web application) وحط الدومين بتاعك في Authorized JavaScript origins.
+   3) اعمل API Key وقيّدها على Picker API.
+   4) حط القيمتين تحت بدل الـ placeholders. */
+const GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY';
+const GOOGLE_CLIENT_ID = 'YOUR_OAUTH_CLIENT_ID.apps.googleusercontent.com';
+
+let gTokenClient = null;
+let gAccessToken = null;
+let gPickerTargetInput = null;
+
+function openDrivePicker(targetInputId){
+  gPickerTargetInput = targetInputId;
+  if(GOOGLE_API_KEY.startsWith('YOUR_') || GOOGLE_CLIENT_ID.startsWith('YOUR_')){
+    alert('لسه محتاج تظبط GOOGLE_API_KEY و GOOGLE_CLIENT_ID في أول ملف admin-dashboard.html عشان زرار Drive يشتغل.');
+    return;
+  }
+  if(!gTokenClient){
+    gTokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: 'https://www.googleapis.com/auth/drive.readonly',
+      callback: (resp) => {
+        if(resp.error){ alert('تعذّر الاتصال بجوجل درايف.'); return; }
+        gAccessToken = resp.access_token;
+        showPicker();
+      },
+    });
+  }
+  gTokenClient.requestAccessToken({ prompt: gAccessToken ? '' : 'consent' });
+}
+function showPicker(){
+  gapi.load('picker', () => {
+    const view = new google.picker.DocsView().setIncludeFolders(true);
+    const picker = new google.picker.PickerBuilder()
+      .addView(view)
+      .setOAuthToken(gAccessToken)
+      .setDeveloperKey(GOOGLE_API_KEY)
+      .setCallback(pickerCallback)
+      .build();
+    picker.setVisible(true);
+  });
+}
+function pickerCallback(data){
+  if(data.action === google.picker.Action.PICKED){
+    const file = data.docs[0];
+    const link = file.url || ('https://drive.google.com/file/d/' + file.id + '/view');
+    if(gPickerTargetInput) document.getElementById(gPickerTargetInput).value = link;
+  }
+}
+
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 const PLAN_LABELS = { free:'تجربة مجانية', sub1:'الاشتراك الأول', sub2:'الاشتراك الثاني', sub3:'الاشتراك الثالث', pro:'البرو (مدى الحياة)' };
