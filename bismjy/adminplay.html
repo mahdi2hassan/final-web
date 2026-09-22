@@ -106,6 +106,39 @@
   .mod-post .mp-head{display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--ink-soft); margin-bottom:8px;}
   .mod-post .mp-body{font-size:13.5px; line-height:1.7; margin-bottom:8px; white-space:pre-wrap;}
   .mod-post img{max-width:220px; border-radius:5px; display:block; margin-bottom:8px;}
+
+  /* ---------- admin support chat ---------- */
+  .chat-shell{display:flex; border:1px solid var(--line); border-radius:12px; overflow:hidden; height:min(600px,72vh); background:var(--white);}
+  .chat-list-pane{width:280px; flex-shrink:0; border-left:1px solid var(--line); overflow-y:auto;}
+  .conv-item{display:flex; align-items:center; gap:10px; padding:11px 12px; cursor:pointer; border-bottom:1px solid var(--paper-dim);}
+  .conv-item:hover{background:var(--paper-dim);}
+  .conv-item.active{background:rgba(184,83,46,0.08);}
+  .conv-item .conv-info{flex:1; min-width:0;}
+  .conv-item .conv-name{font-weight:800; font-size:13px; color:var(--ink);}
+  .conv-item .conv-preview{font-size:11.5px; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .conv-item .conv-badge{background:var(--brick); color:#fff; font-size:10px; font-weight:800; min-width:17px; height:17px; padding:0 4px; border-radius:9px; display:flex; align-items:center; justify-content:center;}
+  .mini-avatar{width:32px; height:32px; border-radius:50%; background:var(--brick); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0;}
+  .chat-thread-pane{flex:1; display:flex; flex-direction:column; min-width:0;}
+  .chat-thread-empty{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--ink-soft); font-size:13px; text-align:center; padding:20px;}
+  .chat-thread-active{flex:1; display:flex; flex-direction:column; min-height:0;}
+  .chat-thread-head{display:flex; align-items:center; gap:10px; padding:12px 14px; border-bottom:1px solid var(--line);}
+  .chat-back-btn{display:none; background:var(--paper-dim); border-radius:50%; width:30px; height:30px; align-items:center; justify-content:center; flex-shrink:0;}
+  .chat-thread-name{font-weight:800; font-size:13.5px; color:var(--ink);}
+  .chat-messages{flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:8px; background:var(--paper-dim);}
+  .msg-bubble{max-width:72%; padding:9px 13px; border-radius:14px; font-size:13px; line-height:1.6; word-break:break-word;}
+  .msg-bubble.mine{align-self:flex-end; background:var(--brick); color:#fff; border-bottom-left-radius:4px;}
+  .msg-bubble.theirs{align-self:flex-start; background:var(--white); color:var(--ink); border:1px solid var(--line); border-bottom-right-radius:4px;}
+  .msg-time{font-size:9.5px; opacity:.7; margin-top:3px; display:block;}
+  .chat-input-row{display:flex; gap:8px; padding:12px; border-top:1px solid var(--line); align-items:center;}
+  .chat-input-row input{flex:1; padding:10px 14px; border:1px solid var(--line); border-radius:20px; font-family:inherit; font-size:13px;}
+  .chat-input-row button{background:var(--brick); color:#fff; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  @media (max-width:760px){
+    .chat-shell{position:relative;}
+    .chat-list-pane{position:absolute; inset:0; width:100%; z-index:1; border-left:none; transition:transform .2s ease;}
+    .chat-list-pane.hide-mobile{transform:translateX(105%);}
+    .chat-thread-pane{position:absolute; inset:0; width:100%;}
+    .chat-back-btn{display:flex;}
+  }
 </style>
 </head>
 <body>
@@ -146,6 +179,9 @@
 <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
 <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
 <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.6 21.6 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
+<symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+<symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+<symbol id="i-check-double" viewBox="0 0 24 24"><polyline points="18 6 7 17 2 12"/><polyline points="22 10 13 19 11 17"/></symbol>
 </svg>
 
 <div id="toast-stack"></div>
@@ -201,6 +237,8 @@
     <button class="tab" onclick="switchTab('community', this)"><svg class="icon"><use href="#i-users"></use></svg> المجتمع</button>
     <button class="tab" onclick="switchTab('notebooks', this)"><svg class="icon"><use href="#i-notebook"></use></svg> دفاتر التحضير</button>
     <button class="tab" onclick="switchTab('users', this)"><svg class="icon"><use href="#i-user"></use></svg> المستخدمين</button>
+    <button class="tab" onclick="switchTab('support', this)"><svg class="icon"><use href="#i-chat-circle"></use></svg> دردشات الدعم</button>
+    <button class="tab" onclick="switchTab('settings', this)"><svg class="icon"><use href="#i-settings"></use></svg> الإعدادات</button>
   </div>
 
   <div class="panel active" id="panel-lessons">
@@ -257,6 +295,44 @@
   <div class="panel" id="panel-users">
     <div class="status" id="users-status" style="margin-bottom:10px;"></div>
     <div id="users-list"></div>
+  </div>
+
+  <div class="panel" id="panel-support">
+    <div class="chat-shell" id="admin-chat-shell">
+      <div class="chat-list-pane" id="admin-chat-list-pane">
+        <div id="admin-conv-list"><div class="empty-state" style="padding:16px;">جاري تحميل المحادثات...</div></div>
+      </div>
+      <div class="chat-thread-pane" id="admin-chat-thread-pane">
+        <div class="chat-thread-empty" id="admin-chat-thread-empty">
+          <svg class="icon" style="width:40px; height:40px; color:var(--line); margin-bottom:10px;"><use href="#i-chat-circle"></use></svg>
+          اختار محادثة من القائمة عشان ترد كـ "فريق الدعم الفني"
+        </div>
+        <div class="chat-thread-active" id="admin-chat-thread-active" style="display:none;">
+          <div class="chat-thread-head">
+            <button class="chat-back-btn" onclick="closeAdminChatThread()"><svg class="icon"><use href="#i-chevron" style="transform:scaleX(-1)"></use></svg></button>
+            <div class="mini-avatar" id="admin-chat-thread-avatar"></div>
+            <div class="chat-thread-name" id="admin-chat-thread-name"></div>
+          </div>
+          <div class="chat-messages" id="admin-chat-messages"></div>
+          <div class="chat-input-row">
+            <input type="text" id="admin-chat-input" placeholder="اكتب رد كفريق الدعم..." onkeydown="if(event.key==='Enter'){event.preventDefault(); sendAdminChatMessage();}">
+            <button onclick="sendAdminChatMessage()"><svg class="icon"><use href="#i-send"></use></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-settings">
+    <div class="card">
+      <div class="field"><label>رقم واتساب (بالصيغة الدولية بدون +، مثال: 201234567890)</label><input type="text" id="set-whatsapp"></div>
+      <div class="field"><label>رقم هاتف للاتصال</label><input type="text" id="set-phone"></div>
+      <div class="field"><label>إيميل التواصل</label><input type="text" id="set-email"></div>
+      <div class="field"><label>رابط جروب فيسبوك</label><input type="text" id="set-fb"></div>
+      <div class="field"><label>رابط تليجرام</label><input type="text" id="set-tg"></div>
+      <button class="btn" onclick="saveContactSettings()"><svg class="icon"><use href="#i-check"></use></svg> حفظ إعدادات التواصل</button>
+      <div class="status" id="settings-status"></div>
+    </div>
   </div>
 </div>
 
@@ -415,6 +491,8 @@ async function checkGate(){
     loadUsers();
     loadCommunityMod();
     loadNotebooksMod();
+    subscribeAdminConvList();
+    loadContactSettings();
   }catch(e){
     err.textContent = 'دخول فشل: ' + (e.message || e.code);
   }
@@ -588,6 +666,106 @@ async function deleteNotebookMod(id){
   }catch(err){ toast('تعذّر الحذف: '+err.message, {type:'err'}); }
 }
 
+/* ================= دردشات الدعم الفني — الأدمن بيرد كـ "فريق الدعم الفني" ================= */
+const SUPPORT_UID = 'support-team';
+const SUPPORT_NAME = 'فريق الدعم الفني — نُدرس معًا';
+let adminActiveConvId = null;
+let adminConvListUnsub = null;
+let adminMsgUnsub = null;
+function initials(name){ return (name||'؟').trim().split(' ').slice(0,2).map(w=>w[0]).join(' '); }
+
+function subscribeAdminConvList(){
+  if(adminConvListUnsub) adminConvListUnsub();
+  adminConvListUnsub = db.collection('conversations')
+    .where('participants', 'array-contains', SUPPORT_UID)
+    .orderBy('lastMessageAt', 'desc')
+    .onSnapshot(snap => {
+      const el = document.getElementById('admin-conv-list');
+      if(!el) return;
+      if(snap.empty){ el.innerHTML = '<div class="empty-state" style="padding:16px;">لسه مفيش محادثات دعم.</div>'; return; }
+      el.innerHTML = snap.docs.map(d => {
+        const c = d.data();
+        const otherUid = (c.participants || []).find(u => u !== SUPPORT_UID) || '';
+        const otherName = (c.participantNames && c.participantNames[otherUid]) || 'مستخدم';
+        const unread = (c.unread && c.unread[SUPPORT_UID]) || 0;
+        return `<div class="conv-item ${d.id===adminActiveConvId?'active':''}" onclick="openAdminChat('${d.id}','${escapeAttr(otherUid)}','${escapeAttr(otherName)}')">
+          <div class="mini-avatar">${escapeHtml(initials(otherName))}</div>
+          <div class="conv-info"><div class="conv-name">${escapeHtml(otherName)}</div><div class="conv-preview">${escapeHtml(c.lastMessage||'')}</div></div>
+          ${unread>0 ? `<span class="conv-badge">${unread}</span>` : ''}
+        </div>`;
+      }).join('');
+    }, err => console.warn(err));
+}
+async function openAdminChat(convId, otherUid, otherName){
+  adminActiveConvId = convId;
+  document.getElementById('admin-chat-thread-empty').style.display = 'none';
+  document.getElementById('admin-chat-thread-active').style.display = 'flex';
+  document.getElementById('admin-chat-thread-name').textContent = otherName;
+  document.getElementById('admin-chat-thread-avatar').textContent = initials(otherName);
+  document.getElementById('admin-chat-list-pane').classList.add('hide-mobile');
+  try{ await db.collection('conversations').doc(convId).update({ [`unread.${SUPPORT_UID}`]: 0 }); }catch(e){}
+  if(adminMsgUnsub) adminMsgUnsub();
+  adminMsgUnsub = db.collection('conversations').doc(convId).collection('messages')
+    .orderBy('createdAt','asc').limit(200)
+    .onSnapshot(snap => {
+      const el = document.getElementById('admin-chat-messages');
+      if(!el) return;
+      el.innerHTML = snap.docs.map(d => {
+        const m = d.data();
+        const mine = m.senderUid === SUPPORT_UID;
+        const time = m.createdAt && m.createdAt.toDate ? m.createdAt.toDate().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'}) : '';
+        return `<div class="msg-bubble ${mine?'mine':'theirs'}">${escapeHtml(m.text||'')}<span class="msg-time">${time}</span></div>`;
+      }).join('');
+      el.scrollTop = el.scrollHeight;
+    }, err => console.warn(err));
+}
+function closeAdminChatThread(){ document.getElementById('admin-chat-list-pane').classList.remove('hide-mobile'); }
+async function sendAdminChatMessage(){
+  const input = document.getElementById('admin-chat-input');
+  const text = input.value.trim();
+  if(!text || !adminActiveConvId) return;
+  const convId = adminActiveConvId;
+  const otherUid = convId.split('_').find(u => u !== SUPPORT_UID);
+  input.value = '';
+  try{
+    await db.collection('conversations').doc(convId).collection('messages').add({
+      senderUid: SUPPORT_UID, senderName: SUPPORT_NAME, text, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection('conversations').doc(convId).update({
+      lastMessage: text, lastMessageAt: firebase.firestore.FieldValue.serverTimestamp(), lastSenderUid: SUPPORT_UID,
+      [`unread.${otherUid}`]: firebase.firestore.FieldValue.increment(1)
+    });
+  }catch(err){ toast('تعذّر إرسال الرسالة: '+err.message, {type:'err'}); }
+}
+
+/* ================= إعدادات التواصل (siteSettings/contact) ================= */
+async function loadContactSettings(){
+  try{
+    const doc = await db.collection('siteSettings').doc('contact').get();
+    const s = doc.exists ? doc.data() : {};
+    document.getElementById('set-whatsapp').value = s.whatsapp || '';
+    document.getElementById('set-phone').value = s.phone || '';
+    document.getElementById('set-email').value = s.email || '';
+    document.getElementById('set-fb').value = s.facebookGroup || '';
+    document.getElementById('set-tg').value = s.telegram || '';
+  }catch(err){ console.warn(err); }
+}
+async function saveContactSettings(){
+  const status = document.getElementById('settings-status');
+  const data = {
+    whatsapp: document.getElementById('set-whatsapp').value.trim(),
+    phone: document.getElementById('set-phone').value.trim(),
+    email: document.getElementById('set-email').value.trim(),
+    facebookGroup: document.getElementById('set-fb').value.trim(),
+    telegram: document.getElementById('set-tg').value.trim(),
+  };
+  try{
+    await db.collection('siteSettings').doc('contact').set(data, { merge: true });
+    status.className = 'status ok'; status.textContent = '✓ تم حفظ إعدادات التواصل.';
+    toast('اتحفظت إعدادات التواصل.');
+  }catch(err){ status.className = 'status err'; status.textContent = 'حصل خطأ: '+err.message; }
+}
+
 /* ---------- Google Drive Picker ----------
    لازم تحط بياناتك من Google Cloud Console (Credentials) قبل ما الزرار يشتغل:
    1) فعّل Google Picker API و Google Drive API في مشروعك على Google Cloud.
@@ -675,6 +853,10 @@ async function saveUser(uid){
     await db.collection('users').doc(uid).update({ plan, status });
     statusEl.className = 'status ok'; statusEl.textContent = '✓ تم تحديث المستخدم.';
     toast('تم تحديث بيانات المستخدم.');
+    db.collection('notifications').add({
+      recipientUid: uid, type: 'plan', text: 'تم تحديث خطتك/حالة اشتراكك من فريق الإدارة', viewId: null, read: false,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(()=>{});
     loadUsers();
   }catch(err){ statusEl.className = 'status err'; statusEl.textContent = 'حصل خطأ: '+err.message; toast('حصل خطأ: '+err.message, {type:'err'}); }
 }
