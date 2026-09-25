@@ -124,6 +124,65 @@ body {
   to   { opacity: 1; transform: none; }
 }
 
+/* ===== DIGITAL ID CARD ===== */
+#idcard-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(2,4,10,0.82); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  padding: 16px;
+}
+#idcard-overlay.show { display: flex; }
+.idcard {
+  width: 100%; max-width: 320px;
+  background: linear-gradient(160deg, #0d1633 0%, #050810 100%);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px 20px 18px;
+  position: relative;
+  text-align: center;
+  box-shadow: 0 30px 70px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.06);
+  animation: cardIn .4s cubic-bezier(.22,1,.36,1) both;
+}
+.idcard::before {
+  content: ''; position: absolute; inset: -1px;
+  border-radius: 21px; z-index: -1;
+  background: linear-gradient(135deg, rgba(74,127,212,0.5), rgba(201,168,76,0.35), rgba(74,127,212,0.15), rgba(201,168,76,0.4));
+  background-size: 300% 300%;
+  animation: borderA 7s linear infinite;
+}
+.idcard-close {
+  position: absolute; top: 12px; left: 12px;
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.05); color: var(--muted); cursor: pointer;
+}
+.idcard-brand { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: var(--muted); text-transform: uppercase; }
+.idcard-brand span { color: var(--gold2); }
+.idcard-avatar {
+  width: 62px; height: 62px; margin: 14px auto 8px;
+  border-radius: 16px; background: linear-gradient(135deg,#1a3270,#0d1a40);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 900; color: #fff;
+  border: 1px solid var(--border2);
+}
+.idcard-name { font-size: 17px; font-weight: 900; color: var(--text); }
+.idcard-grade { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.idcard-qr-wrap {
+  display: flex; align-items: center; justify-content: center;
+  background: #fff; border-radius: 14px; padding: 10px;
+  width: 150px; height: 150px; margin: 16px auto 10px;
+}
+.idcard-id { font-family: monospace; letter-spacing: 2px; color: var(--gold2); font-weight: 800; font-size: 15px; }
+.idcard-foot { font-size: 10px; color: var(--muted); margin-top: 8px; }
+.idcard-actions { display: flex; gap: 8px; margin-top: 16px; }
+
+@media print {
+  body > *:not(#idcard-overlay) { display: none !important; }
+  #idcard-overlay { position: static; background: #fff; display: flex !important; backdrop-filter: none; }
+  .idcard-close, .idcard-actions { display: none !important; }
+  .idcard { box-shadow: none; border: 1px solid #ccc; }
+}
+
 /* ===== HEADER ===== */
 .auth-header {
   padding: 28px 28px 20px;
@@ -639,8 +698,9 @@ select { appearance: none; }
     <div class="step active" id="step-auth">
       <div class="tabs" id="authMainTabs">
         <button class="tab-btn active" onclick="switchTab('login')">تسجيل الدخول</button>
-        <button class="tab-btn" onclick="switchTab('register')">حساب جديد</button>
+        <button class="tab-btn" id="regTabBtn" onclick="switchTab('register')">حساب جديد</button>
       </div>
+      <div id="reg-closed-notice" style="display:none;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.25);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:var(--warn);text-align:center;line-height:1.7"></div>
 
       <!-- Login Tab -->
       <div id="tab-login">
@@ -677,7 +737,7 @@ select { appearance: none; }
           <div class="spin"></div>
         </button>
 
-        <div style="text-align:center;margin-top:12px">
+        <div style="text-align:center;margin-top:12px" id="quickLoginLink">
           <a href="#" onclick="event.preventDefault();showQuickLogin()" style="font-size:12.5px;color:var(--gold2);text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:6px">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
             دخول سريع
@@ -1137,6 +1197,11 @@ select { appearance: none; }
 
       <!-- Sub info -->
       <div style="display:flex;flex-direction:column;gap:0;background:rgba(8,13,28,0.4);border:1px solid var(--border2);border-radius:12px;padding:8px 12px;margin-bottom:12px">
+        <div class="edit-row" id="studentid-row">
+          <span class="er-lbl"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;margin-left:4px;vertical-align:middle"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h3M15 12h3M6 17c0-1.7 1.3-3 3-3s3 1.3 3 3"/></svg> الهوية الطلابية</span>
+          <span style="font-family:monospace;color:var(--gold2);letter-spacing:1px;font-weight:700;font-size:13px" id="prof-studentid">—</span>
+          <button class="er-btn" onclick="openIdCard()">البطاقة + QR</button>
+        </div>
         <div class="edit-row">
           <span class="er-lbl"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;margin-left:4px;vertical-align:middle"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> الكود</span>
           <span style="font-family:monospace;color:var(--gold2);letter-spacing:2px;font-weight:700;font-size:13px" id="prof-code">—</span>
@@ -1204,6 +1269,26 @@ select { appearance: none; }
       </button>
     </div>
 
+    <!-- ══ DIGITAL ID CARD MODAL ══ -->
+    <div id="idcard-overlay" onclick="if(event.target===this)closeIdCard()">
+      <div class="idcard">
+        <div class="idcard-close" onclick="closeIdCard()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div class="idcard-brand">Plus <span>Mathematics</span></div>
+        <div class="idcard-avatar" id="idcard-avatar">ط</div>
+        <div class="idcard-name" id="idcard-name">—</div>
+        <div class="idcard-grade" id="idcard-grade">—</div>
+        <div class="idcard-qr-wrap"><div id="idcard-qr"></div></div>
+        <div class="idcard-id" id="idcard-id">—</div>
+        <div class="idcard-foot">امسح الكود للتحقق من هوية الطالب</div>
+        <div class="idcard-actions">
+          <button class="er-btn" style="flex:1;padding:8px" onclick="copyStudentId()">نسخ الرقم</button>
+          <button class="er-btn" style="flex:1;padding:8px" onclick="printIdCard()">طباعة</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ══ STEP: EDIT FIELD (phone/email + OTP) ══ -->
     <div class="step" id="step-edit-field">
       <div class="step-info">
@@ -1268,6 +1353,7 @@ select { appearance: none; }
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <!-- EmailJS — used to send: OTP تأكيد التسجيل، رسالة الانضمام، فاتورة الاشتراك -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script>
 
 // ── Firebase Init ──
@@ -1281,6 +1367,65 @@ firebase.initializeApp({
 });
 const auth = firebase.auth();
 const db   = firebase.firestore();
+
+// ══════════════════════════════════════════════
+// ── إعدادات التحكم من لوحة الأدمن (تسجيل الدخول + الهوية الطلابية) ──
+// تُقرأ من settings/auth و settings/studentId وتُطبَّق على الواجهة فور توفرها
+// ══════════════════════════════════════════════
+var _authSettings = {
+  registrationEnabled: true,
+  googleLoginEnabled: true,
+  otpLoginEnabled: true,
+  emailVerificationRequired: true,
+  registrationClosedMsg: ''
+};
+var _studentIdSettings = { enabled: true, prefix: 'PM-' };
+
+function applyAuthControlSettings(){
+  var s = _authSettings;
+  var regTabBtn = document.getElementById('regTabBtn');
+  if(regTabBtn) regTabBtn.style.display = s.registrationEnabled===false ? 'none' : '';
+  if(s.registrationEnabled===false && typeof _activeTab!=='undefined' && _activeTab==='register'){
+    switchTab('login');
+  }
+  var notice = document.getElementById('reg-closed-notice');
+  if(notice){
+    if(s.registrationEnabled===false && s.registrationClosedMsg){
+      notice.textContent = s.registrationClosedMsg;
+      notice.style.display = 'block';
+    } else {
+      notice.style.display = 'none';
+    }
+  }
+  var gLogin = document.getElementById('google-login-btn');
+  var gReg   = document.getElementById('google-reg-btn');
+  if(gLogin) gLogin.style.display = s.googleLoginEnabled===false ? 'none' : '';
+  if(gReg)   gReg.style.display   = s.googleLoginEnabled===false ? 'none' : '';
+  var qll = document.getElementById('quickLoginLink');
+  if(qll) qll.style.display = s.otpLoginEnabled===false ? 'none' : '';
+}
+
+function applyStudentIdSettings(){
+  var row = document.getElementById('studentid-row');
+  if(row) row.style.display = _studentIdSettings.enabled===false ? 'none' : '';
+}
+
+Promise.all([
+  db.collection('settings').doc('auth').get().catch(function(){ return null; }),
+  db.collection('settings').doc('studentId').get().catch(function(){ return null; })
+]).then(function(results){
+  var a = results[0], sid = results[1];
+  if(a && a.exists){
+    var ad = a.data();
+    Object.keys(ad).forEach(function(k){ if(k in _authSettings) _authSettings[k] = ad[k]; });
+  }
+  if(sid && sid.exists){
+    var sd = sid.data();
+    Object.keys(sd).forEach(function(k){ if(k in _studentIdSettings) _studentIdSettings[k] = sd[k]; });
+  }
+  applyAuthControlSettings();
+  applyStudentIdSettings();
+}).catch(function(){});
 
 // ══════════════════════════════════════════════
 // ── EMAILJS CONFIG — لازم تستبدل القيم دي ببياناتك من https://dashboard.emailjs.com ──
@@ -1579,6 +1724,66 @@ function renewSendWA(){
   });
 }
 
+// ── الهوية الطلابية (Student ID) + QR ──
+var _currentProfileData = null;
+
+// يولّد رقم هوية تسلسلي فريد عبر Firestore transaction (meta/studentIdCounter)
+// ملحوظة: لازم قواعد Firestore تسمح بالقراءة/الكتابة على مستند meta/studentIdCounter للمستخدمين المسجلين
+async function ensureStudentId(uid){
+  var counterRef = db.collection('meta').doc('studentIdCounter');
+  var userRef = db.collection('users').doc(uid);
+  var prefix = (_studentIdSettings && _studentIdSettings.prefix) || 'PM-';
+  return db.runTransaction(async function(tx){
+    var snap = await tx.get(counterRef);
+    var next = ((snap.exists && snap.data().count) || 0) + 1;
+    tx.set(counterRef, { count: next }, { merge:true });
+    var sid = prefix + String(next).padStart(6,'0');
+    tx.update(userRef, { studentId: sid });
+    return sid;
+  });
+}
+
+function renderStudentIdField(data){
+  document.getElementById('prof-studentid').textContent = data.studentId || '...';
+}
+
+function openIdCard(){
+  if(_studentIdSettings.enabled===false) return;
+  var d = _currentProfileData;
+  if(!d) return;
+  var name = d.name||'طالب';
+  document.getElementById('idcard-avatar').textContent = name.slice(0,2);
+  document.getElementById('idcard-name').textContent   = name;
+  document.getElementById('idcard-grade').textContent  = d.grade||'—';
+  document.getElementById('idcard-id').textContent     = d.studentId||'—';
+  var qrEl = document.getElementById('idcard-qr');
+  qrEl.innerHTML = '';
+  if(window.QRCode && d.studentId){
+    new QRCode(qrEl, {
+      text: d.studentId, width: 130, height: 130,
+      colorDark: '#0b1330', colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } else if(!d.studentId){
+    qrEl.innerHTML = '<div style="color:#888;font-size:11px;padding:10px">جاري تجهيز الهوية...</div>';
+  }
+  document.getElementById('idcard-overlay').classList.add('show');
+}
+function closeIdCard(){
+  document.getElementById('idcard-overlay').classList.remove('show');
+}
+function copyStudentId(){
+  var id = (_currentProfileData && _currentProfileData.studentId) || '';
+  if(!id) return;
+  if(navigator.clipboard) navigator.clipboard.writeText(id).catch(function(){});
+  showMsg('prof-msg','تم نسخ رقم الهوية ✓','success');
+  setTimeout(function(){ document.getElementById('prof-msg').className='msg'; },2500);
+}
+function printIdCard(){
+  if(!_currentProfileData || !_currentProfileData.studentId) return;
+  window.print();
+}
+
 // ── Show Profile Step ──
 function showProfileStep(data){
   var name = data.name||'طالب';
@@ -1586,6 +1791,25 @@ function showProfileStep(data){
   document.getElementById('prof-name').textContent   = name;
   document.getElementById('prof-grade').textContent  = data.grade||'—';
   document.getElementById('prof-code').textContent   = data.subscriptionCode||'—';
+
+  _currentProfileData = data;
+  applyStudentIdSettings();
+  if(_studentIdSettings.enabled===false){
+    renderStudentIdField(data);
+  } else {
+    renderStudentIdField(data);
+    if(!data.studentId){
+      var u = auth.currentUser;
+      if(u){
+        ensureStudentId(u.uid).then(function(sid){
+          data.studentId = sid;
+          if(_currentProfileData === data) renderStudentIdField(data);
+        }).catch(function(){
+          document.getElementById('prof-studentid').textContent = '—';
+        });
+      }
+    }
+  }
 
   // Phone
   var phoneEl = document.getElementById('prof-phone-val');
@@ -2179,6 +2403,13 @@ function doRegister(){
     })
     .then(function(){
       setLoad(btn,false);
+      if(_authSettings.emailVerificationRequired===false){
+        db.collection('users').doc(newUid).update({ emailVerified:true }).catch(function(){});
+        sendWelcomeEmail(lowerEmail, name);
+        showMsg('reg-msg','تم إنشاء حسابك ✓','success');
+        setTimeout(function(){ showStep('step-grade'); }, 700);
+        return;
+      }
       showMsg('reg-msg','تم إنشاء حسابك ✓ جاري إرسال كود التأكيد...','success');
       setTimeout(function(){
         sendRegistrationOtp(lowerEmail, name, newUid);
