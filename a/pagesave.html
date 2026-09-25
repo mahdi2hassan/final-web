@@ -1671,6 +1671,57 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
             </div>
           </div>
 
+          <!-- ══ STUDENT ID / QR CARD ══ -->
+          <div class="card">
+            <h4>🪪 الهوية الطلابية وQR</h4>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">كل طالب بياخد رقم هوية فريد وQR كود يظهر في صفحته. تقدر تتحكم فيه من هنا.</p>
+            <div class="toggle-row">
+              <label>تفعيل نظام الهوية الطلابية</label>
+              <label class="tog"><input type="checkbox" id="sid-enabled"/><span class="tog-sl"></span></label>
+            </div>
+            <div class="ff"><label>بادئة رقم الهوية</label>
+              <input type="text" id="sid-prefix" placeholder="PM-" style="direction:ltr;text-align:left"/>
+              <p style="font-size:10px;color:var(--muted);margin-top:3px">مثال: PM- هيدّي أرقام زي PM-000123 (التغيير بيطبّق على الطلاب الجدد بس، القدامى مش بيتغيروا)</p>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:rgba(74,127,212,0.05);border:1px solid var(--b2);border-radius:8px;margin-bottom:12px">
+              <span style="font-size:11px;color:var(--muted)">آخر رقم صادر</span>
+              <span id="sid-last-issued" style="font-family:monospace;font-weight:800;color:var(--gold2)">—</span>
+            </div>
+            <button class="btn primary" style="width:100%;justify-content:center;margin-bottom:8px" onclick="saveStudentIdSettings()">
+              <svg><use href="#ic-check"/></svg>حفظ إعدادات الهوية
+            </button>
+            <button style="width:100%;padding:9px;border:1px solid rgba(255,77,109,0.3);border-radius:8px;background:rgba(255,77,109,0.06);color:var(--err);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700" onclick="resetStudentIdCounter()">
+              ⚠️ إعادة تعيين العداد من الصفر
+            </button>
+          </div>
+
+          <!-- ══ LOGIN / REGISTRATION CONTROL CARD ══ -->
+          <div class="card">
+            <h4>🔑 التحكم في تسجيل الدخول</h4>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">تحكم في طرق التسجيل والدخول المتاحة للطلاب في plus-math-auth.html من غير ما تلمس الكود.</p>
+            <div class="toggle-row">
+              <label>السماح بإنشاء حسابات جديدة</label>
+              <label class="tog"><input type="checkbox" id="auth-reg-enabled"/><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <label>تسجيل الدخول/التسجيل بحساب Google</label>
+              <label class="tog"><input type="checkbox" id="auth-google-enabled"/><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <label>الدخول السريع برمز (OTP هاتف/إيميل)</label>
+              <label class="tog"><input type="checkbox" id="auth-otp-enabled"/><span class="tog-sl"></span></label>
+            </div>
+            <div class="toggle-row">
+              <label>إلزام تأكيد الإيميل بعد التسجيل</label>
+              <label class="tog"><input type="checkbox" id="auth-emailverify-enabled"/><span class="tog-sl"></span></label>
+            </div>
+            <div class="ff"><label>رسالة تظهر لو التسجيل الجديد مقفول</label>
+              <textarea id="auth-closed-msg" rows="2" placeholder="التسجيل مقفول مؤقتاً، تواصل معانا عبر واتساب"></textarea></div>
+            <button class="btn primary" style="width:100%;justify-content:center" onclick="saveAuthControlSettings()">
+              <svg><use href="#ic-check"/></svg>حفظ إعدادات تسجيل الدخول
+            </button>
+          </div>
+
           <div class="card">
             <h4><svg><use href="#ic-dl"/></svg>تصدير البيانات</h4>
             <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7">تصدير كل بيانات الطلاب والأكواد في ملف CSV يمكن فتحه بـ Excel</p>
@@ -2758,6 +2809,22 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         allow read: if request.auth != null;
         allow write: if false; // الأدمن بس من الأدمن بانيل
       }
+      // ← لازم تكون عامة القراءة (بدون تسجيل دخول) عشان صفحة تسجيل الدخول تقرأها
+      // قبل ما الطالب يسجل دخول أصلاً (إعدادات تسجيل الدخول + الهوية الطلابية)
+      match /settings/auth {
+        allow read: if true;
+        allow write: if false;
+      }
+      match /settings/studentId {
+        allow read: if true;
+        allow write: if false;
+      }
+      // ← عداد ترقيم الهويات الطلابية (Student ID). لازم يُكتب من جلسة الطالب نفسه
+      // وقت التسجيل عبر Firestore transaction، ويتقرأ من لوحة الأدمن لعرض آخر رقم
+      match /meta/{doc} {
+        allow read: if true;
+        allow write: if request.auth != null;
+      }
       match /tickets/{doc} {
         allow read, write: if request.auth != null;
       }
@@ -2966,6 +3033,29 @@ window.wloadSettings = async ()=>{
       const el = document.getElementById('default-max-dev');
       if(el) el.value = devSettings.data().defaultMax || 3;
     }
+    // Load student ID / QR settings
+    const sidoc = await db.collection('settings').doc('studentId').get();
+    {
+      const sd = sidoc.exists ? sidoc.data() : {};
+      document.getElementById('sid-enabled').checked = sd.enabled !== false; // default: enabled
+      document.getElementById('sid-prefix').value = sd.prefix || 'PM-';
+    }
+    try{
+      const counterDoc = await db.collection('meta').doc('studentIdCounter').get();
+      document.getElementById('sid-last-issued').textContent = counterDoc.exists && counterDoc.data().count
+        ? (document.getElementById('sid-prefix').value||'PM-') + String(counterDoc.data().count).padStart(6,'0')
+        : 'لسه محدش اتسجل';
+    }catch(e){ document.getElementById('sid-last-issued').textContent = '—'; }
+    // Load auth/login control settings
+    const authdoc = await db.collection('settings').doc('auth').get();
+    {
+      const ad = authdoc.exists ? authdoc.data() : {};
+      document.getElementById('auth-reg-enabled').checked        = ad.registrationEnabled !== false;
+      document.getElementById('auth-google-enabled').checked     = ad.googleLoginEnabled !== false;
+      document.getElementById('auth-otp-enabled').checked        = ad.otpLoginEnabled !== false;
+      document.getElementById('auth-emailverify-enabled').checked= ad.emailVerificationRequired !== false;
+      document.getElementById('auth-closed-msg').value           = ad.registrationClosedMsg || '';
+    }
   }catch(e){ console.warn('settings:',e.message); }
 };
 
@@ -3066,6 +3156,52 @@ window.saveDefaultMaxDevices = async ()=>{
     });
     toast('✅ تم حفظ الحد الافتراضي: '+val+' أجهزة','ok');
     logActivity('⚙️','تغيير الحد الافتراضي للأجهزة','→ '+val);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── SAVE STUDENT ID / QR SETTINGS ──
+window.saveStudentIdSettings = async ()=>{
+  const enabled = document.getElementById('sid-enabled').checked;
+  const prefix = document.getElementById('sid-prefix').value.trim() || 'PM-';
+  try{
+    await db.collection('settings').doc('studentId').set({
+      enabled: enabled,
+      prefix: prefix,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('✅ تم حفظ إعدادات الهوية الطلابية','ok');
+    logActivity?.('🪪','تعديل إعدادات الهوية الطلابية', enabled?'مفعّلة':'معطّلة');
+    window.wloadSettings?.();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── RESET STUDENT ID COUNTER ──
+window.resetStudentIdCounter = async ()=>{
+  if(!confirm('هيرجع ترقيم الهويات يبدأ من واحد تاني. الطلاب اللي عندهم هوية بالفعل مش هيتأثروا، بس ممكن يتكرر رقمهم مع طالب جديد. متأكد؟')) return;
+  if(!confirm('تأكيد أخير: إعادة تعيين العداد؟')) return;
+  try{
+    await db.collection('meta').doc('studentIdCounter').set({
+      count: 0, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('✅ تم تصفير العداد','ok');
+    logActivity?.('🪪','تصفير عداد الهوية الطلابية','');
+    window.wloadSettings?.();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── SAVE LOGIN / REGISTRATION CONTROL SETTINGS ──
+window.saveAuthControlSettings = async ()=>{
+  try{
+    await db.collection('settings').doc('auth').set({
+      registrationEnabled:        document.getElementById('auth-reg-enabled').checked,
+      googleLoginEnabled:         document.getElementById('auth-google-enabled').checked,
+      otpLoginEnabled:            document.getElementById('auth-otp-enabled').checked,
+      emailVerificationRequired:  document.getElementById('auth-emailverify-enabled').checked,
+      registrationClosedMsg:      document.getElementById('auth-closed-msg').value.trim(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('✅ تم حفظ إعدادات تسجيل الدخول','ok');
+    logActivity?.('🔑','تعديل إعدادات تسجيل الدخول','');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
