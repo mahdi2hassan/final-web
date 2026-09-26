@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>التحقق من الهوية الطلابية — Plus Mathematics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0a0f24; --navy2:#050810; --gold:#c9a84c; --gold2:#e8c97a;
+    --text:#f2f4fa; --muted:#8b93ad; --border:rgba(201,168,76,0.25);
+    --ok:#1fbf75; --err:#ff4d6d; --warn:#f5a623;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  body{
+    min-height:100%;
+    font-family:'Tajawal',sans-serif;
+    background:radial-gradient(ellipse at top,#0d1633 0%,var(--navy2) 70%);
+    color:var(--text);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .wrap{width:100%;max-width:360px}
+  .logo{text-align:center;margin-bottom:22px;font-size:13px;font-weight:800;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase}
+  .logo span{color:var(--gold2)}
+  .card{
+    background:linear-gradient(160deg,#0d1633 0%,#050810 100%);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:26px 22px;
+    text-align:center;
+    box-shadow:0 30px 70px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05);
+    position:relative;
+  }
+  .card::before{
+    content:'';position:absolute;inset:-1px;border-radius:23px;z-index:-1;
+    background:linear-gradient(135deg,rgba(74,127,212,0.5),rgba(201,168,76,0.35),rgba(74,127,212,0.15),rgba(201,168,76,0.4));
+    background-size:300% 300%;animation:borderA 7s linear infinite;
+  }
+  @keyframes borderA{0%{background-position:0 50%}100%{background-position:300% 50%}}
+  .avatar{
+    width:66px;height:66px;margin:0 auto 14px;border-radius:18px;
+    background:linear-gradient(135deg,#1a3270,#0d1a40);
+    display:flex;align-items:center;justify-content:center;
+    font-size:24px;font-weight:900;color:#fff;border:1px solid var(--border);
+  }
+  .name{font-size:19px;font-weight:900}
+  .grade{font-size:13px;color:var(--muted);margin-top:3px}
+  .sid{font-family:monospace;letter-spacing:2px;color:var(--gold2);font-weight:800;font-size:14px;margin-top:10px}
+  .status{
+    display:inline-flex;align-items:center;gap:6px;
+    margin-top:16px;padding:8px 16px;border-radius:999px;
+    font-size:13px;font-weight:800;
+  }
+  .status.active{background:rgba(31,191,117,0.12);color:var(--ok);border:1px solid rgba(31,191,117,0.3)}
+  .status.expired{background:rgba(255,77,109,0.1);color:var(--err);border:1px solid rgba(255,77,109,0.3)}
+  .foot{margin-top:18px;font-size:10.5px;color:var(--muted);line-height:1.7}
+  .loading{color:var(--muted);font-size:13px;padding:30px 0}
+  .spinner{
+    width:28px;height:28px;margin:0 auto 12px;border-radius:50%;
+    border:3px solid rgba(255,255,255,0.1);border-top-color:var(--gold2);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .notfound{padding:20px 0}
+  .notfound .icon{font-size:40px;margin-bottom:10px}
+  .notfound .msg{font-size:14px;color:var(--muted);line-height:1.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">Plus <span>Mathematics</span></div>
+  <div class="card" id="card">
+    <div class="loading">
+      <div class="spinner"></div>
+      جاري التحقق...
+    </div>
+  </div>
+  <div class="foot">صفحة تحقق عامة من الهوية الطلابية — لا يتم عرض أي بيانات حساسة</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyB2ziv39cpnOyyfamabO1ujhU-1CyIdRaE",
+  authDomain:"plusinmath-web.firebaseapp.com",
+  projectId:"plusinmath-web",
+  storageBucket:"plusinmath-web.firebasestorage.app",
+  messagingSenderId:"444492731461",
+  appId:"1:444492731461:web:14529f08d9ccf047dabf2c"
+});
+const db = firebase.firestore();
+
+function esc(s){
+  return String(s||'').replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function render(html){ document.getElementById('card').innerHTML = html; }
+
+function renderNotFound(){
+  render(
+    '<div class="notfound">'+
+      '<div class="icon">🔎</div>'+
+      '<div class="msg">مفيش طالب بالرقم ده.<br>اتأكد من الرابط أو الكود وحاول تاني.</div>'+
+    '</div>'
+  );
+}
+
+function renderStudent(d){
+  var isActive = d.subscriptionActive === true;
+  var notExpired = true;
+  if(d.expiresAt){
+    var exp = d.expiresAt.toDate ? d.expiresAt.toDate() : new Date(d.expiresAt);
+    notExpired = exp.getTime() > Date.now();
+  }
+  var active = isActive && notExpired;
+  var initials = esc((d.name||'ط').slice(0,2));
+  render(
+    '<div class="avatar">'+initials+'</div>'+
+    '<div class="name">'+esc(d.name||'طالب')+'</div>'+
+    '<div class="grade">'+esc(d.grade||'—')+'</div>'+
+    '<div class="sid">'+esc(d.studentId||'')+'</div>'+
+    '<div class="status '+(active?'active':'expired')+'">'+
+      (active ? '✅ اشتراك سارِي' : '⏳ اشتراك غير سارِي')+
+    '</div>'
+  );
+}
+
+var sid = new URLSearchParams(location.search).get('id');
+if(!sid){
+  renderNotFound();
+} else {
+  db.collection('users').where('studentId','==',sid.toUpperCase()).limit(1).get()
+    .then(function(snap){
+      if(snap.empty){ renderNotFound(); return; }
+      renderStudent(snap.docs[0].data());
+    })
+    .catch(function(){ renderNotFound(); });
+}
+</script>
+</body>
+</html>

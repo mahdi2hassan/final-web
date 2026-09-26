@@ -856,6 +856,10 @@ select { appearance: none; }
           <label>الإيميل <span style="color:var(--error)">*</span></label>
           <input type="email" id="reg-email" placeholder="example@gmail.com"/>
         </div>
+        <div class="field" id="reg-referral-field">
+          <label>كود دعوة (اختياري) 🎁</label>
+          <input type="text" id="reg-referral" placeholder="مثال: PM-000123" style="direction:ltr;text-align:left;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/>
+        </div>
         <div class="field">
           <label>كلمة المرور</label>
           <div style="position:relative">
@@ -1219,6 +1223,20 @@ select { appearance: none; }
         </div>
       </div>
 
+      <!-- Referral & Points -->
+      <div id="points-row" style="background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:10px 12px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:12px;font-weight:700;color:var(--muted)">🏆 نقاطك</span>
+          <span style="font-weight:900;font-size:16px;color:var(--gold2)"><span id="prof-points">0</span> نقطة</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px">= <span id="prof-points-egp">0</span> جنيه — كل طالب تحيله وياخد اشتراك فعلي بكودك تاخد <span id="prof-points-per-ref">500</span> نقطة</div>
+        <div style="display:flex;gap:6px;margin-bottom:8px">
+          <button class="er-btn" style="flex:1" onclick="copyReferralLink()">📎 نسخ رابط الدعوة</button>
+          <button class="er-btn" style="flex:1" onclick="openRedeemModal()">🎁 استبدال النقاط</button>
+        </div>
+        <div id="redeem-status" style="display:none;font-size:11px;color:var(--warn);background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.2);border-radius:8px;padding:6px 8px;text-align:center"></div>
+      </div>
+
       <!-- Password section -->
       <div style="background:rgba(8,13,28,0.4);border:1px solid var(--border2);border-radius:12px;padding:8px 12px;margin-bottom:12px">
         <div class="edit-row" style="border:none;padding:0">
@@ -1285,6 +1303,46 @@ select { appearance: none; }
         <div class="idcard-actions">
           <button class="er-btn" style="flex:1;padding:8px" onclick="copyStudentId()">نسخ الرقم</button>
           <button class="er-btn" style="flex:1;padding:8px" onclick="printIdCard()">طباعة</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ REDEEM POINTS MODAL ══ -->
+    <div id="redeem-overlay" onclick="if(event.target===this)closeRedeemModal()" style="position:fixed;inset:0;z-index:500;display:none;align-items:center;justify-content:center;background:rgba(2,4,10,0.82);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:16px">
+      <div style="width:100%;max-width:320px;background:linear-gradient(160deg,#0d1633 0%,#050810 100%);border:1px solid var(--border);border-radius:20px;padding:20px;position:relative">
+        <div onclick="closeRedeemModal()" style="position:absolute;top:12px;left:12px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.05);color:var(--muted);cursor:pointer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div style="text-align:center;font-weight:900;font-size:15px;margin-bottom:4px">🎁 استبدال النقاط</div>
+        <div style="text-align:center;font-size:12px;color:var(--muted);margin-bottom:16px">رصيدك: <span id="rd-balance" style="color:var(--gold2);font-weight:800">0</span> نقطة</div>
+
+        <div id="rd-form">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+            <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;cursor:pointer" onclick="selectRedeemType('full')" id="rd-opt-full">
+              <input type="radio" name="rd-type" value="full" style="accent-color:var(--gold2)"/>
+              <div style="flex:1">
+                <div style="font-size:12.5px;font-weight:700">تجديد كامل 28 يوم</div>
+                <div style="font-size:10.5px;color:var(--muted)" id="rd-full-cost">يحتاج — نقطة</div>
+              </div>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1.5px solid var(--border2);border-radius:10px;cursor:pointer" onclick="selectRedeemType('partial')" id="rd-opt-partial">
+              <input type="radio" name="rd-type" value="partial" style="accent-color:var(--gold2)"/>
+              <div style="flex:1">
+                <div style="font-size:12.5px;font-weight:700">أيام إضافية جزئية</div>
+                <div style="font-size:10.5px;color:var(--muted)">استخدم جزء من نقاطك</div>
+              </div>
+            </label>
+          </div>
+          <div id="rd-partial-box" style="display:none;margin-bottom:12px">
+            <input type="number" id="rd-partial-points" placeholder="عدد النقاط" oninput="updateRedeemPreview()"
+              style="width:100%;padding:8px 10px;background:var(--input);border:1.5px solid var(--border2);border-radius:9px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;outline:none;margin-bottom:6px"/>
+            <div style="font-size:11px;color:var(--muted);text-align:center" id="rd-partial-preview">هتاخد 0 يوم</div>
+          </div>
+          <div class="msg" id="redeem-msg"></div>
+          <button class="btn" id="rd-submit-btn" onclick="submitRedeemRequest()">
+            <span class="btn-text"><svg><use href="#i-check"/></svg>إرسال طلب الاستبدال</span>
+            <div class="spin"></div>
+          </button>
         </div>
       </div>
     </div>
@@ -1380,6 +1438,7 @@ var _authSettings = {
   registrationClosedMsg: ''
 };
 var _studentIdSettings = { enabled: true, prefix: 'PM-' };
+var _referralSettings = { enabled: true, pointsPerReferral: 500, pointsPerEGP: 100 };
 
 function applyAuthControlSettings(){
   var s = _authSettings;
@@ -1410,11 +1469,19 @@ function applyStudentIdSettings(){
   if(row) row.style.display = _studentIdSettings.enabled===false ? 'none' : '';
 }
 
+function applyReferralSettings(){
+  var f = document.getElementById('reg-referral-field');
+  if(f) f.style.display = _referralSettings.enabled===false ? 'none' : '';
+  var pr = document.getElementById('points-row');
+  if(pr) pr.style.display = _referralSettings.enabled===false ? 'none' : '';
+}
+
 Promise.all([
   db.collection('settings').doc('auth').get().catch(function(){ return null; }),
-  db.collection('settings').doc('studentId').get().catch(function(){ return null; })
+  db.collection('settings').doc('studentId').get().catch(function(){ return null; }),
+  db.collection('settings').doc('referral').get().catch(function(){ return null; })
 ]).then(function(results){
-  var a = results[0], sid = results[1];
+  var a = results[0], sid = results[1], ref = results[2];
   if(a && a.exists){
     var ad = a.data();
     Object.keys(ad).forEach(function(k){ if(k in _authSettings) _authSettings[k] = ad[k]; });
@@ -1423,9 +1490,26 @@ Promise.all([
     var sd = sid.data();
     Object.keys(sd).forEach(function(k){ if(k in _studentIdSettings) _studentIdSettings[k] = sd[k]; });
   }
+  if(ref && ref.exists){
+    var rd = ref.data();
+    Object.keys(rd).forEach(function(k){ if(k in _referralSettings) _referralSettings[k] = rd[k]; });
+  }
   applyAuthControlSettings();
   applyStudentIdSettings();
+  applyReferralSettings();
+  prefillReferralFromUrl();
 }).catch(function(){});
+
+// ── لو الطالب جه برابط دعوة ?ref=PM-000123 — نملأله الكود ونفتحله تاب التسجيل ──
+function prefillReferralFromUrl(){
+  try{
+    var ref = new URLSearchParams(location.search).get('ref');
+    if(!ref) return;
+    var inp = document.getElementById('reg-referral');
+    if(inp) inp.value = ref.toUpperCase();
+    if(_authSettings.registrationEnabled!==false && typeof switchTab==='function') switchTab('register');
+  }catch(e){}
+}
 
 // ══════════════════════════════════════════════
 // ── EMAILJS CONFIG — لازم تستبدل القيم دي ببياناتك من https://dashboard.emailjs.com ──
@@ -1747,6 +1831,187 @@ function renderStudentIdField(data){
   document.getElementById('prof-studentid').textContent = data.studentId || '...';
 }
 
+// ══════════════════════════════════════════════
+// ── نظام الإحالة (Referral): يضيف النقاط للمحيل لما المُحال يفعّل اشتراكه فعلياً ──
+// ══════════════════════════════════════════════
+async function creditReferralIfNeeded(uid){
+  try{
+    if(_referralSettings.enabled===false) return;
+    var userRef = db.collection('users').doc(uid);
+    var userSnap = await userRef.get();
+    var ud = userSnap.data()||{};
+    if(!ud.referredBy || ud.referralCredited) return;
+
+    var refQuery = await db.collection('users').where('studentId','==',ud.referredBy).limit(1).get();
+    if(refQuery.empty){
+      await userRef.update({ referralCredited:true }).catch(function(){});
+      return;
+    }
+    var referrerRef = refQuery.docs[0].ref;
+    if(referrerRef.id === uid){ // منع الإحالة الذاتية
+      await userRef.update({ referralCredited:true }).catch(function(){});
+      return;
+    }
+    var pts = (_referralSettings && _referralSettings.pointsPerReferral) || 500;
+
+    await db.runTransaction(async function(tx){
+      var freshUser = await tx.get(userRef);
+      if((freshUser.data()||{}).referralCredited) return; // اتحسبت بالفعل (حماية من التكرار)
+      var freshReferrer = await tx.get(referrerRef);
+      var curPts = ((freshReferrer.data()||{}).points) || 0;
+      tx.update(referrerRef, { points: curPts + pts });
+      tx.update(userRef, { referralCredited: true });
+    });
+
+    db.collection('pointsLog').add({
+      uid: referrerRef.id, type:'referral', amount: pts,
+      note: 'إحالة طالب فعّل اشتراكه: '+(ud.name||uid),
+      relatedUid: uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(){});
+  }catch(e){ console.warn('referral credit failed:', e.message); }
+}
+
+// ══════════════════════════════════════════════
+// ── النقاط + طلب الاستبدال (Redeem Request) ──
+// ══════════════════════════════════════════════
+function renderPointsField(data){
+  var pts = data.points||0;
+  var egpEl = document.getElementById('prof-points-egp');
+  var ptsEl = document.getElementById('prof-points');
+  var perRefEl = document.getElementById('prof-points-per-ref');
+  if(ptsEl) ptsEl.textContent = pts;
+  if(egpEl) egpEl.textContent = (pts/((_referralSettings&&_referralSettings.pointsPerEGP)||100)).toFixed(2);
+  if(perRefEl) perRefEl.textContent = (_referralSettings&&_referralSettings.pointsPerReferral)||500;
+}
+
+function copyReferralLink(){
+  var d = _currentProfileData;
+  if(!d || !d.studentId){ showMsg('prof-msg','لسه هويتك بتتجهز، جرب تاني كمان شوية','error'); return; }
+  var link = location.origin + location.pathname + '?ref=' + d.studentId;
+  if(navigator.clipboard) navigator.clipboard.writeText(link).catch(function(){});
+  showMsg('prof-msg','تم نسخ رابط الدعوة ✓','success');
+  setTimeout(function(){ document.getElementById('prof-msg').className='msg'; },2500);
+}
+
+// يرجع سعر اشتراك صف معيّن (بالجنيه) حسب وضع التسعير الحالي
+function getGradeSubscriptionPrice(gradeKey){
+  return db.collection('settings').doc('subscription').get().then(function(sd){
+    var sub = sd.exists ? sd.data() : {};
+    var price = Number(sub.price)||0;
+    if(sub.pricingMode==='perGrade' && gradeKey && GRADE_PRICES[gradeKey]){
+      price = Number(GRADE_PRICES[gradeKey])||price;
+    }
+    return price;
+  }).catch(function(){ return 0; });
+}
+
+var _rdType = 'full';
+var _rdFullCost = 0;
+
+function openRedeemModal(){
+  var d = _currentProfileData;
+  if(!d){ return; }
+  document.getElementById('rd-balance').textContent = d.points||0;
+  document.getElementById('redeem-msg').className = 'msg';
+  document.getElementById('rd-partial-points').value = '';
+  document.getElementById('rd-partial-preview').textContent = 'هتاخد 0 يوم';
+  _rdType = 'full';
+  document.querySelector('input[name="rd-type"][value="full"]').checked = true;
+  document.getElementById('rd-partial-box').style.display = 'none';
+  getGradeSubscriptionPrice(d.gradeKey).then(function(price){
+    var pointsPerEGP = (_referralSettings&&_referralSettings.pointsPerEGP)||100;
+    _rdFullCost = Math.round(price * pointsPerEGP);
+    document.getElementById('rd-full-cost').textContent = 'يحتاج '+_rdFullCost+' نقطة';
+    var fullOpt = document.getElementById('rd-opt-full');
+    if((d.points||0) < _rdFullCost){
+      fullOpt.style.opacity = '0.45';
+    } else {
+      fullOpt.style.opacity = '1';
+    }
+  });
+  document.getElementById('redeem-overlay').classList.add('show');
+  document.getElementById('redeem-overlay').style.display = 'flex';
+}
+function closeRedeemModal(){
+  document.getElementById('redeem-overlay').style.display = 'none';
+}
+function selectRedeemType(t){
+  _rdType = t;
+  document.querySelector('input[name="rd-type"][value="'+t+'"]').checked = true;
+  document.getElementById('rd-partial-box').style.display = t==='partial' ? 'block' : 'none';
+}
+function updateRedeemPreview(){
+  var d = _currentProfileData;
+  var pts = parseInt(document.getElementById('rd-partial-points').value)||0;
+  getGradeSubscriptionPrice(d.gradeKey).then(function(price){
+    var pointsPerEGP = (_referralSettings&&_referralSettings.pointsPerEGP)||100;
+    var egp = pts/pointsPerEGP;
+    var days = price>0 ? Math.round(egp/(price/28)) : 0;
+    document.getElementById('rd-partial-preview').textContent = 'هتاخد '+Math.max(days,0)+' يوم';
+  });
+}
+
+function submitRedeemRequest(){
+  var d = _currentProfileData;
+  var user = auth.currentUser;
+  if(!d || !user) return;
+  var btn = document.getElementById('rd-submit-btn');
+  var balance = d.points||0;
+
+  function finish(pointsRequested, daysRequested, type){
+    if(pointsRequested<=0 || daysRequested<=0){
+      showMsg('redeem-msg','مينفعش تستبدل صفر نقطة','error'); return;
+    }
+    if(pointsRequested > balance){
+      showMsg('redeem-msg','نقاطك مش كفاية','error'); return;
+    }
+    setLoad(btn,true);
+    db.collection('redeemRequests').add({
+      uid: user.uid, studentId: d.studentId||'', name: d.name||'', grade: d.grade||'', gradeKey: d.gradeKey||'',
+      type: type, pointsRequested: pointsRequested, daysRequested: daysRequested,
+      pointsBalanceAtRequest: balance, status:'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function(){
+      setLoad(btn,false);
+      closeRedeemModal();
+      showMsg('prof-msg','تم إرسال طلبك ✓ هيتراجع من الأدمن قريب','success');
+      checkPendingRedeemRequest();
+    }).catch(function(e){
+      setLoad(btn,false);
+      showMsg('redeem-msg','خطأ: '+e.message,'error');
+    });
+  }
+
+  if(_rdType==='full'){
+    finish(_rdFullCost, 28, 'full');
+  } else {
+    var pts = parseInt(document.getElementById('rd-partial-points').value)||0;
+    getGradeSubscriptionPrice(d.gradeKey).then(function(price){
+      var pointsPerEGP = (_referralSettings&&_referralSettings.pointsPerEGP)||100;
+      var egp = pts/pointsPerEGP;
+      var days = price>0 ? Math.round(egp/(price/28)) : 0;
+      finish(pts, days, 'partial');
+    });
+  }
+}
+
+function checkPendingRedeemRequest(){
+  var user = auth.currentUser;
+  var statusEl = document.getElementById('redeem-status');
+  if(!user || !statusEl) return;
+  db.collection('redeemRequests').where('uid','==',user.uid).where('status','==','pending').limit(1).get()
+    .then(function(snap){
+      if(!snap.empty){
+        var r = snap.docs[0].data();
+        statusEl.textContent = '📩 عندك طلب استبدال معلّق: '+(r.pointsRequested||0)+' نقطة مقابل '+(r.daysRequested||0)+' يوم — في انتظار موافقة الأدمن';
+        statusEl.style.display = 'block';
+      } else {
+        statusEl.style.display = 'none';
+      }
+    }).catch(function(){});
+}
+
 function openIdCard(){
   if(_studentIdSettings.enabled===false) return;
   var d = _currentProfileData;
@@ -1794,6 +2059,9 @@ function showProfileStep(data){
 
   _currentProfileData = data;
   applyStudentIdSettings();
+  applyReferralSettings();
+  renderPointsField(data);
+  checkPendingRedeemRequest();
   if(_studentIdSettings.enabled===false){
     renderStudentIdField(data);
   } else {
@@ -2391,15 +2659,21 @@ function doRegister(){
   setLoad(btn,true);
   var newUid = null;
   var lowerEmail = email.toLowerCase();
+  var refCode = (document.getElementById('reg-referral')?.value||'').trim().toUpperCase();
   auth.createUserWithEmailAndPassword(phoneToEmail(phone), pass)
     .then(function(cred){
       newUid = cred.user.uid;
-      return db.collection('users').doc(newUid).set({
+      var userDoc = {
         name:name, phone:phone, email:lowerEmail,
         subscriptionActive:false, emailVerified:false,
         createdAt:firebase.firestore.FieldValue.serverTimestamp(),
         signInMethod:'phone'
-      });
+      };
+      if(refCode && _referralSettings.enabled!==false){
+        userDoc.referredBy = refCode;
+        userDoc.referralCredited = false;
+      }
+      return db.collection('users').doc(newUid).set(userDoc);
     })
     .then(function(){
       setLoad(btn,false);
@@ -2523,6 +2797,9 @@ function clearVerifyEmailMsg(){
 
 // ── GOOGLE ──
 function doGoogle(msgId){
+  window._pendingReferralCode = (msgId==='reg-msg')
+    ? (document.getElementById('reg-referral')?.value||'').trim().toUpperCase()
+    : '';
   var provider = new firebase.auth.GoogleAuthProvider();
   auth.signInWithPopup(provider)
     .then(function(result){ return handleGoogleUser(result.user); })
@@ -2538,12 +2815,19 @@ function handleGoogleUser(user){
   return db.collection('users').doc(user.uid).get().then(function(ud){
     if(!ud.exists){
       // مستخدم جديد — اعمل document وودّيه لاختيار الصف
-      return db.collection('users').doc(user.uid).set({
+      var userDoc = {
         name:user.displayName||'', email:user.email||'', phone:'',
         subscriptionActive:false, emailVerified:true,
         createdAt:firebase.firestore.FieldValue.serverTimestamp(),
         signInMethod:'google'
-      }).then(function(){
+      };
+      var refCode = window._pendingReferralCode||'';
+      if(refCode && _referralSettings.enabled!==false){
+        userDoc.referredBy = refCode;
+        userDoc.referralCredited = false;
+      }
+      window._pendingReferralCode = '';
+      return db.collection('users').doc(user.uid).set(userDoc).then(function(){
         sendWelcomeEmail(user.email, user.displayName);
         showStep('step-grade');
       });
@@ -2932,6 +3216,7 @@ function submitCode(){
             }).catch(function(){});
           })
           .then(function(){
+            creditReferralIfNeeded(user.uid);
             sendInvoiceEmail({
               name: ud.data().name, email: ud.data().email,
               code: code, grade: (ud.data().grade||codeData.grade||''),
@@ -3057,6 +3342,7 @@ submitCode = function(){
         grade:    userData.grade||(GRADE_LABELS[myGradeKey]||myGradeKey),
         stage:    userData.stage||''
       }).then(function(){
+        creditReferralIfNeeded(user.uid);
         db.collection('adminNotifications').add({
           type:'code_activated',icon:'🎟️',title:'تفعيل كوبون مجاني',
           body:(userData.name||'طالب')+' فعّل كوبون '+cp.code+' — '+(userData.grade||myGradeKey),
