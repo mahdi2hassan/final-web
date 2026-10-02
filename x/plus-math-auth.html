@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Plus In Mathematics – تسجيل الدخول</title>
+<title>Plus In Math – تسجيل حساب</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 <style>
 
@@ -1813,6 +1813,30 @@ var _currentProfileData = null;
 
 // يولّد رقم هوية تسلسلي فريد عبر Firestore transaction (meta/studentIdCounter)
 // ملحوظة: لازم قواعد Firestore تسمح بالقراءة/الكتابة على مستند meta/studentIdCounter للمستخدمين المسجلين
+// ══════════════════════════════════════════════
+// ── بطاقة الهوية العامة: studentCards/{studentId} (بيقراها id.html) ──
+// بنحدّثها بعد: فتح البروفايل، تفعيل كود، تفعيل كوبون. الأدمن بيزامنها من لوحته.
+// ══════════════════════════════════════════════
+function studentCardSig(u){
+  var exp = u.expiresAt ? (u.expiresAt.toMillis ? u.expiresAt.toMillis() : new Date(u.expiresAt).getTime()) : 0;
+  return [u.name||'', u.grade||'', u.subscriptionActive===true?1:0, exp||0, u.blocked===true?1:0].join('|');
+}
+function syncStudentCard(uid){
+  if(!uid) return Promise.resolve();
+  return db.collection('users').doc(uid).get().then(function(snap){
+    var u = snap.exists ? snap.data() : null;
+    if(!u || !u.studentId) return;
+    return db.collection('studentCards').doc(u.studentId).set({
+      name: u.name||'', grade: u.grade||'', studentId: u.studentId, uid: uid,
+      subscriptionActive: u.subscriptionActive===true,
+      expiresAt: u.expiresAt || null,
+      blocked: u.blocked===true,
+      sig: studentCardSig(u),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }).catch(function(e){ console.warn('studentCards sync:', e && e.message); });
+}
+
 async function ensureStudentId(uid){
   var counterRef = db.collection('meta').doc('studentIdCounter');
   var userRef = db.collection('users').doc(uid);
@@ -2025,7 +2049,7 @@ function openIdCard(){
   qrEl.innerHTML = '';
   if(window.QRCode && d.studentId){
     new QRCode(qrEl, {
-      text: d.studentId, width: 130, height: 130,
+      text: new URL('id.html?id='+encodeURIComponent(d.studentId), location.href).href, width: 130, height: 130,
       colorDark: '#0b1330', colorLight: '#ffffff',
       correctLevel: QRCode.CorrectLevel.M
     });
@@ -2072,10 +2096,13 @@ function showProfileStep(data){
         ensureStudentId(u.uid).then(function(sid){
           data.studentId = sid;
           if(_currentProfileData === data) renderStudentIdField(data);
+          syncStudentCard(u.uid);
         }).catch(function(){
           document.getElementById('prof-studentid').textContent = '—';
         });
       }
+    } else if(auth.currentUser){
+      syncStudentCard(auth.currentUser.uid);
     }
   }
 
@@ -3200,6 +3227,7 @@ function submitCode(){
             });
           })
           .then(function(){
+            syncStudentCard(user.uid);
             // ── إشعار للأدمن عند تفعيل كود ──
             return db.collection('adminNotifications').add({
               type: 'code_activated',
@@ -3342,6 +3370,7 @@ submitCode = function(){
         grade:    userData.grade||(GRADE_LABELS[myGradeKey]||myGradeKey),
         stage:    userData.stage||''
       }).then(function(){
+        syncStudentCard(user.uid);
         creditReferralIfNeeded(user.uid);
         db.collection('adminNotifications').add({
           type:'code_activated',icon:'🎟️',title:'تفعيل كوبون مجاني',
