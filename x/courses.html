@@ -2966,32 +2966,90 @@ document.addEventListener('click', function(e){
     if(p) p.style.display = 'none';
   }
 });
+// ═══ مركز الرسائل ═══
+window._nfKind='all';
+const _nEsc=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 async function loadNotifications(){
   if(!_user) return;
-  var list = document.getElementById('notifList');
-  list.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">جاري التحميل...</div>';
+  var list=document.getElementById('notifList');
+  list.innerHTML='<div style="text-align:center;font-size:12px;color:var(--muted);padding:8px">جاري التحميل...</div>';
   try{
-    var snap = await getDocs(query(collection(db,'notifications',_user.uid,'items'), where('read','==',false)));
-    var notifs = snap.docs.map(function(d){return {id:d.id,...d.data()};})
-      .sort(function(a,b){return (b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)});
-    if(!notifs.length){
-      list.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--muted);padding:16px">لا يوجد إشعارات جديدة ✓</div>';
-      return;
-    }
-    list.innerHTML = notifs.map(function(n){return `
-      <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--b2)">
-        <span style="font-size:18px;flex-shrink:0">${n.icon||'📬'}</span>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:700;margin-bottom:2px">${n.title||'إشعار جديد'}</div>
-          ${n.body?`<div style="font-size:12px;color:var(--muted);white-space:pre-wrap">${n.body}</div>`:''}
-        </div>
-        <button onclick="markNotifRead('${n.id}')" style="background:transparent;border:none;color:var(--blue);cursor:pointer;font-size:11px;flex-shrink:0;font-family:'Tajawal',sans-serif;padding:0">✓ قرأت</button>
-      </div>`;}).join('');
-    var dot = document.getElementById('notifDot');
-    dot.textContent = notifs.length > 9 ? '9+' : notifs.length;
-    dot.style.display = 'flex';
-  }catch(e){ list.innerHTML = '<div style="text-align:center;font-size:12px;color:var(--err);padding:8px">خطأ في التحميل</div>'; }
+    var snap=await getDocs(collection(db,'notifications',_user.uid,'items'));
+    window._notifAll=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)).slice(0,60);
+    _drawNotifs();
+  }catch(e){ list.innerHTML='<div style="text-align:center;font-size:12px;color:var(--err);padding:8px">خطأ في التحميل</div>'; }
 }
+const _isSubN=n=>/expiry|pay|renew|subscr/i.test(n.type||'');
+function _drawNotifs(){
+  var all=window._notifAll||[], unread=all.filter(n=>!n.read), k=_nfKind;
+  var rows=all.filter(n=>k==='unread'?!n.read:k==='sub'?_isSubN(n):k==='admin'?(!_isSubN(n)&&n.type!=='welcome'):true);
+  var chip=(id,l)=>`<button onclick="_nfKind='${id}';_drawNotifs()" style="padding:4px 10px;border-radius:14px;border:1px solid ${k===id?'var(--blue)':'var(--b2)'};background:${k===id?'rgba(74,127,212,.15)':'transparent'};color:${k===id?'var(--blue)':'var(--muted)'};font-family:inherit;font-size:11px;font-weight:700;cursor:pointer">${l}</button>`;
+  var h=`<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding-bottom:8px">${chip('all','الكل')}${chip('unread','غير مقروء')}${chip('sub','الاشتراك والدفع')}${chip('admin','من الإدارة')}${unread.length?`<button onclick="markAllNotifRead()" style="margin-right:auto;background:transparent;border:none;color:var(--blue);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer">✓ تعليم الكل كمقروء</button>`:''}</div>`;
+  h+=rows.length?rows.map(n=>`<div style="display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--b2);opacity:${n.read?.55:1}">
+    <span style="font-size:18px;flex-shrink:0">${_nEsc(n.icon)||'📬'}</span>
+    <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;margin-bottom:2px">${_nEsc(n.title)||'إشعار جديد'}</div>${n.body?`<div style="font-size:12px;color:var(--muted);white-space:pre-wrap">${_nEsc(n.body)}</div>`:''}</div>
+    ${n.read?'':`<button onclick="markNotifRead('${n.id}')" style="background:transparent;border:none;color:var(--blue);cursor:pointer;font-size:11px;flex-shrink:0;font-family:inherit">تم ✓</button>`}</div>`).join(''):'<div style="text-align:center;font-size:12px;color:var(--muted);padding:16px">مفيش رسائل هنا ✓</div>';
+  document.getElementById('notifList').innerHTML=h;
+  var dot=document.getElementById('notifDot');
+  if(dot){ dot.textContent=unread.length>9?'9+':unread.length; dot.style.display=unread.length?'flex':'none'; }
+}
+window._drawNotifs=_drawNotifs;
+window.markAllNotifRead=async function(){
+  try{ await Promise.all((window._notifAll||[]).filter(n=>!n.read).map(n=>updateDoc(doc(db,'notifications',_user.uid,'items',n.id),{read:true}))); }catch(e){}
+  loadNotifications(); checkNotifDot();
+};
+
+// ═══ تبويب «اشتراكي» ═══
+window.openMySub=async function(){
+  if(!_user){ return; }
+  var ud=window._userData||{}, exp=ud.expiresAt?(ud.expiresAt.toDate?ud.expiresAt.toDate():new Date(ud.expiresAt)):null;
+  var days=exp?Math.ceil((exp-new Date())/86400000):null, active=ud.subscriptionActive&&(days===null||days>0);
+  var ov=document.createElement('div'); ov.id='mySubOv';
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:14px;direction:rtl;font-family:inherit';
+  ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
+  ov.innerHTML='<div style="width:100%;max-width:480px;max-height:88vh;overflow:auto;background:var(--card,#0d1530);border:1px solid var(--b2);border-radius:14px;padding:16px;color:inherit"><div id="mySubBody">جاري التحميل...</div><button onclick="document.getElementById(\'mySubOv\').remove()" style="margin-top:12px;width:100%;padding:9px;border:1px solid var(--b2);border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;font-weight:700">إغلاق</button></div>';
+  document.body.appendChild(ov);
+  var hist=[];
+  try{ var s=await getDocs(query(collection(db,'paymentRequests'),where('uid','==',_user.uid))); s.docs.forEach(d=>hist.push({k:'req',...d.data()})); }catch(e){}
+  try{ var r=await getDocs(query(collection(db,'subscriptionRenewals'),where('uid','==',_user.uid))); r.docs.forEach(d=>hist.push({k:'ren',...d.data()})); }catch(e){}
+  hist.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+  var pending=hist.some(x=>x.k==='req'&&x.status==='pending');
+  var st=s=>s==='pending'?['⏳ قيد المراجعة','var(--gold,#c9a84c)']:/reject|refus/i.test(s||'')?['❌ مرفوض','var(--err)']:['✅ تم','var(--ok)'];
+  var fd=x=>x?.seconds?new Date(x.seconds*1000).toLocaleDateString('ar-EG'):'';
+  document.getElementById('mySubBody').innerHTML=`
+    <div style="font-size:15px;font-weight:800;margin-bottom:10px">💳 اشتراكي</div>
+    <div style="padding:12px;border-radius:10px;background:${active?'rgba(0,214,143,.08)':'rgba(255,77,109,.08)'};border:1px solid ${active?'rgba(0,214,143,.25)':'rgba(255,77,109,.25)'}">
+      <div style="font-size:14px;font-weight:800;color:${active?'var(--ok)':'var(--err)'}">${active?'اشتراكك شغال ✓':'اشتراكك منتهي أو غير مفعّل'}</div>
+      ${exp?`<div style="font-size:12px;color:var(--muted);margin-top:4px">${days>0?'باقي '+days+' يوم · ':''}ينتهي ${exp.toLocaleDateString('ar-EG')}</div>`:''}</div>
+    <div style="font-size:13px;font-weight:800;margin:14px 0 6px">🔄 تجديد الاشتراك</div>
+    ${pending?'<div style="font-size:12px;color:var(--gold,#c9a84c)">عندك طلب تجديد قيد المراجعة — استنى التأكيد.</div>':`
+      <input id="rcpFile" type="file" accept="image/*" style="width:100%;font-size:12px;margin-bottom:8px"/>
+      <select id="rcpMethod" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:inherit;font-family:inherit;font-size:12px"><option value="whatsapp">استلام الكود على واتساب</option><option value="sms">استلام الكود برسالة SMS</option><option value="email">استلام الكود على الإيميل</option></select>
+      <button onclick="sendRenewal()" style="margin-top:8px;width:100%;padding:10px;border:none;border-radius:9px;background:var(--blue);color:#fff;font-family:inherit;font-weight:800;cursor:pointer">إرسال إيصال التجديد</button>
+      <div id="rcpMsg" style="font-size:12px;margin-top:6px"></div>`}
+    <div style="font-size:13px;font-weight:800;margin:14px 0 4px">🧾 السجل</div>
+    ${hist.length?hist.map(x=>{var z=st(x.k==='ren'?'ok':x.status);return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--b2);font-size:12px"><span>${x.k==='ren'?'تجديد':'طلب دفع'} · ${fd(x.createdAt)}</span><span style="color:${z[1]};font-weight:700">${z[0]}</span></div>`;}).join(''):'<div style="font-size:12px;color:var(--muted)">مفيش سجل لسه</div>'}`;
+};
+window.sendRenewal=async function(){
+  var f=document.getElementById('rcpFile').files[0], msg=document.getElementById('rcpMsg');
+  if(!f){ msg.style.color='var(--err)'; msg.textContent='اختار صورة الإيصال الأول'; return; }
+  msg.style.color='var(--muted)'; msg.textContent='جاري الإرسال...';
+  try{
+    var img=await new Promise((res,rej)=>{ var im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=URL.createObjectURL(f); });
+    var url='', w=1000;
+    for(var q=.8;q>=.3;q-=.1){ var sc=Math.min(1,w/img.width), c=document.createElement('canvas'); c.width=img.width*sc; c.height=img.height*sc; c.getContext('2d').drawImage(img,0,0,c.width,c.height); url=c.toDataURL('image/jpeg',q); if(url.length<900000) break; w=800; }
+    if(url.length>=940000) throw new Error('الصورة كبيرة — جرّب صورة أصغر');
+    var ud=window._userData||{};
+    await addDoc(collection(db,'paymentRequests'),{uid:_user.uid,name:ud.name||'',phone:ud.phone||'',gradeKey:ud.gradeKey||'',status:'pending',type:'renewal',deliveryMethod:document.getElementById('rcpMethod').value,receiptImg:url,createdAt:serverTimestamp()});
+    document.getElementById('mySubOv')?.remove(); window.openMySub();
+  }catch(e){ msg.style.color='var(--err)'; msg.textContent='خطأ: '+(e.message||e); }
+};
+(function(){
+  var bell=document.getElementById('notifBell'); if(!bell||document.getElementById('mySubBtn')) return;
+  var b=document.createElement('button'); b.id='mySubBtn'; b.className=bell.className; b.setAttribute('style',bell.getAttribute('style')||'');
+  b.innerHTML='<span style="font-size:18px">💳</span><span style="font-size:9px;font-weight:700">اشتراكي</span>'; b.onclick=()=>window.openMySub();
+  bell.parentNode.insertBefore(b,bell);
+})();
 async function markNotifRead(notifId){
   if(!_user) return;
   try{
