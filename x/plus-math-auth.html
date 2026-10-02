@@ -601,6 +601,17 @@ select { appearance: none; }
 .ob-step { transition: background .2s; }
 .ob-step:hover { background: rgba(74,127,212,0.07); }
 
+
+.ferr{display:none;font-size:11px;color:var(--error);margin-top:5px;font-weight:700}
+.ferr.show{display:block}
+.field.invalid input,.field.invalid select{border-color:var(--error)!important}
+.req{color:var(--error)}.opt{color:var(--muted);font-size:10px;font-weight:500}
+.rc-box{border:1.5px dashed rgba(201,168,76,.4);border-radius:12px;padding:12px;margin-bottom:12px;background:rgba(201,168,76,.04)}
+.rc-box img{max-width:100%;max-height:200px;border-radius:8px;display:none;margin-top:8px}
+.dm-row{display:flex;gap:6px;margin:8px 0}
+.dm-row label{flex:1;text-align:center;padding:8px 4px;border:1px solid var(--border2);border-radius:9px;font-size:12px;cursor:pointer}
+.dm-row input{display:none}.dm-row input:checked+span{color:var(--gold2);font-weight:800}
+.dm-row label:has(input:checked){border-color:var(--gold);background:rgba(201,168,76,.1)}
 </style>
 
 <!-- ══ SEO ══ -->
@@ -839,36 +850,54 @@ select { appearance: none; }
       <!-- Register Tab -->
       <div id="tab-register" style="display:none">
         <div class="field">
-          <label>الاسم الكامل</label>
-          <input type="text" id="reg-name" placeholder="اسمك بالكامل"/>
+          <label>الاسم الكامل <span class="req">*</span></label>
+          <input type="text" id="reg-name" placeholder="اسمك بالكامل" oninput="clearFieldErr('reg-name')"/>
+          <div class="ferr" id="err-reg-name"></div>
         </div>
         <div class="field">
-          <label>رقم الهاتف</label>
+          <label>رقم الهاتف <span class="req">*</span></label>
           <div class="phone-row">
             <div class="phone-prefix">
               <svg viewBox="0 0 20 14"><rect width="20" height="4.67" y="0" fill="#CE1126"/><rect width="20" height="4.67" y="4.67" fill="#FFF"/><rect width="20" height="4.67" y="9.33" fill="#000"/><g transform="translate(10,7)"><ellipse cx="0" cy="0" rx="1.8" ry="1.4" fill="none" stroke="#C09300" stroke-width=".5"/><rect x="-.4" y="-.3" width=".8" height="1.7" fill="#C09300"/><rect x="-1" y="1.3" width="2" height=".3" fill="#C09300"/></g></svg>
               <span class="code">+20</span>
             </div>
-            <input type="tel" class="phone-input" id="reg-phone" placeholder="01x xxxx xxxx" maxlength="11" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'')"/>
+            <input type="tel" class="phone-input" id="reg-phone" placeholder="10xxxxxxxx أو 010xxxxxxxx" inputmode="numeric" autocomplete="tel" oninput="fmtEgPhoneInput(this);clearFieldErr('reg-phone')" onblur="fmtEgPhoneBlur(this)"/>
           </div>
+          <div class="ferr" id="err-reg-phone"></div>
         </div>
         <div class="field">
           <label>الإيميل <span style="color:var(--error)">*</span></label>
-          <input type="email" id="reg-email" placeholder="example@gmail.com"/>
+          <input type="email" id="reg-email" placeholder="example@gmail.com" oninput="clearFieldErr('reg-email')"/>
+          <div class="ferr" id="err-reg-email"></div>
+        </div>
+        <div class="field">
+          <label>المحافظة <span class="opt">(اختياري)</span></label>
+          <select id="reg-gov" onchange="fillCenters()" style="width:100%"><option value="">— اختر —</option></select>
+        </div>
+        <div class="field">
+          <label>المركز / المدينة <span class="opt">(اختياري)</span></label>
+          <input type="text" id="reg-center" list="center-list" placeholder="اكتب أو اختر المركز"/>
+          <datalist id="center-list"></datalist>
+        </div>
+        <div class="field">
+          <label>رقم ولي الأمر <span class="opt">(اختياري)</span></label>
+          <input type="tel" id="reg-parent" placeholder="010xxxxxxxx" inputmode="numeric" style="direction:ltr;text-align:left" oninput="fmtEgPhoneInput(this);clearFieldErr('reg-parent')" onblur="fmtEgPhoneBlur(this)"/>
+          <div class="ferr" id="err-reg-parent"></div>
         </div>
         <div class="field" id="reg-referral-field">
           <label>كود دعوة (اختياري) 🎁</label>
           <input type="text" id="reg-referral" placeholder="مثال: PM-000123" style="direction:ltr;text-align:left;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()"/>
         </div>
         <div class="field">
-          <label>كلمة المرور</label>
+          <label>كلمة المرور <span class="req">*</span></label>
           <div style="position:relative">
             <input type="password" id="reg-pass" placeholder="٨ أحرف على الأقل" minlength="8"
-              oninput="checkRegPassStrength(this.value)" style="padding-left:36px!important"/>
+              oninput="checkRegPassStrength(this.value);clearFieldErr('reg-pass')" style="padding-left:36px!important"/>
             <span onclick="togglePassVisibility('reg-pass', this)" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--muted);display:flex">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </span>
           </div>
+          <div class="ferr" id="err-reg-pass"></div>
           <div class="pass-strength" id="reg-pass-strength"></div>
           <div class="pass-strength-lbl" id="reg-pass-strength-lbl"></div>
         </div>
@@ -1030,6 +1059,19 @@ select { appearance: none; }
         ٣️⃣ ابعته على واتساب مع اسمك وصفك<br>
         ٤️⃣ الأستاذ هيبعتلك كود التفعيل — ادخله في الخطوة الجاية
       </div>
+      <div class="rc-box">
+        <div style="font-size:13px;font-weight:800;margin-bottom:6px">📸 ارفع صورة إيصال الدفع</div>
+        <input type="file" id="rc-file" accept="image/*" onchange="previewReceipt(this)" style="font-size:12px;width:100%"/>
+        <img id="rc-preview" alt="الإيصال"/>
+        <div class="ferr" id="err-rc-file"></div>
+        <div style="font-size:12px;font-weight:800;margin-top:10px">استلام كود الاشتراك عن طريق:</div>
+        <div class="dm-row">
+          <label><input type="radio" name="rc-dm" value="sms"><span>📱 SMS</span></label>
+          <label><input type="radio" name="rc-dm" value="email"><span>📧 Email</span></label>
+          <label><input type="radio" name="rc-dm" value="whatsapp" checked><span>💬 WhatsApp</span></label>
+        </div>
+        <button class="btn" id="rc-btn" onclick="submitReceipt()"><span class="btn-text"><svg><use href="#i-check"/></svg>إرسال الإيصال للمراجعة</span><div class="spin"></div></button>
+      </div>
       <div class="msg" id="payment-msg"></div>
       <button class="btn-wa" onclick="paymentSendWA()" style="margin-bottom:10px">
         <svg><use href="#i-wa"/></svg>تواصل واتساب لإرسال الإيصال
@@ -1038,6 +1080,24 @@ select { appearance: none; }
       <button class="btn" onclick="skipToCode()">
         <span class="btn-text"><svg><use href="#i-arrow-r"/></svg>تخطي - لقد حصلت على كود</span>
       </button>
+    </div>
+
+    <!-- ══ STEP: PENDING REVIEW ══ -->
+    <div class="step" id="step-pending">
+      <div style="text-align:center;padding:10px 0">
+        <div style="font-size:46px">✅</div>
+        <h3 style="font-size:17px;font-weight:900;margin:8px 0">تم استلام طلبك بنجاح</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.9">حسابك حاليًا <b style="color:var(--warn)">قيد المراجعة</b>، وسيتم إرسال كود الاشتراك بعد التأكيد.</p>
+        <div id="pending-info" style="margin:12px 0;font-size:12px;color:var(--muted)"></div>
+        <div style="font-size:12px;font-weight:800;margin-top:6px">طريقة استلام الكود</div>
+        <div class="dm-row">
+          <label><input type="radio" name="pd-dm" value="sms" onchange="changeDelivery(this.value)"><span>📱 SMS</span></label>
+          <label><input type="radio" name="pd-dm" value="email" onchange="changeDelivery(this.value)"><span>📧 Email</span></label>
+          <label><input type="radio" name="pd-dm" value="whatsapp" onchange="changeDelivery(this.value)"><span>💬 WhatsApp</span></label>
+        </div>
+        <div class="msg" id="pending-msg"></div>
+        <button class="btn" onclick="skipToCode()" style="margin-top:8px"><span class="btn-text">لدي كود بالفعل</span></button>
+      </div>
     </div>
 
     <!-- ══ STEP: ONBOARDING ══ -->
@@ -1123,6 +1183,7 @@ select { appearance: none; }
         ٤️⃣ الأستاذ هيبعتلك كود جديد — ادخله هنا
       </div>
       <!-- WA + Code entry -->
+      <button class="btn" onclick="startRenewal()" style="margin-bottom:10px"><span class="btn-text">📸 ارفع إيصال التجديد</span></button>
       <button class="btn-wa" onclick="renewSendWA()" style="margin-bottom:10px">
         <svg><use href="#i-wa"/></svg>تواصل للتجديد على واتساب
       </button>
@@ -1222,6 +1283,26 @@ select { appearance: none; }
           <div id="prof-bar" style="height:100%;border-radius:3px;background:linear-gradient(90deg,var(--success),#006040);transition:width 1s;width:0%"></div>
         </div>
       </div>
+
+      <!-- Subscription status / renewal / notifications / extra data -->
+      <div id="prof-status" style="text-align:center;padding:8px;border-radius:10px;font-size:13px;font-weight:800;margin-bottom:8px"></div>
+      <button class="btn" id="prof-renew-btn" onclick="startRenewal()" style="display:none;margin-bottom:12px"><span class="btn-text">🔄 تجديد الاشتراك الآن</span></button>
+      <details style="margin-bottom:12px;background:rgba(8,13,28,.4);border:1px solid var(--border2);border-radius:12px;padding:8px 12px">
+        <summary style="cursor:pointer;font-size:12px;font-weight:800">🔔 الإشعارات <span id="notif-count" style="color:var(--gold2)"></span></summary>
+        <div id="prof-notifs" style="margin-top:8px;font-size:12px;display:grid;gap:6px"></div>
+      </details>
+      <details style="margin-bottom:12px;background:rgba(8,13,28,.4);border:1px solid var(--border2);border-radius:12px;padding:8px 12px">
+        <summary style="cursor:pointer;font-size:12px;font-weight:800">📜 سجل التجديد</summary>
+        <div id="prof-history" style="margin-top:8px;font-size:12px;color:var(--muted)">—</div>
+      </details>
+      <details style="margin-bottom:12px;background:rgba(8,13,28,.4);border:1px solid var(--border2);border-radius:12px;padding:8px 12px">
+        <summary style="cursor:pointer;font-size:12px;font-weight:800">📍 بياناتي الإضافية</summary>
+        <div class="field" style="margin-top:8px"><label>المحافظة</label><select id="prof-gov" onchange="profFillCenters()" style="width:100%"><option value="">—</option></select></div>
+        <div class="field"><label>المركز</label><input type="text" id="prof-center" list="prof-center-list"/><datalist id="prof-center-list"></datalist></div>
+        <div class="field"><label>رقم ولي الأمر</label><input type="tel" id="prof-parent" inputmode="numeric" style="direction:ltr;text-align:left" oninput="fmtEgPhoneInput(this);clearFieldErr('prof-parent')"/><div class="ferr" id="err-prof-parent"></div></div>
+        <div class="msg" id="prof-extra-msg"></div>
+        <button class="btn" id="prof-extra-btn" onclick="saveExtraData()"><span class="btn-text">حفظ</span><div class="spin"></div></button>
+      </details>
 
       <!-- Referral & Points -->
       <div id="points-row" style="background:rgba(201,168,76,0.05);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:10px 12px;margin-bottom:12px">
@@ -1627,8 +1708,9 @@ function clearLoginMsg(){ document.getElementById('login-msg').className='msg'; 
 // Smart error messages
 function smartLoginError(code, id){
   const tips = {
-    'auth/user-not-found':    { msg:'الحساب غير موجود', tip:'تأكد من رقم الهاتف أو سجل حساب جديد من فوق' },
-    'auth/wrong-password':    { msg:'كلمة المرور غلط', tip:'جرب "نسيت كلمة المرور" لإعادة التعيين' },
+    'auth/user-not-found':    { msg:'بيانات الدخول غير صحيحة', tip:'تأكد من الرقم وكلمة المرور' },
+    'auth/wrong-password':    { msg:'بيانات الدخول غير صحيحة', tip:'تأكد من الرقم وكلمة المرور' },
+    'auth/invalid-credential':{ msg:'بيانات الدخول غير صحيحة', tip:'تأكد من الرقم وكلمة المرور' },
     'auth/too-many-requests': { msg:'محاولات كتير جداً', tip:'انتظر دقيقة وحاول تاني أو ريست كلمة المرور' },
     'auth/invalid-email':     { msg:'الإيميل أو الرقم مش صح', tip:'تأكد من الكتابة أو استخدم Google' },
     'auth/user-disabled':     { msg:'الحساب موقوف', tip:'تواصل مع الأستاذ على واتساب: 01007586279' },
@@ -1690,6 +1772,8 @@ function togglePassVisibility(id, iconEl){
 // (they can tap "skip" there if they already have a code).
 function routeAfterGrade(data){
   if(!data.gradeKey){ showStep('step-grade'); return; }
+  if(data.pendingPaymentStatus==='pending'){ showPendingStep(data.deliveryMethod); return; }
+  if(data.expiresAt && data.subscriptionActive!==true){ showExpiredStep(data.grade||'', data.gradeKey||''); return; }
   showPaymentStep(data.gradeKey, data.grade);
 }
 
@@ -1738,6 +1822,58 @@ function showPaymentStep(gradeKey, gradeName){
   }).catch(function(){});
   applyPriceForGrade(gradeKey, 'payment-price-val');
   showStep('step-payment');
+}
+
+// ══ Receipt upload → paymentRequests ══
+var _receiptData=null;
+function previewReceipt(inp){
+  _receiptData=null; clearFieldErr('rc-file');
+  var f=inp.files&&inp.files[0]; if(!f) return;
+  if(!/^image\//.test(f.type)){ setFieldErr('rc-file','لازم يكون الملف صورة'); inp.value=''; return; }
+  if(f.size>12*1024*1024){ setFieldErr('rc-file','الصورة كبيرة جدًا (الحد 12MB)'); inp.value=''; return; }
+  var img=new Image(), url=URL.createObjectURL(f);
+  img.onload=function(){
+    var max=1100, r=Math.min(1,max/Math.max(img.width,img.height));
+    var c=document.createElement('canvas'); c.width=Math.round(img.width*r); c.height=Math.round(img.height*r);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    _receiptData=c.toDataURL('image/jpeg',0.72); URL.revokeObjectURL(url);
+    var pv=document.getElementById('rc-preview'); pv.src=_receiptData; pv.style.display='block';
+  };
+  img.onerror=function(){ setFieldErr('rc-file','تعذّر قراءة الصورة'); };
+  img.src=url;
+}
+function submitReceipt(){
+  var user=auth.currentUser; if(!user) return;
+  if(!_receiptData){ setFieldErr('rc-file','ارفع صورة الإيصال أولًا'); return; }
+  if(_receiptData.length>900000){ setFieldErr('rc-file','الصورة كبيرة — جرّب صورة أصغر'); return; }
+  var dm=(document.querySelector('input[name="rc-dm"]:checked')||{}).value||'whatsapp';
+  var btn=document.getElementById('rc-btn'); setLoad(btn,true);
+  db.collection('users').doc(user.uid).get().then(function(ud){
+    var u=ud.data()||{};
+    var req={ uid:user.uid, name:u.name||'', phone:u.phone||'', email:u.email||'',
+      gradeKey:u.gradeKey||window._savedGradeKey||'', grade:u.grade||window._savedGrade||'',
+      type:(u.expiresAt?'renew':'new'), amount:(getInvoicePriceText()||'').replace(/[^\d.]/g,''),
+      receiptImg:_receiptData, deliveryMethod:dm, status:'pending',
+      createdAt:firebase.firestore.FieldValue.serverTimestamp() };
+    return db.collection('paymentRequests').add(req).then(function(ref){
+      return db.collection('users').doc(user.uid).update({ pendingPaymentId:ref.id, pendingPaymentStatus:'pending', deliveryMethod:dm });
+    }).then(function(){
+      db.collection('adminNotifications').add({ type:'payment_receipt', icon:'🧾', title:'إيصال دفع جديد', body:(u.name||'طالب')+' — '+(u.grade||''), userId:user.uid, userName:u.name||'', read:false, createdAt:firebase.firestore.FieldValue.serverTimestamp() }).catch(function(){});
+      setLoad(btn,false); showPendingStep(dm);
+    });
+  }).catch(function(){ showMsg('payment-msg','تعذّر إرسال الإيصال — حاول مرة أخرى','error'); setLoad(btn,false); });
+}
+function showPendingStep(dm){
+  var r=document.querySelector('input[name="pd-dm"][value="'+(dm||'whatsapp')+'"]'); if(r) r.checked=true;
+  showStep('step-pending');
+}
+function changeDelivery(v){
+  var u=auth.currentUser; if(!u) return;
+  db.collection('users').doc(u.uid).get().then(function(d){
+    var id=(d.data()||{}).pendingPaymentId; var ps=[db.collection('users').doc(u.uid).update({deliveryMethod:v})];
+    if(id) ps.push(db.collection('paymentRequests').doc(id).update({deliveryMethod:v}));
+    return Promise.all(ps);
+  }).then(function(){ showMsg('pending-msg','تم حفظ طريقة الاستلام ✓','success'); }).catch(function(){});
 }
 
 function cpPayNum(num){
@@ -2147,9 +2283,77 @@ function showProfileStep(data){
     var total = Math.max(1,Math.ceil((exp-start)/86400000));
     setTimeout(function(){ document.getElementById('prof-bar').style.width=Math.round(days/total*100)+'%'; },300);
   }
+  try{ renderSubStatus(data); loadRenewalHistory(); loadStudentNotifs(data); fillExtraData(data); }catch(e){ console.warn(e); }
   showStep('step-profile');
+  try{ if(new URLSearchParams(location.search).get('renew')==='1' && document.getElementById('prof-renew-btn').style.display!=='none'){ history.replaceState(null,'',location.pathname); startRenewal(); } }catch(e){}
   // تحميل الأجهزة المتصلة
   setTimeout(function(){ loadSessions(); }, 300);
+}
+
+// ══ حالة الاشتراك + التجديد + السجل + الإشعارات + البيانات الإضافية ══
+function _toDate(x){ return x ? (x.toDate ? x.toDate() : new Date(x)) : null; }
+function renderSubStatus(data){
+  var el=document.getElementById('prof-status'), btn=document.getElementById('prof-renew-btn');
+  var exp=_toDate(data.expiresAt), days=exp?Math.ceil((exp-new Date())/86400000):0;
+  var pending=data.pendingPaymentStatus==='pending', cls, txt, canRenew=false;
+  if(pending){ cls=['rgba(245,166,35,.1)','#f5a623']; txt='⏳ قيد المراجعة — طلب الدفع بانتظار تأكيد الأستاذ'; }
+  else if(!exp||days<=0||data.subscriptionActive===false){ cls=['rgba(255,77,109,.1)','var(--error)']; txt='⛔ منتهي'; canRenew=true; }
+  else if(days<=5){ cls=['rgba(245,166,35,.1)','#f5a623']; txt='⚠️ على وشك الانتهاء — باقي '+days+' يوم'; canRenew=true; }
+  else { cls=['rgba(0,214,143,.1)','var(--success)']; txt='✅ نشط — باقي '+days+' يوم (حتى '+exp.toLocaleDateString('ar-EG')+')'; }
+  el.style.background=cls[0]; el.style.color=cls[1]; el.textContent=txt;
+  btn.style.display=canRenew?'':'none';
+}
+function startRenewal(){
+  var d=_currentProfileData||{};
+  window._renewMode=true;
+  showPaymentStep(d.gradeKey||window._savedGradeKey, d.grade||window._savedGrade);
+}
+function loadRenewalHistory(){
+  var u=auth.currentUser, el=document.getElementById('prof-history'); if(!u||!el) return;
+  db.collection('subscriptionRenewals').where('uid','==',u.uid).get().then(function(sn){
+    var rows=sn.docs.map(function(d){return d.data();}).sort(function(a,b){return (_toDate(b.createdAt)||0)-(_toDate(a.createdAt)||0);});
+    el.innerHTML = rows.length ? rows.map(function(r){
+      return '<div style="padding:6px 0;border-bottom:1px solid var(--border2)">'+(r.type==='renew'?'🔄 تجديد':'🆕 اشتراك')+' — '+(_toDate(r.createdAt)?_toDate(r.createdAt).toLocaleDateString('ar-EG'):'')+' ← ينتهي '+(_toDate(r.toDate)?_toDate(r.toDate).toLocaleDateString('ar-EG'):'')+'</div>';
+    }).join('') : 'لا يوجد سجل بعد';
+  }).catch(function(){});
+}
+function loadStudentNotifs(data){
+  var u=auth.currentUser, el=document.getElementById('prof-notifs'); if(!u||!el) return;
+  var items=[], exp=_toDate(data.expiresAt), days=exp?Math.ceil((exp-new Date())/86400000):null;
+  if(days!==null && days>0 && days<=5) items.push({t:'⏰ اشتراكك ينتهي خلال '+days+' يوم — تقدر تجدد من الزر أعلاه',virtual:true});
+  if(days!==null && days<=0) items.push({t:'⛔ انتهى اشتراكك — جدد للاستمرار',virtual:true});
+  db.collection('notifications').doc(u.uid).collection('items').get().then(function(sn){
+    var stored=sn.docs.map(function(d){var x=d.data(); return {id:d.id,t:(x.title||'')+(x.body?' — '+x.body:''),read:x.read,at:_toDate(x.createdAt)};})
+      .sort(function(a,b){return (b.at||0)-(a.at||0);}).slice(0,15);
+    items=items.concat(stored);
+    var unread=stored.filter(function(n){return !n.read;});
+    document.getElementById('notif-count').textContent = (unread.length+items.filter(function(i){return i.virtual;}).length)||'';
+    el.innerHTML = items.length ? items.map(function(n){return '<div style="padding:7px 9px;border-radius:8px;background:'+(n.read===false||n.virtual?'rgba(201,168,76,.08)':'transparent')+'">'+n.t+'</div>';}).join('') : '<div style="color:var(--muted)">لا توجد إشعارات</div>';
+    unread.forEach(function(n){ db.collection('notifications').doc(u.uid).collection('items').doc(n.id).update({read:true}).catch(function(){}); });
+  }).catch(function(){});
+}
+function fillExtraData(data){
+  var g=document.getElementById('prof-gov'); if(!g) return;
+  if(g.options.length<2){ var rg=document.getElementById('reg-gov'); for(var i=1;i<rg.options.length;i++){ g.appendChild(rg.options[i].cloneNode(true)); } }
+  g.value=data.governorate||''; profFillCenters(true);
+  document.getElementById('prof-center').value=data.center||'';
+  document.getElementById('prof-parent').value=data.parentPhone||'';
+}
+function profFillCenters(keep){
+  var g=document.getElementById('prof-gov').value;
+  document.getElementById('prof-center-list').innerHTML=(GOV_CENTERS[g]||[]).map(function(c){return '<option value="'+c+'">';}).join('');
+  if(keep!==true) document.getElementById('prof-center').value='';
+}
+function saveExtraData(){
+  var u=auth.currentUser; if(!u) return;
+  clearFieldErr('prof-parent');
+  var raw=document.getElementById('prof-parent').value.trim(), n=raw?normalizeEgPhone(raw):'';
+  if(raw && !n){ setFieldErr('prof-parent','رقم ولي الأمر غير صحيح'); return; }
+  var btn=document.getElementById('prof-extra-btn'); if(btn.disabled) return; setLoad(btn,true);
+  var upd={ governorate:document.getElementById('prof-gov').value, center:document.getElementById('prof-center').value.trim(), parentPhone:n?'0'+n:'' };
+  db.collection('users').doc(u.uid).update(upd).then(function(){
+    Object.assign(_currentProfileData||{},upd); showMsg('prof-extra-msg','تم الحفظ ✓','success'); setLoad(btn,false);
+  }).catch(function(){ showMsg('prof-extra-msg','تعذّر الحفظ — حاول مرة أخرى','error'); setLoad(btn,false); });
 }
 
 // ── EDIT FIELD (phone/email) ──
@@ -2569,8 +2773,9 @@ function runAuthFlow(user){
         var exp = data.expiresAt.toDate ? data.expiresAt.toDate() : new Date(data.expiresAt);
         if(new Date() > exp){
           db.collection('users').doc(user.uid).update({
-            subscriptionActive: false, subscriptionCode: '', expiresAt: null, activatedAt: null
+            subscriptionActive: false, expiredAt: firebase.firestore.FieldValue.serverTimestamp()
           });
+          data.subscriptionActive=false;
           showExpiredStep(data.grade||'', data.gradeKey||'');
           return;
         }
@@ -2632,26 +2837,34 @@ function detectLoginType(val){
   else ico.innerHTML=svgKey;
 }
 
-// ── LOGIN RATE LIMITING (محلي — ضد Brute Force) ──
-var _loginAttempts = 0;
-var _loginLockUntil = 0;
-
+// ── LOGIN RATE LIMITING (يُحفظ محلياً ويصمد بعد تحديث الصفحة) + سجل أمني ──
+function _lockState(){ try{ return JSON.parse(localStorage.getItem('pm_lock')||'{}'); }catch(e){ return {}; } }
+function _saveLock(o){ try{ localStorage.setItem('pm_lock', JSON.stringify(o)); }catch(e){} }
+function secLog(event, id){
+  var masked = id ? String(id).replace(/.(?=.{3})/g,'•') : '';
+  db.collection('securityLogs').add({ event:event, idHint:masked, deviceId:getDeviceId(), ua:(navigator.userAgent||'').slice(0,120),
+    createdAt:firebase.firestore.FieldValue.serverTimestamp() }).catch(function(){});
+}
 function checkLoginRateLimit(){
-  var now = Date.now();
-  if(now < _loginLockUntil){
-    var secs = Math.ceil((_loginLockUntil - now)/1000);
-    showMsg('login-msg','كتير جداً — انتظر '+secs+' ثانية ⏳','error');
-    return false;
-  }
-  _loginAttempts++;
-  if(_loginAttempts >= 5){
-    _loginLockUntil = Date.now() + 60000; // lock دقيقة
-    _loginAttempts = 0;
-    showMsg('login-msg','5 محاولات فاشلة — انتظر دقيقة ⏳','error');
+  var st=_lockState(), now=Date.now();
+  if(st.until && now < st.until){
+    showMsg('login-msg','محاولات كتير — انتظر '+Math.ceil((st.until-now)/1000)+' ثانية ⏳','error');
     return false;
   }
   return true;
 }
+function registerLoginFailure(id){
+  var st=_lockState(); st.fails=(st.fails||0)+1;
+  secLog('login_failed', id);
+  if(st.fails>=5){
+    st.level=Math.min((st.level||0)+1,4);
+    st.until=Date.now()+60000*Math.pow(2,st.level-1);   // 1، 2، 4، 8 دقائق
+    st.fails=0; secLog('login_locked', id);
+    showMsg('login-msg','5 محاولات فاشلة — تم إيقاف المحاولات مؤقتاً ⏳','error');
+  }
+  _saveLock(st);
+}
+function registerLoginSuccess(){ _saveLock({}); }
 
 // ── LOGIN ──
 function doLogin(){
@@ -2661,27 +2874,75 @@ function doLogin(){
   if(!id)  { showMsg('login-msg','ادخل رقم الهاتف أو الإيميل','error'); return; }
   if(!pass){ showMsg('login-msg','ادخل كلمة المرور','error'); return; }
   var btn = document.getElementById('login-btn');
+  if(btn.disabled) return;
+  var pn = id.includes('@') ? null : normalizeEgPhone(id);
+  if(!id.includes('@') && !pn){ showMsg('login-msg','رقم الهاتف غير صحيح','error'); return; }
   setLoad(btn,true);
-  var email = id.includes('@') ? id.toLowerCase() : phoneToEmail(id);
+  var email = id.includes('@') ? id.toLowerCase() : phoneToEmail('0'+pn);
   saveRememberMe(id);
   auth.signInWithEmailAndPassword(email, pass)
-    .then(function(){ _loginAttempts=0; }) // reset on success
+    .then(function(){ registerLoginSuccess(); secLog('login_ok', id); })
     .catch(function(e){
+      if(e.code!=='auth/network-request-failed' && e.code!=='auth/user-disabled') registerLoginFailure(id);
       smartLoginError(e.code, 'login-msg');
       setLoad(btn,false);
     });
 }
 
+// ══ Helpers: phone / field errors / governorates ══
+function normalizeEgPhone(raw){
+  var d=String(raw||'').replace(/\D/g,'');
+  if(d.indexOf('0020')===0) d=d.slice(4);
+  else if(d.indexOf('20')===0 && d.length>=12) d=d.slice(2);
+  if(d.charAt(0)==='0') d=d.slice(1);
+  return /^1[0125]\d{8}$/.test(d) ? d : null;   // 10xxxxxxxx
+}
+function fmtEgPhoneInput(el){
+  var d=el.value.replace(/\D/g,'');
+  if(d.indexOf('0020')===0) d=d.slice(4); else if(d.indexOf('20')===0 && d.length>11) d=d.slice(2);
+  el.value=d.slice(0,11);
+}
+function fmtEgPhoneBlur(el){
+  if(!el.value) return;
+  var n=normalizeEgPhone(el.value);
+  if(n) el.value='0'+n;
+}
+function setFieldErr(id,msg){
+  var e=document.getElementById('err-'+id), i=document.getElementById(id);
+  if(e){ e.textContent=msg; e.classList.add('show'); }
+  if(i&&i.closest) { var f=i.closest('.field'); if(f) f.classList.add('invalid'); }
+}
+function clearFieldErr(id){
+  var e=document.getElementById('err-'+id), i=document.getElementById(id);
+  if(e) e.classList.remove('show');
+  if(i&&i.closest){ var f=i.closest('.field'); if(f) f.classList.remove('invalid'); }
+}
+var GOV_CENTERS={'القاهرة':['مدينة نصر','المعادي','شبرا','حلوان','مصر الجديدة'],'الجيزة':['الهرم','الدقي','6 أكتوبر','الشيخ زايد','إمبابة'],'الإسكندرية':['سموحة','المنتزه','العجمي','برج العرب'],'المنيا':['المنيا','بني مزار','مغاغة','العدوة','ملوي','سمالوط','أبو قرقاص','دير مواس','مطاي'],'الدقهلية':['المنصورة','طلخا','ميت غمر','السنبلاوين'],'الغربية':['طنطا','المحلة الكبرى','كفر الزيات'],'أسيوط':['أسيوط','ديروط','منفلوط','أبنوب'],'سوهاج':['سوهاج','أخميم','جرجا','طهطا'],'بني سويف':['بني سويف','الواسطى','ناصر','ببا'],'الفيوم':['الفيوم','سنورس','إطسا','طامية'],'الشرقية':['الزقازيق','العاشر من رمضان','بلبيس','فاقوس'],'المنوفية':['شبين الكوم','منوف','أشمون','السادات'],'القليوبية':['بنها','شبرا الخيمة','قليوب','الخانكة']};
+(function(){var g=document.getElementById('reg-gov'); if(!g) return;
+  ['القاهرة','الجيزة','الإسكندرية','الدقهلية','الشرقية','القليوبية','الغربية','المنوفية','البحيرة','كفر الشيخ','دمياط','بورسعيد','الإسماعيلية','السويس','الفيوم','بني سويف','المنيا','أسيوط','سوهاج','قنا','الأقصر','أسوان','البحر الأحمر','الوادي الجديد','مطروح','شمال سيناء','جنوب سيناء'].forEach(function(n){var o=document.createElement('option');o.value=n;o.textContent=n;g.appendChild(o);});})();
+function fillCenters(){
+  var l=document.getElementById('center-list'), g=document.getElementById('reg-gov').value;
+  l.innerHTML=(GOV_CENTERS[g]||[]).map(function(c){return '<option value="'+c+'">';}).join('');
+  document.getElementById('reg-center').value='';
+}
+
 // ── REGISTER ──
 function doRegister(){
   var name  = document.getElementById('reg-name').value.trim();
-  var phone = document.getElementById('reg-phone').value.trim();
   var email = document.getElementById('reg-email').value.trim();
   var pass  = document.getElementById('reg-pass').value;
-  if(!name)             { showMsg('reg-msg','ادخل اسمك','error'); return; }
-  if(phone.length<10)   { showMsg('reg-msg','رقم الهاتف غير صحيح','error'); return; }
-  if(!email.includes('@')){ showMsg('reg-msg','ادخل إيميل صحيح','error'); return; }
-  if(pass.length<8)     { showMsg('reg-msg','كلمة المرور لازم ٨ أحرف','error'); return; }
+  var phoneN = normalizeEgPhone(document.getElementById('reg-phone').value);
+  var parentRaw = document.getElementById('reg-parent').value.trim();
+  var parentN = parentRaw ? normalizeEgPhone(parentRaw) : '';
+  var ok = true;
+  ['reg-name','reg-phone','reg-email','reg-pass','reg-parent'].forEach(clearFieldErr);
+  if(name.length<3){ setFieldErr('reg-name','اكتب اسمك الكامل'); ok=false; }
+  if(!phoneN){ setFieldErr('reg-phone','رقم هاتف مصري غير صحيح (مثال: 010xxxxxxxx)'); ok=false; }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ setFieldErr('reg-email','اكتب إيميل صحيح'); ok=false; }
+  if(pass.length<8){ setFieldErr('reg-pass','كلمة المرور لازم ٨ أحرف على الأقل'); ok=false; }
+  if(parentRaw && !parentN){ setFieldErr('reg-parent','رقم ولي الأمر غير صحيح'); ok=false; }
+  if(!ok) return;
+  var phone = '0'+phoneN;
   var btn = document.getElementById('reg-btn');
   setLoad(btn,true);
   var newUid = null;
@@ -2691,7 +2952,10 @@ function doRegister(){
     .then(function(cred){
       newUid = cred.user.uid;
       var userDoc = {
-        name:name, phone:phone, email:lowerEmail,
+        name:name, phone:phone, phoneE164:'+20'+phoneN, email:lowerEmail,
+        governorate:document.getElementById('reg-gov').value||'',
+        center:document.getElementById('reg-center').value.trim()||'',
+        parentPhone: parentN ? '0'+parentN : '',
         subscriptionActive:false, emailVerified:false,
         createdAt:firebase.firestore.FieldValue.serverTimestamp(),
         signInMethod:'phone'
@@ -2723,7 +2987,8 @@ function doRegister(){
         'auth/weak-password':'كلمة المرور ضعيفة',
         'auth/network-request-failed':'مشكلة في الإنترنت — تحقق من اتصالك'
       };
-      showMsg('reg-msg', msgs[e.code]||e.message, 'error');
+      if(e.code==='auth/email-already-in-use') setFieldErr('reg-phone', msgs[e.code]);
+      else showMsg('reg-msg', msgs[e.code]||'حدث خطأ، حاول مرة أخرى', 'error');
       setLoad(btn,false);
     });
 }
@@ -2774,12 +3039,15 @@ function confirmRegistrationOtp(){
     showMsg('verify-email-msg','انتهت صلاحية الكود — اضغط إعادة الإرسال','error');
     setLoad(btn,false); return;
   }
+  _regOtp.tries=(_regOtp.tries||0)+1;
+  if(_regOtp.tries>5){ _regOtp.code=null; showMsg('verify-email-msg','تجاوزت عدد المحاولات — اطلب كود جديد','error'); setLoad(btn,false); return; }
   if(entered !== _regOtp.code){
     showMsg('verify-email-msg','الكود غلط ❌','error');
     setLoad(btn,false); return;
   }
   db.collection('users').doc(_regOtp.uid).update({ emailVerified:true })
     .then(function(){
+      _regOtp.code=null; // الكود يُستخدم مرة واحدة فقط
       sendWelcomeEmail(_regOtp.email, _regOtp.name);
       showMsg('verify-email-msg','تم تأكيد إيميلك ✓','success');
       setLoad(btn,false);

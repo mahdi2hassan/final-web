@@ -1039,9 +1039,7 @@ onAuthStateChanged(auth,async(user)=>{
         // ── انتهى الاشتراك: امسح الكود والاشتراك، الحساب والصف يفضل ──
         setDoc(doc(db,'users',user.uid),{
           subscriptionActive:false,
-          subscriptionCode:'',
-          expiresAt:null,
-          activatedAt:null
+          expiredAt:new Date()
         },{merge:true}).catch(()=>{});
         window.location.href='plus-math-auth.html';
         return;
@@ -1057,12 +1055,12 @@ onAuthStateChanged(auth,async(user)=>{
     // ── مراقبة حظر/إلغاء الاشتراك لحظياً — لو الأدمن حظر أو ألغى الاشتراك وهو داخل، يتم طرده فوراً ──
     onSnapshot(doc(db,'users',user.uid),(liveSnap)=>{
       if(!liveSnap.exists()){
-        signOut(auth).finally(()=>{ window.location.href='plus-math-auth.html'; });
+        (_localSave&&_localSave(),signOut(auth)).finally(()=>{ window.location.href='plus-math-auth.html'; });
         return;
       }
       const liveData = liveSnap.data();
       if(liveData.blocked || !liveData.subscriptionActive){
-        signOut(auth).finally(()=>{ window.location.href='plus-math-auth.html'; });
+        (_localSave&&_localSave(),signOut(auth)).finally(()=>{ window.location.href='plus-math-auth.html'; });
       }
     });
     // ── آخر وقت دخول ──
@@ -1088,7 +1086,12 @@ onAuthStateChanged(auth,async(user)=>{
     // Set video watermark with student info
     setTimeout(()=>{ if(window.setWatermark) window.setWatermark(_userData.name||'طالب', _userData.phone||''); }, 500);
     try{const ann=await getDoc(doc(db,'settings','announcement'));if(ann.exists()&&ann.data().show&&ann.data().text){document.getElementById('annText').textContent=ann.data().text;document.getElementById('annBanner').classList.add('show');}}catch(e){}
-    try{const pr=await getDoc(doc(db,'progress',user.uid));_progress=pr.exists()?pr.data():{}}catch(e){_progress={};}
+    let _srvProg=null,_srvOk=true;
+    try{const pr=await getDoc(doc(db,'progress',user.uid));_srvProg=pr.exists()?pr.data():{}}catch(e){_srvOk=false;_srvProg={};}
+    _progress=_mergeProgress(_srvProg,_localLoad(user.uid));
+    _localSave();   // نثبّت النسخة المدمجة محلياً
+    if(_srvOk&&JSON.stringify(_progress)!==JSON.stringify(_srvProg)) _persistProgress(true); // ارفع الأحدث للحساب
+    _initProgressSafety();
     // ── تحميل المراحل الديناميكية ──
     await loadDynamicGrades();
     buildGrades();
@@ -1117,12 +1120,63 @@ const _dayStr=d=>d.getFullYear()+'-'+_pad2(d.getMonth()+1)+'-'+_pad2(d.getDate()
 const _escT=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const _fmtPos=sec=>{sec=Math.max(0,Math.floor(sec));return Math.floor(sec/60)+':'+_pad2(sec%60);};
 
+// ══ حفظ محلي + مزامنة آمنة مع الحساب ══
+const _lk=uid=>'pm_progress_'+uid;
+function _localSave(dirty){
+  if(!_user) return;
+  try{localStorage.setItem(_lk(_user.uid),JSON.stringify({uid:_user.uid,savedAt:Date.now(),dirty:dirty===undefined?(_localDirty()):dirty,data:_progress}));}catch(e){}
+}
+function _localDirty(){try{return !!(JSON.parse(localStorage.getItem(_lk(_user.uid))||'{}').dirty);}catch(e){return false;}}
+function _localLoad(uid){
+  try{
+    const o=JSON.parse(localStorage.getItem(_lk(uid))||'null');
+    if(!o||o.uid!==uid||typeof o.data!=='object'||!o.data) return {};   // لا نقبل بيانات جهاز لمستخدم آخر
+    return o.data;
+  }catch(e){return {};}
+}
+const _num=x=>(typeof x==='number'&&isFinite(x))?x:0;
+// دمج لكل حقل: لا يُفقد شيء، والأحدث يكسب، ومحاولات الامتحان/المشاهدات ما تنقصش أبداً (السيرفر هو المرجع الأدنى)
+function _mergeProgress(srv,loc){
+  const out={...(srv||{})};
+  for(const g of Object.keys(loc||{})){
+    const L=loc[g],S=(srv||{})[g];
+    if(!L||typeof L!=='object') continue;
+    if(!S||typeof S!=='object'){out[g]=L;continue;}
+    const m={...S};
+    const lNewer=_num(L.lastVideo&&L.lastVideo.at)>_num(S.lastVideo&&S.lastVideo.at);
+    if(lNewer){m.lastVideo=L.lastVideo;}
+    const pos={...(S.videoPos||{})};
+    for(const id of Object.keys(L.videoPos||{})){
+      pos[id]=(id in pos)?(lNewer?_num(L.videoPos[id]):pos[id]):_num(L.videoPos[id]);
+    }
+    if(Object.keys(pos).length) m.videoPos=pos;
+    const maxMap=(a,b)=>{const r={...(a||{})};for(const k of Object.keys(b||{}))r[k]=Math.max(_num(r[k]),_num(b[k]));return r;};
+    if(S.examAttempts||L.examAttempts) m.examAttempts=maxMap(S.examAttempts,L.examAttempts);
+    if(S.videoViews||L.videoViews) m.videoViews=maxMap(S.videoViews,L.videoViews);
+    if(S.favs||L.favs) m.favs=[...new Set([...(S.favs||[]),...(L.favs||[])])];
+    const ls=L.streak,ss=S.streak;
+    if(ls&&(!ss||String(ls.last||'')>String(ss.last||'')||(ls.last===ss.last&&_num(ls.count)>_num(ss.count)))) m.streak={...ls,best:Math.max(_num(ls.best),_num(ss&&ss.best))};
+    out[g]=m;
+  }
+  return out;
+}
 let _persistTimer=null;
 function _persistProgress(now){
   if(!_user) return;
+  _localSave(true);                                    // فوراً على الجهاز
   clearTimeout(_persistTimer);
-  const go=()=>setDoc(doc(db,'progress',_user.uid),_progress,{merge:true}).catch(()=>{});
+  const go=()=>setDoc(doc(db,'progress',_user.uid),_progress,{merge:true})
+    .then(()=>_localSave(false)).catch(()=>{/* أوفلاين: يفضل dirty ويتزامن لما النت يرجع */});
   if(now) go(); else _persistTimer=setTimeout(go,800);
+}
+let _progSafety=false;
+function _initProgressSafety(){
+  if(_progSafety) return; _progSafety=true;
+  const flush=()=>{ if(_user&&_localDirty()) _persistProgress(true); };
+  window.addEventListener('online',flush);
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden'){ _localSave(true); flush(); } });
+  window.addEventListener('pagehide',()=>{ _localSave(true); });
+  setInterval(flush,60000);
 }
 
 // ── Streak ──
@@ -2675,6 +2729,11 @@ function startCountdown(expiresAt){
     else if(days <= 7) wrap.className='countdown-wrap warn';
     else wrap.className='countdown-wrap ok';
     val.textContent = days > 0 ? `${days} يوم` : `${Math.floor((diff%86400000)/3600000)} ساعة`;
+    let rb=document.getElementById('renewBtnNav');
+    if(days<=5){
+      if(!rb){rb=document.createElement('a');rb.id='renewBtnNav';rb.href='plus-math-auth.html?renew=1';rb.textContent='🔄 تجديد';
+        rb.style.cssText='margin-inline-start:8px;padding:3px 10px;border-radius:8px;background:var(--gold);color:#000;font-weight:800;font-size:11px;text-decoration:none';wrap.appendChild(rb);}
+    } else if(rb) rb.remove();
   }
   tick();
   setInterval(tick, 60000);
