@@ -1067,7 +1067,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp }
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
@@ -1379,16 +1379,167 @@ window.handleExamFiles = async (files) => {
 };
 
 // ── Delete item ──
-window.deleteItem = async (tab, id, title) => {
-  if(!confirm('حذف "'+title+'"؟')) return;
-  const grade = document.getElementById('gSel').value;
-  const listEl = tab==='videos'?'vList':tab==='exams'?'eList':'hList';
-  try {
-    await deleteDoc(doc(db,'content',grade,tab,id));
-    await loadList(tab, listEl);
-    toast('تم الحذف','ok');
-  } catch(e){ toast('خطأ: '+e.message,'err'); }
+
+// ═══ سلة المحذوفات + الإخفاء + الطوارئ ═══
+const _TABS=['videos','exams','homework'];
+const _TAB_LBL={videos:'فيديو',exams:'امتحان',homework:'واجب'};
+const _LIST_EL={videos:'vList',exams:'eList',homework:'hList'};
+const _esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const _gradeNow=()=>document.getElementById('gSel')?.value;
+const _D=(...p)=>window._doc(window._db,'content',...p);
+
+async function _toTrash(grade,tab,id){
+  const item=(window._cache?.[tab]||[]).find(i=>i.id===id);
+  if(!item) throw new Error('العنصر مش موجود');
+  const {id:_x,...data}=item;
+  // نكتب في السلة الأول وبعدين نمسح الأصل — عشان لو حصل خطأ مانخسرش حاجة
+  await window._setDoc(_D(grade,'trash',tab+'__'+id),{...data,_tab:tab,_origId:id,_deletedAt:Date.now()});
+  await window._deleteDoc(_D(grade,tab,id));
+}
+
+window.deleteItem = async (tab,id,title)=>{
+  if(!confirm('نقل "'+title+'" لسلة المحذوفات؟\n(بيتحفظ 30 يوم وتقدر تسترجعه)')) return;
+  const grade=_gradeNow(); if(!grade) return;
+  try{
+    await _toTrash(grade,tab,id);
+    await window.loadList(tab,_LIST_EL[tab]);
+    toast('اتنقل للسلة ✓ — تقدر تسترجعه خلال 30 يوم','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
+
+window.bulkDelete = async (tab,elId)=>{
+  if(!_bulkSelected.size){ toast('اختار عناصر أولاً','err'); return; }
+  const grade=_gradeNow(); if(!grade||!window._db) return;
+  if(!confirm(`نقل ${_bulkSelected.size} عنصر لسلة المحذوفات؟\n(بيتحفظوا 30 يوم)`)) return;
+  try{
+    const n=_bulkSelected.size;
+    for(const id of [..._bulkSelected]) await _toTrash(grade,tab,id);
+    toast(`اتنقل ${n} عنصر للسلة ✓`,'ok');
+    _bulkMode=false; _bulkSelected.clear();
+    window.loadList(tab,elId);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.bulkSetHidden = async (tab,elId,val)=>{
+  if(!_bulkSelected.size){ toast('اختار عناصر أولاً','err'); return; }
+  const grade=_gradeNow(); if(!grade) return;
+  try{
+    const n=_bulkSelected.size;
+    await Promise.all([..._bulkSelected].map(id=>window._updateDoc(_D(grade,tab,id),{isHidden:val,hiddenByPanic:false})));
+    toast((val?'اتخفى ':'اتظهر ')+n+' عنصر ✓','ok');
+    _bulkMode=false; _bulkSelected.clear();
+    window.loadList(tab,elId);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.selectAllBulk = (tab)=>{
+  (window._cache?.[tab]||[]).forEach(i=>_bulkSelected.add(i.id));
+  document.querySelectorAll('#drag-'+tab+' input[type=checkbox]').forEach(c=>c.checked=true);
+  const c=document.getElementById('bulkCount'); if(c) c.textContent=_bulkSelected.size;
+};
+
+window.toggleHidden = async (tab,id)=>{
+  const grade=_gradeNow(); if(!grade) return;
+  const item=(window._cache?.[tab]||[]).find(i=>i.id===id); if(!item) return;
+  const nv=!item.isHidden;
+  try{
+    await window._updateDoc(_D(grade,tab,id),{isHidden:nv,hiddenByPanic:false});
+    await window.loadList(tab,_LIST_EL[tab]);
+    toast(nv?'اتخفى عن الطلاب 🙈':'ظاهر للطلاب 👁','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+function _modal(html){
+  document.getElementById('_cmModal')?.remove();
+  const m=document.createElement('div'); m.id='_cmModal';
+  m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:14px;font-family:Tajawal,sans-serif;direction:rtl';
+  m.innerHTML=`<div style="width:100%;max-width:520px;max-height:85vh;overflow:auto;background:#0d1530;border:1px solid rgba(74,127,212,.3);border-radius:14px;padding:16px;color:#e8ecf8">${html}<button onclick="document.getElementById('_cmModal').remove()" style="margin-top:12px;width:100%;padding:9px;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:transparent;color:#9aa8cc;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;font-weight:700">إغلاق</button></div>`;
+  m.addEventListener('click',e=>{ if(e.target===m) m.remove(); });
+  document.body.appendChild(m);
+}
+
+window.openTrash = async ()=>{
+  const grade=_gradeNow(); if(!grade){ toast('اختار صف أولاً','err'); return; }
+  try{
+    const snap=await window._getDocs(window._collection(window._db,'content',grade,'trash'));
+    const now=Date.now(), TTL=30*864e5, rows=[];
+    for(const d of snap.docs){
+      const x=d.data();
+      if(now-(x._deletedAt||0)>TTL){ window._deleteDoc(d.ref); continue; } // تنظيف تلقائي بعد 30 يوم
+      rows.push({docId:d.id,...x});
+    }
+    rows.sort((a,b)=>(b._deletedAt||0)-(a._deletedAt||0));
+    window._trashRows=rows;
+    const body=rows.length?rows.map(r=>{
+      const left=Math.max(0,30-Math.floor((now-(r._deletedAt||0))/864e5));
+      return `<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+        <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${_esc(r.title||'—')}</div>
+        <div style="font-size:11px;color:#6a7a9e">${_TAB_LBL[r._tab]||r._tab} · باقي ${left} يوم</div></div>
+        <button onclick="restoreTrash('${_esc(r.docId)}')" style="padding:5px 10px;border:1px solid rgba(0,214,143,.35);border-radius:7px;background:rgba(0,214,143,.1);color:#00d68f;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">استرجاع</button>
+        <button onclick="purgeTrash('${_esc(r.docId)}')" style="padding:5px 8px;border:1px solid rgba(255,77,109,.3);border-radius:7px;background:rgba(255,77,109,.1);color:#ff4d6d;cursor:pointer;font-size:11px">🗑</button></div>`;
+    }).join(''):'<div style="text-align:center;color:#6a7a9e;padding:24px;font-size:13px">السلة فاضية ✨</div>';
+    _modal(`<div style="font-size:15px;font-weight:800;margin-bottom:6px">🗑 سلة المحذوفات</div><div style="font-size:11px;color:#6a7a9e;margin-bottom:8px">العناصر بتتمسح نهائيًا بعد 30 يوم</div>${body}`);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.restoreTrash = async (docId)=>{
+  const grade=_gradeNow(); const r=(window._trashRows||[]).find(x=>x.docId===docId); if(!r) return;
+  try{
+    const {docId:_d,_tab,_origId,_deletedAt,...data}=r;
+    await window._setDoc(_D(grade,_tab,_origId),data);
+    await window._deleteDoc(_D(grade,'trash',docId));
+    toast('اتسترجع ✓','ok');
+    window.loadList(_tab,_LIST_EL[_tab]);
+    window.openTrash();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+window.purgeTrash = async (docId)=>{
+  if(!confirm('حذف نهائي؟ مفيش رجعة بعدها.')) return;
+  try{ await window._deleteDoc(_D(_gradeNow(),'trash',docId)); window.openTrash(); }
+  catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── طوارئ: إخفاء كل محتوى الصف بضغطة، وإرجاع اللي اتخفى بالطوارئ بس ──
+window.openEmergency = ()=>{
+  const grade=_gradeNow(); if(!grade){ toast('اختار صف أولاً','err'); return; }
+  _modal(`<div style="font-size:15px;font-weight:800;margin-bottom:6px">🚨 وضع الطوارئ</div>
+    <div style="font-size:12px;color:#9aa8cc;margin-bottom:12px;line-height:1.7">لو فيه هجوم على صفحة الكورسات: اخفي كل المحتوى عن الطلاب فورًا (من غير ما يتمسح حاجة)، ولما الوضع يهدى ارجّعه.</div>
+    <button onclick="panicHide()" style="width:100%;padding:11px;margin-bottom:8px;border:1px solid rgba(255,77,109,.4);border-radius:9px;background:rgba(255,77,109,.14);color:#ff4d6d;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;font-weight:800">🚨 إخفاء كل محتوى الصف</button>
+    <button onclick="panicRestore()" style="width:100%;padding:11px;border:1px solid rgba(0,214,143,.35);border-radius:9px;background:rgba(0,214,143,.1);color:#00d68f;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;font-weight:800">↩️ إرجاع اللي اتخفى بالطوارئ</button>`);
+};
+async function _panic(hide){
+  const grade=_gradeNow(); let n=0;
+  for(const tab of _TABS){
+    const snap=await window._getDocs(window._collection(window._db,'content',grade,tab));
+    for(const d of snap.docs){
+      const x=d.data();
+      if(hide && !x.isHidden){ await window._updateDoc(d.ref,{isHidden:true,hiddenByPanic:true}); n++; }
+      if(!hide && x.hiddenByPanic){ await window._updateDoc(d.ref,{isHidden:false,hiddenByPanic:false}); n++; }
+    }
+    window.loadList(tab,_LIST_EL[tab]);
+  }
+  return n;
+}
+window.panicHide = async ()=>{
+  if(!confirm('إخفاء كل فيديوهات وامتحانات وواجبات الصف ده عن الطلاب؟')) return;
+  try{ const n=await _panic(true); document.getElementById('_cmModal')?.remove(); toast('اتخفى '+n+' عنصر 🚨','ok'); }
+  catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+window.panicRestore = async ()=>{
+  try{ const n=await _panic(false); document.getElementById('_cmModal')?.remove(); toast('اترجع '+n+' عنصر ✓','ok'); }
+  catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// أزرار عائمة
+(()=>{
+  const w=document.createElement('div');
+  w.style.cssText='position:fixed;bottom:14px;left:14px;z-index:50;display:flex;flex-direction:column;gap:8px';
+  const mk=(t,f,c)=>{const b=document.createElement('button');b.textContent=t;b.onclick=f;b.style.cssText='padding:9px 13px;border-radius:22px;border:1px solid '+c+';background:rgba(8,13,28,.92);color:#e8ecf8;cursor:pointer;font-family:Tajawal,sans-serif;font-size:12px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.4)';return b;};
+  w.append(mk('🗑 السلة',()=>window.openTrash(),'rgba(74,127,212,.5)'),mk('🚨 طوارئ',()=>window.openEmergency(),'rgba(255,77,109,.5)'));
+  document.body.appendChild(w);
+})();
+
 
 // ── Edit item ──
 window.editItem = (tab, id) => {
@@ -1516,6 +1667,7 @@ window._getDoc = getDoc;
 window._addDoc = addDoc;
 window._updateDoc = updateDoc;
 window._deleteDoc = deleteDoc;
+window._setDoc = setDoc;
 window._collection = collection;
 window._doc = doc;
 window._serverTimestamp = serverTimestamp;
@@ -2576,20 +2728,7 @@ window.toggleBulkMode = (tab, elId) => {
   toast(_bulkMode?'وضع الحذف الجماعي — اختار العناصر':'تم إلغاء وضع الحذف','ok');
 };
 
-window.bulkDelete = async (tab, elId) => {
-  if(!_bulkSelected.size){ toast('اختار عناصر أولاً','err'); return; }
-  const grade = document.getElementById('gSel')?.value;
-  if(!grade||!window._db) return;
-  if(!confirm(`حذف ${_bulkSelected.size} عنصر؟`)) return;
-  try{
-    await Promise.all([..._bulkSelected].map(id=>
-      window._deleteDoc(window._doc(window._db,'content',grade,tab,id))
-    ));
-    toast(`تم حذف ${_bulkSelected.size} عناصر ✓`,'ok');
-    _bulkMode=false; _bulkSelected.clear();
-    window.loadList(tab, elId);
-  }catch(e){ toast('خطأ: '+e.message,'err'); }
-};
+
 
 // ── 6. KEYBOARD SHORTCUTS ──
 document.addEventListener('keydown', e=>{
@@ -2641,6 +2780,9 @@ function renderItemsEnhanced(tab, items, elId){
   const bulkBar = _bulkMode ? `<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,77,109,.08);border-bottom:1px solid rgba(255,77,109,.2);font-size:12px;color:#ff8099">
     <span>تم تحديد <strong id="bulkCount">0</strong> عنصر</span>
     <button onclick="bulkDelete('${tab}','${elId}')" style="padding:4px 12px;border:1px solid rgba(255,77,109,.3);border-radius:6px;background:rgba(255,77,109,.1);color:#ff4d6d;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">حذف المحدد</button>
+    <button onclick="bulkSetHidden('${tab}','${elId}',true)" style="padding:4px 12px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.05);color:#e8ecf8;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">🙈 إخفاء المحدد</button>
+    <button onclick="bulkSetHidden('${tab}','${elId}',false)" style="padding:4px 12px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.05);color:#e8ecf8;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">👁 إظهار المحدد</button>
+    <button onclick="selectAllBulk('${tab}')" style="padding:4px 12px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.05);color:#e8ecf8;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">تحديد الكل</button>
     <button onclick="toggleBulkMode('${tab}','${elId}')" style="padding:4px 10px;border:1px solid rgba(255,255,255,.1);border-radius:6px;background:transparent;color:#6a7a9e;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px">إلغاء</button>
   </div>` : '';
 
@@ -2652,6 +2794,7 @@ function renderItemsEnhanced(tab, items, elId){
       <div class="item-info">
         <div class="item-title">${item.title||'—'}</div>
         <div class="item-meta">
+          ${item.isHidden?'<span class="tag" style="background:rgba(255,77,109,.14);color:var(--err)">🙈 مخفي</span>':''}
           ${item.type?`<span class="tag ${tagCls}">${typeLabel[item.type]||item.type}</span>`:''}
           ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
           ${item.deadline?`<span>📅 ${item.deadline}</span>`:''}
@@ -2676,6 +2819,7 @@ function renderItemsEnhanced(tab, items, elId){
         </button>
         ${url?`<button class="ia" onclick="copyItemUrl('${url}')" title="نسخ الرابط"><svg><use href="#i-copy"/></svg></button>`:''}
         ${url?`<a class="ia" href="${url}" target="_blank" title="فتح"><svg><use href="#i-eye"/></svg></a>`:''}
+        <button class="ia" onclick="toggleHidden('${tab}','${item.id}')" title="${item.isHidden?'إظهار للطلاب':'إخفاء عن الطلاب'}" style="font-size:13px">${item.isHidden?'🙈':'👁'}</button>
         <button class="ia del" onclick="deleteItem('${tab}','${item.id}','${(item.title||'').replace(/'/g,"\'")}')"><svg><use href="#i-trash"/></svg></button>
       </div>
     </div>`;
