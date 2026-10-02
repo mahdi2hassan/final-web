@@ -1375,7 +1375,7 @@ async function loadList(grade,tab){
     const now=Date.now();
     // المحتوى المجدول (publishAt في المستقبل) مايظهرش للطالب — بنحسبها لحظيًا لأن حقل hidden بيتحفظ وقت الحفظ بس
     const isScheduled=x=>{const pa=x.publishAt&&(x.publishAt.toDate?x.publishAt.toDate():new Date(x.publishAt));return !!(pa&&!isNaN(pa)&&pa.getTime()>now);};
-    return s.docs.map(d=>({id:d.id,...d.data()})).filter(x=>!isScheduled(x)).sort((a,b)=>(a.order||0)-(b.order||0));
+    return s.docs.map(d=>({id:d.id,...d.data()})).filter(x=>!isScheduled(x)&&!x.isHidden).sort((a,b)=>(a.order||0)-(b.order||0));
   }catch(e){return[];}
 }
 
