@@ -589,6 +589,10 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <span>أولياء الأمور</span>
         <span class="sb-badge" id="parentsBadge" style="display:none">0</span>
       </div>
+      <div class="sb-item" onclick="goPage('payments')" data-perm="codes">
+        <span style="font-size:15px">🧾</span><span>إيصالات الدفع</span>
+        <span class="sb-badge" id="payBadge" style="display:none">0</span>
+      </div>
       <div class="sb-item" onclick="goPage('codes')" data-perm="codes">
         <svg><use href="#ic-key"/></svg><span>الأكواد</span>
       </div>
@@ -1283,6 +1287,14 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 
 
       <!-- ══ COMMENTS ══ -->
+      <div class="page" id="page-payments">
+        <div class="sh"><div class="sh-title">🧾 مراجعة إيصالات الدفع</div>
+          <div class="sh-acts"><select id="pay-filter" onchange="renderPayments()" style="padding:7px 11px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif">
+            <option value="pending">⏳ قيد المراجعة</option><option value="approved">✅ مؤكدة</option><option value="rejected">❌ مرفوضة</option><option value="all">الكل</option></select></div>
+        </div>
+        <div id="pay-list" style="display:grid;gap:12px;padding:4px"></div>
+      </div>
+
       <div class="page" id="page-comments">
         <div class="sh">
           <div class="sh-title">
@@ -2831,6 +2843,27 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 </div>
 
 <!-- Student Details Modal -->
+<div id="msgModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.65);align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--s1,#0c1228);border:1px solid var(--b1);border-radius:14px;padding:16px;width:100%;max-width:420px;max-height:90vh;overflow:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b>✉️ رسالة إلى <span id="msg-to">—</span></b><button onclick="closeMsgModal()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer">×</button></div>
+    <select id="msg-tpl" onchange="applyMsgTpl()" style="width:100%;padding:8px;margin-bottom:8px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif">
+      <option value="">— قالب جاهز (اختياري) —</option>
+      <option value="exp">تنبيه قرب انتهاء الاشتراك</option>
+      <option value="rcpt">طلب إيصال أوضح</option>
+      <option value="welcome">ترحيب بعد التفعيل</option>
+    </select>
+    <input id="msg-title" placeholder="عنوان الرسالة" maxlength="80" style="width:100%;padding:8px;margin-bottom:8px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif">
+    <textarea id="msg-body" rows="4" maxlength="600" placeholder="نص الرسالة" style="width:100%;padding:8px;background:var(--inp);border:1.5px solid var(--b1);border-radius:8px;color:var(--text);font-family:'Tajawal',sans-serif"></textarea>
+    <div style="font-size:12px;margin:8px 0 4px">إرسال أيضًا عبر:</div>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <label style="flex:1;text-align:center;border:1px solid var(--b2);border-radius:8px;padding:6px;font-size:12px"><input type="radio" name="msg-ch" value="" checked> داخل الموقع فقط</label>
+      <label style="flex:1;text-align:center;border:1px solid var(--b2);border-radius:8px;padding:6px;font-size:12px"><input type="radio" name="msg-ch" value="whatsapp"> 💬</label>
+      <label style="flex:1;text-align:center;border:1px solid var(--b2);border-radius:8px;padding:6px;font-size:12px"><input type="radio" name="msg-ch" value="sms"> 📱</label>
+      <label style="flex:1;text-align:center;border:1px solid var(--b2);border-radius:8px;padding:6px;font-size:12px"><input type="radio" name="msg-ch" value="email"> 📧</label>
+    </div>
+    <button class="btn" id="msg-send" onclick="sendAdminMessage()">إرسال</button>
+  </div>
+</div>
 <div class="mbg" id="studentModal">
   <div class="modal" style="max-width:480px">
     <h3><svg><use href="#ic-eye"/></svg>تفاصيل الطالب</h3>
@@ -3356,6 +3389,73 @@ window.updateGenGrades = ()=>{
   });
 };
 
+
+// ══ إيصالات الدفع: مراجعة وتأكيد بضغطة واحدة ══
+let _payReqs=[];
+const _esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+db.collection('paymentRequests').orderBy('createdAt','desc').limit(200).onSnapshot(snap=>{
+  _payReqs=snap.docs.map(d=>({id:d.id,...d.data()}));
+  const n=_payReqs.filter(r=>r.status==='pending').length;
+  const b=document.getElementById('payBadge'); if(b){ b.textContent=n; b.style.display=n?'':'none'; }
+  renderPayments();
+},e=>console.warn('paymentRequests',e.message));
+window.renderPayments=()=>{
+  const el=document.getElementById('pay-list'); if(!el) return;
+  const f=document.getElementById('pay-filter').value;
+  const list=_payReqs.filter(r=>f==='all'||r.status===f);
+  if(!list.length){ el.innerHTML='<div style="text-align:center;color:var(--muted);padding:30px">لا توجد طلبات</div>'; return; }
+  const dm={sms:'📱 SMS',email:'📧 Email',whatsapp:'💬 WhatsApp'};
+  const st={pending:'⏳ قيد المراجعة',approved:'✅ مؤكد',rejected:'❌ مرفوض'};
+  el.innerHTML=list.map(r=>`<div style="background:var(--s2);border:1px solid var(--b2);border-radius:12px;padding:12px;display:flex;gap:12px;flex-wrap:wrap">
+    <a href="${_esc(r.receiptImg)}" target="_blank"><img src="${_esc(r.receiptImg)}" style="width:110px;height:140px;object-fit:cover;border-radius:8px;border:1px solid var(--b1)"></a>
+    <div style="flex:1;min-width:180px;font-size:12px;line-height:1.9">
+      <b style="font-size:14px">${_esc(r.name)}</b> — ${r.type==='renew'?'🔄 تجديد':'🆕 اشتراك جديد'}<br>
+      📞 ${_esc(r.phone)} · ${_esc(r.grade)}<br>💰 ${_esc(r.amount||'—')} جنيه · استلام الكود: ${dm[r.deliveryMethod]||'—'}<br>
+      <span style="color:var(--gold2)">${st[r.status]||r.status}</span>${r.code?` · كود: <b style="font-family:monospace">${_esc(r.code)}</b>`:''}${r.rejectReason?`<br>السبب: ${_esc(r.rejectReason)}`:''}
+      ${r.status==='pending'?`<div style="margin-top:8px;display:flex;gap:8px"><button class="btn sm" onclick="approvePayment('${r.id}',this)">✅ تأكيد وتفعيل</button><button class="btn ghost sm" style="color:var(--err)" onclick="rejectPayment('${r.id}',this)">❌ رفض</button></div>`:''}
+      <div style="margin-top:6px"><button class="btn ghost sm" onclick="openMsgModal('${r.uid}')">✉️ رسالة</button></div>
+    </div></div>`).join('');
+};
+const _adminWho=()=>{const u=firebase.auth().currentUser;return u?(u.email||u.uid):'admin';};
+const _notifyStudent=(uid,title,body,type)=>db.collection('notifications').doc(uid).collection('items').add({icon:type==='payment_rejected'?'❌':'✅',type,title,body,read:false,createdAt:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
+window.approvePayment=async(id,btn)=>{
+  const r=_payReqs.find(x=>x.id===id); if(!r||r.status!=='pending') return;
+  if(!confirm('تأكيد الدفع وتفعيل اشتراك '+r.name+'؟')) return;
+  btn.disabled=true; btn.textContent='جاري التفعيل...';
+  try{
+    const ch='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const code=Array.from({length:6},()=>ch[Math.floor(Math.random()*ch.length)]).join('');
+    const uRef=db.collection('users').doc(r.uid), uSnap=await uRef.get(), u=uSnap.data()||{};
+    const prev=u.expiresAt?(u.expiresAt.toDate?u.expiresAt.toDate():new Date(u.expiresAt)):null;
+    const base=(prev&&prev>new Date())?prev:new Date();          // التجديد يمدّد من تاريخ الانتهاء الحالي
+    const expiry=new Date(base.getTime()+29*24*60*60*1000);
+    const TS=firebase.firestore.FieldValue.serverTimestamp();
+    await db.collection('codes').add({code,stage:u.stage||'',gradeKey:r.gradeKey||'',grade:r.grade||'',price:r.amount||'',used:true,usedBy:r.uid,usedAt:TS,source:'receipt',requestId:id,createdAt:TS});
+    await uRef.update({subscriptionActive:true,subscriptionCode:code,activatedAt:TS,expiresAt:expiry,pendingPaymentStatus:'approved'});
+    await db.collection('subscriptionRenewals').add({uid:r.uid,requestId:id,type:r.type,code,fromDate:base,toDate:expiry,amount:r.amount||'',confirmedBy:_adminWho(),createdAt:TS});
+    await db.collection('paymentRequests').doc(id).update({status:'approved',code,approvedBy:_adminWho(),approvedAt:TS});
+    await _notifyStudent(r.uid,'تم قبول الدفع ✅','تم تفعيل اشتراكك حتى '+expiry.toLocaleDateString('ar-EG')+' — كودك: '+code,'payment_approved');
+    window.logActivity?.('✅','تأكيد دفع وتفعيل اشتراك',(r.name||'')+' — كود '+code+' — بواسطة '+_adminWho());
+    toast('تم التفعيل ✓ كود: '+code,'ok');
+    const phone='20'+String(r.phone||'').replace(/^0/,''), msg=encodeURIComponent('تم تفعيل اشتراكك في Plus Math ✅\nكود الاشتراك: '+code);
+    if(r.deliveryMethod==='whatsapp') window.open('https://wa.me/'+phone+'?text='+msg,'_blank');
+    else if(r.deliveryMethod==='sms') window.open('sms:+'+phone+'?body='+msg);
+    else if(r.email) window.open('mailto:'+r.email+'?subject='+encodeURIComponent('كود اشتراكك')+'&body='+msg);
+  }catch(e){ toast('فشل التفعيل: '+e.message,'err'); btn.disabled=false; btn.textContent='✅ تأكيد وتفعيل'; }
+};
+window.rejectPayment=async(id,btn)=>{
+  const r=_payReqs.find(x=>x.id===id); if(!r) return;
+  const reason=prompt('سبب رفض الإيصال؟'); if(reason===null) return;
+  btn.disabled=true;
+  try{
+    await db.collection('paymentRequests').doc(id).update({status:'rejected',rejectReason:reason,rejectedBy:_adminWho(),rejectedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    await db.collection('users').doc(r.uid).update({pendingPaymentStatus:'rejected'});
+    await _notifyStudent(r.uid,'تم رفض الإيصال ❌',reason||'برجاء رفع إيصال واضح','payment_rejected');
+    window.logActivity?.('❌','رفض إيصال دفع',(r.name||'')+' — '+reason);
+    toast('تم رفض الإيصال','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); btn.disabled=false; }
+};
+
 window.genCodes = async ()=>{
   const n     = Math.min(parseInt(document.getElementById('gc').value)||10, 100);
   const stage = document.getElementById('gs').value;
@@ -3726,6 +3826,7 @@ window.viewUser = async (id)=>{
           <svg width="12" height="12"><use href="#ic-mail"/></svg>إرسال reset كلمة مرور
         </button>
         ${d.subscriptionActive?`<button class="btn sm" style="background:linear-gradient(135deg,var(--warn),#8a5010);font-size:11px" onclick="revokeUser('${id}');closeModal('studentModal')"><svg width="12" height="12"><use href="#ic-x"/></svg>إلغاء الاشتراك</button>`:''}
+        <button class="btn primary sm" style="font-size:11px" onclick="openMsgModal('${id}')">✉️ رسالة للطالب</button>
         ${d.blocked
           ?`<button class="btn ok sm" style="font-size:11px" onclick="blockUser('${id}',false);closeModal('studentModal')"><svg width="12" height="12"><use href="#ic-shield"/></svg>إلغاء الحظر</button>`
           :`<button class="btn sm" style="background:linear-gradient(135deg,#f5a623,#a06010);font-size:11px" onclick="blockUser('${id}',true);closeModal('studentModal')"><svg width="12" height="12"><use href="#ic-shield-off"/></svg>حظر</button>`}
@@ -10534,6 +10635,155 @@ window.exportHwCsv = ()=>{
     openModal('vipActivityModal');
   };
 
+})();
+
+// ═══════════════════════════════════════════════════════════
+// ══ سجل نشاط دائم + حماية الأزرار + تأكيدات + رسالة من الأدمن ══
+// ═══════════════════════════════════════════════════════════
+(function(){
+  const FS=firebase.firestore.FieldValue;
+  const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const adminName=()=>{const a=window._loggedAdmin||{};const cu=firebase.auth().currentUser;return a.name||a.username||(cu&&cu.email)||'مجهول';};
+  const userName=id=>((window._users||[]).find(u=>u.id===id)||{}).name||id;
+
+  // 1) سجل النشاط يتخزن في Firestore (يظهر لكل الأدمنز، وما يتمسحش بمسح المتصفح)
+  const _oldLog=window.logActivity;
+  let _actSeq=0;
+  window.logActivity=(icon,action,detail='',extra={})=>{
+    _actSeq++;
+    try{_oldLog&&_oldLog(icon,action,detail);}catch(e){}
+    try{
+      const cu=firebase.auth().currentUser, a=window._loggedAdmin||{};
+      db.collection('activityLog').add({icon,action,detail:String(detail||'').slice(0,500),who:adminName(),adminId:a.id||(cu&&cu.uid)||'',
+        targetUid:(extra&&extra.targetUid)||'',createdAt:FS.serverTimestamp()}).catch(()=>{});
+    }catch(e){}
+  };
+  let rows=[];
+  db.collection('activityLog').orderBy('createdAt','desc').limit(300).onSnapshot(sn=>{
+    rows=sn.docs.map(d=>{const x=d.data();return {icon:x.icon,action:x.action,detail:x.detail,who:x.who,time:x.createdAt&&x.createdAt.toDate?x.createdAt.toDate():new Date()};});
+    window.renderActivity&&window.renderActivity();
+  },e=>console.warn('activityLog',e.message));
+  window.renderActivity=function(){
+    const el=document.getElementById('activityList'); if(!el) return;
+    const fv=document.getElementById('act-filter')?.value||'all', sv=(document.getElementById('act-search')?.value||'').trim().toLowerCase();
+    let list=rows.length?rows:getActivity().map(a=>({...a,time:new Date(a.time)}));
+    if(fv!=='all') list=list.filter(a=>a.icon===fv||(a.action||'').includes(fv));
+    if(sv) list=list.filter(a=>((a.action||'')+(a.detail||'')+(a.who||'')).toLowerCase().includes(sv));
+    if(!list.length){ el.innerHTML='<div class="empty"><p>لا يوجد نشاط مسجل</p></div>'; return; }
+    el.innerHTML=list.map(a=>`<div style="display:flex;gap:10px;padding:10px 12px;border-bottom:1px solid var(--b2)">
+      <span style="font-size:20px">${esc(a.icon)}</span><div style="flex:1;min-width:0">
+      <div style="font-size:13px;font-weight:800">${esc(a.action)}</div>
+      ${a.detail?`<div style="font-size:11px;color:var(--muted);margin-top:2px;word-break:break-all">${esc(a.detail)}</div>`:''}
+      <div style="display:flex;gap:8px;margin-top:4px"><span style="font-size:10px;background:rgba(74,127,212,.1);color:var(--blue);border-radius:5px;padding:1px 6px;font-weight:700">👤 ${esc(a.who||'مجهول')}</span>
+      <span style="font-size:10px;color:var(--muted)">${a.time.toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'})} · ${a.time.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span></div></div></div>`).join('');
+  };
+  // سجل التدقيق لا يُمسح من السيرفر — المسح هنا للنسخة المحلية فقط
+  window.clearActivity=()=>{ if(!confirm('مسح النسخة المحلية فقط؟ السجل الدائم على السيرفر يفضل محفوظ.')) return; saveActivity([]); toast('تم مسح النسخة المحلية','ok'); };
+
+  // 2) تتبّع العمليات + تأكيد للحساسة اللي مالهاش تأكيد
+  //    لو الدالة الأصلية سجّلت النشاط بنفسها (_actSeq اتغيّر) مش بنسجّل تاني → مفيش تكرار
+  function track(name,build,confirmMsg){
+    const orig=window[name]; if(typeof orig!=='function'||orig.__tracked) return true;
+    const hasOwnConfirm=/confirm\(|prompt\(/.test(orig.toString());
+    const w=async function(...args){
+      if(confirmMsg && !hasOwnConfirm && !confirm(typeof confirmMsg==='function'?confirmMsg(args):confirmMsg)) return false;
+      let info=null; try{ info=build(args); }catch(e){}
+      let aborted=false; const oc=window.confirm, op=window.prompt, before=_actSeq;
+      window.confirm=m=>{const r=oc.call(window,m); if(!r) aborted=true; return r;};
+      window.prompt=(m,d)=>{const r=op.call(window,m,d); if(r===null) aborted=true; return r;};
+      try{
+        const r=await orig.apply(this,args);
+        if(!aborted && r!==false && _actSeq===before && info) window.logActivity(info[0],info[1],info[2],{targetUid:info[3]||''});
+        return r;
+      } finally{ window.confirm=oc; window.prompt=op; }
+    };
+    w.__tracked=true; window[name]=w; return true;
+  }
+  // بعض الدوال بتتعرّف متأخر (Exam Plus / VIP) — نحاول لحد ما تظهر
+  function trackLater(name,build,confirmMsg){
+    if(track(name,build,confirmMsg)&&typeof window[name]==='function') return;
+    let n=0; const t=setInterval(()=>{ if((typeof window[name]==='function'&&track(name,build,confirmMsg))||++n>30) clearInterval(t); },500);
+  }
+  const val=id=>(document.getElementById(id)?.value||'').trim();
+  const scoreName=id=>{const x=(window._allScores||[]).find(r=>r.id===id)||{};return (x.userName||x.name||'')+(x.examTitle?' — '+x.examTitle:'')||id;};
+  // — أكواد واشتراكات
+  trackLater('genCodes',()=>['🔑','إنشاء أكواد',(val('gc')||'10')+' كود'],()=>'إنشاء '+(val('gc')||10)+' كود؟');
+  trackLater('reuseCode',a=>['♻️','إعادة تفعيل كود مستخدم',String(a[0])],'إعادة الكود للاستخدام مرة أخرى؟');
+  trackLater('delUsedCodes',()=>['🗑','حذف الأكواد المستخدمة','']);
+  trackLater('extendSub',a=>['📅','تمديد اشتراك',userName(a[0])+' — '+a[1]+' يوم',a[0]],a=>'تمديد اشتراك '+userName(a[0])+' بمقدار '+a[1]+' يوم؟');
+  trackLater('extendSubCustom',a=>['📅','تمديد اشتراك (مخصص)',userName(a[0]),a[0]]);
+  trackLater('changeSubCode',a=>['🔑','تغيير كود اشتراك طالب',userName(a[0]),a[0]],'تغيير كود الاشتراك لهذا الطالب؟');
+  trackLater('saveSubCode',a=>['🔑','تعديل كود اشتراك',userName(a[0]),a[0]]);
+  trackLater('saveCodeEdit',()=>['✏️','تعديل كود',val('ec-code')],'حفظ تعديل الكود؟');
+  // — بيانات الطلاب
+  trackLater('saveStudentInfo',a=>['✏️','تعديل بيانات طالب',userName(a[0]),a[0]],'حفظ تعديلات بيانات الطالب؟');
+  trackLater('saveStudentNote',a=>['📌','ملاحظة على طالب',userName(a[0]),a[0]]);
+  trackLater('saveParentNote',a=>['📌','ملاحظة على ولي أمر',String(a[0])]);
+  trackLater('resetUserPass',a=>['🔐','إرسال reset كلمة مرور',a[2]||a[1]||a[0],a[0]],a=>'إرسال رابط إعادة تعيين كلمة المرور إلى '+(a[2]||a[1])+'؟');
+  trackLater('resetDevices',a=>['📱','مسح أجهزة طالب',userName(a[0]),a[0]],'مسح كل الأجهزة المسجلة لهذا الطالب؟');
+  // — إعدادات
+  trackLater('saveAnn',()=>['📢','تعديل الإعلان','']);
+  trackLater('saveSub',()=>['💰','تعديل إعدادات الاشتراك/الأسعار','']);
+  trackLater('savePaySettings',()=>['💳','تعديل إعدادات الدفع','']);
+  // — محتوى وصفوف
+  trackLater('saveContent',()=>{let g='',t='';try{g=_curGrade||'';t=_curContentType||'';}catch(e){} return ['🎬','حفظ محتوى',g+'/'+t+' — '+(val('v-title')||val('e-title')||val('h-title'))];});
+  trackLater('delContent',a=>['🗑','حذف محتوى',a[0]+'/'+a[1]],'حذف المحتوى نهائيًا؟');
+  trackLater('deleteGrade',a=>['🗑','حذف صف',String(a[0])],'حذف الصف نهائيًا؟');
+  trackLater('deleteResearch',a=>['🗑','حذف بحث',String(a[0])],'حذف البحث؟');
+  // — درجات وتسليمات وتعليقات وتذاكر
+  ['deleteMerged','deleteScore'].forEach(n=>trackLater(n,a=>['🗑','حذف درجة',scoreName(a[0])],'حذف الدرجة نهائيًا؟'));
+  trackLater('deleteComment',a=>['🗑','حذف تعليق',String(a[0])],'حذف التعليق؟');
+  trackLater('dsSaveGrade',()=>['✏️','تعديل درجة تسليم امتحان','']);
+  trackLater('saveHwReview',()=>['📝','مراجعة تسليم واجب','']);
+  trackLater('deleteHwSubmission',a=>['🗑','حذف تسليم واجب',String(a[0])],'حذف التسليم؟');
+  trackLater('saveTicketNoteInline',()=>['📌','ملاحظة على تذكرة','']);
+  trackLater('closeTicket',a=>['🎫','إغلاق تذكرة',String(a[0])]);
+  // — Exam Plus / VIP
+  trackLater('epGenerateCodesAdmin',()=>['🔑','إنشاء أكواد Exam Plus','']);
+  trackLater('epDeleteCodeAdmin',a=>['🗑','حذف كود Exam Plus',String(a[0])]);
+  trackLater('vipDeleteAccount',a=>['🗑','حذف حساب VIP',String(a[0])]);
+
+  // 3) منع الضغط المتكرر على الأزرار الحساسة
+  const SENS=/(approve|reject|delete|del[A-Z]|block|extend|revoke|gen[A-Z]|save|submit|send|reset|activate|renew|reuse|change)/i;
+  document.addEventListener('click',e=>{
+    const b=e.target.closest&&e.target.closest('button[onclick]'); if(!b) return;
+    if(!SENS.test(b.getAttribute('onclick')||'')) return;
+    if(b.dataset.busy==='1'){ e.stopImmediatePropagation(); e.preventDefault(); return; }
+    b.dataset.busy='1'; b.style.opacity='.6';
+    setTimeout(()=>{ b.dataset.busy=''; b.style.opacity=''; },1600);
+  },true);
+
+  // 4) رسالة من الأدمن للطالب
+  const TPL={exp:['تنبيه: اشتراكك قارب على الانتهاء','اشتراكك على وشك الانتهاء. تقدر تجدد من حسابك قبل الانتهاء عشان ما تفقدش مدتك.'],
+    rcpt:['الإيصال غير واضح','الإيصال اللي رفعته مش واضح. من فضلك ارفع صورة أوضح لإيصال الدفع.'],
+    welcome:['أهلًا بيك في Plus Math 🎓','تم تفعيل اشتراكك. بالتوفيق ومتنساش تتابع الدروس يوميًا.']};
+  let _msgUid=null;
+  window.openMsgModal=id=>{
+    const u=(window._users||[]).find(x=>x.id===id)||{};
+    _msgUid=id; document.getElementById('msg-to').textContent=u.name||id;
+    document.getElementById('msg-tpl').value=''; document.getElementById('msg-title').value=''; document.getElementById('msg-body').value='';
+    document.getElementById('msgModal').style.display='flex';
+  };
+  window.closeMsgModal=()=>{document.getElementById('msgModal').style.display='none';};
+  window.applyMsgTpl=()=>{const t=TPL[document.getElementById('msg-tpl').value]; if(t){document.getElementById('msg-title').value=t[0];document.getElementById('msg-body').value=t[1];}};
+  window.sendAdminMessage=async()=>{
+    const title=document.getElementById('msg-title').value.trim()||'رسالة من الأدمن', body=document.getElementById('msg-body').value.trim();
+    if(!body){ toast('اكتب نص الرسالة','err'); return; }
+    if(!_msgUid) return;
+    const btn=document.getElementById('msg-send'); if(btn.disabled) return; btn.disabled=true; btn.textContent='جاري الإرسال...';
+    try{
+      const u=(window._users||[]).find(x=>x.id===_msgUid)||{};
+      await db.collection('notifications').doc(_msgUid).collection('items').add({icon:'💬',type:'admin_message',title,body,from:adminName(),read:false,createdAt:FS.serverTimestamp()});
+      window.logActivity('💬','رسالة للطالب',(u.name||_msgUid)+' — '+title,{targetUid:_msgUid});
+      const ch=(document.querySelector('input[name="msg-ch"]:checked')||{}).value, text=title+'\n'+body;
+      const ph='20'+String(u.phone||'').replace(/\D/g,'').replace(/^0/,'');
+      if(ch==='whatsapp'&&u.phone) window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(text),'_blank');
+      else if(ch==='sms'&&u.phone) window.open('sms:+'+ph+'?body='+encodeURIComponent(text));
+      else if(ch==='email'&&u.email&&!u.email.includes('@plusinmath')) window.open('mailto:'+u.email+'?subject='+encodeURIComponent(title)+'&body='+encodeURIComponent(body));
+      toast('تم إرسال الرسالة ✓','ok'); closeMsgModal();
+    }catch(e){ toast('تعذّر الإرسال: '+e.message,'err'); }
+    btn.disabled=false; btn.textContent='إرسال';
+  };
 })();
 </script>
 
