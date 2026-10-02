@@ -6858,12 +6858,57 @@ function openDashboard(){
 // ══════════════════════════════════════
 let _unsubUsers=null, _unsubCodes=null;
 
+// ══════════════════════════════════════
+// ── مزامنة بطاقات الهوية العامة (studentCards) مع users ──
+// بتشتغل مع الـ listener الموجود (قراءة البطاقات مرة واحدة بس في الجلسة)،
+// ونفس منطق الـ sig الموجود في plus-math-auth.html.
+// ══════════════════════════════════════
+let _cardSigs=null, _cardChain=Promise.resolve();
+function _cardSig(u){
+  const exp=u.expiresAt?(u.expiresAt.toMillis?u.expiresAt.toMillis():new Date(u.expiresAt).getTime()):0;
+  return [u.name||'',u.grade||'',u.subscriptionActive===true?1:0,exp||0,u.blocked===true?1:0].join('|');
+}
+function syncStudentCards(changes){
+  _cardChain=_cardChain.then(async()=>{
+    try{
+      if(!window.db) return;
+      if(_cardSigs===null){
+        _cardSigs={};
+        const cs=await db.collection('studentCards').get();
+        cs.forEach(d=>{_cardSigs[d.id]=d.data().sig||'';});
+      }
+      for(const ch of changes){
+        const u=ch.doc.data();
+        if(!u.studentId) continue;
+        if(ch.type==='removed'){
+          if(_cardSigs[u.studentId]!==undefined){
+            delete _cardSigs[u.studentId];
+            await db.collection('studentCards').doc(u.studentId).delete();
+          }
+          continue;
+        }
+        const sig=_cardSig(u);
+        if(_cardSigs[u.studentId]===sig) continue;
+        await db.collection('studentCards').doc(u.studentId).set({
+          name:u.name||'', grade:u.grade||'', studentId:u.studentId, uid:ch.doc.id,
+          subscriptionActive:u.subscriptionActive===true,
+          expiresAt:u.expiresAt||null,
+          blocked:u.blocked===true,
+          sig, updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+        _cardSigs[u.studentId]=sig;
+      }
+    }catch(e){ console.warn('studentCards sync:',e.message); }
+  });
+}
+
 function startRealtimeListeners(){
   if(!window._fbReady || !window.db) return;
   if(_unsubUsers) _unsubUsers();
   if(_unsubCodes) _unsubCodes();
 
   _unsubUsers = db.collection('users').onSnapshot(snap=>{
+    syncStudentCards(snap.docChanges());
     if(!window._users) return;
     const newUsers = snap.docs.map(d=>({id:d.id,...d.data()}));
     const prevCount = (window._users||[]).length;
