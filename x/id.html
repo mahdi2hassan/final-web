@@ -59,6 +59,12 @@
   }
   .status.active{background:rgba(31,191,117,0.12);color:var(--ok);border:1px solid rgba(31,191,117,0.3)}
   .status.expired{background:rgba(255,77,109,0.1);color:var(--err);border:1px solid rgba(255,77,109,0.3)}
+  .status.blocked{background:rgba(245,166,35,0.1);color:var(--warn);border:1px solid rgba(245,166,35,0.3)}
+  .exp{margin-top:12px;font-size:12px;color:var(--muted);line-height:1.8}
+  .exp b{color:var(--text);font-weight:800}
+  .verified{margin-top:14px;padding-top:12px;border-top:1px dashed rgba(255,255,255,0.08);font-size:10.5px;color:var(--muted)}
+  .verified b{color:var(--gold2);font-weight:700}
+  .retry{margin-top:14px;padding:9px 18px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--gold2);font-family:inherit;font-size:12px;font-weight:800;cursor:pointer}
   .foot{margin-top:18px;font-size:10.5px;color:var(--muted);line-height:1.7}
   .loading{color:var(--muted);font-size:13px;padding:30px 0}
   .spinner{
@@ -114,36 +120,102 @@ function renderNotFound(){
   );
 }
 
+function renderError(){
+  render(
+    '<div class="notfound">'+
+      '<div class="icon">📡</div>'+
+      '<div class="msg">حصلت مشكلة في الاتصال.<br>اتأكد من الإنترنت وحاول تاني.</div>'+
+      '<button class="retry" onclick="location.reload()">إعادة المحاولة</button>'+
+    '</div>'
+  );
+}
+
+function toDate(v){
+  if(!v) return null;
+  var d = v.toDate ? v.toDate() : new Date(v);
+  return isNaN(d.getTime()) ? null : d;
+}
+function fmtDate(d){
+  try{ return d.toLocaleDateString('ar-EG',{year:'numeric',month:'long',day:'numeric'}); }
+  catch(e){ return d.toISOString().slice(0,10); }
+}
+function fmtDateTime(d){
+  try{ return d.toLocaleString('ar-EG',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}); }
+  catch(e){ return d.toISOString(); }
+}
+
+// يقبل الكود نفسه أو رابط كامل (لو الـ QR فيه رابط) ويطلّع الكود بس
+function extractId(raw){
+  if(!raw) return '';
+  raw = String(raw).trim();
+  try{
+    if(/^https?:\/\//i.test(raw)){
+      var u = new URL(raw);
+      raw = u.searchParams.get('id') || raw.split('/').pop();
+    }
+  }catch(e){}
+  return raw.replace(/[^A-Za-z0-9\-_]/g,'').toUpperCase().slice(0,32);
+}
+
 function renderStudent(d){
-  var isActive = d.subscriptionActive === true;
-  var notExpired = true;
-  if(d.expiresAt){
-    var exp = d.expiresAt.toDate ? d.expiresAt.toDate() : new Date(d.expiresAt);
-    notExpired = exp.getTime() > Date.now();
-  }
-  var active = isActive && notExpired;
+  var exp = toDate(d.expiresAt);
+  var now = Date.now();
+  var notExpired = exp ? exp.getTime() > now : true;
+  var isBlocked = d.blocked === true;
+  var active = d.subscriptionActive === true && notExpired && !isBlocked;
   var initials = esc((d.name||'ط').slice(0,2));
+
+  var cls, label;
+  if(isBlocked){ cls='blocked'; label='⛔ الحساب موقوف'; }
+  else if(active){ cls='active'; label='✅ اشتراك سارِي'; }
+  else { cls='expired'; label='⏳ اشتراك غير سارِي'; }
+
+  var expLine = '';
+  if(!isBlocked && exp){
+    if(active){
+      var days = Math.ceil((exp.getTime()-now)/86400000);
+      expLine = '<div class="exp">ينتهي في <b>'+esc(fmtDate(exp))+'</b>'+
+                (days<=7 ? '<br>(باقي '+days+' يوم)' : '')+'</div>';
+    } else {
+      expLine = '<div class="exp">انتهى في <b>'+esc(fmtDate(exp))+'</b></div>';
+    }
+  }
+
   render(
     '<div class="avatar">'+initials+'</div>'+
     '<div class="name">'+esc(d.name||'طالب')+'</div>'+
     '<div class="grade">'+esc(d.grade||'—')+'</div>'+
     '<div class="sid">'+esc(d.studentId||'')+'</div>'+
-    '<div class="status '+(active?'active':'expired')+'">'+
-      (active ? '✅ اشتراك سارِي' : '⏳ اشتراك غير سارِي')+
-    '</div>'
+    '<div class="status '+cls+'">'+label+'</div>'+
+    expLine+
+    '<div class="verified">تم التحقق: <b>'+esc(fmtDateTime(new Date()))+'</b></div>'
   );
 }
 
-var sid = new URLSearchParams(location.search).get('id');
+// ١) نحاول الأول collection عام صغير studentCards/{ID} (بيانات الاسم والصف والحالة بس)
+// ٢) لو مش موجود نرجع للطريقة القديمة (users) — احذف الـ fallback بعد ما تنسخ البطاقات
+async function lookup(sid){
+  try{
+    var card = await db.collection('studentCards').doc(sid).get();
+    if(card.exists) return card.data();
+  }catch(e){ /* القاعدة لسه ما اتضافتش — نكمل للـ fallback */ }
+  var snap = await db.collection('users').where('studentId','==',sid).limit(1).get();
+  if(snap.empty) return null;
+  var d = snap.docs[0].data();
+  // ننقل الحقول المطلوبة فقط عشان ما نمسكش بيانات حساسة في الذاكرة
+  return {
+    name:d.name, grade:d.grade, studentId:d.studentId,
+    subscriptionActive:d.subscriptionActive, expiresAt:d.expiresAt, blocked:d.blocked
+  };
+}
+
+var sid = extractId(new URLSearchParams(location.search).get('id'));
 if(!sid){
   renderNotFound();
 } else {
-  db.collection('users').where('studentId','==',sid.toUpperCase()).limit(1).get()
-    .then(function(snap){
-      if(snap.empty){ renderNotFound(); return; }
-      renderStudent(snap.docs[0].data());
-    })
-    .catch(function(){ renderNotFound(); });
+  lookup(sid)
+    .then(function(d){ d ? renderStudent(d) : renderNotFound(); })
+    .catch(function(){ renderError(); });
 }
 </script>
 </body>
