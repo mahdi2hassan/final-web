@@ -1379,6 +1379,13 @@ async function loadList(grade,tab){
   }catch(e){return[];}
 }
 
+// ── الوحدات + القفل التسلسلي (openAll = مفتوح للجميع) ──
+function _unitHdr(list,i){
+  const u=String(list[i].unit||'').trim(), pu=i>0?String(list[i-1].unit||'').trim():'';
+  if(u===pu) return '';
+  return `<div style="margin:14px 2px 6px;font-size:12px;font-weight:800;color:var(--gold)">📚 ${(u||'دروس أخرى').replace(/</g,'&lt;')}</div>`;
+}
+function _prevReq(list,i){ let j=i-1; while(j>=0&&list[j].openAll) j--; return j>=0?list[j]:null; }
 function renderVideos(videos,done,gradeKey,isMine){
   const el=document.getElementById('videoList');
   if(!videos.length){el.innerHTML='<div class="empty"><p>لا يوجد فيديوهات بعد</p></div>';return;}
@@ -1387,7 +1394,7 @@ function renderVideos(videos,done,gradeKey,isMine){
   const videoViews=gp.videoViews||{};
   el.innerHTML=videos.map((v,i)=>{
     const isDone=done.includes(v.id);
-    const isLocked=isMine&&i>0&&!done.includes(videos[i-1].id)&&!isDone;
+    const _pr=_prevReq(videos,i); const isLocked=isMine&&!v.openAll&&!!_pr&&!done.includes(_pr.id)&&!isDone;
 
     // تاريخ انتهاء الفيديو
     let isExpired=false;
@@ -1431,7 +1438,7 @@ function renderVideos(videos,done,gradeKey,isMine){
     const iframeAllow = isDrive ? 'autoplay; fullscreen' : 'autoplay';
 
     const isFav=isMine&&(gp.favs||[]).includes(v.id);
-    return `<div class="video-item${window._favFilter&&isMine&&!isFav?' fav-hide':''}" data-vid-id="${v.id}" data-fav="${isFav?1:0}">
+    return `${_unitHdr(videos,i)}<div class="video-item${window._favFilter&&isMine&&!isFav?' fav-hide':''}" data-vid-id="${v.id}" data-fav="${isFav?1:0}">
       <div id="vp-${v.id}" class="video-player" style="display:none">
         <iframe id="vf-${v.id}" src="" allowfullscreen allow="${iframeAllow}" style="width:100%;height:clamp(200px,50vw,320px);border:none;display:block"></iframe>
         ${isDrive?`<div style="position:absolute;inset:0;pointer-events:none;z-index:3;background:repeating-linear-gradient(-45deg,transparent,transparent 60px,rgba(255,255,255,.012) 60px,rgba(255,255,255,.012) 61px)"></div>`:''}
@@ -1533,7 +1540,7 @@ function renderExams(exams,done,gradeKey,isMine){
   const tC={mcq:'var(--blue)',essay:'var(--purple)',images:'var(--ok)',link:'var(--gold)',pdf:'var(--ok)',mixed:'var(--ok)'};
   el.innerHTML=exams.map((e,i)=>{
     const isDone=done.includes(e.id);
-    const isLocked=isMine&&i>0&&!done.includes(exams[i-1].id)&&!isDone;
+    const _pr=_prevReq(exams,i); const isLocked=isMine&&!e.openAll&&!!_pr&&!done.includes(_pr.id)&&!isDone;
     const tl=tL[e.type]||'امتحان';
     const tc=e.type==='mixed'?'var(--ok)':tC[e.type]||'var(--gold)';
     const hasAction=e.mcqRaw||e.essayText||e.imageUrls?.length||e.fileUrl||e.externalUrl||e.url||(e.type==='mixed'&&e.questions?.length);
@@ -1571,7 +1578,7 @@ function renderExams(exams,done,gradeKey,isMine){
       metaExtra+=` · ⏰ ${exp.toLocaleDateString('ar-EG')}`;
     }
 
-    return `<div class="exam-item" data-exam-id="${e.id}" style="${isLocked||isBlocked?'opacity:.6;cursor:not-allowed':''}"
+    return `${_unitHdr(exams,i)}<div class="exam-item" data-exam-id="${e.id}" style="${isLocked||isBlocked?'opacity:.6;cursor:not-allowed':''}"
       ${clickable?`data-eidx="${i}" onclick="handleExam(this)"`:''}
     >
       <div class="exam-ico" style="background:${tc}18;color:${tc}">
@@ -1938,6 +1945,7 @@ async function submitMixedExam(){
           fb.style.border=`1px solid ${isCorrect?'rgba(0,214,143,0.25)':'rgba(255,77,109,0.25)'}`;
           fb.style.color=isCorrect?'var(--ok)':'var(--err)';
           fb.textContent=isCorrect?`✅ صح — ${pts} نقطة`:`❌ الإجابة الصحيحة: ${typeof q.options[correct]==='object'?q.options[correct].text||q.options[correct]:q.options[correct]}`;
+          if(!isCorrect&&q.videoId&&(window._allVideos||[]).some(v=>v.id===q.videoId)){ const _b=document.createElement('button'); _b.textContent='▶ شاهد الشرح'; _b.style.cssText='display:block;margin-top:8px;padding:6px 12px;border-radius:8px;border:1px solid rgba(74,127,212,.4);background:rgba(74,127,212,.12);color:var(--blue);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer'; _b.onclick=e=>{e.stopPropagation(); window.resumeVideo(window._openGrade,q.videoId);}; fb.appendChild(_b); }
         }
       } else {
         (q.options||[]).forEach((_,oi)=>{const el=document.getElementById(`mx-${qi}-${oi}`);if(el)el.onclick=null;});
