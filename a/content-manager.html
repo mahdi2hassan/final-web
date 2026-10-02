@@ -592,6 +592,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
               <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.6px;text-transform:uppercase">الأسئلة</div>
               <span id="qTotalCounter" style="font-size:10px;padding:2px 8px;background:rgba(0,214,143,0.1);border:1px solid rgba(0,214,143,0.2);border-radius:20px;color:var(--ok);font-weight:700"></span>
             </div>
+            <button class="btn sm ghost" onclick="openBank()" style="margin-left:6px">📚 من البنك</button>
             <button class="btn sm ok" onclick="addQuestion()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               إضافة سؤال
@@ -1531,6 +1532,106 @@ window.panicRestore = async ()=>{
   catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
+
+// ═══ تعديل جماعي: وحدة + جدولة + انتهاء + قفل ═══
+window.openBulkEdit = (tab,elId)=>{
+  if(!_bulkSelected.size){ toast('اختار عناصر أولاً','err'); return; }
+  const inp='width:100%;padding:8px;margin-top:4px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:#080d1c;color:#e8ecf8;font-family:Tajawal,sans-serif;font-size:13px';
+  const lb='display:block;font-size:12px;color:#9aa8cc;margin-top:10px';
+  _modal(`<div style="font-size:15px;font-weight:800">⚙️ تعديل ${_bulkSelected.size} عنصر</div>
+    <div style="font-size:11px;color:#6a7a9e;margin-top:4px">اللي تسيبه فاضي ما بيتغيرش</div>
+    <label style="${lb}">الوحدة (مثال: الوحدة الأولى: الجبر)<input id="beUnit" style="${inp}"/></label>
+    <label style="${lb}">تاريخ النشر<input id="bePub" type="datetime-local" style="${inp}"/></label>
+    <label style="${lb}">تاريخ الانتهاء<input id="beExp" type="datetime-local" style="${inp}"/></label>
+    <label style="${lb}">القفل التسلسلي<select id="beLock" style="${inp}"><option value="">من غير تغيير</option><option value="normal">عادي (يتقفل لحد اللي قبله)</option><option value="open">مفتوح للجميع (مراجعة / تعريفي)</option></select></label>
+    <button onclick="applyBulkEdit('${tab}','${elId}')" style="margin-top:14px;width:100%;padding:11px;border:none;border-radius:9px;background:var(--blue,#4a7fd4);color:#fff;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;font-weight:800">تطبيق</button>`);
+};
+window.applyBulkEdit = async (tab,elId)=>{
+  const grade=_gradeNow(); if(!grade) return;
+  const v=id=>document.getElementById(id).value, p={};
+  if(v('beUnit').trim()) p.unit=v('beUnit').trim();
+  if(v('bePub')){ const d=new Date(v('bePub')); p.publishAt=d; p.hidden=d>new Date(); }
+  if(v('beExp')) p.expiresAt=new Date(v('beExp'));
+  if(v('beLock')) p.openAll=v('beLock')==='open';
+  if(!Object.keys(p).length){ toast('مفيش تغيير','err'); return; }
+  try{
+    const n=_bulkSelected.size;
+    await Promise.all([..._bulkSelected].map(id=>window._updateDoc(_D(grade,tab,id),p)));
+    document.getElementById('_cmModal')?.remove();
+    _bulkMode=false; _bulkSelected.clear();
+    window.loadList(tab,elId);
+    toast('اتعدّل '+n+' عنصر ✓','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+
+// ═══ معاينة كطالب (من غير حفظ نتيجة ولا تأثير على التقدم) ═══
+window.previewItem = (tab,id)=>{
+  const it=(window._cache?.[tab]||[]).find(i=>i.id===id); if(!it) return;
+  const card='background:#080d1c;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px;margin-top:8px';
+  let body='';
+  if(tab==='videos'){
+    const u=it.url||it.externalUrl||'', m=u.match(/(?:youtu\.be\/|v=|embed\/)([\w-]{11})/);
+    const src=m?'https://www.youtube.com/embed/'+m[1]:(it.driveId?'https://drive.google.com/file/d/'+it.driveId+'/preview':'');
+    body=(src?`<div style="position:relative;padding-bottom:56.25%;height:0;border-radius:10px;overflow:hidden;margin-top:8px"><iframe src="${_esc(src)}" style="position:absolute;inset:0;width:100%;height:100%;border:0" allowfullscreen></iframe></div>`:'<div style="color:#ff8099;font-size:12px;margin-top:8px">⚠️ مفيش رابط فيديو صالح</div>')
+      +(it.description?`<div style="${card};font-size:12px;line-height:1.7">${_esc(it.description)}</div>`:'');
+  }else if(tab==='exams'){
+    const qs=it.questions||[];
+    body=qs.length?qs.map((q,i)=>{
+      const opts=(q.options||[]).map(o=>`<div style="${card};margin-top:6px;font-size:12px">○ ${_esc(typeof o==='object'?(o.text||''):o)}</div>`).join('');
+      const extra=q.type==='essay'?`<div style="${card};font-size:11px;color:#a78bfa">✍️ الطالب يكتب إجابته هنا</div>`:q.type==='truefalse'&&!opts?`<div style="${card};font-size:12px">○ صح &nbsp; ○ خطأ</div>`:'';
+      return `<div style="${card}"><div style="font-size:13px;font-weight:700">${i+1}. ${_esc(q.text||'')} <span style="font-size:10px;color:#6a7a9e">(${q.points||1} نقطة)</span></div>${opts}${extra}</div>`;
+    }).join(''):`<div style="${card};font-size:12px;color:#9aa8cc">${it.type==='link'?'امتحان برابط خارجي: ':'امتحان بنظام قديم (صور / ملف / رابط). '}${it.url||it.externalUrl?`<a href="${_esc(it.url||it.externalUrl)}" target="_blank" style="color:#4a7fd4">افتح الرابط</a>`:''}</div>`;
+  }else{
+    body=`<div style="${card};font-size:12px;line-height:1.7">${_esc(it.description||'')}${it.deadline?`<div style="margin-top:6px;color:#c9a84c">📅 آخر موعد: ${_esc(it.deadline)}</div>`:''}${it.fileUrl?`<div style="margin-top:6px"><a href="${_esc(it.fileUrl)}" target="_blank" style="color:#a78bfa">📎 الملف المرفق</a></div>`:''}</div>`;
+  }
+  _modal(`<div style="font-size:11px;color:#c9a84c;font-weight:800">👀 معاينة كطالب — مفيش حاجة بتتسجل</div><div style="font-size:15px;font-weight:800;margin-top:4px">${_esc(it.title||'—')}</div>${it.duration?`<div style="font-size:11px;color:#6a7a9e">⏱ ${_esc(it.duration)}</div>`:''}${body}`);
+};
+
+
+// ═══ بنك الأسئلة (content/{grade}/qbank) ═══
+window.setQMeta=(id,k,v)=>{ const q=window.questions.find(x=>x.id===id); if(q) q[k]=v; };
+window.saveToBank=async(id)=>{
+  const grade=_gradeNow(); if(!grade){ toast('اختار صف أولاً','err'); return; }
+  const q=window.questions.find(x=>x.id===id); if(!q||!String(q.text||'').trim()){ toast('اكتب نص السؤال الأول','err'); return; }
+  try{
+    await window._addDoc(window._collection(window._db,'content',grade,'qbank'),{type:q.type,text:q.text,points:q.points||1,options:q.options||[],correctAnswer:q.correctAnswer??0,lesson:q.lesson||'',difficulty:q.difficulty||'',videoId:q.videoId||'',createdAt:Date.now()});
+    toast('اتحفظ في البنك ✓','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+window.openBank=async()=>{
+  const grade=_gradeNow(); if(!grade){ toast('اختار صف أولاً','err'); return; }
+  try{
+    const snap=await window._getDocs(window._collection(window._db,'content',grade,'qbank'));
+    window._bank=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    window._bankSel=new Set(); window._bankF={lesson:'',difficulty:''}; _drawBank();
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+function _drawBank(){
+  const B=window._bank, F=window._bankF, lessons=[...new Set(B.map(q=>q.lesson).filter(Boolean))];
+  const list=B.filter(q=>(!F.lesson||q.lesson===F.lesson)&&(!F.difficulty||q.difficulty===F.difficulty));
+  const sel='padding:6px;border-radius:7px;border:1px solid rgba(255,255,255,.12);background:#080d1c;color:#e8ecf8;font-family:Tajawal,sans-serif;font-size:12px';
+  _modal(`<div style="font-size:15px;font-weight:800">📚 بنك الأسئلة (${B.length})</div>
+    <div style="display:flex;gap:6px;margin:10px 0"><select onchange="_bankF.lesson=this.value;_drawBank()" style="${sel}"><option value="">كل الدروس</option>${lessons.map(l=>`<option ${F.lesson===l?'selected':''}>${_esc(l)}</option>`).join('')}</select>
+    <select onchange="_bankF.difficulty=this.value;_drawBank()" style="${sel}"><option value="">كل الصعوبات</option>${['سهل','متوسط','صعب'].map(d=>`<option ${F.difficulty===d?'selected':''}>${d}</option>`).join('')}</select></div>
+    ${list.length?list.map(q=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+      <input type="checkbox" ${_bankSel.has(q.id)?'checked':''} onchange="this.checked?_bankSel.add('${q.id}'):_bankSel.delete('${q.id}')" style="margin-top:4px;accent-color:#4a7fd4"/>
+      <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:700">${_esc(q.text)}</div><div style="font-size:10px;color:#6a7a9e">${_esc(q.lesson||'من غير درس')} · ${_esc(q.difficulty||'—')}${q.videoId?' · ▶ شرح':''}</div></div>
+      <button onclick="delBank('${q.id}')" style="border:none;background:none;color:#ff4d6d;cursor:pointer">🗑</button></div>`).join(''):'<div style="text-align:center;color:#6a7a9e;padding:20px;font-size:13px">مفيش أسئلة مطابقة</div>'}
+    <button onclick="addFromBank()" style="margin-top:12px;width:100%;padding:11px;border:none;border-radius:9px;background:#4a7fd4;color:#fff;cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;font-weight:800">إضافة المحدد للامتحان</button>`);
+}
+window._drawBank=_drawBank;
+window.addFromBank=()=>{
+  const picked=window._bank.filter(q=>_bankSel.has(q.id)); if(!picked.length){ toast('اختار أسئلة أولاً','err'); return; }
+  picked.forEach((q,i)=>{ const {id,createdAt,...d}=q; window.questions.push({...d,id:`q${Date.now()}${i}`}); });
+  renderQuestionsV2(); document.getElementById('_cmModal')?.remove(); toast('اتضاف '+picked.length+' سؤال ✓','ok');
+};
+window.delBank=async(id)=>{
+  if(!confirm('حذف السؤال من البنك؟ (الامتحانات اللي استخدمته مش بتتأثر)')) return;
+  try{ await window._deleteDoc(_D(_gradeNow(),'qbank',id)); window._bank=window._bank.filter(q=>q.id!==id); window._bankSel.delete(id); _drawBank(); }
+  catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
 // أزرار عائمة
 (()=>{
   const w=document.createElement('div');
@@ -1598,6 +1699,7 @@ window.editItem = (tab, id) => {
     window._links_e    = (item.links||[]).map(l=>({...l,id:Date.now()+Math.random()}));
     window._links_eOld = (item.links||[]).map(l=>({...l,id:Date.now()+Math.random()}));
     renderLinks('e'); renderLinks('eOld');
+    if(item.examSystem==='new'||(item.questions||[]).length){ window.questions=(item.questions||[]).map(q=>({...q})); window.onExamSystemChange?.('new'); renderQuestionsV2(); }
     setEType(item.type||'mcq');
     window.scrollTo({top:0,behavior:'smooth'});
   } else {
@@ -2254,6 +2356,12 @@ function renderQuestionsV2() {
         </button>
       </div>
       <textarea class="q-text" rows="2" placeholder="اكتب نص السؤال هنا..." oninput="setQuestionText('${q.id}',this.value)">${q.text||''}</textarea>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0">
+        <input value="${String(q.lesson||'').replace(/"/g,'&quot;')}" placeholder="الدرس" oninput="setQMeta('${q.id}','lesson',this.value)" style="flex:1;min-width:90px;padding:6px;border-radius:7px;border:1px solid rgba(255,255,255,.12);background:#080d1c;color:#e8ecf8;font-family:Tajawal,sans-serif;font-size:11px"/>
+        <select onchange="setQMeta('${q.id}','difficulty',this.value)" style="padding:6px;border-radius:7px;border:1px solid rgba(255,255,255,.12);background:#080d1c;color:#e8ecf8;font-family:Tajawal,sans-serif;font-size:11px"><option value="">الصعوبة</option>${['سهل','متوسط','صعب'].map(d=>`<option ${q.difficulty===d?'selected':''}>${d}</option>`).join('')}</select>
+        <select onchange="setQMeta('${q.id}','videoId',this.value)" style="flex:1;min-width:110px;max-width:100%;padding:6px;border-radius:7px;border:1px solid rgba(255,255,255,.12);background:#080d1c;color:#e8ecf8;font-family:Tajawal,sans-serif;font-size:11px"><option value="">▶ فيديو الشرح (اختياري)</option>${(window._cache?.videos||[]).map(v=>`<option value="${v.id}" ${q.videoId===v.id?'selected':''}>${String(v.title||'—').replace(/</g,'&lt;')}</option>`).join('')}</select>
+        <button onclick="saveToBank('${q.id}')" style="padding:6px 10px;border-radius:7px;border:1px solid rgba(201,168,76,.4);background:rgba(201,168,76,.1);color:#c9a84c;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">💾 للبنك</button>
+      </div>
       ${optsHTML}
     </div>`;
   }).join('');
@@ -2285,7 +2393,7 @@ window.saveBuilderQuestions = async () => {
       maxAttempts: parseInt(document.getElementById('eMaxAttempts')?.value||'')||null,
       expiresAt: document.getElementById('eExpiresAt')?.value ? new Date(document.getElementById('eExpiresAt').value) : null,
       links: (window._links_e||[]).filter(l=>l.url&&l.label),
-      questions: qs.map(q=>({ id:q.id, type:q.type, text:q.text, points:q.points, options:q.options, correctAnswer:q.correctAnswer })),
+      questions: qs.map(q=>({ id:q.id, type:q.type, text:q.text, points:q.points, options:q.options, correctAnswer:q.correctAnswer, lesson:q.lesson||'', difficulty:q.difficulty||'', videoId:q.videoId||'' })),
       updatedAt: serverTimestamp()
     };
     const isEdit = !!window._editId?.e;
@@ -2783,6 +2891,7 @@ function renderItemsEnhanced(tab, items, elId){
     <button onclick="bulkSetHidden('${tab}','${elId}',true)" style="padding:4px 12px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.05);color:#e8ecf8;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">🙈 إخفاء المحدد</button>
     <button onclick="bulkSetHidden('${tab}','${elId}',false)" style="padding:4px 12px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.05);color:#e8ecf8;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">👁 إظهار المحدد</button>
     <button onclick="selectAllBulk('${tab}')" style="padding:4px 12px;border:1px solid rgba(255,255,255,.12);border-radius:6px;background:rgba(255,255,255,.05);color:#e8ecf8;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">تحديد الكل</button>
+    <button onclick="openBulkEdit('${tab}','${elId}')" style="padding:4px 12px;border:1px solid rgba(201,168,76,.35);border-radius:6px;background:rgba(201,168,76,.1);color:#c9a84c;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px;font-weight:700">⚙️ وحدة/جدولة/قفل</button>
     <button onclick="toggleBulkMode('${tab}','${elId}')" style="padding:4px 10px;border:1px solid rgba(255,255,255,.1);border-radius:6px;background:transparent;color:#6a7a9e;cursor:pointer;font-family:Tajawal,sans-serif;font-size:11px">إلغاء</button>
   </div>` : '';
 
@@ -2795,6 +2904,7 @@ function renderItemsEnhanced(tab, items, elId){
         <div class="item-title">${item.title||'—'}</div>
         <div class="item-meta">
           ${item.isHidden?'<span class="tag" style="background:rgba(255,77,109,.14);color:var(--err)">🙈 مخفي</span>':''}
+          ${item.unit?`<span class="tag" style="background:rgba(201,168,76,.12);color:var(--gold)">📚 ${String(item.unit).replace(/</g,'&lt;')}</span>`:''}${item.openAll?'<span class="tag ok">🔓 مفتوح للجميع</span>':''}
           ${item.type?`<span class="tag ${tagCls}">${typeLabel[item.type]||item.type}</span>`:''}
           ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
           ${item.deadline?`<span>📅 ${item.deadline}</span>`:''}
@@ -2819,6 +2929,7 @@ function renderItemsEnhanced(tab, items, elId){
         </button>
         ${url?`<button class="ia" onclick="copyItemUrl('${url}')" title="نسخ الرابط"><svg><use href="#i-copy"/></svg></button>`:''}
         ${url?`<a class="ia" href="${url}" target="_blank" title="فتح"><svg><use href="#i-eye"/></svg></a>`:''}
+        <button class="ia" onclick="previewItem('${tab}','${item.id}')" title="معاينة كطالب" style="font-size:13px">👀</button>
         <button class="ia" onclick="toggleHidden('${tab}','${item.id}')" title="${item.isHidden?'إظهار للطلاب':'إخفاء عن الطلاب'}" style="font-size:13px">${item.isHidden?'🙈':'👁'}</button>
         <button class="ia del" onclick="deleteItem('${tab}','${item.id}','${(item.title||'').replace(/'/g,"\'")}')"><svg><use href="#i-trash"/></svg></button>
       </div>
