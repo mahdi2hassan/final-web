@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<title>التحقق من الهوية الطلابية — Plus Mathematics</title>
+<title>التحقق من الهوية والشهادات — Plus Mathematics</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -87,7 +87,7 @@
       جاري التحقق...
     </div>
   </div>
-  <div class="foot">صفحة تحقق عامة من الهوية الطلابية — لا يتم عرض أي بيانات حساسة</div>
+  <div class="foot">صفحة تحقق عامة من الهوية الطلابية والشهادات — لا يتم عرض أي بيانات حساسة</div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -209,8 +209,39 @@ async function lookup(sid){
   };
 }
 
-var sid = extractId(new URLSearchParams(location.search).get('id'));
-if(!sid){
+// ── التحقق من شهادة الإتمام: id.html?u=UID&g=GRADEKEY (الـQR في الشهادة) ──
+function renderCertBad(icon,msg){
+  render('<div class="notfound"><div class="icon">'+icon+'</div><div class="msg">'+msg+'</div></div>');
+}
+async function verifyCert(uid,gk){
+  if(/\//.test(uid)||/\//.test(gk)||uid.length>64||gk.length>64) return renderCertBad('🔎','رابط الشهادة غير صحيح.');
+  var res = await Promise.all([
+    db.collection('users').doc(uid).collection('certificates').doc(gk).get(),
+    db.collection('users').doc(uid).get()
+  ]);
+  var cs = res[0], us = res[1];
+  if(!cs.exists) return renderCertBad('🔎','الشهادة دي مش موجودة.<br>اتأكد من الرابط أو الـQR وحاول تاني.');
+  var c = cs.data(), real = us.exists ? String(us.data().name||'').trim() : '';
+  if(c.revoked === true) return renderCertBad('⛔','الشهادة دي ملغاة.');
+  if(real && c.name && real !== String(c.name).trim()) return renderCertBad('⚠️','بيانات الشهادة غير مطابقة لبيانات الطالب.');
+  var dt = toDate(c.issuedAt);
+  render(
+    '<div class="avatar">🎓</div>'+
+    '<div class="name">'+esc(c.name||'طالب')+'</div>'+
+    '<div class="grade">أتمّ بنجاح: '+esc(c.gradeLabel||'—')+'</div>'+
+    '<div class="sid">'+esc(c.no||'')+'</div>'+
+    '<div class="status active">✅ شهادة صحيحة</div>'+
+    (dt ? '<div class="exp">صدرت بتاريخ <b>'+esc(fmtDate(dt))+'</b></div>' : '')+
+    '<div class="verified">تم التحقق: <b>'+esc(fmtDateTime(new Date()))+'</b></div>'
+  );
+}
+
+var qs = new URLSearchParams(location.search);
+var certU = qs.get('u'), certG = qs.get('g');
+var sid = extractId(qs.get('id'));
+if(certU && certG){
+  verifyCert(certU, certG).catch(function(){ renderError(); });
+} else if(!sid){
   renderNotFound();
 } else {
   lookup(sid)

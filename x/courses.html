@@ -2985,7 +2985,7 @@ function _drawNotifs(){
   var all=window._notifAll||[], unread=all.filter(n=>!n.read), k=_nfKind;
   var rows=all.filter(n=>k==='unread'?!n.read:k==='sub'?_isSubN(n):k==='admin'?(!_isSubN(n)&&n.type!=='welcome'):true);
   var chip=(id,l)=>`<button onclick="_nfKind='${id}';_drawNotifs()" style="padding:4px 10px;border-radius:14px;border:1px solid ${k===id?'var(--blue)':'var(--b2)'};background:${k===id?'rgba(74,127,212,.15)':'transparent'};color:${k===id?'var(--blue)':'var(--muted)'};font-family:inherit;font-size:11px;font-weight:700;cursor:pointer">${l}</button>`;
-  var h=`<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding-bottom:8px">${chip('all','الكل')}${chip('unread','غير مقروء')}${chip('sub','الاشتراك والدفع')}${chip('admin','من الإدارة')}${unread.length?`<button onclick="markAllNotifRead()" style="margin-right:auto;background:transparent;border:none;color:var(--blue);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer">✓ تعليم الكل كمقروء</button>`:''}</div>`;
+  var h=`<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding-bottom:8px">${chip('all','الكل')}${chip('unread','غير مقروء')}${chip('sub','الاشتراك والدفع')}${chip('admin','من الإدارة')}${unread.length?`<button onclick="markAllNotifRead()" style="margin-right:auto;background:transparent;border:none;color:var(--blue);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer">✓ تعليم الكل كمقروء</button>`:''}${(PUSH_VAPID&&('Notification' in window)&&Notification.permission!=='granted')?`<button onclick="enablePush()" style="flex-basis:100%;padding:6px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:var(--blue);font-family:inherit;font-size:11px;font-weight:700;cursor:pointer">🔔 فعّل إشعارات الهاتف</button>`:''}</div>`;
   h+=rows.length?rows.map(n=>`<div style="display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--b2);opacity:${n.read?.55:1}">
     <span style="font-size:18px;flex-shrink:0">${_nEsc(n.icon)||'📬'}</span>
     <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;margin-bottom:2px">${_nEsc(n.title)||'إشعار جديد'}</div>${n.body?`<div style="font-size:12px;color:var(--muted);white-space:pre-wrap">${_nEsc(n.body)}</div>`:''}</div>
@@ -3030,6 +3030,61 @@ async function _applyResets(user){
     if(any){ _localSave(); await setDoc(doc(db,'progress',user.uid),_progress,{merge:true}); await updateDoc(doc(db,'users',user.uid),{attemptResetsDone:done}); }
   }catch(e){}
 }
+// ═══ شهادة الإتمام ═══
+function _loadScript(u){ return new Promise(function(res,rej){ if(window.QRCode) return res(); var s=document.createElement('script'); s.src=u; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
+function _certInfo(){
+  var ud=window._userData||{}, gk=ud.gradeKey, V=window._allVideos||[], E=window._allExams||[], gp=(_progress[gk]||{}), dv=gp.videos||[], de=gp.exams||[];
+  var v=V.filter(function(x){return dv.indexOf(x.id)>-1;}).length, e=E.filter(function(x){return de.indexOf(x.id)>-1;}).length;
+  return {gk:gk,tv:V.length,te:E.length,v:v,e:e,ok:V.length>0&&v>=V.length&&e>=E.length};
+}
+function _certBlock(){
+  var c=_certInfo(), h='<div style="font-size:13px;font-weight:800;margin:16px 0 6px">🎓 شهادة الإتمام</div>';
+  if(!c.tv&&!c.te) return h+'<div style="font-size:12px;color:var(--muted)">افتح كورسك وخلّص الدروس والامتحانات علشان تطلع شهادتك.</div>';
+  if(!c.ok) return h+'<div style="font-size:12px;color:var(--muted)">باقي لك '+(c.tv-c.v)+' درس و'+(c.te-c.e)+' امتحان لحد الشهادة.</div>';
+  return h+'<button onclick="getCert()" style="width:100%;padding:10px;border:none;border-radius:9px;background:var(--gold,#c9a84c);color:#1b1503;font-family:inherit;font-weight:800;cursor:pointer">🎓 احصل على شهادتك</button>';
+}
+window.getCert=async function(){
+  var ud=window._userData||{}, c=_certInfo(); if(!c.ok||!_user) return;
+  try{
+    var ref=doc(db,'users',_user.uid,'certificates',c.gk), sn=await getDoc(ref), d;
+    if(sn.exists()) d=sn.data();
+    else{ d={no:((ud.studentId||_user.uid.slice(0,6))+'-'+Date.now().toString(36).slice(-5)).toUpperCase(),name:ud.name||'',gradeKey:c.gk,gradeLabel:(window._GM&&window._GM[c.gk]||{}).label||ud.grade||'',issuedAt:serverTimestamp(),videos:c.tv,exams:c.te}; await setDoc(ref,d); d.issuedAt=null; }
+    await _loadScript('https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js');
+    try{ await document.fonts.ready; }catch(e){}
+    var q=document.createElement('div'); new QRCode(q,{text:'https://plusinmath.vercel.app/id.html?u='+_user.uid+'&g='+encodeURIComponent(c.gk),width:220,height:220,correctLevel:QRCode.CorrectLevel.M});
+    var W=1600,H=1130,cv=document.createElement('canvas'); cv.width=W; cv.height=H; var x=cv.getContext('2d');
+    var gr=x.createLinearGradient(0,0,W,H); gr.addColorStop(0,'#0b1330'); gr.addColorStop(1,'#080d1c'); x.fillStyle=gr; x.fillRect(0,0,W,H);
+    x.strokeStyle='#c9a84c'; x.lineWidth=10; x.strokeRect(40,40,W-80,H-80); x.lineWidth=3; x.strokeRect(65,65,W-130,H-130);
+    x.direction='rtl'; x.textAlign='center';
+    function T(s,y,z,col,w){ x.fillStyle=col; x.font=(w||'700')+' '+z+'px Tajawal,Tahoma,sans-serif'; x.fillText(s,W/2,y); }
+    T('PLUS',190,72,'#4a7fd4','900'); T('بلس للتعليم الإلكتروني',250,40,'#9aa8cc');
+    T('شهادة إتمام',400,120,'#c9a84c','900'); T('تشهد المنصة بأن الطالب / الطالبة',500,42,'#eef2ff');
+    T(d.name||'—',630,100,'#ffffff','900'); T('قد أتمّ بنجاح جميع الدروس والامتحانات في',730,42,'#eef2ff');
+    T(d.gradeLabel||'',810,64,'#4a7fd4','900');
+    var dt=(d.issuedAt&&d.issuedAt.toDate)?d.issuedAt.toDate():new Date(); T('بتاريخ '+dt.toLocaleDateString('ar-EG'),900,38,'#9aa8cc');
+    x.fillStyle='#9aa8cc'; x.font='600 30px Tajawal,sans-serif'; x.textAlign='left'; x.direction='ltr'; x.fillText(d.no,110,H-110);
+    x.fillStyle='#fff'; x.fillRect(W-330,H-330,200,200); x.drawImage(q.querySelector('canvas'),W-322,H-322,184,184);
+    x.textAlign='center'; x.direction='rtl'; x.fillStyle='#9aa8cc'; x.font='600 28px Tajawal,sans-serif'; x.fillText('امسح للتحقق',W-230,H-95);
+    var url=cv.toDataURL('image/png'), ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px;direction:rtl';
+    ov.onclick=function(e){ if(e.target===ov) ov.remove(); };
+    ov.innerHTML='<img src="'+url+'" style="max-width:100%;max-height:70vh;border-radius:8px"/><a href="'+url+'" download="شهادة-بلس.png" style="padding:10px 22px;border-radius:99px;background:var(--gold,#c9a84c);color:#1b1503;font-weight:800;text-decoration:none;font-family:inherit">⬇ تحميل الشهادة</a><button onclick="this.parentNode.remove()" style="background:none;border:none;color:#9aa8cc;font-family:inherit;cursor:pointer">إغلاق</button>';
+    document.body.appendChild(ov);
+  }catch(e){ alert('تعذّر إنشاء الشهادة — حاول مرة أخرى'); }
+};
+// ═══ إشعارات الهاتف (FCM) ═══
+var PUSH_VAPID=''; // ضع مفتاح VAPID هنا: Firebase Console > Project settings > Cloud Messaging > Web Push certificates
+window.enablePush=async function(){
+  try{
+    if(!PUSH_VAPID||!('Notification' in window)||!('serviceWorker' in navigator)){ alert('إشعارات الهاتف مش متاحة دلوقتي'); return; }
+    if(await Notification.requestPermission()!=='granted') return;
+    var m=await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js');
+    var reg=await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    var tok=await m.getToken(m.getMessaging(app),{vapidKey:PUSH_VAPID,serviceWorkerRegistration:reg}); if(!tok) return;
+    var ud=window._userData||{}, arr=(ud.fcmTokens||[]).filter(function(z){return z!==tok;}); arr.push(tok); arr=arr.slice(-5);
+    await updateDoc(doc(db,'users',_user.uid),{fcmTokens:arr}); ud.fcmTokens=arr; _drawNotifs();
+  }catch(e){ alert('تعذّر تفعيل الإشعارات'); }
+};
 // ═══ تبويب «اشتراكي» ═══
 window.openMySub=async function(){
   if(!_user){ return; }
@@ -3062,6 +3117,7 @@ window.openMySub=async function(){
       <div id="rcpMsg" style="font-size:12px;margin-top:6px"></div>`}
     <div style="font-size:13px;font-weight:800;margin:14px 0 4px">🧾 السجل</div>
     ${hist.length?hist.map(x=>{var z=st(x.k==='ren'?'ok':x.status);return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--b2);font-size:12px"><span>${x.k==='ren'?'تجديد':'طلب دفع'} · ${fd(x.createdAt)}</span><span style="color:${z[1]};font-weight:700">${z[0]}</span></div>`;}).join(''):'<div style="font-size:12px;color:var(--muted)">مفيش سجل لسه</div>'}
+    ${_certBlock()}
     <div style="font-size:13px;font-weight:800;margin:16px 0 6px">👤 بياناتي</div>
     <select id="pfGov" onchange="pfCenters()" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:inherit;font-family:inherit;font-size:12px;margin-bottom:6px"><option value="">المحافظة</option>${Object.keys(_GOVC).map(g=>`<option ${ud.governorate===g?'selected':''}>${g}</option>`).join('')}</select>
     <input id="pfCenter" list="pfCenterList" value="${_nEsc(ud.center||'')}" placeholder="المركز / المدينة" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:inherit;font-family:inherit;font-size:12px;margin-bottom:6px"/><datalist id="pfCenterList">${(_GOVC[ud.governorate]||[]).map(c=>`<option value="${c}">`).join('')}</datalist>
