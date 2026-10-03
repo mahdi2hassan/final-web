@@ -1090,6 +1090,7 @@ onAuthStateChanged(auth,async(user)=>{
     try{const pr=await getDoc(doc(db,'progress',user.uid));_srvProg=pr.exists()?pr.data():{}}catch(e){_srvOk=false;_srvProg={};}
     _progress=_mergeProgress(_srvProg,_localLoad(user.uid));
     _localSave();   // نثبّت النسخة المدمجة محلياً
+    await _applyResets(user);
     if(_srvOk&&JSON.stringify(_progress)!==JSON.stringify(_srvProg)) _persistProgress(true); // ارفع الأحدث للحساب
     _initProgressSafety();
     // ── تحميل المراحل الديناميكية ──
@@ -1394,7 +1395,7 @@ function renderVideos(videos,done,gradeKey,isMine){
   const videoViews=gp.videoViews||{};
   el.innerHTML=videos.map((v,i)=>{
     const isDone=done.includes(v.id);
-    const _pr=_prevReq(videos,i); const isLocked=isMine&&!v.openAll&&!!_pr&&!done.includes(_pr.id)&&!isDone;
+    const _pr=_prevReq(videos,i); const isLocked=isMine&&!v.openAll&&!(window._userData&&window._userData.openAllLessons)&&!!_pr&&!done.includes(_pr.id)&&!isDone;
 
     // تاريخ انتهاء الفيديو
     let isExpired=false;
@@ -1540,7 +1541,7 @@ function renderExams(exams,done,gradeKey,isMine){
   const tC={mcq:'var(--blue)',essay:'var(--purple)',images:'var(--ok)',link:'var(--gold)',pdf:'var(--ok)',mixed:'var(--ok)'};
   el.innerHTML=exams.map((e,i)=>{
     const isDone=done.includes(e.id);
-    const _pr=_prevReq(exams,i); const isLocked=isMine&&!e.openAll&&!!_pr&&!done.includes(_pr.id)&&!isDone;
+    const _pr=_prevReq(exams,i); const isLocked=isMine&&!e.openAll&&!(window._userData&&window._userData.openAllLessons)&&!!_pr&&!done.includes(_pr.id)&&!isDone;
     const tl=tL[e.type]||'امتحان';
     const tc=e.type==='mixed'?'var(--ok)':tC[e.type]||'var(--gold)';
     const hasAction=e.mcqRaw||e.essayText||e.imageUrls?.length||e.fileUrl||e.externalUrl||e.url||(e.type==='mixed'&&e.questions?.length);
@@ -2999,6 +3000,36 @@ window.markAllNotifRead=async function(){
   loadNotifications(); checkNotifDot();
 };
 
+// ═══ إيقاف الكورسات مؤقتًا + سعر التجديد (settings/coursesControl) ═══
+window._cc={};
+try{ onSnapshot(doc(db,'settings','coursesControl'),function(s){
+  var d=s.exists()?s.data():{}; window._cc=d; var o=document.getElementById('ccPause');
+  if(d.paused){
+    if(!o){ o=document.createElement('div'); o.id='ccPause'; o.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(5,9,20,.97);display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;direction:rtl;color:#e8ecf8;font-family:inherit'; document.body.appendChild(o); }
+    o.innerHTML='<div><div style="font-size:42px">🛠</div><div style="font-size:16px;font-weight:800;margin:10px 0">الكورسات متوقفة مؤقتًا</div><div style="font-size:13px;color:#9aa8cc;white-space:pre-wrap">'+_nEsc(d.message||'هنرجع قريب 🙏')+'</div></div>';
+  } else if(o){ o.remove(); }
+},function(){}); }catch(e){}
+async function _loadRenewPrice(){
+  try{
+    var sd=await getDoc(doc(db,'settings','subscription')), sub=sd.exists()?sd.data():{}, p=String(sub.price||''), gk=(window._userData||{}).gradeKey;
+    if(sub.pricingMode==='perGrade'&&gk){ var gs=await getDocs(query(collection(db,'grades'),where('key','==',gk))); gs.docs.forEach(function(d){ if(d.data().price) p=String(d.data().price); }); }
+    window._renewP=p;
+  }catch(e){ window._renewP=window._renewP||''; }
+}
+function _renewPrice(){ return window._renewP||''; }
+// ── تصفير محاولات امتحان بأمر الأدمن (users.attemptResets) ──
+async function _applyResets(user){
+  try{
+    var ud=_userData||{}, rs=ud.attemptResets||{}, done={...(ud.attemptResetsDone||{})}, any=false;
+    Object.keys(rs).forEach(function(k){
+      if((done[k]||0)>=rs[k]) return;
+      var i=k.indexOf('__'); if(i<1) return; var gk=k.slice(0,i), ex=k.slice(i+2);
+      var gp=_progress[gk]||{}, at={...(gp.examAttempts||{})}; at[ex]=0;
+      _progress[gk]={...gp,examAttempts:at}; done[k]=rs[k]; any=true;
+    });
+    if(any){ _localSave(); await setDoc(doc(db,'progress',user.uid),_progress,{merge:true}); await updateDoc(doc(db,'users',user.uid),{attemptResetsDone:done}); }
+  }catch(e){}
+}
 // ═══ تبويب «اشتراكي» ═══
 window.openMySub=async function(){
   if(!_user){ return; }
@@ -3009,11 +3040,12 @@ window.openMySub=async function(){
   ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
   ov.innerHTML='<div style="width:100%;max-width:480px;max-height:88vh;overflow:auto;background:var(--card,#0d1530);border:1px solid var(--b2);border-radius:14px;padding:16px;color:inherit"><div id="mySubBody">جاري التحميل...</div><button onclick="document.getElementById(\'mySubOv\').remove()" style="margin-top:12px;width:100%;padding:9px;border:1px solid var(--b2);border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;font-weight:700">إغلاق</button></div>';
   document.body.appendChild(ov);
+  await _loadRenewPrice();
   var hist=[];
   try{ var s=await getDocs(query(collection(db,'paymentRequests'),where('uid','==',_user.uid))); s.docs.forEach(d=>hist.push({k:'req',...d.data()})); }catch(e){}
   try{ var r=await getDocs(query(collection(db,'subscriptionRenewals'),where('uid','==',_user.uid))); r.docs.forEach(d=>hist.push({k:'ren',...d.data()})); }catch(e){}
   hist.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-  var pending=hist.some(x=>x.k==='req'&&x.status==='pending');
+  var pending=hist.some(x=>x.k==='req'&&x.status==='pending')||ud.pendingPaymentStatus==='pending';
   var st=s=>s==='pending'?['⏳ قيد المراجعة','var(--gold,#c9a84c)']:/reject|refus/i.test(s||'')?['❌ مرفوض','var(--err)']:['✅ تم','var(--ok)'];
   var fd=x=>x?.seconds?new Date(x.seconds*1000).toLocaleDateString('ar-EG'):'';
   document.getElementById('mySubBody').innerHTML=`
@@ -3022,13 +3054,29 @@ window.openMySub=async function(){
       <div style="font-size:14px;font-weight:800;color:${active?'var(--ok)':'var(--err)'}">${active?'اشتراكك شغال ✓':'اشتراكك منتهي أو غير مفعّل'}</div>
       ${exp?`<div style="font-size:12px;color:var(--muted);margin-top:4px">${days>0?'باقي '+days+' يوم · ':''}ينتهي ${exp.toLocaleDateString('ar-EG')}</div>`:''}</div>
     <div style="font-size:13px;font-weight:800;margin:14px 0 6px">🔄 تجديد الاشتراك</div>
+    ${_renewPrice()?`<div style="font-size:12px;color:var(--gold,#c9a84c);margin-bottom:6px">سعر التجديد: ${_nEsc(_renewPrice())} جنيه</div>`:''}
     ${pending?'<div style="font-size:12px;color:var(--gold,#c9a84c)">عندك طلب تجديد قيد المراجعة — استنى التأكيد.</div>':`
       <input id="rcpFile" type="file" accept="image/*" style="width:100%;font-size:12px;margin-bottom:8px"/>
       <select id="rcpMethod" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:inherit;font-family:inherit;font-size:12px"><option value="whatsapp">استلام الكود على واتساب</option><option value="sms">استلام الكود برسالة SMS</option><option value="email">استلام الكود على الإيميل</option></select>
       <button onclick="sendRenewal()" style="margin-top:8px;width:100%;padding:10px;border:none;border-radius:9px;background:var(--blue);color:#fff;font-family:inherit;font-weight:800;cursor:pointer">إرسال إيصال التجديد</button>
       <div id="rcpMsg" style="font-size:12px;margin-top:6px"></div>`}
     <div style="font-size:13px;font-weight:800;margin:14px 0 4px">🧾 السجل</div>
-    ${hist.length?hist.map(x=>{var z=st(x.k==='ren'?'ok':x.status);return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--b2);font-size:12px"><span>${x.k==='ren'?'تجديد':'طلب دفع'} · ${fd(x.createdAt)}</span><span style="color:${z[1]};font-weight:700">${z[0]}</span></div>`;}).join(''):'<div style="font-size:12px;color:var(--muted)">مفيش سجل لسه</div>'}`;
+    ${hist.length?hist.map(x=>{var z=st(x.k==='ren'?'ok':x.status);return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--b2);font-size:12px"><span>${x.k==='ren'?'تجديد':'طلب دفع'} · ${fd(x.createdAt)}</span><span style="color:${z[1]};font-weight:700">${z[0]}</span></div>`;}).join(''):'<div style="font-size:12px;color:var(--muted)">مفيش سجل لسه</div>'}
+    <div style="font-size:13px;font-weight:800;margin:16px 0 6px">👤 بياناتي</div>
+    <select id="pfGov" onchange="pfCenters()" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:inherit;font-family:inherit;font-size:12px;margin-bottom:6px"><option value="">المحافظة</option>${Object.keys(_GOVC).map(g=>`<option ${ud.governorate===g?'selected':''}>${g}</option>`).join('')}</select>
+    <input id="pfCenter" list="pfCenterList" value="${_nEsc(ud.center||'')}" placeholder="المركز / المدينة" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:inherit;font-family:inherit;font-size:12px;margin-bottom:6px"/><datalist id="pfCenterList">${(_GOVC[ud.governorate]||[]).map(c=>`<option value="${c}">`).join('')}</datalist>
+    <input id="pfParent" type="tel" inputmode="numeric" maxlength="11" value="${_nEsc(ud.parentPhone||'')}" placeholder="رقم ولي الأمر 01xxxxxxxxx" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:inherit;font-family:inherit;font-size:12px;direction:ltr"/>
+    <button onclick="saveMyProfile()" style="margin-top:8px;width:100%;padding:9px;border:1px solid var(--b2);border-radius:9px;background:transparent;color:inherit;font-family:inherit;font-weight:700;cursor:pointer">حفظ بياناتي</button><div id="pfMsg" style="font-size:12px;margin-top:6px"></div>`;
+};
+
+const _GOVC={'القاهرة':['مدينة نصر','المعادي','شبرا','حلوان','مصر الجديدة'],'الجيزة':['الهرم','الدقي','6 أكتوبر','الشيخ زايد','إمبابة'],'الإسكندرية':['سموحة','المنتزه','العجمي','برج العرب'],'المنيا':['المنيا','بني مزار','مغاغة','العدوة','ملوي','سمالوط','أبو قرقاص','دير مواس','مطاي'],'الدقهلية':['المنصورة','طلخا','ميت غمر','السنبلاوين'],'الغربية':['طنطا','المحلة الكبرى','كفر الزيات'],'أسيوط':['أسيوط','ديروط','منفلوط','أبنوب'],'سوهاج':['سوهاج','أخميم','جرجا','طهطا'],'بني سويف':['بني سويف','الواسطى','ناصر','ببا'],'الفيوم':['الفيوم','سنورس','إطسا','طامية'],'الشرقية':['الزقازيق','العاشر من رمضان','بلبيس','فاقوس'],'المنوفية':['شبين الكوم','منوف','أشمون','السادات'],'القليوبية':['بنها','شبرا الخيمة','قليوب','الخانكة']};
+window.pfCenters=function(){ var g=document.getElementById('pfGov').value; document.getElementById('pfCenterList').innerHTML=(_GOVC[g]||[]).map(c=>'<option value="'+c+'">').join(''); };
+window.saveMyProfile=async function(){
+  var m=document.getElementById('pfMsg'), raw=document.getElementById('pfParent').value.replace(/\D/g,''), pp='';
+  if(raw){ if(raw.indexOf('0020')===0) raw=raw.slice(4); else if(raw.indexOf('20')===0&&raw.length>=12) raw=raw.slice(2); if(raw[0]==='0') raw=raw.slice(1); if(!/^1[0125]\d{8}$/.test(raw)){ m.style.color='var(--err)'; m.textContent='رقم ولي الأمر غير صحيح'; return; } pp='0'+raw; }
+  var upd={governorate:document.getElementById('pfGov').value,center:document.getElementById('pfCenter').value.trim(),parentPhone:pp};
+  try{ await updateDoc(doc(db,'users',_user.uid),upd); Object.assign(window._userData||{},upd); m.style.color='var(--ok)'; m.textContent='تم الحفظ ✓'; }
+  catch(e){ m.style.color='var(--err)'; m.textContent='تعذّر الحفظ — حاول مرة أخرى'; }
 };
 window.sendRenewal=async function(){
   var f=document.getElementById('rcpFile').files[0], msg=document.getElementById('rcpMsg');
@@ -3040,7 +3088,11 @@ window.sendRenewal=async function(){
     for(var q=.8;q>=.3;q-=.1){ var sc=Math.min(1,w/img.width), c=document.createElement('canvas'); c.width=img.width*sc; c.height=img.height*sc; c.getContext('2d').drawImage(img,0,0,c.width,c.height); url=c.toDataURL('image/jpeg',q); if(url.length<900000) break; w=800; }
     if(url.length>=940000) throw new Error('الصورة كبيرة — جرّب صورة أصغر');
     var ud=window._userData||{};
-    await addDoc(collection(db,'paymentRequests'),{uid:_user.uid,name:ud.name||'',phone:ud.phone||'',gradeKey:ud.gradeKey||'',status:'pending',type:'renewal',deliveryMethod:document.getElementById('rcpMethod').value,receiptImg:url,createdAt:serverTimestamp()});
+    var dm=document.getElementById('rcpMethod').value, nm=ud.name||'';
+    var ref=await addDoc(collection(db,'paymentRequests'),{uid:_user.uid,name:nm,phone:ud.phone||'',email:ud.email||'',gradeKey:ud.gradeKey||'',grade:ud.grade||'',type:(ud.expiresAt?'renew':'new'),amount:_renewPrice(),receiptImg:url,deliveryMethod:dm,status:'pending',createdAt:serverTimestamp()});
+    await updateDoc(doc(db,'users',_user.uid),{pendingPaymentId:ref.id,pendingPaymentStatus:'pending',deliveryMethod:dm});
+    try{ await addDoc(collection(db,'adminNotifications'),{type:'payment_receipt',icon:'🧾',title:'إيصال دفع جديد',body:nm+' — '+(ud.grade||''),userId:_user.uid,userName:nm,read:false,createdAt:serverTimestamp()}); }catch(e){}
+    if(window._userData){ window._userData.pendingPaymentStatus='pending'; }
     document.getElementById('mySubOv')?.remove(); window.openMySub();
   }catch(e){ msg.style.color='var(--err)'; msg.textContent='خطأ: '+(e.message||e); }
 };
