@@ -1444,6 +1444,19 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
         <div class="sh"><div class="sh-title"><svg><use href="#ic-settings"/></svg>الإعدادات</div></div>
         <div class="cgrid">
 
+          <div class="card" style="border-color:rgba(0,214,143,0.35)">
+            <h4>🎛 تحكم الكورسات</h4>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin:6px 0"><input type="checkbox" id="cc-paused" style="width:18px;height:18px"/> إيقاف الكورسات مؤقتًا (بيظهر للطلاب رسالة فورًا)</label>
+            <div class="ff"><label>رسالة للطلاب</label><textarea id="cc-msg" rows="2" placeholder="هنرجع قريب 🙏"></textarea></div>
+            <button class="btn primary sm" onclick="saveCC()">💾 حفظ</button>
+            <div style="border-top:1px solid var(--b1);margin:14px 0 10px"></div>
+            <h4 style="font-size:13px">👤 صلاحيات طالب في الكورسات</h4>
+            <div class="ff"><label>رقم موبايل الطالب</label><input type="tel" id="cc-phone" placeholder="01xxxxxxxxx" style="direction:ltr"/></div>
+            <button class="btn sm" onclick="findCCStudent()">بحث</button>
+            <div id="cc-stu" style="margin-top:8px;font-size:12px"></div>
+            <p style="font-size:11px;color:var(--muted);margin-top:8px">سعر التجديد بيتاخد من «الاشتراك» و«إدارة الصفوف» تلقائيًا.</p>
+          </div>
+
           <div class="card" style="border-color:rgba(245,166,35,0.3)">
             <h4>🔐 فحص صلاحيات الأدمن (مهم)</h4>
             <p style="font-size:12px;color:var(--muted);margin-bottom:10px">
@@ -3097,6 +3110,7 @@ window.wloadCodes = async ()=>{
 
 // ── SETTINGS ──
 window.wloadSettings = async ()=>{
+  window.wloadCC&&window.wloadCC();
   try{
     const a = await db.collection('settings').doc('announcement').get();
     if(a.exists){
@@ -3223,6 +3237,56 @@ window.saveMaintenance = async ()=>{
     toast(enabled ? '🚧 تم تفعيل وضع الصيانة — الطلاب مش هيقدروا يدخلوا' : '✅ تم إلغاء وضع الصيانة — الموقع شغال عادي','ok');
     logActivity?.('🚧', enabled?'تفعيل وضع الصيانة':'إلغاء وضع الصيانة', message);
   }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+
+// ── تحكم الكورسات (settings/coursesControl) + صلاحيات طالب ──
+window.wloadCC = async ()=>{
+  try{ const d=await db.collection('settings').doc('coursesControl').get(), c=d.exists?d.data():{};
+    document.getElementById('cc-paused').checked=!!c.paused; document.getElementById('cc-msg').value=c.message||''; }catch(e){}
+};
+window.saveCC = async ()=>{
+  try{
+    const paused=document.getElementById('cc-paused').checked, message=document.getElementById('cc-msg').value.trim();
+    await db.collection('settings').doc('coursesControl').set({paused,message,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+    toast(paused?'⏸ الكورسات اتوقفت — الطلاب هيشوفوا الرسالة':'▶️ الكورسات رجعت شغالة','ok');
+    window.logActivity?.(paused?'⏸':'▶️',paused?'إيقاف الكورسات مؤقتًا':'إعادة تشغيل الكورسات',message);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+window.findCCStudent = async ()=>{
+  const out=document.getElementById('cc-stu'); let ph=document.getElementById('cc-phone').value.replace(/\D/g,''); if(ph&&ph[0]!=='0') ph='0'+ph;
+  try{
+    const sn=await db.collection('users').where('phone','==',ph).limit(1).get();
+    if(sn.empty){ out.textContent='مفيش طالب بالرقم ده'; return; }
+    const d=sn.docs[0], u=d.data(); window._ccStu=d.id;
+    out.innerHTML='<b>'+String(u.name||'').replace(/</g,'&lt;')+'</b><label style="display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" '+(u.openAllLessons?'checked':'')+' onchange="setCCPerm(this.checked)" style="width:17px;height:17px"/> فتح كل الدروس (من غير قفل تسلسلي)</label>';
+    window._ccGk=u.gradeKey||'';
+    if(u.gradeKey){
+      const es=await db.collection('content').doc(u.gradeKey).collection('exams').get();
+      if(!es.empty) out.innerHTML+='<div style="margin-top:12px;font-weight:700">🔁 تصفير محاولات امتحان</div><select id="cc-exam" style="width:100%;margin-top:4px">'+es.docs.map(d=>'<option value="'+d.id+'">'+String(d.data().title||d.id).replace(/</g,'&lt;')+'</option>').join('')+'</select><button class="btn sm" style="margin-top:6px" onclick="resetCCAttempts()">تصفير المحاولات</button>';
+    }
+  }catch(e){ out.textContent='خطأ: '+e.message; }
+};
+window.resetCCAttempts = async ()=>{
+  const sel=document.getElementById('cc-exam'); if(!sel||!sel.value||!window._ccGk) return;
+  if(!confirm('تصفير محاولات الطالب في الامتحان ده؟ (بيتنفذ أول ما يفتح الكورسات)')) return;
+  try{
+    await db.collection('users').doc(window._ccStu).update(new firebase.firestore.FieldPath('attemptResets',window._ccGk+'__'+sel.value),Date.now());
+    toast('اتسجل التصفير ✓','ok'); window.logActivity?.('🔁','تصفير محاولات امتحان',sel.options[sel.selectedIndex].text+' — '+window._ccStu);
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+window.setCCPerm = async (v)=>{
+  try{ await db.collection('users').doc(window._ccStu).update({openAllLessons:!!v}); toast('اتحفظ ✓','ok');
+    window.logActivity?.('🔓',v?'فتح كل الدروس لطالب':'إلغاء فتح الدروس لطالب',window._ccStu); }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+// ── دمج سجل نشاط المحتوى (activityLog) في صفحة النشاط ──
+window._syncActLog = async ()=>{
+  try{
+    const sn=await db.collection('activityLog').orderBy('createdAt','desc').limit(100).get();
+    const cur=getActivity(), seen=new Set(cur.map(x=>x.time+'|'+x.action));
+    sn.docs.forEach(d=>{ const x=d.data(), t=x.createdAt?.toDate?x.createdAt.toDate().toISOString():null; if(!t||seen.has(t+'|'+x.action)) return; cur.push({icon:x.icon||'📌',action:x.action||'',detail:x.detail||'',time:t,who:x.who||'مجهول'}); });
+    cur.sort((p,q)=>String(q.time).localeCompare(String(p.time)));
+    saveActivity(cur.slice(0,500)); renderActivity();
+  }catch(e){}
 };
 
 // ── SAVE SUB ──
@@ -5294,6 +5358,7 @@ window.logActivity=(icon,action,detail='')=>{
   saveActivity(a);
 };
 function renderActivity(){
+  if(!window._actSync){ window._actSync=1; setTimeout(()=>window._syncActLog&&window._syncActLog(),0); }
   const acts=getActivity();
   const el=document.getElementById('activityList');
   if(!el) return;

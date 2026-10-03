@@ -1068,7 +1068,7 @@ body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
 <!-- Firebase -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, serverTimestamp }
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, setDoc, query, where, updateDoc, deleteDoc, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject }
   from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
@@ -1404,7 +1404,7 @@ window.deleteItem = async (tab,id,title)=>{
   try{
     await _toTrash(grade,tab,id);
     await window.loadList(tab,_LIST_EL[tab]);
-    toast('اتنقل للسلة ✓ — تقدر تسترجعه خلال 30 يوم','ok');
+    _log('🗑','نقل لسلة المحذوفات',(_TAB_LBL[tab]||tab)+': '+title);toast('اتنقل للسلة ✓ — تقدر تسترجعه خلال 30 يوم','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
@@ -1415,7 +1415,7 @@ window.bulkDelete = async (tab,elId)=>{
   try{
     const n=_bulkSelected.size;
     for(const id of [..._bulkSelected]) await _toTrash(grade,tab,id);
-    toast(`اتنقل ${n} عنصر للسلة ✓`,'ok');
+    _log('🗑','حذف جماعي (للسلة)',n+' '+(_TAB_LBL[tab]||tab));toast(`اتنقل ${n} عنصر للسلة ✓`,'ok');
     _bulkMode=false; _bulkSelected.clear();
     window.loadList(tab,elId);
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1427,7 +1427,7 @@ window.bulkSetHidden = async (tab,elId,val)=>{
   try{
     const n=_bulkSelected.size;
     await Promise.all([..._bulkSelected].map(id=>window._updateDoc(_D(grade,tab,id),{isHidden:val,hiddenByPanic:false})));
-    toast((val?'اتخفى ':'اتظهر ')+n+' عنصر ✓','ok');
+    _log(val?'🙈':'👁',val?'إخفاء جماعي':'إظهار جماعي',n+' عنصر');toast((val?'اتخفى ':'اتظهر ')+n+' عنصر ✓','ok');
     _bulkMode=false; _bulkSelected.clear();
     window.loadList(tab,elId);
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1446,7 +1446,7 @@ window.toggleHidden = async (tab,id)=>{
   try{
     await window._updateDoc(_D(grade,tab,id),{isHidden:nv,hiddenByPanic:false});
     await window.loadList(tab,_LIST_EL[tab]);
-    toast(nv?'اتخفى عن الطلاب 🙈':'ظاهر للطلاب 👁','ok');
+    _log(nv?'🙈':'👁',nv?'إخفاء عنصر':'إظهار عنصر',(_TAB_LBL[tab]||tab)+': '+(item.title||''));toast(nv?'اتخفى عن الطلاب 🙈':'ظاهر للطلاب 👁','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
@@ -1489,7 +1489,7 @@ window.restoreTrash = async (docId)=>{
     const {docId:_d,_tab,_origId,_deletedAt,...data}=r;
     await window._setDoc(_D(grade,_tab,_origId),data);
     await window._deleteDoc(_D(grade,'trash',docId));
-    toast('اتسترجع ✓','ok');
+    _log('♻️','استرجاع من السلة',r.title||'');toast('اتسترجع ✓','ok');
     window.loadList(_tab,_LIST_EL[_tab]);
     window.openTrash();
   }catch(e){ toast('خطأ: '+e.message,'err'); }
@@ -1524,11 +1524,11 @@ async function _panic(hide){
 }
 window.panicHide = async ()=>{
   if(!confirm('إخفاء كل فيديوهات وامتحانات وواجبات الصف ده عن الطلاب؟')) return;
-  try{ const n=await _panic(true); document.getElementById('_cmModal')?.remove(); toast('اتخفى '+n+' عنصر 🚨','ok'); }
+  try{ const n=await _panic(true); document.getElementById('_cmModal')?.remove(); _log('🚨','وضع الطوارئ: إخفاء كل المحتوى',n+' عنصر');toast('اتخفى '+n+' عنصر 🚨','ok'); }
   catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 window.panicRestore = async ()=>{
-  try{ const n=await _panic(false); document.getElementById('_cmModal')?.remove(); toast('اترجع '+n+' عنصر ✓','ok'); }
+  try{ const n=await _panic(false); document.getElementById('_cmModal')?.remove(); _log('↩️','إرجاع المخفي بالطوارئ',n+' عنصر');toast('اترجع '+n+' عنصر ✓','ok'); }
   catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
@@ -1560,7 +1560,7 @@ window.applyBulkEdit = async (tab,elId)=>{
     document.getElementById('_cmModal')?.remove();
     _bulkMode=false; _bulkSelected.clear();
     window.loadList(tab,elId);
-    toast('اتعدّل '+n+' عنصر ✓','ok');
+    _log('⚙️','تعديل جماعي',n+' عنصر');toast('اتعدّل '+n+' عنصر ✓','ok');
   }catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
@@ -1632,12 +1632,102 @@ window.delBank=async(id)=>{
   catch(e){ toast('خطأ: '+e.message,'err'); }
 };
 
+
+// ═══ سجل النشاط + لوحة التحكم + الإحصائيات ═══
+window._log=(icon,action,detail)=>{ try{ window._addDoc(window._collection(window._db,'activityLog'),{icon,action,detail:String(detail||'').slice(0,200),who:'مدير المحتوى',createdAt:window._serverTimestamp()}).catch(()=>{}); }catch(e){} };
+window._log=window._log; const _log=window._log;
+const _CC=()=>window._doc(window._db,'settings','coursesControl');
+const _in='width:100%;padding:8px;margin-top:4px;border-radius:8px;border:1px solid rgba(255,255,255,.12);background:#080d1c;color:#e8ecf8;font-family:Tajawal,sans-serif;font-size:13px';
+const _bt=(c)=>`width:100%;padding:10px;margin-top:8px;border:1px solid ${c};border-radius:9px;background:transparent;color:${c};cursor:pointer;font-family:Tajawal,sans-serif;font-size:13px;font-weight:800`;
+window.openControl=async()=>{
+  const grade=_gradeNow(); let c={};
+  try{ const d=await window._getDoc(_CC()); c=d.exists()?d.data():{}; }catch(e){}
+  _modal(`<div style="font-size:15px;font-weight:800">🎛 تحكم الكورسات</div>
+   <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;font-weight:700"><input id="ccPaused" type="checkbox" ${c.paused?'checked':''} style="accent-color:#ff4d6d;width:18px;height:18px"/> إيقاف الكورسات مؤقتًا (بيظهر للطلاب رسالة)</label>
+   <textarea id="ccMsg" rows="2" placeholder="رسالة للطلاب" style="${_in}">${_esc(c.message||'')}</textarea>
+   <label style="display:block;font-size:12px;color:#9aa8cc;margin-top:10px">سعر التجديد الافتراضي (جنيه)<input id="ccPrice" type="number" value="${_esc(c.price||'')}" style="${_in}"/></label>
+   ${grade?`<label style="display:block;font-size:12px;color:#9aa8cc;margin-top:8px">سعر التجديد للصف المختار (لو مختلف)<input id="ccGPrice" type="number" value="${_esc((c.prices||{})[grade]||'')}" style="${_in}"/></label>`:''}
+   <button onclick="saveControl()" style="${_bt('#00d68f')}">💾 حفظ</button>
+   <div style="font-size:13px;font-weight:800;margin-top:16px">👤 صلاحيات طالب</div>
+   <input id="ccPhone" type="tel" placeholder="رقم موبايل الطالب 01xxxxxxxxx" style="${_in};direction:ltr"/>
+   <button onclick="findStudentPerm()" style="${_bt('#4a7fd4')}">بحث</button><div id="ccStu" style="margin-top:8px;font-size:12px"></div>
+   <button onclick="openStats()" style="${_bt('#c9a84c')}">📊 إحصائيات الصف المختار</button>`);
+};
+window.saveControl=async()=>{
+  const grade=_gradeNow(), v=id=>document.getElementById(id)?.value||'';
+  try{
+    const old=(await window._getDoc(_CC())).data()||{}, prices={...(old.prices||{})};
+    if(grade&&document.getElementById('ccGPrice')){ if(v('ccGPrice')) prices[grade]=v('ccGPrice'); else delete prices[grade]; }
+    const paused=document.getElementById('ccPaused').checked;
+    await window._setDoc(_CC(),{paused,message:v('ccMsg'),price:v('ccPrice'),prices},{merge:true});
+    if(!!old.paused!==paused) _log(paused?'⏸':'▶️',paused?'إيقاف الكورسات مؤقتًا':'إعادة تشغيل الكورسات','');
+    document.getElementById('_cmModal')?.remove(); toast('اتحفظ ✓','ok');
+  }catch(e){ toast('خطأ: '+e.message,'err'); }
+};
+window.findStudentPerm=async()=>{
+  const out=document.getElementById('ccStu'); let ph=document.getElementById('ccPhone').value.replace(/\D/g,''); if(ph&&ph[0]!=='0') ph='0'+ph;
+  try{
+    const sn=await window._getDocs(window._query(window._collection(window._db,'users'),window._where('phone','==',ph)));
+    if(sn.empty){ out.textContent='مفيش طالب بالرقم ده'; return; }
+    const d=sn.docs[0], u=d.data(); window._stuId=d.id;
+    out.innerHTML=`<b>${_esc(u.name||'')}</b><label style="display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" ${u.openAllLessons?'checked':''} onchange="setStuPerm(this.checked)" style="accent-color:#4a7fd4;width:17px;height:17px"/> فتح كل الدروس (من غير قفل تسلسلي)</label>`;
+  }catch(e){ out.textContent='خطأ: '+e.message; }
+};
+window.setStuPerm=async(v)=>{ try{ await window._updateDoc(window._doc(window._db,'users',window._stuId),{openAllLessons:!!v}); _log('🔓',v?'فتح كل الدروس لطالب':'إلغاء فتح الدروس لطالب',window._stuId); toast('اتحفظ ✓','ok'); }catch(e){ toast('خطأ: '+e.message,'err'); } };
+window.openStats=async()=>{
+  const grade=_gradeNow(); if(!grade){ toast('اختار صف أولاً','err'); return; }
+  _modal('<div style="padding:20px;text-align:center;color:#9aa8cc">جاري حساب الإحصائيات...</div>');
+  try{
+    const [rt,sc,pg]=await Promise.all([
+      window._getDocs(window._query(window._collection(window._db,'videoRatings'),window._where('gradeKey','==',grade))),
+      window._getDocs(window._query(window._collection(window._db,'scores'),window._where('gradeKey','==',grade))),
+      window._getDocs(window._collection(window._db,'progress'))]);
+    const L={},D={},W={},E={};
+    rt.docs.forEach(d=>{const x=d.data(); (x.rating==1?L:D)[x.videoId]=((x.rating==1?L:D)[x.videoId]||0)+1;});
+    pg.docs.forEach(d=>((d.data()[grade]||{}).videos||[]).forEach(id=>W[id]=(W[id]||0)+1));
+    sc.docs.forEach(d=>{const x=d.data(); const e=E[x.examId]||(E[x.examId]={n:0,sum:0}); e.n++; e.sum+=x.pct||0;});
+    const vids=(window._cache?.videos||[]).map(v=>({t:v.title,l:L[v.id]||0,d:D[v.id]||0,w:W[v.id]||0})).sort((a,b)=>(b.d-b.l)-(a.d-a.l));
+    const row=(t,r,flag)=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid rgba(255,255,255,.06);font-size:12px"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${flag?'⚠️ ':''}${_esc(t||'—')}</span><span style="flex-shrink:0;color:#9aa8cc">${r}</span></div>`;
+    const exs=(window._cache?.exams||[]).map(e=>({t:e.title,n:(E[e.id]||{}).n||0,a:E[e.id]?Math.round(E[e.id].sum/E[e.id].n):null})).sort((a,b)=>(a.a==null)-(b.a==null)||a.a-b.a);
+    _modal(`<div style="font-size:15px;font-weight:800">📊 إحصائيات الصف</div><div style="font-size:11px;color:#6a7a9e;margin:2px 0 8px">⚠️ = تقييمات سلبية أكتر من الإيجابية (محتاج إعادة شرح)</div>
+     <div style="font-size:13px;font-weight:800;margin-top:6px">🎬 الفيديوهات</div>${vids.map(v=>row(v.t,`👍${v.l} 👎${v.d} · شاهده ${v.w}`,v.d>v.l)).join('')||'<div style="font-size:12px;color:#6a7a9e">مفيش</div>'}
+     <div style="font-size:13px;font-weight:800;margin-top:14px">📝 الامتحانات (الأضعف أولًا)</div>${exs.map(e=>row(e.t,e.a==null?'مفيش محاولات':`متوسط ${e.a}% · ${e.n} محاولة`,e.a!=null&&e.a<50)).join('')||'<div style="font-size:12px;color:#6a7a9e">مفيش</div>'}`);
+  }catch(e){ toast('خطأ: '+e.message,'err'); document.getElementById('_cmModal')?.remove(); }
+};
+
+// ── إحصائيات جنب كل عنصر ──
+async function _loadStats(grade){
+  const [rt,sc,pg]=await Promise.all([
+    window._getDocs(window._query(window._collection(window._db,'videoRatings'),window._where('gradeKey','==',grade))),
+    window._getDocs(window._query(window._collection(window._db,'scores'),window._where('gradeKey','==',grade))),
+    window._getDocs(window._collection(window._db,'progress'))]);
+  const S={g:grade,t:Date.now(),L:{},D:{},W:{},E:{}};
+  rt.docs.forEach(d=>{const x=d.data(),m=x.rating==1?S.L:S.D; m[x.videoId]=(m[x.videoId]||0)+1;});
+  pg.docs.forEach(d=>((d.data()[grade]||{}).videos||[]).forEach(id=>S.W[id]=(S.W[id]||0)+1));
+  sc.docs.forEach(d=>{const x=d.data(),e=S.E[x.examId]||(S.E[x.examId]={n:0,sum:0}); e.n++; e.sum+=x.pct||0;});
+  return S;
+}
+window._fillStats=async()=>{
+  if(window._statBusy||!document.querySelector('span[data-stat]:empty')) return;
+  const grade=_gradeNow(); if(!grade) return; window._statBusy=true;
+  try{
+    let S=window._statC; if(!S||S.g!==grade||Date.now()-S.t>3e5) S=window._statC=await _loadStats(grade);
+    document.querySelectorAll('span[data-stat]').forEach(sp=>{
+      const [tab,id]=sp.dataset.stat.split(':'); let t='';
+      if(tab==='videos'){ const l=S.L[id]||0,d=S.D[id]||0; t=(d>l?'⚠️ ':'')+`👍${l} 👎${d} · شاهده ${S.W[id]||0}`; }
+      else if(tab==='exams'){ const e=S.E[id]; t=e?`📈 ${Math.round(e.sum/e.n)}% · ${e.n} محاولة`:'مفيش محاولات'; }
+      sp.textContent=t?' '+t:'\u200b';
+    });
+  }catch(e){} finally{ window._statBusy=false; }
+};
+new MutationObserver(()=>{ clearTimeout(window._stT); window._stT=setTimeout(()=>window._fillStats(),500); }).observe(document.body,{childList:true,subtree:true});
+
 // أزرار عائمة
 (()=>{
   const w=document.createElement('div');
   w.style.cssText='position:fixed;bottom:14px;left:14px;z-index:50;display:flex;flex-direction:column;gap:8px';
   const mk=(t,f,c)=>{const b=document.createElement('button');b.textContent=t;b.onclick=f;b.style.cssText='padding:9px 13px;border-radius:22px;border:1px solid '+c+';background:rgba(8,13,28,.92);color:#e8ecf8;cursor:pointer;font-family:Tajawal,sans-serif;font-size:12px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.4)';return b;};
-  w.append(mk('🗑 السلة',()=>window.openTrash(),'rgba(74,127,212,.5)'),mk('🚨 طوارئ',()=>window.openEmergency(),'rgba(255,77,109,.5)'));
+  w.append(mk('🗑 السلة',()=>window.openTrash(),'rgba(74,127,212,.5)'),mk('🚨 طوارئ',()=>window.openEmergency(),'rgba(255,77,109,.5)'),mk('📊 إحصائيات',()=>window.openStats(),'rgba(201,168,76,.5)'));
   document.body.appendChild(w);
 })();
 
@@ -1770,6 +1860,8 @@ window._addDoc = addDoc;
 window._updateDoc = updateDoc;
 window._deleteDoc = deleteDoc;
 window._setDoc = setDoc;
+window._query = query;
+window._where = where;
 window._collection = collection;
 window._doc = doc;
 window._serverTimestamp = serverTimestamp;
@@ -2904,7 +2996,7 @@ function renderItemsEnhanced(tab, items, elId){
         <div class="item-title">${item.title||'—'}</div>
         <div class="item-meta">
           ${item.isHidden?'<span class="tag" style="background:rgba(255,77,109,.14);color:var(--err)">🙈 مخفي</span>':''}
-          ${item.unit?`<span class="tag" style="background:rgba(201,168,76,.12);color:var(--gold)">📚 ${String(item.unit).replace(/</g,'&lt;')}</span>`:''}${item.openAll?'<span class="tag ok">🔓 مفتوح للجميع</span>':''}
+          ${item.unit?`<span class="tag" style="background:rgba(201,168,76,.12);color:var(--gold)">📚 ${String(item.unit).replace(/</g,'&lt;')}</span>`:''}${item.openAll?'<span class="tag ok">🔓 مفتوح للجميع</span>':''}<span data-stat="${tab}:${item.id}" style="font-size:10px;color:var(--muted)"></span>
           ${item.type?`<span class="tag ${tagCls}">${typeLabel[item.type]||item.type}</span>`:''}
           ${item.duration?`<span>⏱ ${item.duration}</span>`:''}
           ${item.deadline?`<span>📅 ${item.deadline}</span>`:''}
