@@ -2730,14 +2730,14 @@ function startCountdown(expiresAt){
   const exp = expiresAt.toDate ? expiresAt.toDate() : new Date(expiresAt);
   function tick(){
     const diff = exp - new Date();
-    if(diff <= 0){ val.textContent='انتهى'; wrap.className='countdown-wrap'; wrap.style.display='flex'; return; }
+    if(diff <= 0){ val.textContent='الاشتراك انتهى'; wrap.className='countdown-wrap'; wrap.style.display='flex'; return; }
     const days = Math.floor(diff/86400000);
-    if(days > 30){ wrap.style.display='none'; return; }
+    wrap.onclick=function(){ if(window.openMySub) window.openMySub(); }; wrap.style.cursor='pointer';
     wrap.style.display='flex';
     if(days <= 3) wrap.className='countdown-wrap';
     else if(days <= 7) wrap.className='countdown-wrap warn';
     else wrap.className='countdown-wrap ok';
-    val.textContent = days > 0 ? `${days} يوم` : `${Math.floor((diff%86400000)/3600000)} ساعة`;
+    val.textContent = days > 0 ? `باقي ${days} يوم` : `باقي ${Math.max(1,Math.floor((diff%86400000)/3600000))} ساعة`;
     let rb=document.getElementById('renewBtnNav');
     if(days<=5){
       if(!rb){rb=document.createElement('a');rb.id='renewBtnNav';rb.href='plus-math-auth.html?renew=1';rb.textContent='🔄 تجديد';
@@ -3095,34 +3095,43 @@ window.openMySub=async function(){
   ov.onclick=e=>{ if(e.target===ov) ov.remove(); };
   ov.innerHTML='<div style="width:100%;max-width:480px;max-height:88vh;overflow:auto;background:var(--card,#0d1530);border:1px solid var(--b2);border-radius:14px;padding:16px;color:inherit"><div id="mySubBody">جاري التحميل...</div><button onclick="document.getElementById(\'mySubOv\').remove()" style="margin-top:12px;width:100%;padding:9px;border:1px solid var(--b2);border-radius:9px;background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;font-weight:700">إغلاق</button></div>';
   document.body.appendChild(ov);
-  await _loadRenewPrice();
-  var hist=[];
-  try{ var s=await getDocs(query(collection(db,'paymentRequests'),where('uid','==',_user.uid))); s.docs.forEach(d=>hist.push({k:'req',...d.data()})); }catch(e){}
-  try{ var r=await getDocs(query(collection(db,'subscriptionRenewals'),where('uid','==',_user.uid))); r.docs.forEach(d=>hist.push({k:'ren',...d.data()})); }catch(e){}
-  hist.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
-  var pending=hist.some(x=>x.k==='req'&&x.status==='pending')||ud.pendingPaymentStatus==='pending';
+  var hist=null;
+  var _try=function(f){ try{ return f(); }catch(e){ return '<div style="font-size:11px;color:var(--err);margin-top:8px">تعذّر عرض جزء من الصفحة</div>'; } };
   var st=s=>s==='pending'?['⏳ قيد المراجعة','var(--gold,#c9a84c)']:/reject|refus/i.test(s||'')?['❌ مرفوض','var(--err)']:['✅ تم','var(--ok)'];
   var fd=x=>x?.seconds?new Date(x.seconds*1000).toLocaleDateString('ar-EG'):'';
-  document.getElementById('mySubBody').innerHTML=`
+    function paint(){
+  var pending=(hist||[]).some(function(x){return x.k==='req'&&x.status==='pending';})||ud.pendingPaymentStatus==='pending';
+  document.getElementById('mySubBody').innerHTML=`${_try(()=>`
     <div style="font-size:15px;font-weight:800;margin-bottom:10px">💳 اشتراكي</div>
     <div style="padding:12px;border-radius:10px;background:${active?'rgba(0,214,143,.08)':'rgba(255,77,109,.08)'};border:1px solid ${active?'rgba(0,214,143,.25)':'rgba(255,77,109,.25)'}">
       <div style="font-size:14px;font-weight:800;color:${active?'var(--ok)':'var(--err)'}">${active?'اشتراكك شغال ✓':'اشتراكك منتهي أو غير مفعّل'}</div>
       ${exp?`<div style="font-size:12px;color:var(--muted);margin-top:4px">${days>0?'باقي '+days+' يوم · ':''}ينتهي ${exp.toLocaleDateString('ar-EG')}</div>`:''}</div>
-    <div style="font-size:13px;font-weight:800;margin:14px 0 6px">🔄 تجديد الاشتراك</div>
+    `)}${_try(()=>`<div style="font-size:13px;font-weight:800;margin:14px 0 6px">🔄 تجديد الاشتراك</div>
     ${_renewPrice()?`<div style="font-size:12px;color:var(--gold,#c9a84c);margin-bottom:6px">سعر التجديد: ${_nEsc(_renewPrice())} جنيه</div>`:''}
     ${pending?'<div style="font-size:12px;color:var(--gold,#c9a84c)">عندك طلب تجديد قيد المراجعة — استنى التأكيد.</div>':`
       <input id="rcpFile" type="file" accept="image/*" style="width:100%;font-size:12px;margin-bottom:8px"/>
       <select id="rcpMethod" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:inherit;font-family:inherit;font-size:12px"><option value="whatsapp">استلام الكود على واتساب</option><option value="sms">استلام الكود برسالة SMS</option><option value="email">استلام الكود على الإيميل</option></select>
       <button onclick="sendRenewal()" style="margin-top:8px;width:100%;padding:10px;border:none;border-radius:9px;background:var(--blue);color:#fff;font-family:inherit;font-weight:800;cursor:pointer">إرسال إيصال التجديد</button>
       <div id="rcpMsg" style="font-size:12px;margin-top:6px"></div>`}
-    <div style="font-size:13px;font-weight:800;margin:14px 0 4px">🧾 السجل</div>
-    ${hist.length?hist.map(x=>{var z=st(x.k==='ren'?'ok':x.status);return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--b2);font-size:12px"><span>${x.k==='ren'?'تجديد':'طلب دفع'} · ${fd(x.createdAt)}</span><span style="color:${z[1]};font-weight:700">${z[0]}</span></div>`;}).join(''):'<div style="font-size:12px;color:var(--muted)">مفيش سجل لسه</div>'}
-    ${_certBlock()}
+    `)}${_try(()=>`<div style="font-size:13px;font-weight:800;margin:14px 0 4px">🧾 السجل</div>
+    ${hist===null?'<div style="font-size:12px;color:var(--muted)">جاري تحميل السجل...</div>':hist.length?hist.map(x=>{var z=st(x.k==='ren'?'ok':x.status);return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--b2);font-size:12px"><span>${x.k==='ren'?'تجديد':'طلب دفع'} · ${fd(x.createdAt)}</span><span style="color:${z[1]};font-weight:700">${z[0]}</span></div>`;}).join(''):'<div style="font-size:12px;color:var(--muted)">مفيش سجل لسه</div>'}
+    `)}${_try(()=>`${_certBlock()}
     <div style="font-size:13px;font-weight:800;margin:16px 0 6px">👤 بياناتي</div>
     <select id="pfGov" onchange="pfCenters()" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:inherit;font-family:inherit;font-size:12px;margin-bottom:6px"><option value="">المحافظة</option>${Object.keys(_GOVC).map(g=>`<option ${ud.governorate===g?'selected':''}>${g}</option>`).join('')}</select>
     <input id="pfCenter" list="pfCenterList" value="${_nEsc(ud.center||'')}" placeholder="المركز / المدينة" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:inherit;font-family:inherit;font-size:12px;margin-bottom:6px"/><datalist id="pfCenterList">${(_GOVC[ud.governorate]||[]).map(c=>`<option value="${c}">`).join('')}</datalist>
     <input id="pfParent" type="tel" inputmode="numeric" maxlength="11" value="${_nEsc(ud.parentPhone||'')}" placeholder="رقم ولي الأمر 01xxxxxxxxx" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:inherit;font-family:inherit;font-size:12px;direction:ltr"/>
-    <button onclick="saveMyProfile()" style="margin-top:8px;width:100%;padding:9px;border:1px solid var(--b2);border-radius:9px;background:transparent;color:inherit;font-family:inherit;font-weight:700;cursor:pointer">حفظ بياناتي</button><div id="pfMsg" style="font-size:12px;margin-top:6px"></div>`;
+    <button onclick="saveMyProfile()" style="margin-top:8px;width:100%;padding:9px;border:1px solid var(--b2);border-radius:9px;background:transparent;color:inherit;font-family:inherit;font-weight:700;cursor:pointer">حفظ بياناتي</button><div id="pfMsg" style="font-size:12px;margin-top:6px"></div>`)}`;
+  }
+  paint();
+  var R=async function(f){ try{ return await Promise.race([f(),new Promise(function(r){setTimeout(function(){r(null);},6000);})]); }catch(e){ return null; } };
+  var acc=[];
+  await R(function(){return _loadRenewPrice();});
+  var rs=await R(function(){return getDocs(query(collection(db,'paymentRequests'),where('uid','==',_user.uid)));});
+  if(rs) rs.docs.forEach(function(d){acc.push({k:'req',...d.data()});});
+  var rr=await R(function(){return getDocs(query(collection(db,'subscriptionRenewals'),where('uid','==',_user.uid)));});
+  if(rr) rr.docs.forEach(function(d){acc.push({k:'ren',...d.data()});});
+  acc.sort(function(x,y){return ((y.createdAt&&y.createdAt.seconds)||0)-((x.createdAt&&x.createdAt.seconds)||0);});
+  hist=acc; if(document.getElementById('mySubBody')) paint();
 };
 
 const _GOVC={'القاهرة':['مدينة نصر','المعادي','شبرا','حلوان','مصر الجديدة'],'الجيزة':['الهرم','الدقي','6 أكتوبر','الشيخ زايد','إمبابة'],'الإسكندرية':['سموحة','المنتزه','العجمي','برج العرب'],'المنيا':['المنيا','بني مزار','مغاغة','العدوة','ملوي','سمالوط','أبو قرقاص','دير مواس','مطاي'],'الدقهلية':['المنصورة','طلخا','ميت غمر','السنبلاوين'],'الغربية':['طنطا','المحلة الكبرى','كفر الزيات'],'أسيوط':['أسيوط','ديروط','منفلوط','أبنوب'],'سوهاج':['سوهاج','أخميم','جرجا','طهطا'],'بني سويف':['بني سويف','الواسطى','ناصر','ببا'],'الفيوم':['الفيوم','سنورس','إطسا','طامية'],'الشرقية':['الزقازيق','العاشر من رمضان','بلبيس','فاقوس'],'المنوفية':['شبين الكوم','منوف','أشمون','السادات'],'القليوبية':['بنها','شبرا الخيمة','قليوب','الخانكة']};
